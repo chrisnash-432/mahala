@@ -5,6 +5,8 @@
 .testbtn, [data-act="join"], [data-act^="join:"], [data-act="givegate"], [data-act^="give:"], [data-act^="pledge:"], [data-act^="crewjoin:"],
 [data-act^="shift:"], [data-act^="notify:"], [data-g="give"], [data-g="test"], a[href^="https://claude.ai/"], #takePart, .topbar .who,
 [data-w="take"], [data-w="path"], [data-w="apply"], [data-w="kitchen"], [data-w="tent"], [data-w="crews"], [data-w="guide"], [data-w="give"], [data-w="gate6"], [data-act^="take:"], [data-act^="step:"], [data-choose] { display: none !important; }
+/* no letter on the public page */
+#envRest { display: none !important; }
 </style>
 <title>Mahalaverse Temple Builders</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1326,7 +1328,7 @@ addEventListener('hashchange', () => { if (!/^#mahalaverse$/i.test(location.hash
 <header class="ui top">
   <button class="mark" type="button" id="toTop" aria-label="Mahala, back to the start">MAHALA</button>
   <nav class="menu" aria-label="Menu">
-    <button type="button" data-open="letter">Letter</button>
+    <a class="menu-door" href="camp.html">The camp</a>
     <button type="button" data-open="film">Film</button>
     <button type="button" id="seedSound" aria-pressed="false"><span class="dot" aria-hidden="true"></span>Sound</button>
     <a class="menu-door" id="toVerse" href="#mahalaverse">Mahalaverse<svg viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg></a>
