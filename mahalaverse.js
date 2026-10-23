@@ -3506,11 +3506,12 @@ function openExplore(t) { if (t) tab = t; EXPLORE.open = true; renderTabs(); clo
 const MENU = $('#menuPop');
 function closeMenu() { if (MENU) { MENU.hidden = true; $('#menuBtn').setAttribute('aria-expanded', 'false'); } }
 function renderMenu() {
-  MENU.innerHTML = [['take', 'gate', 'Take part'], ['explore', 'path', 'The story, gates, events and more'], ['search', 'search', 'Search'], ['time', 'sun', 'Time of day'], ['sound', SND.on ? 'sound' : 'mute', SND.on ? 'Sound off' : 'Sound on'], ['path', 'star', 'Your path']]
+  MENU.innerHTML = [['home', 'left', 'Back to The Seed'], ['take', 'gate', 'Take part'], ['explore', 'path', 'The story, gates, events and more'], ['search', 'search', 'Search'], ['time', 'sun', 'Time of day'], ['sound', SND.on ? 'sound' : 'mute', SND.on ? 'Sound off' : 'Sound on'], ['path', 'star', 'Your path']]
     .map(([k, ic, t]) => `<button type="button" data-m="${k}">${icon(ic)}${t}</button>`).join('');
 }
 $('#menuBtn').addEventListener('click', e => { e.stopPropagation(); const open = MENU.hidden; closePops(); if (open) renderMenu(); MENU.hidden = !open; $('#menuBtn').setAttribute('aria-expanded', String(open)); });
 MENU.addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (!b) return; const k = b.dataset.m; closeMenu();
+  if (k === 'home') { location.href = './'; return; }
   if (k === 'take') openJoin(); if (k === 'explore') openExplore(); if (k === 'path') openPath(); if (k === 'sound') setSound(!SND.on);
   if (k === 'search') { $('#search').classList.add('open'); setTimeout(() => $('#q').focus(), 0); }
   if (k === 'time') $('#sunctl').classList.toggle('open'); });
