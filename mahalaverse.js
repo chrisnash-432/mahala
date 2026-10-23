@@ -3187,7 +3187,7 @@ const WAY = [
     acts: [['mahal', 'gate', 'Step inside'], ['coil', 'torus', 'See the coil'], ['album', 'sound', 'Sunrise at the Mahal']] },
   { id: 'camp', short: 'Camp', eye: 'Home for the builders', name: 'The camp', clock: 15 * 60 + 30,
     view: () => ({ t: V3(CAMP.x + 1, 1, CAMP.z + 2), d: 66, p: 0.92, a: 2.45 }),
-    lines: ['Bell tents, the kitchen and the main tent: home for the builders through build week and the burn.', 'Apply for your place, then choose how you will help.'],
+    lines: ['Bell tents, the kitchen and the main tent: home for the builders through build week and the burn.', 'Camp mates apply for their place, then choose how they will help.'],
     acts: [['apply', 'tent', 'Apply to the camp'], ['tent', 'sound', 'The main tent: playlists and sets'], ['kitchen', 'users', 'The kitchen: meal shifts'], ['crews', 'users', 'Join a crew'], ['camppage', 'right', 'The camp in detail']] },
   { id: 'yard', short: 'Yard', eye: 'Where it is made', name: 'The build yard', clock: 17 * 60 + 15,
     view: () => ({ t: V3(YARD.x, 1, YARD.z), d: 52, p: 1.0, a: 0.95 }),
