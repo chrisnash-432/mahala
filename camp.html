@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mahala Camp</title>
+<meta name="description" content="Mahala, a community camp and creative collective from Cape Town, at AfrikaBurn: the spaces, a day at the camp, how we live together, and The Seed in 2027.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&family=Marcellus&family=Pinyon+Script&display=swap">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #F4EEE4; --bg-2: #EDE4D6; --card: #FBF7F0; --ink: #2A221C; --ink-2: #5B5047; --ink-3: #8A7E72; --rule: #DCD2C3;
+  --yellow: #FFD81F; --cyan: #14A8E0; --magenta: #D8197F; --brass: #9C7A3C; --accent: #A0125D; --shade: rgba(42, 34, 28, .07);
+  --name: "Marcellus", "Cormorant Garamond", Georgia, serif;
+  --verse: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --text: "Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --script: "Pinyon Script", "Snell Roundhand", "Apple Chancery", cursive;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #120E0B; --bg-2: #1A1511; --card: #1E1813; --ink: #EFE7DA; --ink-2: #C9BDAE; --ink-3: #97897A; --rule: #3A3028; --brass: #CA973F; --accent: #F26FB1; --shade: rgba(255, 245, 230, .06); color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #120E0B; --bg-2: #1A1511; --card: #1E1813; --ink: #EFE7DA; --ink-2: #C9BDAE; --ink-3: #97897A; --rule: #3A3028; --brass: #CA973F; --accent: #F26FB1; --shade: rgba(255, 245, 230, .06); color-scheme: dark; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; scroll-padding-top: calc(72px + env(safe-area-inset-top, 0px)); }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--text); font-weight: 300; font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 6px; }
+.wrap { width: min(1160px, 100%); margin: 0 auto; padding-inline: 24px; }
+.eyebrow { font-family: var(--name); font-size: 13px; letter-spacing: .24em; text-transform: uppercase; color: var(--brass); margin: 0; }
+h1, h2, h3 { font-weight: 400; margin: 0; text-wrap: balance; }
+h2 { font-family: var(--verse); font-size: clamp(34px, 4.2vw, 52px); line-height: 1.05; letter-spacing: -.005em; }
+h3 { font-family: var(--verse); font-size: 25px; line-height: 1.15; font-weight: 500; }
+p { margin: 0; text-wrap: pretty; }
+.dots { display: inline-flex; gap: 5px; vertical-align: middle; }
+.dots i { width: 7px; height: 7px; border-radius: 50%; display: block; }
+.dots i:nth-child(1) { background: var(--yellow); } .dots i:nth-child(2) { background: var(--cyan); } .dots i:nth-child(3) { background: var(--magenta); }
+
+/* the bar along the top */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: color-mix(in srgb, var(--bg) 88%, transparent); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-bottom: 1px solid var(--rule); }
+.top .wrap { display: flex; align-items: center; gap: 20px; height: 60px; }
+.mark { font-family: var(--name); font-size: 18px; letter-spacing: .34em; text-decoration: none; padding-left: .34em; white-space: nowrap; }
+.top nav { display: flex; gap: 22px; margin-left: auto; font-size: 14.5px; font-weight: 400; }
+.top nav a { text-decoration: none; color: var(--ink-2); white-space: nowrap; }
+.top nav a:hover { color: var(--ink); }
+.pill { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 18px; border-radius: 999px; border: 1px solid var(--ink); background: var(--ink); color: var(--bg); font-size: 14.5px; font-weight: 400; text-decoration: none; white-space: nowrap; }
+.pill:hover { opacity: .9; }
+.pill.ghost { background: none; color: var(--ink); border-color: var(--rule); }
+.pill.ghost:hover { border-color: var(--ink-3); opacity: 1; }
+.pill svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+/* the opening */
+.hero { padding-block: 56px 28px; text-align: center; }
+.hero .eyebrow { display: inline-flex; gap: 12px; align-items: center; }
+.hero h1 { font-family: var(--name); font-size: clamp(60px, 9.6vw, 124px); line-height: 1; letter-spacing: .3em; padding-left: .3em; margin: 18px 0 18px; }
+.hero .lead { font-family: var(--verse); font-size: clamp(24px, 2.7vw, 32px); line-height: 1.32; max-width: 22em; margin: 0 auto; }
+.hero .sub { color: var(--ink-2); max-width: 34em; margin: 16px auto 0; }
+
+/* the photos */
+.reel { position: relative; padding-block: 24px 8px; }
+.track { display: flex; gap: 14px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding: 4px max(24px, calc((100% - 1160px) / 2 + 24px)) 14px; scrollbar-width: none; overscroll-behavior-x: contain; }
+.track::-webkit-scrollbar { display: none; }
+.slide { flex: none; height: min(62vh, 560px); scroll-snap-align: center; margin: 0; position: relative; border-radius: 6px; overflow: hidden; background: var(--bg-2); box-shadow: 0 18px 40px -26px rgba(42, 34, 28, .6); max-width: calc(100vw - 48px); }
+.slide img { height: 100%; width: auto; object-fit: cover; }
+.reel-foot { display: flex; align-items: center; gap: 16px; padding-top: 10px; }
+.reel-cap { flex: 1; min-width: 0; font-family: var(--verse); font-style: italic; font-size: 19px; color: var(--ink-2); }
+.reel-n { font-family: var(--text); font-size: 13px; letter-spacing: .12em; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.circle { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--rule); background: var(--card); color: var(--ink); display: grid; place-items: center; cursor: pointer; flex: none; }
+.circle:hover { border-color: var(--ink-3); }
+.circle svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+section { padding-block: 88px; }
+section + section { border-top: 1px solid var(--rule); }
+.head { display: grid; gap: 14px; margin-bottom: 40px; max-width: 760px; }
+.head p { color: var(--ink-2); }
+
+/* what Mahala is */
+.about { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 64px; align-items: start; }
+.statement { font-family: var(--verse); font-size: clamp(30px, 3.4vw, 42px); line-height: 1.2; }
+.statement em { font-style: italic; color: var(--accent); }
+.about .body { display: grid; gap: 18px; color: var(--ink-2); padding-top: 8px; }
+.facts { display: flex; flex-wrap: wrap; gap: 10px 28px; margin-top: 10px; padding: 0; list-style: none; font-size: 15px; color: var(--ink); }
+.facts li { display: flex; align-items: center; gap: 9px; }
+.facts li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--brass); }
+
+/* the story, from the book */
+.story { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 56px; align-items: center; }
+.story .text { display: grid; gap: 18px; }
+.story .text p { color: var(--ink-2); }
+.story .text p.verse { font-family: var(--verse); font-size: 24px; line-height: 1.4; color: var(--ink); border-left: 2px solid var(--brass); padding-left: 18px; }
+.pages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: end; }
+.pages figure { margin: 0; }
+.pages img { width: 100%; aspect-ratio: 1000 / 1415; object-fit: cover; border-radius: 3px; box-shadow: 0 16px 30px -20px rgba(42, 34, 28, .7); }
+.pages figure:nth-child(2) img { transform: translateY(-22px); }
+.pages figcaption, .note { font-size: 13px; color: var(--ink-3); margin-top: 10px; }
+
+/* the spaces */
+.spaces { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+.spaces.three { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 18px; }
+.space { background: var(--card); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; }
+.space .im { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--bg-2); }
+.space .im img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.space .im.card-art { background: #2b1c26; }
+.space .im.card-art img { inset: 8% auto auto 50%; transform: translateX(-50%); width: auto; height: 84%; object-fit: contain; border-radius: 6px; box-shadow: 0 10px 24px -10px rgba(0, 0, 0, .7); }
+.space .tx { padding: 16px 18px 20px; display: grid; gap: 6px; }
+.space .tx p { font-size: 15px; line-height: 1.55; color: var(--ink-2); }
+.space.plain .tx { padding-top: 20px; }
+.space.plain .tx::before { content: ""; width: 26px; height: 3px; border-radius: 2px; background: var(--c, var(--brass)); margin-bottom: 8px; }
+
+/* a day at the camp */
+.day { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 56px; align-items: start; }
+.times { list-style: none; margin: 0; padding: 0; display: grid; }
+.times li { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 20px; padding: 16px 0; border-bottom: 1px dashed var(--rule); align-items: baseline; }
+.times li:first-child { border-top: 1px dashed var(--rule); }
+.times b { font-family: var(--name); font-weight: 400; font-size: 17px; letter-spacing: .08em; font-variant-numeric: tabular-nums; }
+.times span { color: var(--ink-2); }
+.nights { background: #17110d; color: #EFE7DA; border: 1px solid var(--rule); border-radius: 10px; padding: 32px 32px 34px; display: grid; gap: 18px; position: relative; overflow: hidden; }
+.nights::after { content: ""; position: absolute; inset: auto -30% -60% auto; width: 90%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(216, 25, 127, .28), rgba(20, 168, 224, .12) 45%, transparent 70%); pointer-events: none; }
+.nights .eyebrow { color: #CA973F; }
+.nights ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; position: relative; z-index: 1; }
+.nights li { font-family: var(--verse); font-size: 26px; line-height: 1.2; }
+.nights li small { display: block; font-family: var(--text); font-size: 14px; color: #BDB0A0; margin-top: 2px; }
+
+/* living together */
+.together { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.letters { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 28px 28px 26px; display: grid; gap: 16px; align-content: start; }
+.letters ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.letters li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; align-items: baseline; }
+.letters li b { font-family: var(--name); font-weight: 400; font-size: 24px; color: var(--accent); }
+.letters li span { color: var(--ink); font-size: 16px; line-height: 1.45; }
+.letters .note { margin-top: 0; }
+.ways { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px; margin-top: 44px; }
+.ways div { display: grid; gap: 8px; align-content: start; }
+.ways p { font-size: 15.5px; color: var(--ink-2); }
+
+/* the year */
+.year { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.year div { border-left: 2px solid var(--brass); padding: 4px 0 4px 22px; display: grid; gap: 8px; }
+.year p { color: var(--ink-2); }
+
+/* 2027 */
+.seed { padding-block: 0; position: relative; background: #0d0a14; color: #EFE7DA; border-top: 0 !important; }
+.seed figure { margin: 0; position: relative; }
+.seed figure picture { display: block; }
+.seed figure img { width: 100%; height: min(72vh, 700px); object-fit: cover; object-position: 50% 58%; }
+.seed figure::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 22%; background: linear-gradient(to top, #0d0a14, rgba(13, 10, 20, 0)); pointer-events: none; }
+.seed .over { padding-block: 8px 72px; }
+.seed .over .wrap { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 16px 56px; align-items: start; }
+.seed .over .lead-in { display: grid; gap: 14px; }
+.seed .over .rest { display: grid; gap: 16px; padding-top: 6px; }
+.seed .eyebrow { color: #CA973F; }
+.seed h2 { font-family: var(--name); letter-spacing: .14em; font-size: clamp(42px, 6vw, 72px); }
+.seed p { max-width: 36em; color: #DCD1C2; }
+.seed .acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px; }
+.seed .pill { background: #EFE7DA; color: #17110d; border-color: #EFE7DA; }
+.seed .pill.ghost { background: none; color: #EFE7DA; border-color: rgba(239, 231, 218, .4); }
+.seed .cap { font-size: 12.5px; color: #A89B8B; }
+
+/* joining */
+.join { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 56px; align-items: start; }
+.join .body { display: grid; gap: 18px; color: var(--ink-2); }
+.join .acts { display: flex; flex-wrap: wrap; gap: 10px; }
+.contact { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 28px; display: grid; gap: 14px; }
+.addr { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.addr code { font-family: var(--text); font-size: 19px; font-weight: 400; color: var(--ink); user-select: all; overflow-wrap: anywhere; }
+.copy { height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--rule); background: none; color: var(--ink); font: inherit; font-size: 14px; font-weight: 400; cursor: pointer; }
+.copy:hover { border-color: var(--ink-3); }
+.dates { display: grid; gap: 4px; padding-top: 14px; border-top: 1px solid var(--rule); }
+.dates b { font-weight: 500; color: var(--ink); }
+.wander { font-family: var(--script); font-size: clamp(40px, 5vw, 58px); line-height: 1.2; color: var(--ink); text-align: center; padding-block: 64px 8px; }
+
+footer { border-top: 1px solid var(--rule); padding-block: 32px 40px; font-size: 14px; color: var(--ink-3); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; }
+footer .mark { font-size: 15px; color: var(--ink); }
+footer a { color: var(--ink-2); }
+
+@media (max-width: 1080px) {
+  .spaces { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ways { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+  .top nav { display: none; }
+  .top .pill { margin-left: auto; }
+  .about, .story, .day, .join { grid-template-columns: minmax(0, 1fr); gap: 36px; }
+  .together, .year, .seed .over .wrap { grid-template-columns: minmax(0, 1fr); }
+  section { padding-block: 64px; }
+}
+@media (max-width: 560px) {
+  body { font-size: 16px; }
+  .wrap { padding-inline: 18px; }
+  .top .wrap { height: 56px; gap: 12px; }
+  .mark { font-size: 16px; letter-spacing: .28em; }
+  .top .pill { height: 36px; padding: 0 14px; font-size: 13.5px; }
+  .hero { padding-block: 48px 20px; }
+  .hero h1 { letter-spacing: .22em; padding-left: .22em; margin: 16px 0; }
+  .track { padding-inline: 18px; gap: 10px; }
+  .slide { height: 56vh; max-height: 460px; }
+  .reel-cap { font-size: 17px; }
+  .spaces, .spaces.three { grid-template-columns: minmax(0, 1fr); }
+  .ways { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+  .times li { grid-template-columns: 74px minmax(0, 1fr); gap: 14px; }
+  .nights { padding: 26px 22px; } .nights li { font-size: 23px; }
+  .letters { padding: 22px 20px; }
+  .pages figure:nth-child(2) img { transform: translateY(-12px); }
+  .seed figure img { height: 70vh; object-position: 50% 62%; }
+  .seed .over { padding-block: 4px 48px; }
+}
+@media (prefers-reduced-motion: reduce) { html, .track { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="wrap">
+    <a class="mark" href="#top" aria-label="Mahala, back to the top">MAHALA</a>
+    <nav aria-label="On this page"><a href="#spaces">The spaces</a><a href="#day">A day</a><a href="#together">Living together</a><a href="#seed">2027</a><a href="#join">Joining</a></nav>
+    <a class="pill ghost" href="index.html#mahalaverse">Into the Mahalaverse<svg aria-hidden="true"><use href="#i-right"/></svg></a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero wrap">
+    <p class="eyebrow"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>A theme camp at AfrikaBurn, from Cape Town</p>
+    <h1>Mahala</h1>
+    <p class="lead">A community camp and creative collective, built on gift culture, intentional community and reverential play.</p>
+    <p class="sub">For over ten years we have built camps at AfrikaBurn, on the playa of the Tankwa Karoo.</p>
+  </div>
+
+  <div class="reel" role="region" aria-roledescription="carousel" aria-label="Photos from the camp">
+    <div class="track" id="track" tabindex="0" aria-live="off"></div>
+    <div class="wrap reel-foot">
+      <p class="reel-cap" id="reelCap" aria-live="polite"></p>
+      <span class="reel-n" id="reelN"></span>
+      <button class="circle" type="button" id="reelPrev" aria-label="The photo before"><svg><use href="#i-left"/></svg></button>
+      <button class="circle" type="button" id="reelNext" aria-label="The next photo"><svg><use href="#i-right"/></svg></button>
+    </div>
+  </div>
+
+  <section id="about">
+    <div class="wrap about">
+      <div>
+        <p class="eyebrow">What Mahala is</p>
+        <p class="statement" style="margin-top:18px">Mahala means <em>free</em>, in isiZulu slang. In Arabic and Indian traditions, a <em>mahal</em> is a palace: a gathering place.</p>
+      </div>
+      <div class="body">
+        <p>We are a community camp and a creative collective from Cape Town. What we make at AfrikaBurn is our gift to Tankwa Town: workshops, sound journeys, movement and music, from the first light to late at night.</p>
+        <p>We are completely non-profit, and we are not plug and play. Camp mates dream the camp together, build it together, take it down together, and stay from the first day to the last.</p>
+        <p>Since 2024 we have raised tented temples on the playa and filled them with sound and story. In 2027 we begin to build a temple in timber, starting with The Seed.</p>
+        <ul class="facts"><li>Over ten years at AfrikaBurn</li><li>Non-profit</li><li>By invitation</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="story">
+    <div class="wrap story">
+      <div class="text">
+        <p class="eyebrow">The story</p>
+        <h2>Nowhere's End, and back again</h2>
+        <p>The camp's own book tells it like this. The Ambassadors of Bliss crossed the cosmos in their magic airship, until a Storm of Uncertainty brought them down in a strange and liminal place called Nowhere's End.</p>
+        <p>They salvaged what they could, and made themselves at home with tea and songs. Searching the wreckage for a sign, they found a portal, and with it the great remembering: that unconditional love remains ever present.</p>
+        <p class="verse">Nowhere's End is actually just Anywhere's Beginning.</p>
+        <p>Mahala grew out of State of Bliss, its sister camp, whose lit wooden boat, Blissfull Drift, still sails with us.</p>
+      </div>
+      <div>
+        <div class="pages">
+          <figure><img src="assets/book/p08.jpg" alt="A painting of a wooden ship hanging from a purple and white striped balloon, among small clouds" loading="lazy"></figure>
+          <figure><img src="assets/book/p10.jpg" alt="A painting of a glowing sign reading Nowhere's End in a desert at night" loading="lazy"></figure>
+          <figure><img src="assets/book/p12.jpg" alt="A painting of a glowing bell tent at dusk with music notes rising, beside a little tea bar" loading="lazy"></figure>
+        </div>
+        <p class="note">Paintings from the Book of Mahala.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="spaces">
+    <div class="wrap">
+      <div class="head"><p class="eyebrow">The spaces</p><h2>Through the portal</h2><p>The camp is laid out anew each year. These are the places at its heart.</p></div>
+      <div class="spaces">
+        <article class="space"><div class="im"><img src="assets/photo_portal.jpg" alt="The MAHALA portal at dusk: a timber gate under an onion-shaped sign, a rope spiral on the ground and a lantern at its centre" loading="lazy"></div>
+          <div class="tx"><h3>The MAHALA portal</h3><p>A timber gate with the lotus on its crown, and a spiral of rope on the ground to walk in along.</p></div></article>
+        <article class="space"><div class="im"><img src="assets/photo_lotus_tent.jpg" alt="The Lotus Mahal at night under a full moon: white bell tents joined around a taller centre, glowing at the door" loading="lazy"></div>
+          <div class="tx"><h3>The Lotus Mahal</h3><p>Three bell tents joined like a lotus around a taller centre. The sound journeys play here, two a day, and a big hand-wound coil hangs on its centre pole.</p></div></article>
+        <article class="space"><div class="im"><img src="assets/photo_drift_night.jpg" alt="Blissfull Drift, a wooden boat on the playa, strung with bunting and lights at night" loading="lazy"></div>
+          <div class="tx"><h3>Blissfull Drift</h3><p>The camp's wooden boat. In its open hull, seats step down to a fire pit shaped like a king protea, and around it lies the chill space, with cushions and daybeds.</p></div></article>
+        <article class="space"><div class="im card-art"><img src="assets/deck/back.jpg" alt="The cover of the Mahala Archetype Deck" loading="lazy"></div>
+          <div class="tx"><h3>The Tea Bar</h3><p>Tea for every guest. Draw a card from the Mahala Archetype Deck, and the card chooses your blend.</p></div></article>
+      </div>
+      <div class="spaces three">
+        <article class="space plain" style="--c: var(--yellow)"><div class="tx"><h3>The kitchen</h3><p>Food for the whole camp, cooked by meal teams of camp mates.</p></div></article>
+        <article class="space plain" style="--c: var(--magenta)"><div class="tx"><h3>The camp fire</h3><p>A braai and couches, for long evenings together.</p></div></article>
+        <article class="space plain" style="--c: var(--cyan)"><div class="tx"><h3>The massage pergola</h3><p>Massage, given as part of the camp's gift, under shade with screens and soft light.</p></div></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="day">
+    <div class="wrap">
+      <div class="head"><p class="eyebrow">A day at the camp</p><h2>From the first light to the night journey</h2><p>From the 2026 programme. The 2027 programme is being shaped now.</p></div>
+      <div class="day">
+        <ol class="times">
+          <li><b>06:00</b><span>Silence in the Mahal: movement and meditation, each in your own way</span></li>
+          <li><b>09:00</b><span>Workshops: the archetypes, mask making, morning movement</span></li>
+          <li><b>12:00</b><span>The Mahal rests while the sound is checked</span></li>
+          <li><b>14:00</b><span>The afternoon sound journey</span></li>
+          <li><b>22:00</b><span>The night sound journey</span></li>
+        </ol>
+        <div class="nights">
+          <p class="eyebrow">The heart of the week</p>
+          <ol>
+            <li>The Opening Ceremony<small>The whole camp together, as the week begins</small></li>
+            <li>Two sound journeys a day<small>Afternoon and night in the Mahal, all week, with the lead musicians taking turns</small></li>
+            <li>The Unmasking Ball<small>Masks made at the morning workshop, unmasked at the evening ball on the playa</small></li>
+            <li>The burn<small>The last night together</small></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="together">
+    <div class="wrap">
+      <div class="head"><p class="eyebrow">Living together</p><h2>How the camp holds itself</h2><p>Six agreements for how we treat each other, and a way through conflict when it comes.</p></div>
+      <div class="together">
+        <div class="letters">
+          <h3>The Sacred Agreements</h3>
+          <ol>
+            <li><b>S</b><span>Seek understanding before interpretation</span></li>
+            <li><b>A</b><span>Assume resonant intent</span></li>
+            <li><b>C</b><span>Choose presence over reaction</span></li>
+            <li><b>R</b><span>Radical responsibility as restoration</span></li>
+            <li><b>E</b><span>Empowered expression of needs</span></li>
+            <li><b>D</b><span>Discern gossip as distortion</span></li>
+          </ol>
+        </div>
+        <div class="letters">
+          <h3>When there is conflict</h3>
+          <ol>
+            <li><b>T</b><span>Tune in: settle and get present before you speak</span></li>
+            <li><b>U</b><span>Unlock inquiry: ask real questions, not positions</span></li>
+            <li><b>N</b><span>Navigate reflection: say back what you heard</span></li>
+            <li><b>I</b><span>Invite boundaries with clarity</span></li>
+            <li><b>N</b><span>Name patterns with compassion</span></li>
+            <li><b>G</b><span>Gather in mediation, with a neutral camp mate</span></li>
+          </ol>
+          <p class="note">The camp calls this the TUNING sequence.</p>
+        </div>
+      </div>
+      <div class="ways">
+        <div><h3>Everyone takes a turn</h3><p>As a Guardian, you hold the threshold of the Mahal as Temple Keeper, or greet guests and tend the fire as Greeter and Fire-Keeper. Add a shift at the Tea Bar, a few short chores and a place on a meal team.</p></div>
+        <div><h3>No one arrives alone</h3><p>Every camp mate belongs to a guide's flock. Your guide checks that you are ready: tent, shifts, water, insurance, food needs and the ride in.</p></div>
+        <div><h3>What you bring</h3><p>A tent, water and warm layers, because Tankwa nights can be freezing. Travel insurance that covers air evacuation is a must. The kitchen plans for gluten-free, vegetarian and dairy-free needs.</p></div>
+        <div><h3>Leave no trace</h3><p>We live by <a href="https://www.afrikaburn.org/about/our-guiding-principles/" target="_blank" rel="noopener">AfrikaBurn's guiding principles</a>, and we leave the playa as we found it.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="year">
+    <div class="wrap">
+      <div class="head"><p class="eyebrow">Between the burns</p><h2>The rest of the year</h2></div>
+      <div class="year">
+        <div><h3>New moon circles</h3><p>Each new moon on the way to the burn, we arrive in silence, sit in a guided meditation, share in circle and close with our intentions.</p></div>
+        <div><h3>The Great Unpack</h3><p>After the burn, the camp unpacks together in Cape Town, and the year begins again.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="seed" id="seed">
+    <figure><picture><source media="(max-width: 700px)" srcset="seed/img/m6lit_tall.jpg"><img src="seed/img/m6lit_wide.jpg" alt="The Seed at night: a timber dome of coloured panes lit from inside, throwing a star of colour across the playa" loading="lazy"></picture></figure>
+    <div class="over"><div class="wrap">
+      <div class="lead-in"><p class="eyebrow">AfrikaBurn 2027</p>
+      <h2>The Seed</h2></div>
+      <div class="rest"><p>The first structure of a temple Mahala means to raise over three years: a timber dome clad in coloured panes, opening like a king protea. It is made flat in a Cape Town workshop and raised on the playa in five days. At night its lantern throws a star of colour across the playa.</p>
+      <p>The Mahalaverse is an evolving world you can walk in your browser. Its way runs from the Book of Mahala, through the camp, to The Seed.</p>
+      <div class="acts"><a class="pill" href="index.html#mahalaverse">Walk the way in the Mahalaverse</a><a class="pill ghost" href="index.html#door=support">Help raise The Seed</a></div>
+      <p class="cap">Concept visualisation of a proposed temple.</p></div>
+    </div></div>
+  </section>
+
+  <section id="join">
+    <div class="wrap join">
+      <div class="body">
+        <p class="eyebrow">Joining</p>
+        <h2 style="color:var(--ink)">By invitation</h2>
+        <p>Mahala grows by invitation. Camp mates each name the people they would most like beside them, and each of those people receives a personal invitation. We look for people who are all in, and who want something deeper than a place to pitch a tent.</p>
+        <p>If you have been invited, you can answer in the Mahalaverse: apply for your place at the camp, choose your meal shifts and join a crew. There, under the main tent, camp mates share their playlists and DJ sets.</p>
+        <div class="acts"><a class="pill" href="index.html#door=camp">Apply in the Mahalaverse</a></div>
+      </div>
+      <div class="contact">
+        <p class="eyebrow">Write to us</p>
+        <div class="addr"><code id="mail">wearemahala@gmail.com</code><button class="copy" type="button" id="copyMail">Copy</button></div>
+        <div class="dates"><p><b>AfrikaBurn 2027</b></p><p>Monday 26 April to Sunday 2 May, in the Tankwa Karoo. Build week comes first, and its dates are being confirmed.</p></div>
+      </div>
+    </div>
+    <p class="wander">For those who dare to Wander</p>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="mark">MAHALA</span>
+    <span>A camp from Cape Town</span>
+    <span>Photos from the camp. Renders of The Seed are concept visualisations.</span>
+    <a href="index.html#mahalaverse">The Mahalaverse</a>
+  </div>
+</footer>
+
+<script>
+(() => {
+  // the photos of the camp, in the order they are shown. More can join the list: a file, words for anyone who cannot see it, and a caption
+  const PHOTOS = [
+    ['assets/photo_drift_sunset.jpg', 900 / 692, 'Blissfull Drift, the camp\'s wooden boat, on the playa at sunset', 'Blissfull Drift at sunset'],
+    ['assets/photo_lotus_tent.jpg', 900 / 592, 'The Lotus Mahal at night under a full moon, glowing at the door', 'The Lotus Mahal under a full moon'],
+    ['assets/photo_coil_pole.jpg', 463 / 544, 'A camp mate fitting a big hand-wound coil onto the centre pole of the Mahal', 'Fitting the hand-wound coil to the centre pole of the Mahal'],
+    ['assets/photo_drift_night.jpg', 900 / 600, 'Blissfull Drift strung with bunting and lights at night', 'Blissfull Drift, lit for the night'],
+    ['assets/photo_portal.jpg', 521 / 700, 'The MAHALA portal at dusk, with a rope spiral on the ground', 'The MAHALA portal, the way in'],
+    ['assets/photo_drift_day.jpg', 1, 'Blissfull Drift by day, bell tents behind it', 'Blissfull Drift by day'],
+    ['assets/photo_coil_figure.jpg', 486 / 740, 'The hand-wound coil resting on a carved figure', 'The hand-wound coil, resting on a carved figure'],
+  ];
+  const track = document.getElementById('track'), cap = document.getElementById('reelCap'), num = document.getElementById('reelN');
+  track.innerHTML = PHOTOS.map(([src, r, alt], i) => `<figure class="slide" role="group" aria-roledescription="slide" aria-label="${i + 1} of ${PHOTOS.length}" style="aspect-ratio:${r.toFixed(4)}"><img src="${src}" alt="${alt.replace(/"/g, '&quot;')}" ${i > 1 ? 'loading="lazy"' : ''}></figure>`).join('');
+  const slides = [...track.children];
+  let at = 0, timer = null, held = false;
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function show(i) { at = (i + slides.length) % slides.length; cap.textContent = PHOTOS[at][3]; num.textContent = `${at + 1} / ${slides.length}`; }
+  function go(i, smooth = true) { show(i); const s = slides[at]; track.scrollTo({ left: s.offsetLeft - (track.clientWidth - s.offsetWidth) / 2, behavior: smooth && !reduced ? 'smooth' : 'auto' }); }
+  // which photo is in the middle, as you scroll by hand
+  let raf = 0;
+  track.addEventListener('scroll', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { const mid = track.scrollLeft + track.clientWidth / 2; let best = 0, bd = 1e9; slides.forEach((s, i) => { const d = Math.abs(s.offsetLeft + s.offsetWidth / 2 - mid); if (d < bd) { bd = d; best = i; } }); if (best !== at) show(best); }); }, { passive: true });
+  document.getElementById('reelPrev').addEventListener('click', () => { go(at - 1); rest(); });
+  document.getElementById('reelNext').addEventListener('click', () => { go(at + 1); rest(); });
+  track.addEventListener('keydown', e => { if (e.key === 'ArrowRight') { e.preventDefault(); go(at + 1); rest(); } if (e.key === 'ArrowLeft') { e.preventDefault(); go(at - 1); rest(); } });
+  // it moves on by itself, slowly, and rests while you look or touch
+  function tick() { clearTimeout(timer); if (reduced || held || document.hidden) return; timer = setTimeout(() => { go(at + 1); tick(); }, 5600); }
+  function rest() { clearTimeout(timer); timer = setTimeout(tick, 9000); }
+  const reel = document.querySelector('.reel');
+  reel.addEventListener('pointerenter', () => { held = true; clearTimeout(timer); });
+  reel.addEventListener('pointerleave', () => { held = false; tick(); });
+  reel.addEventListener('focusin', () => { held = true; clearTimeout(timer); });
+  reel.addEventListener('focusout', () => { held = false; tick(); });
+  track.addEventListener('pointerdown', rest, { passive: true });
+  document.addEventListener('visibilitychange', tick);
+  show(0); addEventListener('load', () => { go(0, false); tick(); });
+  // the address, copied
+  const btn = document.getElementById('copyMail');
+  btn.addEventListener('click', async () => {
+    const t = document.getElementById('mail').textContent;
+    try { await navigator.clipboard.writeText(t); btn.textContent = 'Copied'; }
+    catch (e) { const r = document.createRange(); r.selectNodeContents(document.getElementById('mail')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = 'Selected'; }
+    setTimeout(() => { btn.textContent = 'Copy'; }, 2400);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Back to the Mahalaverse</title>
+<style>
+  :root { color-scheme: light dark; --ground: #ECE6DC; --ink: #1E1A16; --ink-2: #5B5248; }
+  @media (prefers-color-scheme: dark) { :root { --ground: #0D1020; --ink: #F2EEE8; --ink-2: #BAB6C8; } }
+  html, body { margin: 0; height: 100%; background: var(--ground); color: var(--ink); }
+  body { display: grid; place-items: center; padding: 16px; box-sizing: border-box; font: 400 17px/1.45 Georgia, "Times New Roman", serif; text-align: center; }
+  p { margin: 0 0 12px; max-width: 34ch; }
+  a { color: var(--ink); }
+  small { color: var(--ink-2); font-size: 14px; }
+</style>
+</head>
+<body>
+<main>
+  <p>Taking you back to the Mahalaverse.</p>
+  <p><small><a id="go" href="../../../#mahalaverse">Go back now</a></small></p>
+</main>
+<script>
+/* The payment providers send givers here (PayFast return_url and cancel_url, Yoco successUrl, cancelUrl and failureUrl,
+   Paystack callback_url). Whatever a provider adds to the address, this page passes on only what the Mahalaverse needs:
+   pay (back, cancel or fail) and ref (the pledge reference), and opens the Mahalaverse. It shows no result itself: only
+   the provider's confirmation to the server marks a gift as paid. */
+(function () {
+  var q = new URLSearchParams(location.search), pay = q.get('pay'), ref = q.get('ref');
+  var home = new URL('../../../', location.href);
+  if (/^(back|cancel|fail)$/.test(pay || '')) {
+    home.searchParams.set('pay', pay);
+    if (/^MH[1-7]-[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{5}-[23456789ABCDEFGHJKMNPQRSTUVWXYZ]{5}$/.test(ref || '')) home.searchParams.set('ref', ref);
+  }
+  home.hash = 'mahalaverse';
+  document.getElementById('go').href = home.href;
+  location.replace(home.href);
+})();
+</script>
+</body>
+</html>
