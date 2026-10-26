@@ -531,10 +531,17 @@ a.act { color: inherit; text-decoration: none; }
   .end-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin: 0 auto; }
   .end-acts .step { font-size: 15px; letter-spacing: .06em; padding: 16px 18px 15px; }
   .end-acts .step { grid-column: 1 / -1; grid-row: 1; justify-content: center; }
-  .end-acts .act:not(.step) { justify-content: center; padding-left: 8px; padding-right: 8px; letter-spacing: .12em; }
+  .end-acts .act:not(.step) { justify-content: center; padding-left: 6px; padding-right: 6px; letter-spacing: .07em; font-size: 10.5px; white-space: nowrap; }
 }
 /* lines of the verse that sit low, over the ground, where the dome would be behind them higher up */
-.breath.low { top: var(--low, 56svh); }
+.breath.low { top: 56svh; }
+.breath.low::before { background: radial-gradient(closest-side, rgba(18, 12, 8, .5), rgba(18, 12, 8, .22) 60%, rgba(18, 12, 8, 0)); }
+/* on a wide screen the verse sits a little higher, clear of the dome in the views from above */
+@media (min-width: 761px) and (orientation: landscape) { .verse { top: 11svh; } .breath.low { top: 60svh; } }
+/* moment 3 on a wide screen: to the right, over the sky, away from the dome */
+@media (min-width: 761px) and (orientation: landscape) and (min-aspect-ratio: 5/4) {
+  .moment[data-m="3"].top-band { left: auto; right: max(5vw, 48px); transform: none; width: min(460px, 34vw); }
+}
 /* where you are: a dot for each line and each moment; the ones you have seen are filled */
 .rail { position: fixed; z-index: 4; right: calc(10px + env(safe-area-inset-right, 0px)); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center;
   height: min(62svh, 620px); width: 24px; filter: drop-shadow(0 0 3px rgba(18, 12, 8, .6)); transition: opacity .6s ease; }
@@ -1470,11 +1477,11 @@ body.from-seed .lobby .eyebrow, body.from-seed #lobbyLine, body.from-seed .lobby
 <div class="verse" id="verse" aria-hidden="true">
   <template data-after="0"><p>There is a calling as old as time.</p><p>To gather.</p><p>To offer hearts and hands in service.</p><p>To build something beautiful, together.</p></template>
   <template data-after="1"><p>Beckoning you to join in unity.</p><p>Inviting you to make real the feeling<br>held deep in the core of your being,</p></template>
-  <template data-after="2"><p>This is that call.</p></template>
-  <template data-after="3"><p>and raise a temple in celebration of life,<br>of love, of freedom, and of all that is possible.</p></template>
-  <template data-after="4"><p>so that it shines as a beacon,<br>inspiring others to remember for themselves.</p><p>To plant the Seed of Hope,<br>the beginnings of a great new garden.</p></template>
+  <template data-after="2"><p data-place="low">This is that call.</p></template>
+  <template data-after="3"><p data-place="low">and raise a temple in celebration of life,<br>of love, of freedom, and of all that is possible.</p></template>
+  <template data-after="4"><p data-place="low">so that it shines as a beacon,<br>inspiring others to remember for themselves.</p><p data-place="low">To plant the Seed of Hope,<br>the beginnings of a great new garden.</p></template>
   <template data-after="5"><p>Roaring cosmic belly laughs fill the air<br>as we work and play with glowing smiles and sparkling eyes,</p><p>the very things that set our souls ablaze.</p><p>At AfrikaBurn 2027, the first structure<br>of the temple complex will rise.</p><p>We call it The Seed.</p><p>It is year one of a three-year vision<br>to bring this temple to life.</p><p>Since 2024, Mahala has raised tented temples<br>and filled them with immersive sound, story and vibrational technology.</p><p>Now the page turns, and a new chapter begins.</p></template>
-  <template data-after="6"><p>It is a role you have been preparing for your whole life,<br>and perhaps for many lifetimes before.</p><p>For how often in a lifetime<br>are we called to be a temple builder?</p><p>This is an entirely non-profit offering.</p><p>We give of ourselves freely,<br>just as Unconditional Love is offered to us freely,<br>and we gift this experience to all who wander into our ambitious tale.</p><p>The Mahalaverse is open, an evolving world<br>that welcomes you into the story of this temple,<br>and lets you craft your own part in it.</p></template>
+  <template data-after="6"><p>It is a role you have been preparing for your whole life,<br>and perhaps for many lifetimes before.</p><p>For how often in a lifetime<br>are we called to be a temple builder?</p><p>This is an entirely non-profit offering.</p><p>We give of ourselves freely,<br>just as Unconditional Love is offered to us freely,</p><p>and we gift this experience<br>to all who wander into our ambitious tale.</p><p>The Mahalaverse is open, an evolving world<br>that welcomes you into the story of this temple,<br>and lets you craft your own part in it.</p></template>
 </div>
 
 <noscript><style>.moment[data-m="0"], .moment[data-m="0"] > *, .moment[data-m="0"] .big span { opacity: 1; filter: none; transform: none; }</style></noscript>
@@ -2422,8 +2429,9 @@ const MIN_GO = [1.2, 1.2, 1.6, 1.3, 1.6, 1.6, 1.6];      // the shortest way bet
 const verseEl = $('verse');
 const BREATHS = [...verseEl.querySelectorAll('template')].map((t) => [...t.content.querySelectorAll('p')].map((x) => x.innerHTML.split(/<br\s*\/?>/)));
 const breathEls = [];
+const PLACES = [...verseEl.querySelectorAll('template')].map((t) => [...t.content.querySelectorAll('p')].map((x) => x.dataset.place || ''));
 BREATHS.forEach((list, i) => list.forEach((lines, j) => {
-  const el = document.createElement('p'); el.className = 'breath';
+  const el = document.createElement('p'); el.className = 'breath' + (PLACES[i][j] ? ' ' + PLACES[i][j] : '');
   el.innerHTML = lines.map((ln, l) => '<span class="ln">' + ln.trim().split(/\s+/).map((w, k) => `<span class="w" style="--d:${(0.12 + 0.42 * l + 0.05 * k).toFixed(2)}">${w}</span>`).join(' ') + '</span>').join('');
   verseEl.appendChild(el); breathEls.push({ el, i, j, on: false });
 }));
