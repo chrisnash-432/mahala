@@ -497,17 +497,46 @@ details.six .sacred b { font-size: 22px; }
   .book .leaf, .dk-in { transition: none; }
 }
 
-/* the camp sheet as a page of its own */
+/* a sheet of the invitation as a page of its own */
 html, body { background: var(--paper); }
 .sheet { position: static; inset: auto; z-index: auto; overflow: visible; opacity: 1; transition: none; }
 .bar h1.ttl { margin: 0; font-weight: 400; }
 a.back, a.primary, a.secondary { text-decoration: none; }
+.bar .back svg path { stroke-width: 1.4; }
+.centre { text-align: center; }
+.nowrap { white-space: nowrap; }
+/* the camp's photographs: swipe, or step with the arrows */
+.car { margin: clamp(46px, 7vw, 76px) 0 0; }
+.car-track { display: flex; gap: clamp(10px, 1.6vw, 16px); overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; overscroll-behavior-x: contain;
+  scrollbar-width: none; -webkit-overflow-scrolling: touch; border-radius: 6px; outline-offset: 4px; }
+.car-track::-webkit-scrollbar { display: none; }
+.car-slide { flex: none; margin: 0; scroll-snap-align: center; display: grid; gap: 8px; }
+.car-slide img { display: block; height: clamp(260px, 46vw, 470px); width: auto; max-width: min(86vw, 900px); object-fit: cover; border-radius: 6px; box-shadow: 0 10px 24px rgba(40, 25, 12, .18); background: var(--paper-2); }
+.car-slide figcaption { font: 400 13px/1.4 var(--text); letter-spacing: .03em; color: var(--ink-2); text-align: center; }
+.car-nav { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 14px; }
+.car-btn { width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--rule); background: rgba(255, 253, 248, .7); color: var(--ink); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.car-btn:hover { border-color: var(--ink); }
+.car-btn[disabled] { opacity: .35; cursor: default; border-color: var(--rule); }
+.car-btn svg { width: 16px; height: 16px; } .car-btn svg path { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.car-count { font: 400 13px/1 var(--text); letter-spacing: .14em; color: var(--ink-2); font-variant-numeric: tabular-nums; min-width: 4.5em; text-align: center; }
+/* the list: name and email, until the full application or the giving page opens */
+.list-box { width: min(100%, 460px); margin: clamp(30px, 5vw, 44px) auto 0; padding: clamp(22px, 4vw, 32px); background: #FFFDF8; border: 1px solid var(--rule); border-radius: 10px; }
+.list-box .h-sub { margin-bottom: 8px; }
+.list-box .small { margin: 0 0 20px; }
+.list-form .primary { width: 100%; }
+.list-form .lf-note { margin: 14px 0 0; font-size: 13.5px !important; }
+.list-form .err { margin: -6px 0 14px; }
+.list-done { outline: none; }
+.list-done .small { margin-bottom: 0; }
+.give { margin-top: clamp(40px, 6vw, 64px); }
+.give .intro { margin-bottom: clamp(18px, 3vw, 26px); }
+.give .nums b { color: var(--ink); }
 </style>
 </head>
 <body>
 <div class="sheet paper-page open" id="sheet-camp">
   <div class="bar">
-    <a class="back" href="./" id="campBack"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg>Back</a>
+    <button class="back" type="button" data-page-close><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>Close</button>
     <h1 class="ttl" id="campH">The camp</h1>
     <span class="side"></span>
   </div>
@@ -544,13 +573,30 @@ a.back, a.primary, a.secondary { text-decoration: none; }
       <li><img class="ic" src="camp-media/icons/wait-dinners.png" width="256" height="256" alt="" loading="lazy"><div><b>One main dinner a day</b><span>Eaten together, and water for the week (seven litres a day).</span></div></li>
       <li><img class="ic" src="camp-media/icons/wait-tent.png" width="256" height="256" alt="" loading="lazy"><div><b>A bell tent to rent</b><span>Pitched before you arrive (or bring your own).</span></div></li>
       <li><img class="ic" src="camp-media/icons/wait-coil.png" width="256" height="256" alt="" loading="lazy"><div><b>Your coil</b><span>Every member wears one: a copper coil wound on the same grooved ring as the temple's heart, a small piece of the temple that carries its pattern.</span></div></li>
-      <li class="has-photo"><img class="ic" src="camp-media/icons/wait-communal.png" width="256" height="256" alt="" loading="lazy"><div><b>The communal space</b><span>The kitchen, a chill and cuddle-puddle zone, long dining tables, a piano.</span></div>
-        <figure class="wide"><img src="camp-media/photos/communal-space.jpg" width="1800" height="1201" alt="The communal space: a circle of people under the shade tent as the sun comes up" loading="lazy"></figure></li>
-      <li class="has-photo"><img class="ic" src="camp-media/icons/wait-fire.png" width="256" height="256" alt="" loading="lazy"><div><b>Activations through the week</b><span>The fireside at the Blissful Drift (the camp's boat), the Lotus Mahal (our temple tent), sound journeys, the theatrical dinner, and whatever you bring to it.</span></div>
-        <figure class="tall"><img src="camp-media/photos/fire-pit.jpg" width="1201" height="1800" alt="The lotus fire pit in front of the boat stage, with people gathered round it" loading="lazy"></figure></li>
+      <li><img class="ic" src="camp-media/icons/wait-communal.png" width="256" height="256" alt="" loading="lazy"><div><b>The communal space</b><span>The kitchen, a chill and cuddle-puddle zone, long dining tables, a piano.</span></div></li>
+      <li><img class="ic" src="camp-media/icons/wait-fire.png" width="256" height="256" alt="" loading="lazy"><div><b>Activations through the week</b><span>The fireside at the Blissful Drift (the camp's boat), the Lotus Mahal (our temple tent), sound journeys, the theatrical dinner, and whatever you bring to it.</span></div></li>
       <li><img class="ic" src="camp-media/icons/wait-seed.png" width="256" height="256" alt="" loading="lazy"><div><b>Building The Seed together</b><span>The camp's art piece.</span></div></li>
       <li><img class="ic" src="camp-media/icons/wait-circles.png" width="256" height="256" alt="" loading="lazy"><div><b>Incredible people and epic vibes</b><span>Community calls through the year, build days in Cape Town, the camp circle on the playa, and the Great Unpack in Cape Town after the burn.</span></div></li>
     </ul>
+
+    <section class="car" id="campPhotos" aria-roledescription="carousel" aria-label="Photographs from the camp">
+      <div class="car-track" id="carTrack" tabindex="0" aria-label="Photographs from the camp: swipe, or use the arrow keys">
+        <figure class="car-slide" role="group" aria-roledescription="slide" aria-label="1 of 9"><img src="camp-media/photos/boat-evening.jpg" alt="The Blissful Drift, the camp's wooden boat, beside the bell tents in the evening light" loading="eager"><figcaption>The Blissful Drift</figcaption></figure>
+        <figure class="car-slide" role="group" aria-roledescription="slide" aria-label="2 of 9"><img src="camp-media/photos/communal-space.jpg" alt="The communal space: a circle of people under the shade tent as the sun comes up" loading="eager"><figcaption>Morning in the communal space</figcaption></figure>
+        <figure class="car-slide" role="group" aria-roledescription="slide" aria-label="3 of 9"><img src="camp-media/photos/fire-pit.jpg" alt="The lotus fire pit in front of the boat stage, with people gathered round it" loading="lazy"><figcaption>Round the lotus fire pit</figcaption></figure>
+        <figure class="car-slide" role="group" aria-roledescription="slide" aria-label="4 of 9"><img src="camp-media/photos/boat-sunset.jpg" alt="The bow of the Blissful Drift at sunset, with the bell tents and the lounge behind it" loading="lazy"><figcaption>Sunset at the Drift</figcaption></figure>
+        <figure class="car-slide" role="group" aria-roledescription="slide" aria-label="5 of 9"><img src="camp-media/photos/gateway.jpg" alt="The Mahala gateway at dusk, a lantern hanging in it and a coil of rope on the ground before it" loading="lazy"><figcaption>The way in</figcaption></figure>
+        <figure class="car-slide" role="group" aria-roledescription="slide" aria-label="6 of 9"><img src="camp-media/photos/lotus-mahal.jpg" alt="The Lotus Mahal, our temple tent, lit from within under the moon" loading="lazy"><figcaption>The Lotus Mahal under the moon</figcaption></figure>
+        <figure class="car-slide" role="group" aria-roledescription="slide" aria-label="7 of 9"><img src="camp-media/photos/boat-night.jpg" alt="The Blissful Drift at night, strung with lights and bunting" loading="lazy"><figcaption>The Drift by night</figcaption></figure>
+        <figure class="car-slide" role="group" aria-roledescription="slide" aria-label="8 of 9"><img src="camp-media/photos/coil-hands.jpg" alt="A camp mate holding a copper coil wound on its grooved ring" loading="lazy"><figcaption>A coil, wound by hand</figcaption></figure>
+        <figure class="car-slide" role="group" aria-roledescription="slide" aria-label="9 of 9"><img src="camp-media/photos/coil-figure.jpg" alt="A carved wooden figure hung with beads and a copper coil" loading="lazy"><figcaption>Coils and beads on a carved figure</figcaption></figure>
+      </div>
+      <div class="car-nav">
+        <button class="car-btn" type="button" data-car="-1" aria-label="Previous photograph"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg></button>
+        <span class="car-count" id="carCount" aria-live="polite">1 / 9</span>
+        <button class="car-btn" type="button" data-car="1" aria-label="Next photograph"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg></button>
+      </div>
+    </section>
 
     <h2 class="h-sec">What you bring</h2>
     <ul class="bring">
@@ -577,11 +623,74 @@ a.back, a.primary, a.secondary { text-decoration: none; }
     </div>
 
     <div class="page-acts">
-      <a class="primary" href="./#mahalaverse">Into the Mahalaverse</a>
-      <a class="secondary" href="./">Home</a>
+      <button class="primary" type="button" id="listOpen" aria-expanded="false" aria-controls="listBox">Join the camp</button>
+      <button class="secondary" type="button" data-page-close>Close</button>
+    </div>
+    <div class="list-box" id="listBox" hidden>
+      <div id="listAsk">
+        <h2 class="h-sub">The full application opens soon.</h2>
+        <p class="small centre">Add your email to the list and we will send it to you first.</p>
+        <form class="list-form" id="listForm" data-interest="camp" novalidate>
+          <div class="field"><label for="lfName">Your name</label><input type="text" id="lfName" name="name" autocomplete="name" maxlength="80" required></div>
+          <div class="field"><label for="lfEmail">Your email</label><input type="email" id="lfEmail" name="email" autocomplete="email" inputmode="email" maxlength="120" required></div>
+          <p class="err" id="lfErr" role="alert"></p>
+          <button class="primary" type="submit" id="lfSend">Add me to the list</button>
+          <p class="small centre lf-note">We use your email only to write to you about Mahala.</p>
+        </form>
+      </div>
+      <div class="list-done" id="listDone" hidden tabindex="-1">
+        <h2 class="h-sub">Thank you, <span id="lfWho"></span>. You are on the list.</h2>
+        <p class="small centre">We will write to you as soon as the application opens.</p>
+      </div>
     </div>
   </div>
 </div>
+<script src="site.js"></script>
+<script>
+(function () {
+  var SITE = window.MAHALA_SITE || {};
+  // opened over the front page, Close hands back to it (it puts you back where you were); on its own, it goes home
+  var EMBED = (function () { try { return window.parent !== window && window.parent.location.origin === location.origin; } catch (e) { return false; } })();
+  if (EMBED) document.documentElement.classList.add('in-pane');
+  function closePage() {
+    if (EMBED) { parent.postMessage({ mahala: 'close' }, location.origin); return; }
+    try { if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) { history.back(); return; } } catch (e) { }
+    location.href = './';
+  }
+  document.querySelectorAll('[data-page-close]').forEach(function (b) { b.addEventListener('click', closePage); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && EMBED) closePage(); });
+  if (EMBED) setTimeout(function () { var c = document.querySelector('.bar [data-page-close]'); if (c) c.focus({ preventScroll: true }); }, 80);
+  document.querySelectorAll('[data-fill="target"]').forEach(function (el) { if (SITE.money) el.textContent = SITE.money(SITE.target); });
+  document.querySelectorAll('[data-fill="days"]').forEach(function (el) { if (SITE.daysToBuild) el.textContent = String(SITE.daysToBuild()); });
+
+  // the list
+  var box = document.getElementById('listBox'), form = document.getElementById('listForm');
+  window.__openList = function (focus) {
+    if (!box) return;
+    box.hidden = false;
+    var o = document.getElementById('listOpen'); if (o) o.setAttribute('aria-expanded', 'true');
+    setTimeout(function () { box.scrollIntoView({ behavior: 'smooth', block: 'center' }); if (focus !== false) { var n = document.getElementById('lfName'); if (n) n.focus({ preventScroll: true }); } }, 40);
+  };
+  var lo = document.getElementById('listOpen'); if (lo) lo.addEventListener('click', function () { window.__openList(); });
+  if (form) form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = form.elements.name, email = form.elements.email, err = document.getElementById('lfErr'), send = document.getElementById('lfSend');
+    var nm = name.value.replace(/[\u0000-\u001f<>]/g, '').trim(), em = email.value.trim();
+    name.removeAttribute('aria-invalid'); email.removeAttribute('aria-invalid'); err.textContent = '';
+    if (!nm) { name.setAttribute('aria-invalid', 'true'); err.textContent = 'Please add your name.'; name.focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { email.setAttribute('aria-invalid', 'true'); err.textContent = 'Please check your email address.'; email.focus(); return; }
+    send.disabled = true; send.textContent = 'Sending';
+    SITE.joinList({ interest: form.dataset.interest, name: nm, email: em }).then(function () {
+      document.getElementById('lfWho').textContent = nm.split(/\s+/)[0];
+      document.getElementById('listAsk').hidden = true;
+      var d = document.getElementById('listDone'); d.hidden = false; d.focus({ preventScroll: true });
+    }).catch(function () {
+      err.textContent = 'That did not go through. Please check your connection and try again.';
+      send.disabled = false; send.textContent = 'Add me to the list';
+    });
+  });
+})();
+</script>
 <script>
 // the reels: their posters at once, each plays (muted) while it is on screen, with sound when asked
 (function () {
@@ -607,10 +716,18 @@ a.back, a.primary, a.secondary { text-decoration: none; }
   var mute = function () { if (!document.fullscreenElement) camp.muted = true; };
   document.addEventListener('fullscreenchange', mute);
   camp.addEventListener('webkitendfullscreen', function () { camp.muted = true; });
-  // Back goes back to where you came from on this site, or to The Seed
-  document.getElementById('campBack').addEventListener('click', function (e) {
-    try { if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) { e.preventDefault(); history.back(); } } catch (err) { }
-  });
+
+  // the photographs
+  var track = document.getElementById('carTrack'), slides = [].slice.call(track.children), count = document.getElementById('carCount');
+  var prev = document.querySelector('[data-car="-1"]'), next = document.querySelector('[data-car="1"]');
+  function at() { var c = track.scrollLeft + track.clientWidth / 2, best = 0, bd = 1e9; slides.forEach(function (s, i) { var d = Math.abs(s.offsetLeft - track.offsetLeft + s.offsetWidth / 2 - c); if (d < bd) { bd = d; best = i; } }); return best; }
+  function show() { var i = at(); count.textContent = (i + 1) + ' / ' + slides.length; prev.disabled = i === 0; next.disabled = i === slides.length - 1; }
+  function go(i) { i = Math.max(0, Math.min(slides.length - 1, i)); var s = slides[i]; track.scrollTo({ left: s.offsetLeft - track.offsetLeft - (track.clientWidth - s.offsetWidth) / 2 }); }
+  prev.addEventListener('click', function () { go(at() - 1); });
+  next.addEventListener('click', function () { go(at() + 1); });
+  track.addEventListener('keydown', function (e) { if (e.key === 'ArrowRight') { go(at() + 1); e.preventDefault(); } if (e.key === 'ArrowLeft') { go(at() - 1); e.preventDefault(); } });
+  var t; track.addEventListener('scroll', function () { clearTimeout(t); t = setTimeout(show, 60); }, { passive: true });
+  addEventListener('resize', show); show();
 })();
 </script>
 </body>

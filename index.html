@@ -1,5 +1,6 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><meta name="robots" content="noindex,nofollow"><meta name="description" content="Mahala at AfrikaBurn 2027: The Seed, a temple of light and glass, and the Mahalaverse. Concept visualisations."></head><body>
 <script>window.__V7_ONLY = ['platform', 'world']; window.__MAHALA_PUBLIC = true;</script>
+<script src="site.js"></script>
 <style id="publicEdition">
 /* the public edition (for AfrikaBurn's Art Committee): no sign-ups, payments, crew or shift sign-ups, testing buttons or claude.ai links */
 .testbtn, [data-act="join"], [data-act^="join:"], [data-act="givegate"], [data-act^="give:"], [data-act^="pledge:"], [data-act^="crewjoin:"],
@@ -452,6 +453,109 @@ a.act { color: inherit; text-decoration: none; }
   .moment, .call { transition: opacity .4s ease; filter: none !important; }
   .paper { transition: none; }
 }
+
+/* ---------------------------------------------------------------------------------- the review of October 2026 */
+/* the menu: The camp, The Seed, Mahalaverse, Donate. On a phone it takes the whole top line. */
+@media (max-width: 640px) {
+  .top .mark { display: none; }
+  .top { justify-content: center; padding-left: 8px; padding-right: 8px; }
+  .menu { gap: 0; }
+  .menu .menu-door { padding: 10px 7px; letter-spacing: .13em; font-size: 10.5px; }
+}
+@media (max-width: 360px) { .menu .menu-door { padding: 10px 5px; letter-spacing: .08em; } .menu .menu-door svg { display: none; } }
+/* the sound: its own button, bottom right */
+.snd { justify-self: end; pointer-events: auto; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: rgba(20, 14, 10, .26); color: var(--warm); display: grid; place-items: center; cursor: pointer; padding: 0;
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: background .3s, color .3s, border-color .3s; }
+.snd:hover { background: rgba(244, 239, 230, .92); color: var(--ink); border-color: transparent; }
+.snd svg { width: 20px; height: 20px; overflow: visible; }
+.snd path { fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.snd .waves { display: none; }
+.snd[aria-pressed="true"] .waves { display: inline; }
+.snd[aria-pressed="true"] .mute { display: none; }
+@media (max-width: 640px) { .snd { grid-row: 2; grid-column: 2; } }
+/* the first prompt: read on slowly */
+.cue { left: 50%; transform: translateX(-50%); bottom: calc(30px + env(safe-area-inset-bottom, 0px)); width: auto; height: auto; overflow: visible; display: grid; justify-items: center; gap: 9px;
+  font: 400 11px/1 var(--text); letter-spacing: .2em; text-transform: uppercase; color: var(--warm); white-space: nowrap; text-shadow: 0 0 14px rgba(18, 12, 8, .8), 0 0 3px rgba(18, 12, 8, .7); }
+.cue.on { opacity: .95; }
+.cue::after { content: none; }
+.cue svg { width: 16px; height: 10px; overflow: visible; animation: cuebob 2.4s ease-in-out infinite; filter: drop-shadow(0 0 4px rgba(18, 12, 8, .7)); }
+.cue svg path { fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+@keyframes cuebob { 0%, 100% { transform: translateY(0); opacity: .55; } 50% { transform: translateY(5px); opacity: 1; } }
+@media (max-width: 640px) { .cue { bottom: calc(92px + env(safe-area-inset-bottom, 0px)); } }
+@media (prefers-reduced-motion: reduce) { .cue svg { animation: none; } }
+/* moment 2: drag the sun, just above the dial */
+.moment.drag-band { bottom: calc(102px + env(safe-area-inset-bottom, 0px)); }
+.drag-hint { display: inline-flex; align-items: center; gap: 11px; margin: 0; font: 400 12px/1 var(--text); letter-spacing: .18em; text-transform: uppercase; color: var(--warm);
+  text-shadow: 0 0 16px rgba(18, 12, 8, .9), 0 0 3px rgba(18, 12, 8, .85); }
+.drag-hint svg { width: 36px; height: 14px; flex: none; overflow: visible; filter: drop-shadow(0 0 3px rgba(18, 12, 8, .8)); }
+.drag-hint path { fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.drag-hint circle { fill: var(--yellow); }
+@media (max-width: 640px) { .moment.drag-band { bottom: calc(126px + env(safe-area-inset-bottom, 0px)); } .drag-hint { font-size: 11px; letter-spacing: .14em; } }
+/* moment 6: The Seed's ask, to one side of the dome */
+.moment.ask-band { top: 50%; bottom: auto; left: max(4vw, 24px); right: auto; transform: translateY(-50%); width: min(390px, 30vw); text-align: left; }
+.ask-card { background: rgba(247, 242, 234, .95); color: var(--ink); text-shadow: none; border-radius: 8px; overflow: hidden; box-shadow: 0 24px 60px rgba(0, 0, 0, .45); }
+.moment.on .ask-card { pointer-events: auto; }
+.call[data-show="false"] .ask-card { pointer-events: none; }
+.ask-film { aspect-ratio: 16 / 9; background: #120d0a; }
+.ask-film video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ask-body { padding: 18px 22px 20px; }
+.ask-dome { font: 400 18px/1.42 var(--verse); margin: 0 0 .6em; }
+.ask-line { font: 400 21px/1.3 var(--verse); margin: 0 0 14px; }
+.nowrap { white-space: nowrap; }
+.ask-nums { display: flex; gap: 26px; margin: 0 0 18px; }
+.ask-nums div { display: grid; gap: 6px; }
+.ask-nums b { font: 400 29px/1 var(--name); letter-spacing: .02em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ask-nums span { font: 400 10.5px/1.2 var(--text); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-2); }
+.ask-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+.ask-card .act { margin: 0; color: var(--ink); background: none; border-color: rgba(42, 34, 28, .4); text-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; padding: 12px 16px 11px; font-size: 11px; letter-spacing: .16em; }
+.ask-card .act:hover { background: var(--ink); color: var(--warm); border-color: var(--ink); }
+.ask-card .act.solid { background: var(--ink); color: var(--warm); border-color: var(--ink); }
+.ask-card .act.solid:hover { background: #3a2f27; }
+@media (max-width: 760px), (orientation: portrait) {
+  .moment.ask-band { top: auto; bottom: calc(64px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(calc(-50% - 10px)); width: min(84vw, 440px); }
+  .ask-card { display: grid; grid-template-columns: 32% minmax(0, 1fr); }
+  .ask-film { aspect-ratio: auto; min-height: 100%; }
+  .ask-body { padding: 14px 14px 14px; }
+  .ask-dome, .ask-nums > div:first-child { display: none; }
+  .ask-line { font-size: 18px; margin-bottom: 10px; }
+  .ask-nums { margin-bottom: 12px; } .ask-nums b { font-size: 24px; }
+  .ask-acts { flex-direction: column; } .ask-card .act { justify-content: center; text-align: center; padding: 11px 10px 10px; letter-spacing: .1em; line-height: 1.25; }
+}
+/* the last frame: three ways on, the Mahalaverse in the middle and a little larger */
+.moment.end-band { width: min(96vw, 980px); }
+.end-acts { display: flex; align-items: center; justify-content: center; gap: clamp(10px, 2vw, 18px); flex-wrap: nowrap; }
+.end-acts .act { margin-top: 0; }
+.end-acts .step { font-size: clamp(16px, 1.8vw, 20px); padding: 18px 30px 17px; }
+@media (max-width: 640px) {
+  .moment.end-band { width: min(84vw, 420px); transform: translateX(calc(-50% - 10px)); }
+  .end-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin: 0 auto; }
+  .end-acts .step { font-size: 15px; letter-spacing: .06em; padding: 16px 18px 15px; }
+  .end-acts .step { grid-column: 1 / -1; grid-row: 1; justify-content: center; }
+  .end-acts .act:not(.step) { justify-content: center; padding-left: 8px; padding-right: 8px; letter-spacing: .12em; }
+}
+/* lines of the verse that sit low, over the ground, where the dome would be behind them higher up */
+.breath.low { top: var(--low, 56svh); }
+/* where you are: a dot for each line and each moment; the ones you have seen are filled */
+.rail { position: fixed; z-index: 4; right: calc(10px + env(safe-area-inset-right, 0px)); top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center;
+  height: min(62svh, 620px); width: 24px; filter: drop-shadow(0 0 3px rgba(18, 12, 8, .6)); transition: opacity .6s ease; }
+.rail::before { content: ""; position: absolute; top: 8px; bottom: 8px; left: 50%; width: 1px; background: rgba(244, 239, 230, .3); }
+.rail button { position: relative; flex: 1 1 0; width: 24px; min-height: 0; padding: 0; border: 0; background: none; cursor: pointer; display: grid; place-items: center; }
+.rail button::after { content: ""; width: 5px; height: 5px; border-radius: 50%; box-sizing: border-box; border: 1px solid rgba(244, 239, 230, .75); background: rgba(21, 17, 14, .55); transition: background .4s, transform .4s, border-color .4s, box-shadow .4s; }
+.rail button.mo::after { width: 8px; height: 8px; }
+.rail button.seen::after { background: rgba(244, 239, 230, .8); }
+.rail button.here::after { background: var(--warm); border-color: var(--warm); transform: scale(1.5); box-shadow: 0 0 9px rgba(255, 236, 206, .95); }
+.rail button:hover::after { transform: scale(1.6); }
+.rail button:focus-visible { outline: 1px solid var(--warm); outline-offset: -2px; border-radius: 6px; }
+.rail.inked { filter: drop-shadow(0 0 3px rgba(250, 244, 235, .7)); }
+.rail.inked::before { background: rgba(42, 34, 28, .3); }
+.rail.inked button::after { border-color: rgba(42, 34, 28, .7); background: rgba(250, 244, 235, .5); }
+.rail.inked button.seen::after { background: rgba(42, 34, 28, .7); }
+.rail.inked button.here::after { background: var(--ink); border-color: var(--ink); box-shadow: 0 0 8px rgba(250, 244, 235, .9); }
+@media (max-width: 640px) { .rail { right: calc(3px + env(safe-area-inset-right, 0px)); width: 18px; height: min(52svh, 460px); } .rail button { width: 18px; } .rail button::after { width: 4px; height: 4px; } .rail button.mo::after { width: 7px; height: 7px; } }
+/* the camp and The Seed, opened over the page */
+.pane { position: fixed; inset: 0; z-index: 40; background: var(--paper); opacity: 0; transition: opacity .35s ease; }
+.pane.open { opacity: 1; }
+.pane iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: var(--paper); }
 </style>
 <style id="mvCss" media="not all">
 /* Layout: the playa world fills the screen; glass cards float at its edges (top bar, KPIs, inspector, journey, lists) and the centre stays clear. The in-world sun decides day cards or night cards. */
@@ -1310,8 +1414,7 @@ body:has(#menuPop:not([hidden])) #tg, body:has(#menuPop:not([hidden])) .tg-call 
 /* arriving from The Seed: the lobby is only the temple being raised */
 body.from-seed .lobby .eyebrow, body.from-seed #lobbyLine, body.from-seed .lobby .in > p:nth-of-type(2), body.from-seed .lobby-acts, body.from-seed .lobby-doors { display: none; }
 </style>
-<script>if (/^#camp$/i.test(location.hash)) location.replace('camp.html');
-addEventListener('hashchange', () => { if (!/^#mahalaverse$/i.test(location.hash) || document.body.classList.contains('from-seed')) return; if (window.__seed && window.__seed.stepIn) window.__seed.stepIn({ quick: true }); else location.reload(); });</script>
+<script>addEventListener('hashchange', () => { if (!/^#mahalaverse$/i.test(location.hash) || document.body.classList.contains('from-seed')) return; if (window.__seed && window.__seed.stepIn) window.__seed.stepIn({ quick: true }); else location.reload(); });</script>
 <script>if (/^#(mahalaverse|enter|play)$/i.test(location.hash) || /(^#|&)(door|gate|card|fire|book|story|tour|sel|place|path|way)=/.test(location.hash)) document.documentElement.classList.add('to-mv');</script>
 
 <div id="seedRoot">
@@ -1334,24 +1437,24 @@ addEventListener('hashchange', () => { if (!/^#mahalaverse$/i.test(location.hash
 <header class="ui top">
   <button class="mark" type="button" id="toTop" aria-label="Mahala, back to the start">MAHALA</button>
   <nav class="menu" aria-label="Menu">
-    <a class="menu-door" href="camp.html">The camp</a>
-    <button type="button" data-open="film">Film</button>
-    <button type="button" id="seedSound" aria-pressed="false"><span class="dot" aria-hidden="true"></span>Sound</button>
+    <a class="menu-door" href="camp.html" data-pane="camp">The camp</a>
+    <a class="menu-door" href="seed.html" data-pane="seed">The Seed</a>
     <a class="menu-door" id="toVerse" href="#mahalaverse">Mahalaverse<svg viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg></a>
+    <a class="menu-door" href="seed.html#give" data-pane="seed" data-give>Donate</a>
   </nav>
 </header>
 
 <main id="track">
   <article class="vh" aria-label="The invitation">
-    <p>An invitation for you, dearest soul. A soul quest game reviving the lost art of temple building.</p>
+    <p>An invitation for you, dearest soul. Reviving the art of temple building, through reverential play.</p>
     <p>There is a calling as old as time. To gather. To offer hearts and hands in service. To build something beautiful, together.</p>
     <p>Do you recall it whispering your name? Beckoning you to join in unity. Inviting you to make real the feeling held deep in the core of your being, the remembering that Love always lights the way.</p>
     <p>This is that call. To step into your role as a temple builder, and raise a temple in celebration of life, of love, of freedom, and of all that is possible. To fill it with song and dance, so that it shines as a beacon, inspiring others to remember for themselves. To plant the Seed of Hope, the beginnings of a great new garden.</p>
     <p>And oh, what fun awaits. Roaring cosmic belly laughs fill the air as we work and play with glowing smiles and sparkling eyes, the very things that set our souls ablaze.</p>
     <p>At AfrikaBurn 2027, the first structure of the temple complex will rise. We call it The Seed. It is year one of a three-year vision to bring this temple to life. Since 2024, Mahala has raised tented temples and filled them with immersive sound, story and vibrational technology. Now the page turns, and a new chapter begins. You are invited to be part of that story.</p>
-    <p>This is an adventure of your own choosing. Join as a temple builder, a fully fledged camp member, a supporting patron, or all of the above. Plant the seed with us at AfrikaBurn 2027, help raise the temple in the years to come, or support from afar with your skills or your resources. Every gift will be received with tremendous gratitude.</p>
-    <p>It is a role you have been preparing for your whole life, and perhaps for many lifetimes before. The Mahalaverse is open, an evolving world that welcomes you into the story of this temple, and lets you craft your own part in it. For how often in a lifetime are we called to be a temple builder?</p>
-    <p>This is an entirely non-profit offering. We give of ourselves freely, just as Unconditional Love is offered to us freely, and we gift this experience to all who wander into our ambitious tale. Freely. For Mahala.</p>
+    <p>The Seed is a dome of timber and coloured acrylic, 8.7 m across and 6.3 m to the tip of its finial. To build it we are raising R 999 999.</p>
+    <p>It is a role you have been preparing for your whole life, and perhaps for many lifetimes before. For how often in a lifetime are we called to be a temple builder?</p>
+    <p>This is an entirely non-profit offering. We give of ourselves freely, just as Unconditional Love is offered to us freely, and we gift this experience to all who wander into our ambitious tale. The Mahalaverse is open, an evolving world that welcomes you into the story of this temple, and lets you craft your own part in it. Freely. For Mahala.</p>
   </article>
   <section id="first-light" aria-labelledby="m0h"></section>
   <section id="from-above" aria-labelledby="m1h"></section>
@@ -1371,14 +1474,14 @@ addEventListener('hashchange', () => { if (!/^#mahalaverse$/i.test(location.hash
   <template data-after="3"><p>and raise a temple in celebration of life,<br>of love, of freedom, and of all that is possible.</p></template>
   <template data-after="4"><p>so that it shines as a beacon,<br>inspiring others to remember for themselves.</p><p>To plant the Seed of Hope,<br>the beginnings of a great new garden.</p></template>
   <template data-after="5"><p>Roaring cosmic belly laughs fill the air<br>as we work and play with glowing smiles and sparkling eyes,</p><p>the very things that set our souls ablaze.</p><p>At AfrikaBurn 2027, the first structure<br>of the temple complex will rise.</p><p>We call it The Seed.</p><p>It is year one of a three-year vision<br>to bring this temple to life.</p><p>Since 2024, Mahala has raised tented temples<br>and filled them with immersive sound, story and vibrational technology.</p><p>Now the page turns, and a new chapter begins.</p></template>
-  <template data-after="6"><p>It is a role you have been preparing for your whole life,<br>and perhaps for many lifetimes before.</p><p>The Mahalaverse is open, an evolving world<br>that welcomes you into the story of this temple,<br>and lets you craft your own part in it.</p><p>For how often in a lifetime<br>are we called to be a temple builder?</p><p>This is an entirely non-profit offering.</p><p>We give of ourselves freely,<br>just as Unconditional Love is offered to us freely,<br>and we gift this experience to all who wander into our ambitious tale.</p></template>
+  <template data-after="6"><p>It is a role you have been preparing for your whole life,<br>and perhaps for many lifetimes before.</p><p>For how often in a lifetime<br>are we called to be a temple builder?</p><p>This is an entirely non-profit offering.</p><p>We give of ourselves freely,<br>just as Unconditional Love is offered to us freely,<br>and we gift this experience to all who wander into our ambitious tale.</p><p>The Mahalaverse is open, an evolving world<br>that welcomes you into the story of this temple,<br>and lets you craft your own part in it.</p></template>
 </div>
 
 <noscript><style>.moment[data-m="0"], .moment[data-m="0"] > *, .moment[data-m="0"] .big span { opacity: 1; filter: none; transform: none; }</style></noscript>
 <div class="moment top-band inked arrive sunrise" data-m="0" inert>
   <p class="kicker v">An invitation for you, dearest soul.</p>
   <h1 class="big" id="m0h" aria-label="MAHALA"><span aria-hidden="true" style="--i:-2.5">M</span><span aria-hidden="true" style="--i:-1.5">A</span><span aria-hidden="true" style="--i:-0.5">H</span><span aria-hidden="true" style="--i:0.5">A</span><span aria-hidden="true" style="--i:1.5">L</span><span aria-hidden="true" style="--i:2.5">A</span></h1>
-  <p class="sub v">A soul quest game reviving the lost art of temple building.</p>
+  <p class="sub v">Reviving the art of temple building, through reverential play</p>
   <p class="vh">The Seed at first light: a dome of coloured panes on the open clay, the sun coming up behind it.</p>
 </div>
 <div class="moment low-band env-band arrive sunrise" data-m="0" inert>
@@ -1393,8 +1496,10 @@ addEventListener('hashchange', () => { if (!/^#mahalaverse$/i.test(location.hash
 </div>
 <div class="moment top-band inked" data-m="2" inert>
   <h2 class="held" id="m2h">the remembering that Love always lights the way.</h2>
-  <p class="sub hint-line">Drag the sun along its path.</p>
   <p class="vh">The Seed in the morning sun, its coloured light falling on the ground. The time of day slider at the foot of the page moves the sun.</p>
+</div>
+<div class="moment low-band drag-band" data-m="2" inert>
+  <p class="drag-hint"><svg viewBox="0 0 36 14" aria-hidden="true"><path d="M7 2.5L2 7l5 4.5M2 7h8M29 2.5l5 4.5-5 4.5M34 7h-8"/><circle cx="18" cy="7" r="3.4"/></svg><span>Drag the sun along its path</span></p>
 </div>
 <div class="moment top-band" data-m="3" inert>
   <h2 class="held" id="m3h">To step into your role as a temple builder,</h2>
@@ -1411,7 +1516,7 @@ addEventListener('hashchange', () => { if (!/^#mahalaverse$/i.test(location.hash
 <div class="moment top-band inked" data-m="5" inert>
   <h2 class="held" id="m5h">And oh, what fun awaits.</h2>
   <p class="sub">AfrikaBurn, Tankwa Karoo, 26 April to 2 May 2027</p>
-  <a class="act" href="camp.html">The camp</a>
+  <a class="act" href="camp.html" data-pane="camp">The camp</a>
   <p class="vh">The Seed at sunset, glowing gold.</p>
 </div>
 <div class="moment top-band" data-m="6" id="m6" inert>
@@ -1422,21 +1527,21 @@ addEventListener('hashchange', () => { if (!/^#mahalaverse$/i.test(location.hash
   </div>
   <div class="call" data-show="false" id="call">
     <p class="vh">The lantern is lit, and a star of coloured light spreads across the ground around The Seed.</p>
-    <div id="callWords"><p class="held">This is an adventure of your own choosing.</p>
-    <p class="sub v">Join as a temple builder, a fully fledged camp member, a supporting patron, or all of the above.</p></div>
-    <div class="home" id="home" hidden>
-      <p class="held">Welcome home, Lerato.</p>
-      <p class="sub" id="homeWay">Your way in: Join the camp.</p>
-    </div>
   </div>
 </div>
-<div class="moment low-band" data-m="6" inert>
+<div class="moment ask-band" data-m="6" inert>
   <div class="call" data-show="false" id="callWays">
-    <div class="ways" role="group" aria-label="Ways in">
-      <button class="way" type="button" data-way="build" style="--c: var(--cyan)"><svg viewBox="0 0 60 84" aria-hidden="true"><path class="arch" d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/><path class="fillp" d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg><span>Join the build</span></button>
-      <button class="way" type="button" data-way="camp" style="--c: var(--yellow)"><svg viewBox="0 0 60 84" aria-hidden="true"><path class="arch" d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/><path class="fillp" d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg><span>Join the camp</span></button>
-      <button class="way" type="button" data-way="support" style="--c: var(--magenta)"><svg viewBox="0 0 60 84" aria-hidden="true"><path class="arch" d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/><path class="fillp" d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg><span>Support the temple</span></button>
-      <button class="way" type="button" data-way="talks" style="--c: var(--lamp)"><svg viewBox="0 0 60 84" aria-hidden="true"><path class="arch" d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/><path class="fillp" d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg><span>Talks and events</span></button>
+    <div class="ask-card" role="group" aria-labelledby="askLine">
+      <div class="ask-film"><video id="askFilm" muted loop playsinline preload="none" aria-hidden="true"></video></div>
+      <div class="ask-body">
+        <p class="ask-dome">A dome of timber and coloured acrylic, 8.7 m across and 6.3 m to the tip of its finial.</p>
+        <p class="ask-line" id="askLine">To build it we are raising <span class="nowrap" data-fill="target">R 999 999</span>.</p>
+        <div class="ask-nums" role="group" aria-label="The ask">
+          <div><b data-fill="target">R 999 999</b><span>to build The Seed</span></div>
+          <div><b data-fill="days">178</b><span>days to build week</span></div>
+        </div>
+        <div class="ask-acts"><a class="act solid" href="seed.html" data-pane="seed">Learn more about The Seed</a><a class="act" href="seed.html#give" data-pane="seed" data-give>Donate</a></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1445,12 +1550,15 @@ addEventListener('hashchange', () => { if (!/^#mahalaverse$/i.test(location.hash
   <p class="sign">For Mahala.</p>
   <p class="vh">The Seed from directly above at night. The dome glows like a rose window, and a star of coloured light spreads from it across the clay.</p>
 </div>
-<div class="moment low-band" data-m="7" inert>
-  <a class="act step" id="stepIn" href="#mahalaverse"><svg viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg>Step into the Mahalaverse</a>
-  <p class="step-way" id="stepWay" hidden></p>
+<div class="moment low-band end-band" data-m="7" inert>
+  <div class="end-acts">
+    <a class="act" href="camp.html" data-pane="camp">Join the camp</a>
+    <a class="act step" id="stepIn" href="#mahalaverse"><svg viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg>Step into the Mahalaverse</a>
+    <a class="act" href="seed.html#give" data-pane="seed" data-hash="give">Donate to The Seed</a>
+  </div>
 </div>
 
-<div class="cue" id="cue" aria-hidden="true"></div>
+<div class="cue" id="cue" aria-hidden="true"><span>Scroll slowly to learn more</span><svg viewBox="0 0 16 10" aria-hidden="true"><path d="M2 2l6 6 6-6"/></svg></div>
 <footer class="ui foot">
   <div class="clock" id="seedClock">07:20, sun 1° up</div>
   <div class="centre">
@@ -1463,19 +1571,10 @@ addEventListener('hashchange', () => { if (!/^#mahalaverse$/i.test(location.hash
       <circle class="glow" id="dialGlow" r="9" cx="0" cy="0"/>
       <circle class="sun" id="dialSun" r="4" cx="0" cy="0"/>
     </svg>
-    <nav class="marks" aria-label="Moments">
-      <button type="button" data-go="0" aria-label="First light" title="First light" aria-current="step"></button>
-      <button type="button" data-go="1" aria-label="From above" title="From above"></button>
-      <button type="button" data-go="2" aria-label="The light" title="The light"></button>
-      <button type="button" data-go="3" aria-label="The way in" title="The way in"></button>
-      <button type="button" data-go="4" aria-label="Within" title="Within"></button>
-      <button type="button" data-go="5" aria-label="Many hands" title="Many hands"></button>
-      <button type="button" data-go="6" aria-label="The lantern" title="The lantern"></button>
-      <button type="button" data-go="7" aria-label="Freely" title="Freely"></button>
-    </nav>
   </div>
-  <div class="cap" id="cap">Concept visualisation<span class="cap-more">, rendered live from the 3D model</span></div>
+  <button class="snd" type="button" id="seedSound" aria-pressed="false" aria-label="Sound" title="Sound on or off"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 7.6h3.1L10.4 4v12l-4.3-3.6H3z"/><path class="waves" d="M13.2 7.3c.8.7 1.2 1.6 1.2 2.7s-.4 2-1.2 2.7M15.4 5.1c1.4 1.3 2.1 3 2.1 4.9s-.7 3.6-2.1 4.9"/><path class="mute" d="M13.4 7.6l4.6 4.8M18 7.6l-4.6 4.8"/></svg></button>
 </footer>
+<nav class="rail" id="rail" aria-label="Where you are in the story"></nav>
 
 <!-- doors -->
 <div class="sheet letter" id="sheet-letter" role="dialog" aria-modal="true" aria-labelledby="letterH" hidden>
@@ -1638,6 +1737,7 @@ addEventListener('hashchange', () => { if (!/^#mahalaverse$/i.test(location.hash
     <div class="film-cap">Concept visualisation: rendered from the 3D model, with motion added by AI.</div>
   </div>
 </div>
+<div class="pane" id="pane" role="dialog" aria-modal="true" aria-label="The camp" hidden></div>
 </div>
 
 <div id="mvRoot" hidden>
@@ -2004,8 +2104,7 @@ document.querySelectorAll('[data-choose]').forEach((b) => b.addEventListener('cl
   if (!chosen.includes(w)) chosen.push(w);
   document.querySelectorAll('[data-way]').forEach((x) => x.classList.toggle('chosen', chosen.includes(x.dataset.way)));
   const names = chosen.map((k) => WAY_NAME[k]);
-  $('homeWay').textContent = (names.length > 1 ? 'Your ways in: ' : 'Your way in: ') + listAnd(names) + '.';
-  $('home').hidden = false; $('callWords').hidden = true;
+  if ($('homeWay')) { $('homeWay').textContent = (names.length > 1 ? 'Your ways in: ' : 'Your way in: ') + listAnd(names) + '.'; $('home').hidden = false; $('callWords').hidden = true; }
   S.chosen = chosen[0]; music.home();
   const sw = $('stepWay'); if (sw) { sw.hidden = false; sw.textContent = (names.length > 1 ? 'Your doors open inside: ' : 'Your door opens inside: ') + listAnd(names) + '.'; }
 }));
@@ -2359,27 +2458,163 @@ function alongAt(x) {        // the point on the journey where the camera stands
   for (let k = 0; k < 30; k++) { const mid = (lo + hi) / 2; if (ease(mid) < f) lo = mid; else hi = mid; }
   return g.a + (lo + hi) / 2 * (g.b - g.a);
 }
-function goMoment(i) {
-  const g = holdOf(clamp(i, 0, N_M - 1)), max = document.documentElement.scrollHeight - innerHeight;
-  scrollTo({ top: max * ((g.a + g.b) / 2) / S_END, behavior: REDUCED ? 'auto' : 'smooth' });
-}
+function goMoment(i) { toStop(STOPS.findIndex((st) => st.m === clamp(i, 0, N_M - 1))); }
 const nearestMoment = () => { let best = 0, bd = 1e9; for (let i = 0; i < N_M; i++) { const g = holdOf(i), d = Math.abs(along - (g.a + g.b) / 2); if (d < bd) { bd = d; best = i; } } return best; };
 document.querySelectorAll('[data-go]').forEach((b) => b.addEventListener('click', () => goMoment(+b.dataset.go)));
-let navTo = 0, navT = -1e9;
+$('toTop').addEventListener('click', () => goMoment(0));
+// ----------------------------------------------------------------------------------------------------------- one line at a time
+// Every line of the verse and every moment is a stop. A flick of the wheel, a swipe or a key moves on to the next stop,
+// slowly, and nothing more comes until that move has settled, so no line is skipped by accident. The rail at the right
+// shows every stop: the ones you have seen are filled, and any can be tapped.
+const MOMENT_NAME = ['First light', 'From above', 'The light', 'The way in', 'Within', 'Many hands', 'The lantern', 'Freely'];
+const STOPS = [];
+{ let n = 0;
+  for (let i = 0; i < N_M; i++) {
+    const g = holdOf(i); STOPS.push({ at: i === 0 ? 0 : (g.a + g.b) / 2, m: i, label: MOMENT_NAME[i] });
+    if (i < N_M - 1) { const sg = segs[2 * i + 1], w = (sg.b - sg.a - 2 * EDGE) / sg.n;
+      for (let j = 0; j < sg.n; j++, n++) { const b = breathEls[n]; b.stop = STOPS.length; STOPS.push({ at: sg.a + EDGE + (j + 0.5) * w, m: -1, label: b.el.textContent.replace(/\s+/g, ' ').trim() }); } }
+  } }
+const rail = $('rail'), seen = new Set();
+let stopAt = 0, hereAt = -1, glide = null, wheelHush = 0, wheelSum = 0, wheelLast = 0;
+STOPS.forEach((st, k) => {
+  const b = document.createElement('button'); b.type = 'button'; b.className = st.m >= 0 ? 'mo' : 'br';
+  b.setAttribute('aria-label', st.label); b.title = st.label.length > 60 ? st.label.slice(0, 57).replace(/\s+\S*$/, '') + '...' : st.label;
+  if (st.m < 0) b.tabIndex = -1;
+  b.addEventListener('click', () => toStop(k)); rail.appendChild(b); st.el = b;
+});
+const visit = (k) => { if (k >= 0 && !seen.has(k)) { seen.add(k); STOPS[k].el.classList.add('seen'); } };
+const steppable = () => !S.gone && !openSheet && !paneName;
+const yOf = (k) => Math.round((document.documentElement.scrollHeight - innerHeight) * STOPS[k].at / S_END);
+const nearestStop = () => { let best = 0, bd = 1e9; STOPS.forEach((st, k) => { const d = Math.abs(along - st.at); if (d < bd) { bd = d; best = k; } }); return best; };
+function toStop(k, jump) {
+  if (k < 0) return;
+  k = clamp(k, 0, STOPS.length - 1); stopAt = k;
+  if (glide) { cancelAnimationFrame(glide.raf); glide = null; }
+  const y1 = yOf(k), y0 = scrollY, dist = Math.abs(y1 - y0);
+  if (jump || REDUCED || dist < 2) { scrollTo({ top: y1, behavior: 'instant' }); readScroll(); return; }
+  const dur = clamp(820 + dist * 0.45, 1000, 1800), t0 = performance.now();
+  const ease2 = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
+  const tick = (now) => {
+    const u = clamp((now - t0) / dur, 0, 1);
+    scrollTo({ top: Math.round(y0 + (y1 - y0) * ease2(u)), behavior: 'instant' }); readScroll();
+    if (u < 1) glide.raf = requestAnimationFrame(tick); else { glide = null; wheelHush = performance.now(); }
+  };
+  glide = { raf: requestAnimationFrame(tick) };
+}
+function step(d) {
+  // off the stops (after dragging the scroll bar, say): the next stop on from here
+  let k = stopAt;
+  if (Math.abs(along - STOPS[k].at) > 0.03) { k = d > 0 ? STOPS.findIndex((st) => st.at > along + 0.01) : STOPS.findLastIndex((st) => st.at < along - 0.01); if (k < 0) return; toStop(k); return; }
+  // at the lantern, the first move on lights it, and The Seed's ask comes up before the story goes on
+  if (d > 0 && STOPS[k].m === 6 && !lanternGoal) { lightLantern(); return; }
+  if (k + d >= 0 && k + d < STOPS.length) toStop(k + d);
+}
+S.step = step; S.toStop = toStop; S.stops = () => STOPS.map((st, k) => ({ k, at: st.at, m: st.m, label: st.label, seen: seen.has(k) }));
+addEventListener('wheel', (e) => {
+  if (!steppable() || e.ctrlKey) return;
+  if (e.target instanceof Element && e.target.closest('.dial')) return;
+  e.preventDefault();
+  const now = performance.now(), gap = now - wheelLast; wheelLast = now;
+  if (glide || now - wheelHush < 180) { wheelHush = glide ? wheelHush : now; wheelSum = 0; return; }      // the rest of the same flick
+  if (gap > 400) wheelSum = 0;
+  wheelSum += e.deltaMode === 1 ? e.deltaY * 18 : e.deltaMode === 2 ? e.deltaY * innerHeight : e.deltaY;
+  if (Math.abs(wheelSum) >= 22) { const d = Math.sign(wheelSum); wheelSum = 0; wheelHush = now; step(d); }
+}, { passive: false });
+let touch0 = null;
+addEventListener('touchstart', (e) => {
+  touch0 = null;
+  if (!steppable() || e.touches.length !== 1) return;
+  if (e.target instanceof Element && e.target.closest('.dial, input, textarea, select')) return;
+  touch0 = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+}, { passive: true });
+addEventListener('touchmove', (e) => { if (touch0 && steppable() && e.cancelable) e.preventDefault(); }, { passive: false });
+addEventListener('touchend', (e) => {
+  if (!touch0) return;
+  const t = e.changedTouches[0], dx = touch0.x - t.clientX, dy = touch0.y - t.clientY; touch0 = null;
+  if (!glide && Math.abs(dy) > 30 && Math.abs(dy) > Math.abs(dx) * 1.2) step(Math.sign(dy));
+}, { passive: true });
 document.addEventListener('keydown', (e) => {
-  if (S.gone || openSheet || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+  if (paneName && e.key === 'Escape') { closePane(); return; }
+  if (!steppable() || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
   const t = e.target instanceof Element ? e.target : null;
   if (t && t.closest('input, textarea, select, video, [role="slider"]')) return;
   let d = 0;
   if (e.key === 'PageDown' || e.key === 'ArrowDown' || (e.key === ' ' && !e.shiftKey)) d = 1;
   else if (e.key === 'PageUp' || e.key === 'ArrowUp' || (e.key === ' ' && e.shiftKey)) d = -1;
-  else if (e.key === 'Home') d = -99; else if (e.key === 'End') d = 99;
+  else if (e.key === 'Home') { e.preventDefault(); toStop(0); return; } else if (e.key === 'End') { e.preventDefault(); toStop(STOPS.length - 1); return; }
   if (!d || (e.key === ' ' && t && t.closest('button, a'))) return;
   e.preventDefault();
-  const from = performance.now() - navT < 1100 ? navTo : nearestMoment();
-  navTo = clamp(from + d, 0, N_M - 1); navT = performance.now(); goMoment(navTo);
+  if (glide && !(d > 0 && STOPS[stopAt].m === 6 && !lanternGoal)) { if (stopAt + d >= 0 && stopAt + d < STOPS.length) toStop(stopAt + d); return; }
+  step(d);
 });
-$('toTop').addEventListener('click', () => goMoment(0));
+// dragging the scroll bar still works: where it lets go becomes the stop you are at
+addEventListener('scroll', () => { if (!glide) { clearTimeout(S.reStop); S.reStop = setTimeout(() => { if (!glide) stopAt = nearestStop(); }, 120); } }, { passive: true });
+addEventListener('resize', () => { if (!glide && steppable()) setTimeout(() => { if (!glide) toStop(stopAt, true); }, 60); });
+function railShow(near) {
+  if (near >= 0) visit(STOPS.findIndex((st) => st.m === near));
+  for (const b of breathEls) if (b.on) visit(b.stop);
+  const k = nearestStop();
+  if (k !== hereAt) { if (hereAt >= 0) { STOPS[hereAt].el.classList.remove('here'); STOPS[hereAt].el.removeAttribute('aria-current'); } hereAt = k; STOPS[k].el.classList.add('here'); STOPS[k].el.setAttribute('aria-current', 'step'); }
+  const ink = verseEl.classList.contains('inked'); if (rail.classList.contains('inked') !== ink) rail.classList.toggle('inked', ink);
+}
+
+// ----------------------------------------------------------------------------------------------------------- the camp and The Seed
+// Each opens over the page in a pane. Close (or Back) takes it away and leaves you exactly where you were.
+const SITE = window.MAHALA_SITE || {};
+const PANES = { camp: ['camp.html', 'The camp'], seed: ['seed.html', 'The Seed'] };
+const pane = $('pane');
+let paneName = null, paneY = 0, panePushed = false, paneFrom = null;
+function openPane(name, hash = '', from = null, fromLink = false) {
+  if (!PANES[name] || S.gone) return;
+  if (openSheet) close(true);
+  if (glide) { cancelAnimationFrame(glide.raf); glide = null; }
+  const [url, label] = PANES[name];
+  if (!paneName) { paneY = scrollY; paneFrom = from || document.activeElement; }
+  // a new frame each time, so the page inside never adds steps to the browser's history
+  pane.textContent = '';
+  const f = document.createElement('iframe'); f.title = label; f.src = url + (hash ? '#' + hash : '');
+  pane.appendChild(f); pane.setAttribute('aria-label', label);
+  pane.hidden = false; requestAnimationFrame(() => requestAnimationFrame(() => pane.classList.add('open')));
+  document.documentElement.style.overflow = 'hidden';
+  paneName = name; S.sheet = 'pane'; music.duck(true);
+  if (!fromLink) { history.pushState({ pane: name }, '', '#' + name); panePushed = true; }
+  f.addEventListener('load', () => { try { f.focus(); } catch (e) { /* fine */ } }, { once: true });
+}
+function hidePane() {
+  if (!paneName) return;
+  paneName = null; S.sheet = null; pane.classList.remove('open');
+  document.documentElement.style.overflow = '';
+  scrollTo({ top: paneY, behavior: 'instant' }); readScroll();
+  music.duck(false);
+  if (!panePushed && /^#(camp|seed|give)$/i.test(location.hash)) history.replaceState(null, '', location.pathname + location.search);
+  panePushed = false;
+  setTimeout(() => { if (!paneName) { pane.hidden = true; pane.textContent = ''; } }, 380);
+  if (paneFrom && paneFrom.focus) paneFrom.focus({ preventScroll: true });
+}
+function closePane() { if (panePushed && history.state && history.state.pane) history.back(); else hidePane(); }
+addEventListener('popstate', (e) => {
+  if (paneName && !(e.state && e.state.pane)) hidePane();
+  else if (!paneName && e.state && e.state.pane && !S.gone) { openPane(e.state.pane, '', null, true); panePushed = true; }      // forward again
+});
+addEventListener('hashchange', () => {      // a #camp, #seed or #give typed or followed while on the page
+  const pl = /^#(camp|seed|give)$/i.exec(location.hash);
+  if (pl && !paneName && !S.gone && !(history.state && history.state.pane)) openPane(pl[1].toLowerCase() === 'camp' ? 'camp' : 'seed', pl[1].toLowerCase() === 'give' ? 'give' : '', null, true);
+});
+addEventListener('message', (e) => { if (e.origin === location.origin && e.data && e.data.mahala === 'close') closePane(); });
+document.querySelectorAll('[data-give]').forEach((a) => { if (SITE.donateUrl) { a.href = SITE.donateUrl; a.target = '_blank'; a.rel = 'noopener'; a.removeAttribute('data-pane'); } });
+document.addEventListener('click', (e) => {
+  const a = e.target instanceof Element && e.target.closest('[data-pane]'); if (!a || S.gone) return;
+  e.preventDefault(); openPane(a.dataset.pane, a.dataset.hash || (a.hasAttribute('data-give') ? 'give' : ''), a);
+});
+document.querySelectorAll('[data-fill="target"]').forEach((el) => { if (SITE.money) el.textContent = SITE.money(SITE.target); });
+document.querySelectorAll('[data-fill="days"]').forEach((el) => { if (SITE.daysToBuild) el.textContent = String(SITE.daysToBuild()); });
+S.openPane = openPane; S.closePane = closePane; S.pane = () => paneName;
+// the film in The Seed's ask plays (without sound) while the ask is up
+const askFilm = $('askFilm');
+function askPlay(on) {
+  if (on && !askFilm.getAttribute('src')) { const tall = innerHeight > innerWidth || innerWidth <= 760; askFilm.poster = tall ? 'seed-media/loop_tall.jpg' : 'seed-media/loop_wide.jpg'; askFilm.src = tall ? 'seed-media/loop_tall.mp4' : 'seed-media/loop_wide.mp4'; }
+  if (on && askFilm.paused) askFilm.play().catch(() => {}); else if (!on && !askFilm.paused) askFilm.pause();
+}
 S.go = goMoment; S.scrollFor = (i) => (document.documentElement.scrollHeight - innerHeight) * ((holdOf(i).a + holdOf(i).b) / 2) / S_END;   // for the tests
 const momentEls = [...document.querySelectorAll('.moment')];
 const markEls = [...document.querySelectorAll('[data-go]')];
@@ -2408,6 +2643,8 @@ function words() {
     document.querySelector('.top').classList.toggle('at0', m === 0);
     if (m === 2 && near === 2) { const dl = $('dial'); dl.classList.remove('hint'); void dl.getBoundingClientRect(); dl.classList.add('hint'); }
   }
+  railShow(near);
+  askPlay(near === 6 && $('callWays').dataset.show === 'true' && !paneName);
   if (!S.three) {      // without 3D the verse takes its ink from the moment it is nearest
     const ink = momentEls.find((el) => +el.dataset.m === m && el.classList.contains('top-band'))?.classList.contains('inked');
     verseEl.classList.toggle('inked', !!ink);
@@ -2549,6 +2786,7 @@ function hhmm(m) { m = Math.round(m); return `${String(Math.floor(m / 60)).padSt
 function clockText(m, el) { const e = Math.round(el); return e >= 0 ? `${hhmm(m)}, sun ${e}° up` : `${hhmm(m)}, sun ${-e}° down`; }
 
 let THREE = null;
+if (!MV_LINK) { const pl = /^#(camp|seed|give)$/i.exec(location.hash); if (pl) openPane(pl[1].toLowerCase() === 'camp' ? 'camp' : 'seed', pl[1].toLowerCase() === 'give' ? 'give' : '', null, true); }
 if (MV_LINK) stepIn({ quick: true, now: true });           // a link straight into the Mahalaverse: The Seed stays out of the way
 else { try { THREE = await import('three'); } catch (e) { S.errors.push('three: ' + e.message); } }
 const canGL = (() => { try { return !!document.createElement('canvas').getContext('webgl2'); } catch (e) { return false; } })();
@@ -2561,7 +2799,7 @@ function noThree(why) {
   document.body.classList.add('no3d');
   m0s.forEach((el) => el.classList.remove('sunrise'));          // no sunrise to wait for: the words come at their own pace
   $('poster').classList.add('gone'); $('load').style.opacity = 0;
-  $('cap').innerHTML = 'Concept visualisation<span class="cap-more">, rendered from the 3D model</span>';
+  if ($('cap')) $('cap').innerHTML = 'Concept visualisation<span class="cap-more">, rendered from the 3D model</span>';
   const loop = () => { if (S.gone) return; words(); const m = [440, 470, 510, 600, 690, 1060, 1170, 1170][nearestMoment()]; $('seedClock').textContent = clockText(m, sunAt(m).el);
     if (!lanternGoal && qAt(along) > 6.12) lightLantern(); requestAnimationFrame(loop); };
   readScroll(); loop(); S.ready = true;
