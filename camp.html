@@ -720,9 +720,16 @@ a.back, a.primary, a.secondary { text-decoration: none; }
   // the photographs
   var track = document.getElementById('carTrack'), slides = [].slice.call(track.children), count = document.getElementById('carCount');
   var prev = document.querySelector('[data-car="-1"]'), next = document.querySelector('[data-car="1"]');
-  function at() { var c = track.scrollLeft + track.clientWidth / 2, best = 0, bd = 1e9; slides.forEach(function (s, i) { var d = Math.abs(s.offsetLeft - track.offsetLeft + s.offsetWidth / 2 - c); if (d < bd) { bd = d; best = i; } }); return best; }
+  function at() {
+    var max = track.scrollWidth - track.clientWidth;
+    if (track.scrollLeft <= 2) return 0;
+    if (track.scrollLeft >= max - 2) return slides.length - 1;
+    var tr = track.getBoundingClientRect(), c = tr.left + tr.width / 2, best = 0, bd = 1e9;
+    slides.forEach(function (s, i) { var r = s.getBoundingClientRect(), d = Math.abs(r.left + r.width / 2 - c); if (d < bd) { bd = d; best = i; } });
+    return best;
+  }
   function show() { var i = at(); count.textContent = (i + 1) + ' / ' + slides.length; prev.disabled = i === 0; next.disabled = i === slides.length - 1; }
-  function go(i) { i = Math.max(0, Math.min(slides.length - 1, i)); var s = slides[i]; track.scrollTo({ left: s.offsetLeft - track.offsetLeft - (track.clientWidth - s.offsetWidth) / 2 }); }
+  function go(i) { i = Math.max(0, Math.min(slides.length - 1, i)); var tr = track.getBoundingClientRect(), r = slides[i].getBoundingClientRect(); track.scrollTo({ left: track.scrollLeft + (r.left - tr.left) - (tr.width - r.width) / 2 }); }
   prev.addEventListener('click', function () { go(at() - 1); });
   next.addEventListener('click', function () { go(at() + 1); });
   track.addEventListener('keydown', function (e) { if (e.key === 'ArrowRight') { go(at() + 1); e.preventDefault(); } if (e.key === 'ArrowLeft') { go(at() - 1); e.preventDefault(); } });
