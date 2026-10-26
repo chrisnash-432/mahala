@@ -535,7 +535,10 @@ a.act { color: inherit; text-decoration: none; }
 }
 /* lines of the verse that sit low, over the ground, where the dome would be behind them higher up */
 .breath.low { top: 56svh; }
-.breath.low::before { background: radial-gradient(closest-side, rgba(18, 12, 8, .5), rgba(18, 12, 8, .22) 60%, rgba(18, 12, 8, 0)); }
+.breath.low::before, .verse.inked .breath.low::before, .verse.inked .breath.light::before { background: radial-gradient(closest-side, rgba(18, 12, 8, .5), rgba(18, 12, 8, .22) 60%, rgba(18, 12, 8, 0)); }
+/* these keep warm letters on a dark halo whatever the sky does: the low ones sit on the ground, the late ones on the night */
+.verse.inked .breath.low, .verse.inked .breath.light { color: var(--warm); text-shadow: 0 0 22px var(--halo), 0 0 3px var(--halo); }
+@media (max-width: 760px), (orientation: portrait) { .breath.low-tall { top: 56svh; } .verse.inked .breath.low-tall { color: var(--warm); text-shadow: 0 0 22px var(--halo), 0 0 3px var(--halo); } }
 /* on a wide screen the verse sits a little higher, clear of the dome in the views from above */
 @media (min-width: 761px) and (orientation: landscape) { .verse { top: 11svh; } .breath.low { top: 60svh; } }
 /* moment 3 on a wide screen: to the right, over the sky, away from the dome */
@@ -1479,7 +1482,7 @@ body.from-seed .lobby .eyebrow, body.from-seed #lobbyLine, body.from-seed .lobby
   <template data-after="1"><p>Beckoning you to join in unity.</p><p>Inviting you to make real the feeling<br>held deep in the core of your being,</p></template>
   <template data-after="2"><p data-place="low">This is that call.</p></template>
   <template data-after="3"><p data-place="low">and raise a temple in celebration of life,<br>of love, of freedom, and of all that is possible.</p></template>
-  <template data-after="4"><p data-place="low">so that it shines as a beacon,<br>inspiring others to remember for themselves.</p><p data-place="low">To plant the Seed of Hope,<br>the beginnings of a great new garden.</p></template>
+  <template data-after="4"><p data-place="low">so that it shines as a beacon,<br>inspiring others to remember for themselves.</p><p data-place="low-tall">To plant the Seed of Hope,<br>the beginnings of a great new garden.</p></template>
   <template data-after="5"><p>Roaring cosmic belly laughs fill the air<br>as we work and play with glowing smiles and sparkling eyes,</p><p>the very things that set our souls ablaze.</p><p>At AfrikaBurn 2027, the first structure<br>of the temple complex will rise.</p><p>We call it The Seed.</p><p>It is year one of a three-year vision<br>to bring this temple to life.</p><p>Since 2024, Mahala has raised tented temples<br>and filled them with immersive sound, story and vibrational technology.</p><p>Now the page turns, and a new chapter begins.</p></template>
   <template data-after="6"><p>It is a role you have been preparing for your whole life,<br>and perhaps for many lifetimes before.</p><p>For how often in a lifetime<br>are we called to be a temple builder?</p><p>This is an entirely non-profit offering.</p><p>We give of ourselves freely,<br>just as Unconditional Love is offered to us freely,</p><p>and we gift this experience<br>to all who wander into our ambitious tale.</p><p>The Mahalaverse is open, an evolving world<br>that welcomes you into the story of this temple,<br>and lets you craft your own part in it.</p></template>
 </div>
@@ -2431,7 +2434,7 @@ const BREATHS = [...verseEl.querySelectorAll('template')].map((t) => [...t.conte
 const breathEls = [];
 const PLACES = [...verseEl.querySelectorAll('template')].map((t) => [...t.content.querySelectorAll('p')].map((x) => x.dataset.place || ''));
 BREATHS.forEach((list, i) => list.forEach((lines, j) => {
-  const el = document.createElement('p'); el.className = 'breath' + (PLACES[i][j] ? ' ' + PLACES[i][j] : '');
+  const el = document.createElement('p'); el.className = 'breath' + (PLACES[i][j] ? ' ' + PLACES[i][j] : '') + (i >= 6 ? ' light' : '');
   el.innerHTML = lines.map((ln, l) => '<span class="ln">' + ln.trim().split(/\s+/).map((w, k) => `<span class="w" style="--d:${(0.12 + 0.42 * l + 0.05 * k).toFixed(2)}">${w}</span>`).join(' ') + '</span>').join('');
   verseEl.appendChild(el); breathEls.push({ el, i, j, on: false });
 }));
