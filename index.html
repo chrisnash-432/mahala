@@ -2667,74 +2667,46 @@ function words() {
 }
 
 // ----------------------------------------------------------------------------------------------------------- sound
-// The film's score, cut to the moments at bar boundaries (96 BPM, one bar = 2.5 s). Silent until Sound is tapped.
-// Layers: the score now; Chris's live recordings (wind, clay underfoot, fire, voices) join as more entries in LAYERS.
-const BAR = 2.5;
-const SECTION = { dawn: [0, 7.5, 'day'], day: [7.5, 37.5, 'loop'], sunset: [37.5, 42.5, 'loop'], hush: [40, 42.5, 'loop'],
-                  swell: [42.5, 45, 'night'], night: [45, 52.5, 'nightloop'], nightloop: [47.5, 52.5, 'loop'], home: [52.5, 60, 'end'] };
-const LAYERS = { score: { src: ['seed/audio/score.mp3', 'seed/audio/score.webm'], gain: 0.9 } };
+// The camp's own music: Acoustic Intro, an original production from the Mahala camp. Silent until Sound is tapped.
+// It plays through the whole story, quietens while a film or a page is open over it, and fades as you step into the
+// Mahalaverse, where the camp's other tracks take over, one for each part of the way.
 const music = (() => {
-  let ctx = null, master = null, buf = null, cur = null, on = false, want = 'dawn', loading = null, ducked = false, lantern = false, homed = false;
-  const forMoment = (m) => (homed && m >= 6 ? 'home' : lantern && m >= 6 ? 'nightloop' : ['dawn', 'day', 'day', 'day', 'day', 'sunset', 'hush', 'hush'][m] || 'day');
-  async function load() {
-    const probe = document.createElement('audio');
-    const url = probe.canPlayType('seed/audio/mpeg') ? LAYERS.score.src[0] : LAYERS.score.src[1];
-    const res = await fetch(url); const ab = await res.arrayBuffer();
-    buf = await new Promise((ok, bad) => ctx.decodeAudioData(ab, ok, bad));
+  const SRC = 'assets/audio/acoustic-intro.mp3', LEVEL = 0.85;
+  let ctx = null, gain = null, el = null, on = false, ducked = false, stopT = 0;
+  function setup() {
+    el = new Audio(); el.src = SRC; el.loop = true; el.preload = 'auto';
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) { try { ctx = new AC(); gain = ctx.createGain(); gain.gain.value = 0; ctx.createMediaElementSource(el).connect(gain); gain.connect(ctx.destination); } catch (e) { ctx = null; } }
+    if (!ctx) el.volume = 0;
   }
-  function stopCur(at) { if (!cur) return; const c = cur; cur = null; clearTimeout(c.timer); c.g.gain.setTargetAtTime(0, at, 0.12); try { c.s.stop(at + 1.2); } catch (e) { /* already stopped */ } }
-  function play(name, at) {
-    const [a, b, next] = SECTION[name];
-    const s = ctx.createBufferSource(); s.buffer = buf;
-    const g = ctx.createGain(); g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(1, at + 0.3);
-    s.connect(g); g.connect(master);
-    if (next === 'loop') { s.loop = true; s.loopStart = a; s.loopEnd = b; s.start(at, a); }
-    else s.start(at, a, b - a + 0.6);
-    const c = { s, g, name, at }; cur = c;
-    if (next !== 'loop' && next !== 'end') {          // chain on to what follows, at the section's end
-      const t = at + (b - a);
-      c.timer = setTimeout(() => {
-        if (cur !== c) return;
-        const nxt = name === 'dawn' ? (want === 'dawn' ? 'day' : want) : next;
-        stopCur(t); play(SECTION[nxt] ? nxt : 'day', t);
-      }, Math.max(0, (t - ctx.currentTime - 0.15) * 1000));
-    }
+  const level = () => (on && !ducked ? LEVEL : 0);
+  function apply(tc) {
+    if (!el) return;
+    clearTimeout(stopT);
+    if (ctx) { gain.gain.cancelScheduledValues(ctx.currentTime); gain.gain.setTargetAtTime(level(), ctx.currentTime, tc); } else el.volume = level();
+    if (level() > 0) { if (el.paused) el.play().catch(() => {}); }
+    else stopT = setTimeout(() => { if (el && level() === 0) el.pause(); }, tc * 5000 + 200);
   }
-  function nextBar() {
-    if (!cur) return ctx.currentTime + 0.05;
-    const pos = (ctx.currentTime - cur.at) % BAR;
-    return ctx.currentTime + (BAR - pos < 0.12 ? 2 * BAR - pos : BAR - pos);
-  }
-  function go(name) {
-    want = name;
-    if (!on || !buf || !ctx) return;
-    if (cur && cur.name === name) return;
-    if (cur && (cur.name === 'swell' || cur.name === 'night') && name === 'nightloop') return;   // let the bloom run its course
-    if (cur && cur.name === 'dawn' && name === 'day') return;                                  // dawn rolls into the day by itself
-    const at = nextBar();
-    stopCur(at); play(name, at);
-  }
-  async function toggle() {
-    if (!ctx) { const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return; ctx = new AC(); master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination); }
+  function toggle() {
+    if (!el) setup();
     on = !on; $('seedSound').setAttribute('aria-pressed', String(on));
     if (on) {
-      await ctx.resume();
-      if (!buf) { try { loading = loading || load(); await loading; } catch (e) { S.errors.push('audio: ' + e.message); on = false; $('seedSound').setAttribute('aria-pressed', 'false'); return; } }
-      master.gain.cancelScheduledValues(ctx.currentTime); master.gain.setTargetAtTime(ducked ? 0 : LAYERS.score.gain, ctx.currentTime, 0.4);
-      if (!cur) play(want, ctx.currentTime + 0.05);
-    } else master.gain.setTargetAtTime(0, ctx.currentTime, 0.25);
+      el.play().catch((e) => { S.errors.push('audio: ' + e.message); on = false; $('seedSound').setAttribute('aria-pressed', 'false'); });   // within the tap, so phones allow it
+      if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+    }
+    apply(on ? 0.9 : 0.35);
   }
   return {
     toggle,
-    state: () => ({ on, loaded: !!buf, section: cur && cur.name, want }),
-    moment(m) { go(forMoment(m)); },
-    duck(d) { ducked = d; if (ctx && on) master.gain.setTargetAtTime(d ? 0 : LAYERS.score.gain, ctx.currentTime, 0.3); },
-    // lighting the lantern: the swell starts on the next bar, and the bloom lands as the lantern reaches full
-    fadeOut() { if (!ctx) return; master.gain.setTargetAtTime(0, ctx.currentTime, 0.35); setTimeout(() => { try { ctx.close(); } catch (e) { /* closed */ } }, 2000); },
-    lantern() { lantern = true; if (!on || !buf) return 0; const at = nextBar(); stopCur(at); play('swell', at); want = 'nightloop'; return at - ctx.currentTime; },
-    home() { homed = true; go('home'); },
+    state: () => ({ on, loaded: !!el && el.readyState > 2, section: el && !el.paused ? 'acoustic' : null, at: el ? el.currentTime : 0 }),
+    moment() { /* one track through the whole story */ },
+    duck(d) { ducked = d; apply(d ? 0.3 : 0.8); },
+    fadeOut() { if (!el) return; on = false; apply(0.35); setTimeout(() => { try { el.pause(); if (ctx) ctx.close(); } catch (e) { /* closed */ } }, 2200); },
+    lantern() { return 0; },
+    home() { },
   };
 })();
+S.music = music;       // for the tests
 $('seedSound').addEventListener('click', () => music.toggle());
 
 // ----------------------------------------------------------------------------------------------------------- into the Mahalaverse

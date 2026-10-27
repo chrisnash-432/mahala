@@ -4233,5 +4233,46 @@ Object.assign(window.__mahala, { HOOK7, v7: {
   JF, BADGE_SVG, closeJoin, giveStep: (...a) => giveStep7(...a), renderJoin: (...a) => renderJoin(...a),
   /* v7: host exports end */
 } });
+/* ---------- the camp's own music: original productions from the Mahala camp, one for each part of the way ----------
+   Downtempo as you arrive (the book, the portal and Blissfull Drift), Acoustic Intro at the Lotus Mahal and inside it,
+   Flower of Life through the camp and its main tent (and on to the build yard), and Song ID, Track 2 at The Seed and
+   inside it. Moving between them crossfades over a few seconds; each track picks up where it was left. It plays only
+   while Sound is on, under the playa wind and the fire. */
+const MUSIC = {
+  src: { arrive: 'assets/audio/downtempo.mp3', mahal: 'assets/audio/acoustic-intro.mp3', camp: 'assets/audio/flower-of-life.mp3', seed: 'assets/audio/song-id-2.mp3' },
+  of: { book: 'arrive', portal: 'arrive', drift: 'arrive', mahal: 'mahal', camp: 'camp', yard: 'camp', seed: 'seed' },
+  level: 0.6, el: {}, g: {}, stop: {}, now: null,
+};
+function musicWant() {
+  if (inside) return insideAt === 'mahal' ? 'mahal' : 'seed';
+  if (current === 'CAMP_TENT') return 'camp';
+  const s = WAY[WY.i]; return (s && MUSIC.of[s.id]) || 'arrive';
+}
+function musicNode(k) {
+  if (MUSIC.el[k]) return MUSIC.el[k];
+  const el = new Audio(); el.src = MUSIC.src[k]; el.loop = true; el.preload = 'none'; MUSIC.el[k] = el;
+  try { const g = SND.ctx.createGain(); g.gain.value = 0; SND.ctx.createMediaElementSource(el).connect(g).connect(SND.ctx.destination); MUSIC.g[k] = g; } catch (e) { el.volume = 0; }
+  return el;
+}
+function musicMix(fromTap) {
+  if (!SND.ctx) return;
+  const want = SND.on ? musicWant() : null, t = SND.ctx.currentTime;
+  if (want) musicNode(want);
+  Object.keys(MUSIC.el).forEach((k) => {
+    const el = MUSIC.el[k], g = MUSIC.g[k], up = k === want;
+    clearTimeout(MUSIC.stop[k]);
+    if (g) g.gain.setTargetAtTime(up ? MUSIC.level : 0, t, up ? 1.2 : 0.9); else el.volume = up ? MUSIC.level : 0;
+    if (up) { if (el.paused) el.play().catch(() => {}); }
+    else if (!el.paused) MUSIC.stop[k] = setTimeout(() => el.pause(), 5200);
+  });
+  // a tap on Sound is the moment phones allow sound to start, so every track is woken then, silently, for later
+  if (fromTap && SND.on) Object.keys(MUSIC.src).forEach((k) => { if (k !== want) { const el = musicNode(k); el.play().then(() => { if (musicWant() !== k) el.pause(); }).catch(() => {}); } });
+  MUSIC.now = want;
+}
+$('#soundBtn').addEventListener('click', () => musicMix(true));
+setInterval(() => { const w = SND.on ? musicWant() : null; if (w !== MUSIC.now) musicMix(false); }, 700);
+setTimeout(() => { if (SND.on) musicMix(false); }, 1200);       // arriving with Sound already on
+window.__mahalaMusic = () => ({ want: MUSIC.now, playing: Object.keys(MUSIC.el).filter((k) => !MUSIC.el[k].paused), sound: SND.on });   // for the tests
+
 import('./assets/together.js').then(m => m.start(window.__mahala)).catch(e => console.warn('The together layer did not start:', e));
 import('./assets/v7/index.js').then(m => m.start(window.__mahala)).catch(e => console.warn('The v7 plugins did not start:', e));
