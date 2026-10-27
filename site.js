@@ -5,9 +5,10 @@ window.MAHALA_SITE = {
   donateUrl: '',
   target: 999999,                 // what we are raising to build The Seed, in rand
   buildWeek: [2027, 3, 22],       // the first day of build week: year, month counted from 0 (3 is April), day
-  // The Mahala Temple Builder Nominations & Applications sheet, through its Apps Script web app. Camp applications go
+  // The Mahala Temple Builder Nominations & Applications sheet, through the "Mahala applications backend" web app
+  // (an Apps Script project in Chris's BioHarmonic account; its code is apps-script-standalone.gs). Camp applications go
   // to its Applications tab, and sign-ups for news to its Email list tab.
-  sheet: 'https://script.google.com/macros/s/AKfycbz9hE1X_QETwBCUOm0PxAFe9T4opCqD-IZQUdoQZtuhTkKGioNO9LmzLLNkMwSRqZVS/exec',
+  sheet: 'https://script.google.com/macros/s/AKfycbzghj0pcukOFS6AyXr7xgEEFx192BIIZYrjOZqCbZvHDwh986SsGEZor4r8l5M8b9o/exec',
 };
 
 (function (S) {
