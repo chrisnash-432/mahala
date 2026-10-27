@@ -2229,6 +2229,7 @@ function renderBook() {
   const [l, r] = spreadPages(spreadOf(BKR.i));
   BKR.book.classList.toggle('at-cover', !BKR.solo && BKR.i === 0);
   $('#bkNum').textContent = BKR.i === 0 ? `Cover · ${N - 1} page${N === 2 ? '' : 's'}` : BKR.solo ? `Page ${BKR.i} of ${N - 1}` : `Pages ${l}${r < N ? ' and ' + r : ''} of ${N - 1}`;   // the cover is not numbered
+  { const st = $('#bkStart'); if (st) st.hidden = BKR.i === 0; }      // back to the beginning, once you are past the cover
   $('#bkPrev').disabled = BKR.i === 0; $('#bkNext').disabled = BKR.solo ? BKR.i >= N - 1 : spreadOf(BKR.i) >= spreadOf(N - 1);
   const ch = [...BOOK.chapters].reverse().find(c => c.page <= BKR.i); if (ch) $('#bkToc').value = String(ch.page);
   if (!$('#bkText').hidden) renderBookWords();
@@ -2263,6 +2264,7 @@ $('#bkToc').hidden = !BOOK.chapters.length;
 $('#bkToc').addEventListener('change', e => { BKR.i = +e.target.value; renderBook(); });
 $('#bkRange').addEventListener('input', e => { const v = +e.target.value; BKR.i = BKR.solo ? v : (v === 0 ? 0 : 2 * v - 1); renderBook(); });
 $('#bkPrev').addEventListener('click', () => turn(-1)); $('#bkNext').addEventListener('click', () => turn(1));
+{ const st = $('#bkStart'); if (st) st.addEventListener('click', () => { BKR.i = 0; renderBook(); }); }
 $('#bookClose').addEventListener('click', closeBook);
 $('#bkDraw').addEventListener('click', () => { closeBook(); if (WAY[WY.i].id === 'book') openPlinthDeck(); else openFireside('deck'); });
 $('#bkWords').addEventListener('click', () => { const on = $('#bkText').hidden; $('#bkText').hidden = !on; $('#bkWords').setAttribute('aria-pressed', String(on)); if (on) renderBookWords(); });

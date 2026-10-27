@@ -529,6 +529,49 @@ a.back, a.primary, a.secondary { text-decoration: none; }
 .list-done { outline: none; }
 .list-done .small { margin-bottom: 0; }
 .give { margin-top: clamp(40px, 6vw, 64px); }
+.seed-close { font-style: italic; }
+.car-track.drifting { scroll-snap-type: none; scroll-behavior: auto; }
+/* Join the camp: the application, over the camp page */
+html.join-open, html.join-open body { overflow: hidden; }
+.join { position: fixed; inset: 0; z-index: 30; background: var(--paper); color: var(--ink); overflow-y: auto; overscroll-behavior: contain; opacity: 0; transition: opacity .25s ease; -webkit-overflow-scrolling: touch; }
+.join.open { opacity: 1; }
+.join-page { width: min(100% - 32px, 620px); }
+.jstep { font: 400 12px/1 var(--text); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap; }
+.join .h-sub { font-size: clamp(26px, 3.4vw, 34px); margin: 8px 0 20px; }
+.join .field { margin-bottom: 22px; border: 0; padding: 0; }
+.join .field small { text-transform: none; letter-spacing: 0; font-weight: 300; }
+.join .small { margin: 0 0 18px; }
+.chips-pick { gap: 8px; }
+.pick { min-height: 44px; padding: 10px 16px 9px; border: 1px solid #CFC3B2; border-radius: 999px; background: #FFFDF8; color: var(--ink); font: 400 16px/1.2 var(--text); cursor: pointer; }
+.pick:hover { border-color: var(--ink); }
+.pick.on { background: var(--ink); border-color: var(--ink); color: var(--warm); }
+.pick:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.fee { display: grid; justify-items: center; gap: 6px; margin: 0 0 10px; }
+.fee b { font: 400 clamp(40px, 7vw, 58px)/1 var(--name); letter-spacing: .02em; }
+.fee span { font: 400 12px/1 var(--text); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); }
+.coil { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 16px; align-items: center; margin: 18px 0 20px; }
+.coil img { width: 72px; height: 72px; }
+.coil p { margin: 0; font: italic 400 18px/1.45 var(--verse); }
+.opt.tick { display: block; margin: 0 0 10px; }
+.opt.tick span { display: block; border-radius: 12px; padding: 13px 16px 12px 46px; min-height: 0; line-height: 1.45; position: relative; }
+.opt.tick span::before { content: ""; position: absolute; left: 15px; top: 14px; width: 18px; height: 18px; border: 1px solid #b9ab97; border-radius: 4px; background: #fff; display: grid; place-items: center; font-size: 13px; line-height: 18px; text-align: center; }
+.opt.tick input:checked + span::before { content: "✓"; background: var(--ink); color: var(--warm); border-color: var(--ink); }
+.opt.tick input:checked + span { background: #FFFDF8; color: var(--ink); border-color: var(--ink); }
+.sum { border-top: 1px solid var(--rule); margin: 22px 0 14px; padding-top: 10px; font: 400 16px/1.4 var(--text); font-variant-numeric: tabular-nums; }
+.sum > div { display: flex; justify-content: space-between; gap: 14px; padding: 6px 0; }
+.sum .tot { border-top: 1px solid var(--rule); margin-top: 6px; padding-top: 12px; font-weight: 500; font-size: 18px; }
+.sum .per { color: var(--ink-2); }
+.join details.more { margin: 12px 0 0; border: 1px solid var(--rule); border-radius: 12px; background: rgba(255, 253, 248, .6); }
+.join details.more summary { cursor: pointer; min-height: 48px; display: flex; align-items: center; padding: 0 16px; font: 400 16px/1.3 var(--text); }
+.join details.more > :not(summary) { margin: 4px 16px 16px; }
+.join details.more .sacred li { font-size: 16px; } .join details.more .sacred b { font-size: 22px; }
+.join details.more .bring { font-size: 17px; }
+.join textarea { min-height: 120px; }
+.join-acts { margin-top: 26px; }
+.join-acts .primary[aria-disabled="true"] { background: #b9ada0; border-color: #b9ada0; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.join-done .next { margin: 0 0 8px; padding-left: 1.3em; display: grid; gap: 14px; font: 300 17px/1.5 var(--text); }
+.join-done .next b { font-weight: 500; }
 .give .intro { margin-bottom: clamp(18px, 3vw, 26px); }
 .give .nums b { color: var(--ink); }
 </style>
@@ -546,61 +589,63 @@ a.back, a.primary, a.secondary { text-decoration: none; }
       <video id="seedFilm" controls playsinline preload="none" aria-label="The film of The Seed"></video>
       <p class="reel-cap"><span>Concept visualisation: rendered from the 3D model, with motion added by AI.</span><span>60 s</span></p>
     </div>
-    <p class="intro" style="margin-top: clamp(30px, 5vw, 48px)">A dome of timber and coloured acrylic, 8.7 m across and 6.3 m to the tip of its finial. By day, sunlight through the acrylic paints the floor and the people inside in fields of colour. At night a lantern inside makes the dome glow and throws a star of coloured light across the ground.</p>
+    <p class="intro" style="margin-top: clamp(30px, 5vw, 48px)">A seed holds the whole tree.<br>The Seed holds a temple: its geometry, its craft and, above all, its people.</p>
 
-    <h2 class="h-sec">The sacred geometry</h2>
+    <h2 class="h-sec">A temple, open to all</h2>
     <div class="two">
-      <figure class="fig"><picture><source media="(max-width: 700px)" srcset="seed-media/img/above_800.jpg"><img src="seed-media/img/above_1600.jpg" width="1600" height="900" alt="The Seed from above at morning, in the middle of its pattern of coloured circles on the clay" loading="lazy"></picture><figcaption>Concept visualisation, rendered from the 3D model.</figcaption></figure>
+      <figure class="fig"><picture><source media="(max-width: 700px)" srcset="seed-media/img/dawn_800.jpg"><img src="seed-media/img/dawn_1600.jpg" width="1600" height="900" alt="The Seed at dawn, its one low doorway facing the rising sun" loading="lazy"></picture><figcaption>Concept visualisation, rendered from the 3D model.</figcaption></figure>
       <div>
-        <p>The Seed is a zome: a dome of rhombic panels spiralling up from eighteen footings, inspired by the King Protea.</p>
-        <p>It stands at the centre of the Golden Seed of Life, a pattern of coloured circles laid out on the clay around it in copper, sea teal, amber and pearl. Its circles grow by the golden ratio, and the smallest of them is the dome's own base ring.</p>
-        <p>The centrepiece is sized the same way: from the temple's base radius, divided by the golden ratio again and again.</p>
+        <p>Come in to sit, to lie on the floor, to meditate, to sing, to grieve, or simply to shelter from the wind. No ticket, no skill, no performance: just a low doorway and a moment of colour.</p>
+        <p>The one doorway faces east, to the rising sun, through an arch low enough that everyone bows their head to enter.</p>
       </div>
     </div>
-    <ul class="facts">
-      <li><b>18-fold</b><span>A rhombic zome</span></li>
-      <li><b>8.7 m</b><span>Across</span></li>
-      <li><b>6.3 m</b><span>To the tip of the finial</span></li>
-      <li><b>45 m</b><span>The pattern on the ground</span></li>
-    </ul>
 
-    <h2 class="h-sec">The materials</h2>
-    <div class="two">
-      <figure class="fig"><picture><source media="(max-width: 700px)" srcset="seed-media/img/dawn_800.jpg"><img src="seed-media/img/dawn_1600.jpg" width="1600" height="900" alt="The Seed at dawn: the timber frame and the coloured panes, the petals round its base" loading="lazy"></picture><figcaption>Concept visualisation, rendered from the 3D model.</figcaption></figure>
-      <div>
-        <h3 class="h-sub" style="text-align: left">Timber and coloured acrylic</h3>
-        <p>Pine timbers spiral up from eighteen footings. The top two rings stay open timber: a star of sky at the crown.</p>
-      </div>
-    </div>
+    <h2 class="h-sec">The closed bud of the protea</h2>
     <div class="two flip">
-      <figure class="fig"><picture><source media="(max-width: 700px)" srcset="seed-media/img/floor_800.jpg"><img src="seed-media/img/floor_1600.jpg" width="1600" height="900" alt="Inside The Seed at midday: the floor and the people in fields of yellow, cyan and pink light, the column at the centre" loading="lazy"></picture><figcaption>Concept visualisation, rendered from the 3D model.</figcaption></figure>
+      <figure class="fig"><picture><source media="(max-width: 700px)" srcset="seed-media/img/above_800.jpg"><img src="seed-media/img/above_1600.jpg" width="1600" height="900" alt="The Seed from above, at the centre of its pattern of coloured circles on the clay" loading="lazy"></picture><figcaption>Concept visualisation, rendered from the 3D model.</figcaption></figure>
       <div>
-        <h3 class="h-sub" style="text-align: left">The eight rings</h3>
-        <p>Each panel of the lower eight rings is one sheet of cast acrylic, one colour per ring: yellow, cyan and magenta in turn from the crown down.</p>
-        <p>Where near and far panels overlap, the colours stack: yellow and cyan make green, cyan and magenta make violet blue, magenta and yellow make red.</p>
+        <p>The Seed is shaped like the closed bud of the King Protea, timber spirals turning around a single centre and gathering to a point at the crown.</p>
+        <p>In the fynbos, the protea keeps its seed until fire comes. In the Tankwa, seeds wait in the dust for rain. The Seed waits for people.</p>
+        <p>Every measure, from the egg at its heart to the dome itself, follows the golden ratio: the proportion a sunflower uses to pack its seeds.</p>
       </div>
     </div>
+
+    <h2 class="h-sec">Three colours, every colour</h2>
     <div class="two">
-      <figure class="fig"><picture><source media="(max-width: 700px)" srcset="seed-media/img/fretwork_800.jpg"><img src="seed-media/img/fretwork_1600.jpg" width="1600" height="900" alt="The fretwork petals round the base of the dome in the morning light, their pattern thrown across the ground" loading="lazy"></picture><figcaption>Concept visualisation, rendered from the 3D model.</figcaption></figure>
+      <figure class="fig"><picture><source media="(max-width: 700px)" srcset="seed-media/img/floor_800.jpg"><img src="seed-media/img/floor_1600.jpg" width="1600" height="900" alt="Inside The Seed at midday: the floor and the people on it in fields of yellow, cyan and pink light" loading="lazy"></picture><figcaption>Concept visualisation, rendered from the 3D model.</figcaption></figure>
       <div>
-        <h3 class="h-sub" style="text-align: left">The twelve petals</h3>
-        <p>Twelve fretwork screens shaped like petals stand around the base in two rows of six, fixed half open, like the bracts of a King Protea.</p>
-        <p>The one doorway faces east, through an S-curved arch in the front petal; it is low, so adults stoop to go in.</p>
+        <p>The dome is glazed in only three colours, yellow, cyan and magenta, the three from which every other colour can be mixed. The sun does the rest. Where yellow crosses magenta, it turns red.</p>
+        <p>The Seed is still; the sun is what moves. Hour by hour its colours drift across the floor and out over the playa, so no two visits are the same. Inside, the old words come true: as above, so below.</p>
       </div>
     </div>
+
+    <h2 class="h-sec">The heart</h2>
     <div class="two flip">
-      <figure class="fig"><picture><source media="(max-width: 700px)" srcset="seed-media/img/inside_800.jpg"><img src="seed-media/img/inside_1600.jpg" width="1600" height="900" alt="Inside The Seed: the carved column at the centre under the coloured panes, with people around it" loading="lazy"></picture><figcaption>Concept visualisation, rendered from the 3D model.</figcaption></figure>
+      <figure class="fig"><picture><source media="(max-width: 700px)" srcset="seed-media/img/inside_800.jpg"><img src="seed-media/img/inside_1600.jpg" width="1600" height="900" alt="The carved column at the centre of The Seed, under the coloured panes, with people around it" loading="lazy"></picture><figcaption>Concept visualisation, rendered from the 3D model.</figcaption></figure>
       <div>
-        <h3 class="h-sub" style="text-align: left">The egg on its copper nest</h3>
-        <p>At the centre, on a carved hardwood column, a glass egg of water rests on a nest of copper coil, under the open crown.</p>
-        <p>Two windings of copper cross in the grooves of its black ring: eight times round, and seven times through.</p>
+        <p>At the centre, a carved hardwood column holds a nest of hand-wound copper, and in the nest rests an egg of clear water. A slow vortex turns inside it.</p>
+        <p>The Seed asks the body to move: the bow at the door, the step into colour, the circle around the egg.</p>
       </div>
     </div>
+
     <h2 class="h-sec">At night</h2>
     <div class="two">
       <figure class="fig"><picture><source media="(max-width: 700px)" srcset="seed-media/img/night_800.jpg"><img src="seed-media/img/night_1600.jpg" width="1600" height="900" alt="The Seed at night with the lantern lit inside, the dome glowing and coloured light thrown across the ground" loading="lazy"></picture><figcaption>Concept visualisation, rendered from the 3D model.</figcaption></figure>
       <figure class="fig"><picture><source media="(max-width: 700px)" srcset="seed-media/img/star_800.jpg"><img src="seed-media/img/star_1600.jpg" width="1600" height="900" alt="The Seed from directly above at night: the lit dome like a rose window, a star of coloured light spreading across the clay" loading="lazy"></picture><figcaption>Concept visualisation, rendered from the 3D model.</figcaption></figure>
     </div>
+    <p class="intro" style="margin-top: clamp(26px, 4vw, 40px)">At dusk a lantern wakes beneath the crown. The dome glows from within, and a star of coloured light spreads across the clay: a beacon to walk towards.</p>
+
+    <h2 class="h-sec">The temple it grows into</h2>
+    <div class="two flip">
+      <figure class="fig"><picture><source media="(max-width: 700px)" srcset="seed-media/img/fretwork_800.jpg"><img src="seed-media/img/fretwork_1600.jpg" width="1600" height="900" alt="The fretwork petals around the base of the dome in the morning light" loading="lazy"></picture><figcaption>Concept visualisation, rendered from the 3D model.</figcaption></figure>
+      <div>
+        <p>The Seed does not burn. When the burn ends, the glass, the heart and the lantern come home, and nothing in it is made to be used only once.</p>
+        <p>Each year it flowers a little further. Petals open around its base. Rings of circles spread across the ground, and copper meditation pods take root on them. Fretwork lace joins the glass.</p>
+        <p>Burn by burn the temple grows, and so does the community able to build it, until The Seed and all that has grown from it become the temple in its full form.</p>
+      </div>
+    </div>
+    <p class="intro" style="margin-top: clamp(34px, 5vw, 52px)">It is raised by many hands: by builders who were each called in by someone who saw something in them, and told them, you are a seed of hope.</p>
+    <p class="intro seed-close">This is the seed. The temple is what it grows into.</p>
 
     <div class="give" id="give">
       <p class="intro">To build it we are raising <span class="nowrap" data-fill="target">R 999 999</span>.</p>
@@ -684,13 +729,20 @@ a.back, a.primary, a.secondary { text-decoration: none; }
   var SITE = window.MAHALA_SITE || {};
   // the film, in the shape that suits the screen
   var film = document.getElementById('seedFilm'), box = document.getElementById('filmBox');
+  var phone = matchMedia('(max-width: 760px)');
   function shape() {
-    var tall = innerHeight > innerWidth, src = tall ? 'seed/media/film_tall.mp4' : 'seed/media/film_wide.mp4';
+    var tall = phone.matches, src = tall ? 'seed/media/film_tall.mp4' : 'seed/media/film_wide.mp4';
     box.classList.toggle('tall', tall);
-    if (film.getAttribute('src') === src || !film.paused) return;
+    if (film.getAttribute('src') === src || (!film.paused && !film.muted)) return;
+    var was = !film.paused;
     film.poster = tall ? 'seed/img/film_tall.jpg' : 'seed/img/film_wide.jpg'; film.src = src;
+    if (was) film.play().catch(function () {});
   }
-  shape(); addEventListener('resize', shape);
+  film.muted = true; film.loop = true; film.setAttribute('playsinline', ''); film.preload = 'auto';
+  shape(); (phone.addEventListener ? phone.addEventListener('change', shape) : phone.addListener(shape));
+  // it plays, without sound, while it is on screen; the controls give the sound
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { if (es[0].isIntersecting) film.play().catch(function () {}); else if (film.muted) film.pause(); }, { threshold: 0.4 }).observe(film);
+  else film.play().catch(function () {});
   // Donate: the crowdfunding page once it is live; until then, the list for the day it opens
   var d = document.getElementById('donateBtn');
   if (SITE.donateUrl) { d.href = SITE.donateUrl; d.target = '_blank'; d.rel = 'noopener'; }

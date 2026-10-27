@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mahala · The camp</title>
-<meta name="description" content="Mahala, a theme camp at AfrikaBurn: the dates for 2027, what is included, what to bring and how we live together.">
+<meta name="description" content="Mahala, a theme camp at AfrikaBurn: the dates for 2027, what is included, what to bring and how we live together, and the application to join.">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#F7F2EA">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -529,6 +529,49 @@ a.back, a.primary, a.secondary { text-decoration: none; }
 .list-done { outline: none; }
 .list-done .small { margin-bottom: 0; }
 .give { margin-top: clamp(40px, 6vw, 64px); }
+.seed-close { font-style: italic; }
+.car-track.drifting { scroll-snap-type: none; scroll-behavior: auto; }
+/* Join the camp: the application, over the camp page */
+html.join-open, html.join-open body { overflow: hidden; }
+.join { position: fixed; inset: 0; z-index: 30; background: var(--paper); color: var(--ink); overflow-y: auto; overscroll-behavior: contain; opacity: 0; transition: opacity .25s ease; -webkit-overflow-scrolling: touch; }
+.join.open { opacity: 1; }
+.join-page { width: min(100% - 32px, 620px); }
+.jstep { font: 400 12px/1 var(--text); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); white-space: nowrap; }
+.join .h-sub { font-size: clamp(26px, 3.4vw, 34px); margin: 8px 0 20px; }
+.join .field { margin-bottom: 22px; border: 0; padding: 0; }
+.join .field small { text-transform: none; letter-spacing: 0; font-weight: 300; }
+.join .small { margin: 0 0 18px; }
+.chips-pick { gap: 8px; }
+.pick { min-height: 44px; padding: 10px 16px 9px; border: 1px solid #CFC3B2; border-radius: 999px; background: #FFFDF8; color: var(--ink); font: 400 16px/1.2 var(--text); cursor: pointer; }
+.pick:hover { border-color: var(--ink); }
+.pick.on { background: var(--ink); border-color: var(--ink); color: var(--warm); }
+.pick:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.fee { display: grid; justify-items: center; gap: 6px; margin: 0 0 10px; }
+.fee b { font: 400 clamp(40px, 7vw, 58px)/1 var(--name); letter-spacing: .02em; }
+.fee span { font: 400 12px/1 var(--text); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); }
+.coil { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 16px; align-items: center; margin: 18px 0 20px; }
+.coil img { width: 72px; height: 72px; }
+.coil p { margin: 0; font: italic 400 18px/1.45 var(--verse); }
+.opt.tick { display: block; margin: 0 0 10px; }
+.opt.tick span { display: block; border-radius: 12px; padding: 13px 16px 12px 46px; min-height: 0; line-height: 1.45; position: relative; }
+.opt.tick span::before { content: ""; position: absolute; left: 15px; top: 14px; width: 18px; height: 18px; border: 1px solid #b9ab97; border-radius: 4px; background: #fff; display: grid; place-items: center; font-size: 13px; line-height: 18px; text-align: center; }
+.opt.tick input:checked + span::before { content: "✓"; background: var(--ink); color: var(--warm); border-color: var(--ink); }
+.opt.tick input:checked + span { background: #FFFDF8; color: var(--ink); border-color: var(--ink); }
+.sum { border-top: 1px solid var(--rule); margin: 22px 0 14px; padding-top: 10px; font: 400 16px/1.4 var(--text); font-variant-numeric: tabular-nums; }
+.sum > div { display: flex; justify-content: space-between; gap: 14px; padding: 6px 0; }
+.sum .tot { border-top: 1px solid var(--rule); margin-top: 6px; padding-top: 12px; font-weight: 500; font-size: 18px; }
+.sum .per { color: var(--ink-2); }
+.join details.more { margin: 12px 0 0; border: 1px solid var(--rule); border-radius: 12px; background: rgba(255, 253, 248, .6); }
+.join details.more summary { cursor: pointer; min-height: 48px; display: flex; align-items: center; padding: 0 16px; font: 400 16px/1.3 var(--text); }
+.join details.more > :not(summary) { margin: 4px 16px 16px; }
+.join details.more .sacred li { font-size: 16px; } .join details.more .sacred b { font-size: 22px; }
+.join details.more .bring { font-size: 17px; }
+.join textarea { min-height: 120px; }
+.join-acts { margin-top: 26px; }
+.join-acts .primary[aria-disabled="true"] { background: #b9ada0; border-color: #b9ada0; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.join-done .next { margin: 0 0 8px; padding-left: 1.3em; display: grid; gap: 14px; font: 300 17px/1.5 var(--text); }
+.join-done .next b { font-weight: 500; }
 .give .intro { margin-bottom: clamp(18px, 3vw, 26px); }
 .give .nums b { color: var(--ink); }
 </style>
@@ -639,28 +682,19 @@ a.back, a.primary, a.secondary { text-decoration: none; }
     </div>
 
     <div class="page-acts">
-      <button class="primary" type="button" id="listOpen" aria-expanded="false" aria-controls="listBox">Join the camp</button>
+      <button class="primary" type="button" data-join>Join the camp</button>
       <button class="secondary" type="button" data-page-close>Close</button>
-    </div>
-    <div class="list-box" id="listBox" hidden>
-      <div id="listAsk">
-        <h2 class="h-sub">The full application opens soon.</h2>
-        <p class="small centre">Add your email to the list and we will send it to you first.</p>
-        <form class="list-form" id="listForm" data-interest="camp" novalidate>
-          <div class="field"><label for="lfName">Your name</label><input type="text" id="lfName" name="name" autocomplete="name" maxlength="80" required></div>
-          <div class="field"><label for="lfEmail">Your email</label><input type="email" id="lfEmail" name="email" autocomplete="email" inputmode="email" maxlength="120" required></div>
-          <p class="err" id="lfErr" role="alert"></p>
-          <button class="primary" type="submit" id="lfSend">Add me to the list</button>
-          <p class="small centre lf-note">We use your email only to write to you about Mahala.</p>
-        </form>
-      </div>
-      <div class="list-done" id="listDone" hidden tabindex="-1">
-        <h2 class="h-sub">Thank you, <span id="lfWho"></span>. You are on the list.</h2>
-        <p class="small centre">We will write to you as soon as the application opens.</p>
-      </div>
     </div>
   </div>
 </div>
+<section class="join" id="join" role="dialog" aria-modal="true" aria-labelledby="joinH" hidden>
+  <div class="bar">
+    <button class="back" type="button" id="joinClose"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>Close</button>
+    <span class="ttl" id="joinH">Join the camp</span>
+    <span class="side"><span class="jstep" id="joinStep"></span></span>
+  </div>
+  <div class="page join-page"><div id="joinBody"></div></div>
+</section>
 <script src="site.js"></script>
 <script>
 (function () {
@@ -733,25 +767,56 @@ a.back, a.primary, a.secondary { text-decoration: none; }
   document.addEventListener('fullscreenchange', mute);
   camp.addEventListener('webkitendfullscreen', function () { camp.muted = true; });
 
-  // the photographs
-  var track = document.getElementById('carTrack'), slides = [].slice.call(track.children), count = document.getElementById('carCount');
+  // the photographs: in a new order each visit, drifting slowly along until you take them in hand
+  var track = document.getElementById('carTrack'), count = document.getElementById('carCount');
   var prev = document.querySelector('[data-car="-1"]'), next = document.querySelector('[data-car="1"]');
+  var real = [].slice.call(track.children);
+  for (var i = real.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), tmp = real[i]; real[i] = real[j]; real[j] = tmp; }
+  real.forEach(function (s, k) { s.setAttribute('aria-label', (k + 1) + ' of ' + real.length); track.appendChild(s); });
+  var N = real.length;
+  // a second run of the same photographs follows the first, so the drift can go round and round
+  real.forEach(function (s) { var c = s.cloneNode(true); c.setAttribute('aria-hidden', 'true'); c.removeAttribute('aria-label'); c.classList.add('clone'); c.querySelectorAll('img').forEach(function (im) { im.alt = ''; im.loading = 'lazy'; }); track.appendChild(c); });
+  var slides = [].slice.call(track.children);
+  track.style.scrollBehavior = 'auto'; track.scrollLeft = 0; requestAnimationFrame(function () { track.scrollLeft = 0; track.style.scrollBehavior = ''; });   // back to the start after the reshuffle
+  var loopW = function () { return slides[N].offsetLeft - slides[0].offsetLeft; };
   function at() {
-    var max = track.scrollWidth - track.clientWidth;
     if (track.scrollLeft <= 2) return 0;
-    if (track.scrollLeft >= max - 2) return slides.length - 1;
     var tr = track.getBoundingClientRect(), c = tr.left + tr.width / 2, best = 0, bd = 1e9;
-    slides.forEach(function (s, i) { var r = s.getBoundingClientRect(), d = Math.abs(r.left + r.width / 2 - c); if (d < bd) { bd = d; best = i; } });
+    slides.forEach(function (s, k) { var r = s.getBoundingClientRect(), d = Math.abs(r.left + r.width / 2 - c); if (d < bd) { bd = d; best = k; } });
     return best;
   }
-  function show() { var i = at(); count.textContent = (i + 1) + ' / ' + slides.length; prev.disabled = i === 0; next.disabled = i === slides.length - 1; }
-  function go(i) { i = Math.max(0, Math.min(slides.length - 1, i)); var tr = track.getBoundingClientRect(), r = slides[i].getBoundingClientRect(); track.scrollTo({ left: track.scrollLeft + (r.left - tr.left) - (tr.width - r.width) / 2 }); }
-  prev.addEventListener('click', function () { go(at() - 1); });
-  next.addEventListener('click', function () { go(at() + 1); });
+  function show() { count.textContent = (at() % N + 1) + ' / ' + N; }
+  function go(k) {
+    if (k < 0) { track.scrollLeft += loopW(); k += N; }
+    if (k >= slides.length) k = slides.length - 1;
+    var tr = track.getBoundingClientRect(), r = slides[k].getBoundingClientRect();
+    track.scrollTo({ left: track.scrollLeft + (r.left - tr.left) - (tr.width - r.width) / 2, behavior: 'smooth' });
+  }
+  var drift = !matchMedia('(prefers-reduced-motion: reduce)').matches, seenIt = false, heldUntil = 0, x = 0, last = 0, SPEED = 22;   // pixels a second
+  function hold(ms) { heldUntil = performance.now() + (ms || 7000); track.classList.remove('drifting'); }
+  function tick(now) {
+    requestAnimationFrame(tick);
+    var dt = Math.min(0.05, (now - (last || now)) / 1000); last = now;
+    if (!drift || !seenIt || document.hidden || now < heldUntil) { x = track.scrollLeft; return; }
+    track.classList.add('drifting');
+    x += SPEED * dt; var w = loopW(); if (w > 0 && x >= w) x -= w;
+    track.scrollLeft = x;
+  }
+  requestAnimationFrame(tick);
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { seenIt = es[0].isIntersecting; }, { threshold: 0.2 }).observe(track);
+  else seenIt = true;
+  ['pointerdown', 'wheel', 'touchstart', 'focusin', 'keydown'].forEach(function (ev) { track.addEventListener(ev, function () { hold(); }, { passive: true }); });
+  track.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') hold(60000); });
+  track.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') hold(1500); });
+  prev.addEventListener('click', function () { hold(); go(at() - 1); });
+  next.addEventListener('click', function () { hold(); go(at() + 1); });
   track.addEventListener('keydown', function (e) { if (e.key === 'ArrowRight') { go(at() + 1); e.preventDefault(); } if (e.key === 'ArrowLeft') { go(at() - 1); e.preventDefault(); } });
-  var t; track.addEventListener('scroll', function () { clearTimeout(t); t = setTimeout(show, 60); }, { passive: true });
+  var t2; track.addEventListener('scroll', function () {
+    clearTimeout(t2); t2 = setTimeout(function () { var w = loopW(); if (!track.classList.contains('drifting') && w > 0 && track.scrollLeft >= w + 4) track.scrollLeft -= w; show(); }, 90);
+  }, { passive: true });
   addEventListener('resize', show); show();
 })();
 </script>
+<script src="join.js"></script>
 </body>
 </html>
