@@ -271,7 +271,7 @@ export const PLACE_BY = Object.fromEntries(PLACES.map(p => [p.id, p]));
 
 // what each place of the vision is, in a line or two. A vision, never a plan or a partnership.
 export const VISION = [
-  { id: 'tankwa', role: 'start', eye: 'Where it begins', line: 'On the Tankwa Karoo playa, at AfrikaBurn: The Seed, the temple Mahala proposes for 2027, and the dream of a grand temple for 2029.' },
+  { id: 'tankwa', role: 'start', eye: 'Where it begins', line: 'On the Tankwa Karoo playa, at AfrikaBurn: The Seed, the temple Mahala proposes for 2027, and the dream of a grand temple for 2030.' },
   { id: 'cape-town', role: 'first', eye: 'The first permanent temple, a dream', line: 'As Mahala dreams it: a temple space in Cape Town that stays, open to everyone, free to enter, for people of every faith and of none.' },
   { id: 'waterval-boven', role: 'seed', eye: 'A seed of the vision', line: 'In the Mpumalanga highlands. Imagine a temple space among the cliffs and waterfalls.' },
   { id: 'egypt', role: 'seed', eye: 'A seed of the vision', line: 'Imagine a temple space where some of the oldest temples on earth still stand.' },

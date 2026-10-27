@@ -72,7 +72,7 @@ const DATA = {
     { n: 3, id: 'GATE_3', name: 'The theme camp', amount: '$500', space: 'camp', col: 'magenta', gift: 'Camp access, a pendant and a T-shirt', extra: 'What camp access covers at AfrikaBurn 2027 is still being set by the camp', builds: 'The camp and the temple build' },
     { n: 4, id: 'GATE_4', name: 'The zome', amount: '$1,000', space: 'zome', col: 'yellow', gift: 'A big coil, an art piece cut by a computer-controlled (CNC) router, or a Temple Tech light box', builds: 'The Temple Tech research behind the gifts, and The Seed', rd: true },
     { n: 5, id: 'GATE_5', name: 'Honorary builder', amount: '$10,000', space: 'all', col: 'cyan', badge: 'Honorary builder', gift: 'A pendant, a CNC-cut art piece, a big coil and a light box', extra: 'You carry the honorary builder badge', builds: 'The temple and the camp', rd: true },
-    { n: 6, id: 'GATE_6', name: 'Cosmic architect', amount: '$50,000', space: 'beyond', col: 'magenta', badge: 'Cosmic architect', gift: 'The cosmic architect badge', extra: 'A view beyond the zome, to the bigger vision: the temple of 2029', builds: 'The camp and The Seed: a first step towards the temple of 2029, a vision' },
+    { n: 6, id: 'GATE_6', name: 'Cosmic architect', amount: '$50,000', space: 'beyond', col: 'magenta', badge: 'Cosmic architect', gift: 'The cosmic architect badge', extra: 'A view beyond the zome, to the bigger vision: the temple of 2030', builds: 'The camp and The Seed: a first step towards the temple of 2030, a vision' },
     { n: 7, id: 'GATE_7', name: 'The lighthouses', amount: '$100,000 to $10,000,000', space: 'lighthouse', col: 'yellow', badge: 'Lighthouse builder', gift: 'The lighthouse badge', extra: 'The much bigger picture, a vision: a permanent temple in Cape Town, and lighthouse temples seeded around the world', builds: 'The camp and The Seed, and the vision of temples to come' },
   ],
   events: [
@@ -153,8 +153,8 @@ const PATHS = [
     reflect: 'Something rises inside you as the temple rises outside. What is it?', poem: 'Write a verse for a stone at the build yard.', art: 'Design one panel of glass: its colour, and the light it would throw.' },
   { feel: 'A keeper of the space', steps: [['all', 'Walk every space'], ['host', 'Bring a newcomer to the fire'], ['gather', 'Offer to host a gathering']],
     reflect: 'What does it mean to you to hold a place open for others?', poem: 'Write a welcome for the next builder through the portal.', art: 'Draw the temple as you hope it will look on the night it is lit.' },
-  { feel: 'Looking further', steps: [['beyond', 'Look beyond the zome'], ['vision', 'Read the vision of the temple of 2029']],
-    reflect: 'What should the temple of 2029 hold that this temple cannot?', poem: 'Write a poem for the temple you hope for.', art: 'Sketch the temple of 2029 as you imagine it, from above.' },
+  { feel: 'Looking further', steps: [['beyond', 'Look beyond the zome'], ['vision', 'Read the vision of the temple of 2030']],
+    reflect: 'What should the temple of 2030 hold that this temple cannot?', poem: 'Write a poem for the temple you hope for.', art: 'Sketch the temple of 2030 as you imagine it, from above.' },
   { feel: 'A light for others', steps: [['city', 'Name a city that needs a lighthouse temple'], ['keepers', 'Imagine who would tend it']],
     reflect: 'Where in the world should a lighthouse temple stand, and who would tend it?', poem: 'Write the words you would carve over its door.', art: 'Draw a lighthouse temple for your own city.' },
 ];
@@ -2738,7 +2738,7 @@ function goBeyond(n) {
   flyTo(n === 6 ? { t: V3(0, 8, 0), d: 120, p: 0.5, a: 0.8 } : { t: V3(0, 20, 0), d: 360, p: 0.28, a: 0.4 }, 3.2);
   current = null; selBox = null; $('#selLabel').hidden = true;
   setInspector(head('temple', n === 6 ? 'Gate 6 · cosmic architect' : 'Gate 7 · the lighthouses', n === 6 ? 'Beyond the zome' : 'The lighthouse temples', n === 6 ? 'The bigger vision' : 'The much bigger picture') + `<div class="insp-body">
-    <p class="spine">${n === 6 ? 'This temple, proposed for AfrikaBurn 2027, could be a first step on a longer road: the temple of 2029, a vision.' : 'A vision: a permanent temple in Cape Town, and lighthouse temples seeded around the world.'}</p>
+    <p class="spine">${n === 6 ? 'This temple, proposed for AfrikaBurn 2027, could be a first step on a longer road: the temple of 2030, a vision.' : 'A vision: a permanent temple in Cape Town, and lighthouse temples seeded around the world.'}</p>
     <p>${n === 6 ? 'From up here the zome is small: a seed. What grows from it is the work of every builder on this path.' : 'Each lighthouse would be a place to gather, built by its own community of temple builders.'}</p>
     <div class="prompts"><button class="prompt" data-act="write:reflect:${n}"><span class="k">Reflect</span><span>${esc(PATHS[n].reflect)}</span></button><button class="prompt" data-act="write:art:${n}"><span class="k">Draw</span><span>${esc(PATHS[n].art)}</span></button></div><div class="actions"><button class="btn" data-act="path">${icon('path')}Your path</button></div>
     <p class="note">${n === 6 ? 'A vision, not a plan.' : 'A vision, not a plan.'} Shared by the camp as an aim, not a promise.</p></div>`);
@@ -3253,7 +3253,7 @@ function goWay(i, o = {}) {
   closePops(); if (story.on) stopStory(false); if (fire.on) leaveFireside(false);
   if (!$('#spotModal').hidden) closeSpot();
   WY.i = i; ME.way = i; saveMe();
-  // on a phone the card opens short at every stop, and folded at the vision, so the temple of 2029 and The Seed show together
+  // on a phone the card opens short at every stop, and folded at the vision, so the temple of 2030 and The Seed show together
   WY.more = false; if (WY.autoFold) { WY.fold = false; WY.autoFold = false; }
   if (innerWidth <= 760 && i === WAY_BY.vision && !WY.fold) { WY.fold = true; WY.autoFold = true; }
   current = null; selBox = null; $('#selLabel').hidden = true; brks.forEach(b => b.hidden = true);
@@ -3593,10 +3593,10 @@ W6.views.whole = () => ({ t: V3(104, 0, 4), d: 300, p: 0.86, a: 0.2 });
 // arriving at dawn: high over the east end of the way, looking down its length to The Seed, before coming down to the book
 W6.views.arrive = () => ({ t: wayP(104).setY(0), d: 300, p: 1.0, a: Math.atan2(0.99, -0.12) });
 
-/* ====================== v7 world: the temple of 2029, the eighth stop, the seat of the cap, and the colours made steady ======================
+/* ====================== v7 world: the temple of 2030, the eighth stop, the seat of the cap, and the colours made steady ======================
    Inserted into the module by patch_v7_world.py, before the test hooks, so everything the world is made of is in scope.
    - A phantom far out on the playa, west of The Seed: a vast, faint silhouette of the grand temple Mahala dreams of for
-     AfrikaBurn 2029, grown from The Seed. A mirage by day, a faint luminous outline at night. One mesh, one draw call.
+     AfrikaBurn 2030, grown from The Seed. A mirage by day, a faint luminous outline at night. One mesh, one draw call.
    - The eighth stop of the way and the eighth chapter of the tour look over The Seed to it, and open the map of the
      temples to come (the world plugin, assets/v7/world/).
    - The finial cap, the stupa, is lifted onto the frame's top so its foot rests on the members instead of sinking into them.
@@ -3688,7 +3688,7 @@ for (const g of LOW_GLOWS) {
 }
 if (SAIL_GLOW) SAIL_GLOW.userData.k = 0;     // its light goes on the ground instead
 
-/* ---------- the temple of 2029: a phantom on the far playa ---------- */
+/* ---------- the temple of 2030: a phantom on the far playa ---------- */
 const PH = V3(-236, 0, -4);                      // west of The Seed, behind it as you walk the way in from the east
 function phantomGeometry() {
   const pos = [], nor = [], uv = [], part = [], idx = [];
@@ -3825,11 +3825,11 @@ FRAME_HOOKS.push((dt, T) => { PHU.uTime.value = REDUCED ? 0 : T; PHU.uSel.value 
   FLAME_GLOW.userData.k = 0.55 * lerp(1, 0.45, smooth(150, 380, camera.position.distanceTo(FLAME_GLOW.position))); FLAME_GLOW.material.opacity = nightK * FLAME_GLOW.userData.k; });
 
 // selectable: its own card, with the two ways onward
-reg('VISION', { kind: 'vision', title: 'The temple of 2029', chip: 'A vision', obj: phantom, focus: () => visionView() });
+reg('VISION', { kind: 'vision', title: 'The temple of 2030', chip: 'A vision', obj: phantom, focus: () => visionView() });
 GLYPH.vision = 'seed';
-INDEX.push({ id: 'VISION', label: 'The temple of 2029', sub: 'A vision · beyond The Seed', key: '' });
+INDEX.push({ id: 'VISION', label: 'The temple of 2030', sub: 'A vision · beyond The Seed', key: '' });
 WAY_OF.VISION = 'vision';
-HOOK7.cardIn.push(it => it.kind === 'vision' ? head('vision', 'A vision · AfrikaBurn 2029', 'The temple of 2029', 'A dream Mahala hopes to grow from The Seed') + `<div class="insp-body">
+HOOK7.cardIn.push(it => it.kind === 'vision' ? head('vision', 'A vision · AfrikaBurn 2030', 'The temple of 2030', 'A dream Mahala hopes to grow from The Seed') + `<div class="insp-body">
     <p class="spine">Far out on the playa, beyond The Seed: a grand temple grown from it, its petals opening like a king protea's, an axis rising through it to a stupa crown, and a small flame at the very top.</p>
     <p>A vision, not a plan. AfrikaBurn chooses its own temple builders, so for now it is a hope, and a direction for every builder on this path. Each gift to The Seed, each crew and each build brings it closer.</p>
     <div class="actions"><button class="btn primary" data-act="worldmap">${icon('seed')}See the temples to come</button><button class="btn" data-act="gate6">${icon('gift')}Ways to give</button></div>
@@ -3884,8 +3884,8 @@ function tourVisionView(phone, k) {
     }
     return _flyTo(v, dur, then);
   }; }
-WAY.push({ id: 'vision', short: 'Beyond', eye: 'A vision', name: 'The temple of 2029', clock: 22 * 60 + 40, s: WAY_LEN, view: () => visionView(),
-  lines: ['Far out on the playa stands a dream: the grand temple Mahala hopes to raise at AfrikaBurn in 2029, grown from The Seed.', 'A vision, not a plan. Each gift to The Seed, each crew and each build brings it closer.'],
+WAY.push({ id: 'vision', short: 'Beyond', eye: 'A vision', name: 'The temple of 2030', clock: 22 * 60 + 40, s: WAY_LEN, view: () => visionView(),
+  lines: ['Far out on the playa stands a dream: the grand temple Mahala hopes to raise at AfrikaBurn in 2030, grown from The Seed.', 'A vision, not a plan. Each gift to The Seed, each crew and each build brings it closer.'],
   note: 'Concept visualisation of a hope. AfrikaBurn chooses its own temple builders.',
   acts: [['worldmap', 'seed', 'See the temples to come'], ['gate6', 'gift', 'Ways to give']] });
 WAY_BY.vision = WAY.length - 1; STOP_S.vision = WAY_LEN;
@@ -3894,7 +3894,7 @@ WAY_BY.vision = WAY.length - 1; STOP_S.vision = WAY_LEN;
 // (your figure stands where the camera looks: a little along the way from the book, so it stands beside it, not in front)
 { const w = WAY.find(s => s.id === 'book'); if (w) { const v = w.view; w.view = () => innerWidth <= 760 ? v() : { t: wayP(ST.book).lerp(wayP(ST.book + 10), 0.3).setY(1.7), d: 15, p: 1.42, a: Math.PI / 2 - 0.25 }; } }
 WY.i = clamp(+ME.way || 0, 0, WAY.length - 1);
-// "Ways to give": the gates, from small to large (a gift funds the camp and The Seed; the temple of 2029 stays a vision)
+// "Ways to give": the gates, from small to large (a gift funds the camp and The Seed; the temple of 2030 stays a vision)
 const helpItGrow = () => openJoin('back');
 { const _goWay = goWay;
   goWay = function (i, o = {}) { const s = WAY[clamp(Math.round(+i) || 0, 0, WAY.length - 1)]; if (s && s.id === 'vision' && o.lift === undefined) o = Object.assign({}, o, { lift: false }); return _goWay(i, o); };
@@ -3907,8 +3907,8 @@ const helpItGrow = () => openJoin('back');
 $('#wayBar').setAttribute('aria-label', 'The eight stops of the way');
 
 /* the tour: an eighth chapter, after the Book of Mahala */
-TOUR.push({ title: 'The temple of 2029', clock: 22 * 60 + 40, view: () => visionView(true),
-  lines: ['Far out on the playa, beyond The Seed, stands a dream: the grand temple Mahala hopes to raise at AfrikaBurn in 2029.', 'A vision, not a plan. Each gift to The Seed, each crew and each build brings it closer.'],
+TOUR.push({ title: 'The temple of 2030', clock: 22 * 60 + 40, view: () => visionView(true),
+  lines: ['Far out on the playa, beyond The Seed, stands a dream: the grand temple Mahala hopes to raise at AfrikaBurn in 2030.', 'A vision, not a plan. Each gift to The Seed, each crew and each build brings it closer.'],
   act: ['worldmap', 'seed', 'A dream for the world.', 'See the temples to come'] });
 // the game's own handler has already closed the tour: go to the eighth stop under the map, so closing the map lands there
 $('#story').addEventListener('click', e => { if (e.target.closest('[data-tour="worldmap"]')) { goWay(WAY_BY.vision, { dur: 1.2 }); W7.openMap('tour'); } });
