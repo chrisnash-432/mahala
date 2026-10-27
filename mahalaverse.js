@@ -4246,7 +4246,8 @@ const MUSIC = {
 function musicWant() {
   if (inside) return insideAt === 'mahal' ? 'mahal' : 'seed';
   if (current === 'CAMP_TENT') return 'camp';
-  const s = WAY[WY.i]; return (s && MUSIC.of[s.id]) || 'arrive';
+  for (let i = WY.i; i >= 0; i--) { const s = WAY[i]; if (s && MUSIC.of[s.id]) return MUSIC.of[s.id]; }   // a stop added later takes the music of the one before it
+  return 'arrive';
 }
 function musicNode(k) {
   if (MUSIC.el[k]) return MUSIC.el[k];
