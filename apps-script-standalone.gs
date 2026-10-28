@@ -5,7 +5,8 @@
  * Nominations are not touched: they keep their own backend inside the sheet.
  */
 var SHEET_ID = '1xbxEWSTKn0ULESNiuAWGSng4OMkqXHOx8yt8crQq6Q0';
-var NOTIFY_EMAIL = '';   // optional: an address for a short note on each application
+// who hears about each new camp application (comma separated)
+var NOTIFY_EMAIL = 'bioharmonicpermaculture@gmail.com, wearemahala@gmail.com, hi@meredithdetko.com';
 
 function doGet() {
   return ContentService.createTextOutput('Mahala applications backend is running.');
@@ -23,11 +24,10 @@ function clean_(v) {
   return /^[=+\-@]/.test(v) ? "'" + v : v;   // nothing that looks like a formula runs in the sheet
 }
 
-/* ================================================================ Applications (added October 2026)
+/* ================================================================ Applications
    The public site's forms post here as JSON with type "application":
      path "camp"  a full Join the camp application, one row in the "Applications" tab
-     path "list"  someone leaving their name and email to hear more, one row in the "Email list" tab
-   The nominations above are untouched: anything without type "application" still goes to submitNominations. */
+     path "list"  someone leaving their name and email to hear more, one row in the "Email list" tab */
 
 var APP_SHEET = 'Applications';
 var APP_HEADERS = [
@@ -64,14 +64,31 @@ function submitApplication_(p) {
       clean_(p.nominatedBy), clean_(p.page),
       'New', ''
     ]);
-    if (NOTIFY_EMAIL) {
-      MailApp.sendEmail(NOTIFY_EMAIL, 'Mahala: a camp application from ' + (clean_(p.name) || clean_(p.email)),
-        (clean_(p.name) || 'Someone') + ' has applied to join the camp. See the Applications tab.');
-    }
+    if (NOTIFY_EMAIL) notifyApplication_(p);
     return { ok: true, tab: APP_SHEET };
   } finally {
     lock.releaseLock();
   }
+}
+
+/** A short email to the camp leads for each application, with the answers and a link to the sheet. */
+function notifyApplication_(p) {
+  var who = clean_(p.name) || clean_(p.email) || 'Someone';
+  var line = function (k, v) { return v ? k + ': ' + v + '\n' : ''; };
+  var list = function (a) { return (a || []).join(', '); };
+  var body = who + ' has applied to join Mahala camp.\n\n' +
+    line('Name', clean_(p.name)) + line('Email', clean_(p.email)) + line('WhatsApp', clean_(p.whatsapp)) +
+    line('Lives in', clean_(p.livesIn)) + line('Travelling from', clean_(p.travelFrom)) +
+    line('Can bring', list(p.skills)) + line('Crew', clean_(p.crew)) +
+    line('Total (working)', clean_(p.total) + (p.payIn ? ', ' + clean_(p.payIn) : '')) +
+    line('Big coil', p.bigCoil ? 'Yes' : '') + line('Extra gift', p.gift && p.gift !== 'None' ? clean_(p.gift) : '') + line('Coupon', clean_(p.coupon)) +
+    line('Welcome call, best times', list(p.callTimes)) + line('Anything else', clean_(p.message)) +
+    '\nThe full row is in the Applications tab:\nhttps://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit\n';
+  try {
+    var mail = { to: NOTIFY_EMAIL, subject: 'Mahala camp application: ' + who, body: body, name: 'Mahala website' };
+    if (/^[^\s@]+@[^\s@]+$/.test(clean_(p.email))) mail.replyTo = clean_(p.email);   // reply goes straight to the applicant
+    MailApp.sendEmail(mail);
+  } catch (err) { console.error('notify failed: ' + err); }   // a failed email never loses the application
 }
 
 /** The tab, made with its header row the first time it is used. */
