@@ -1,7 +1,7 @@
 // Settings shared by every page of the public Mahala site (the front page, The camp and The Seed). Change them here.
 window.MAHALA_SITE = {
   // The crowdfunding page for The Seed, live on BackaBuddy. Every Donate button on the site opens it in a new tab.
-  // Empty it again and every Donate button falls back to the end of The Seed page, where people leave their email.
+  // The Donate buttons in index.html and seed.html also carry this link directly, so change it there too if it moves.
   donateUrl: 'https://www.backabuddy.co.za/campaign/the-seed',
   target: 999999,                 // what we are raising to build The Seed, in rand
   buildWeek: [2027, 3, 22],       // the first day of build week: year, month counted from 0 (3 is April), day

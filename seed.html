@@ -654,31 +654,14 @@ html.join-open, html.join-open body { overflow: hidden; }
         <div><b data-fill="days">178</b><span>days to build week</span></div>
       </div>
       <div class="page-acts">
-        <a class="primary" id="donateBtn" href="#give">Donate</a>
+        <a class="primary" id="donateBtn" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener">Donate</a>
         <button class="secondary" type="button" data-page-close>Close</button>
       </div>
 
-    <div class="list-box" id="listBox" hidden>
-      <div id="listAsk">
-        <h2 class="h-sub">Our crowdfunding page opens soon.</h2>
-        <p class="small centre">Add your email and we will tell you the day it opens.</p>
-        <form class="list-form" id="listForm" data-interest="the seed" novalidate>
-          <div class="field"><label for="lfName">Your name</label><input type="text" id="lfName" name="name" autocomplete="name" maxlength="80" required></div>
-          <div class="field"><label for="lfEmail">Your email</label><input type="email" id="lfEmail" name="email" autocomplete="email" inputmode="email" maxlength="120" required></div>
-          <p class="err" id="lfErr" role="alert"></p>
-          <button class="primary" type="submit" id="lfSend">Add me to the list</button>
-          <p class="small centre lf-note">We use your email only to write to you about Mahala.</p>
-        </form>
-      </div>
-      <div class="list-done" id="listDone" hidden tabindex="-1">
-        <h2 class="h-sub">Thank you, <span id="lfWho"></span>. You are on the list.</h2>
-        <p class="small centre">We will write to you the day the crowdfunding page opens.</p>
-      </div>
-    </div>
     </div>
   </div>
 </div>
-<script src="site.js"></script>
+<script src="site.js?v=2"></script>
 <script>
 (function () {
   var SITE = window.MAHALA_SITE || {};
@@ -696,32 +679,6 @@ html.join-open, html.join-open body { overflow: hidden; }
   document.querySelectorAll('[data-fill="target"]').forEach(function (el) { if (SITE.money) el.textContent = SITE.money(SITE.target); });
   document.querySelectorAll('[data-fill="days"]').forEach(function (el) { if (SITE.daysToBuild) el.textContent = String(SITE.daysToBuild()); });
 
-  // the list
-  var box = document.getElementById('listBox'), form = document.getElementById('listForm');
-  window.__openList = function (focus) {
-    if (!box) return;
-    box.hidden = false;
-    var o = document.getElementById('listOpen'); if (o) o.setAttribute('aria-expanded', 'true');
-    setTimeout(function () { box.scrollIntoView({ behavior: 'smooth', block: 'center' }); if (focus !== false) { var n = document.getElementById('lfName'); if (n) n.focus({ preventScroll: true }); } }, 40);
-  };
-  var lo = document.getElementById('listOpen'); if (lo) lo.addEventListener('click', function () { window.__openList(); });
-  if (form) form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    var name = form.elements.name, email = form.elements.email, err = document.getElementById('lfErr'), send = document.getElementById('lfSend');
-    var nm = name.value.replace(/[\u0000-\u001f<>]/g, '').trim(), em = email.value.trim();
-    name.removeAttribute('aria-invalid'); email.removeAttribute('aria-invalid'); err.textContent = '';
-    if (!nm) { name.setAttribute('aria-invalid', 'true'); err.textContent = 'Please add your name.'; name.focus(); return; }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em)) { email.setAttribute('aria-invalid', 'true'); err.textContent = 'Please check your email address.'; email.focus(); return; }
-    send.disabled = true; send.textContent = 'Sending';
-    SITE.joinList({ interest: form.dataset.interest, name: nm, email: em }).then(function () {
-      document.getElementById('lfWho').textContent = nm.split(/\s+/)[0];
-      document.getElementById('listAsk').hidden = true;
-      var d = document.getElementById('listDone'); d.hidden = false; d.focus({ preventScroll: true });
-    }).catch(function () {
-      err.textContent = 'That did not go through. Please check your connection and try again.';
-      send.disabled = false; send.textContent = 'Add me to the list';
-    });
-  });
 })();
 </script>
 <script>
@@ -743,11 +700,10 @@ html.join-open, html.join-open body { overflow: hidden; }
   // it plays, without sound, while it is on screen; the controls give the sound
   if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { if (es[0].isIntersecting) film.play().catch(function () {}); else if (film.muted) film.pause(); }, { threshold: 0.4 }).observe(film);
   else film.play().catch(function () {});
-  // Donate: the crowdfunding page once it is live; until then, the list for the day it opens
+  // Donate: straight to the crowdfunding page on BackaBuddy (site.js can point it elsewhere)
   var d = document.getElementById('donateBtn');
-  if (SITE.donateUrl) { d.href = SITE.donateUrl; d.target = '_blank'; d.rel = 'noopener'; }
-  else d.addEventListener('click', function (e) { e.preventDefault(); window.__openList(); });
-  if (location.hash === '#give') setTimeout(function () { if (SITE.donateUrl) document.getElementById('give').scrollIntoView(); else window.__openList(false); }, 120);
+  if (SITE.donateUrl) d.href = SITE.donateUrl;
+  if (location.hash === '#give') setTimeout(function () { document.getElementById('give').scrollIntoView(); }, 120);
 })();
 </script>
 </body>
