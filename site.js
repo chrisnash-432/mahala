@@ -3,7 +3,7 @@ window.MAHALA_SITE = {
   // The crowdfunding page for The Seed, live on BackaBuddy. Every Donate button on the site opens it in a new tab.
   // The Donate buttons in index.html and seed.html also carry this link directly, so change it there too if it moves.
   donateUrl: 'https://www.backabuddy.co.za/campaign/the-seed',
-  target: 999999,                 // what we are raising to build The Seed, in rand
+  target: 718875,                 // what we are raising to build The Seed, in rand (the BackaBuddy goal)
   buildWeek: [2027, 3, 22],       // the first day of build week: year, month counted from 0 (3 is April), day
   // The Mahala Temple Builder Nominations & Applications sheet, through the "Mahala applications backend" web app
   // (an Apps Script project in Chris's BioHarmonic account; its code is apps-script-standalone.gs). Camp applications go
@@ -12,7 +12,7 @@ window.MAHALA_SITE = {
 };
 
 (function (S) {
-  // R 999 999: rand, with a space between the thousands
+  // R 718 875: rand, with a space between the thousands
   S.money = function (n) { return 'R ' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' '); };
   S.daysToBuild = function () {
     var b = S.buildWeek, t = new Date(b[0], b[1], b[2]), now = new Date(); now.setHours(0, 0, 0, 0);

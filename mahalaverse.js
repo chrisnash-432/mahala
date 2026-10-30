@@ -3155,7 +3155,7 @@ startLive();
    The world stays as it was; what changes is how you move through it. A way card tells you where you are and what you can do there,
    a bar along the bottom shows the seven stops, and Next takes you on. The gates are ways to give: nothing on the way is locked. */
 Object.assign(CONFIG, {
-  raise: { raised: 70000, target: 999999.99, cur: 'R' },            // raised for The Seed, until the camp's accounts keeper sets the ledger
+  raise: { raised: 70000, target: (window.MAHALA_SITE || {}).target || 718875, cur: 'R' },            // raised for The Seed, until the camp's accounts keeper sets the ledger
   album: 'https://open.spotify.com/album/0prxG8cheSrs2hugGQPdw8',  // Sunrise at the Mahal, by Gustav Loubser
   guide: 'https://claude.ai/artifact/24TQxDchG2Z8zvYq1rDhRT',      // the Mahala Temple Build Guide
   campPage: 'camp.html',
