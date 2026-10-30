@@ -108,7 +108,7 @@ const DATA = {
 
 /* ---------- v4: the builder's path. One ladder of gates; each gate opens a space in the world and a stage of your own creative work ---------- */
 const CONFIG = {
-  share: 'https://chrisnash-432.github.io/mahala/',   // the published link that every share carries
+  share: 'https://wearemahala.com/',   // the published link that every share carries
   pay: {},       // a payment page per gate, for example pay[1] = 'https://...'. Empty until the camp chooses who runs payments.
   form: null,    // a private sign-up form, for visitors who cannot write to the shared database
   // the camp's own pages from the Temple Builder Journey outline, filled in once each exists
