@@ -1,8 +1,8 @@
 // Settings shared by every page of the public Mahala site (the front page, The camp and The Seed). Change them here.
 window.MAHALA_SITE = {
-  // The crowdfunding page, once it is live (a BackaBuddy or Thundafund link, say). While it is empty, every Donate
-  // button opens the end of The Seed page, where people can leave their email to hear the day giving opens.
-  donateUrl: '',
+  // The crowdfunding page for The Seed, live on BackaBuddy. Every Donate button on the site opens it in a new tab.
+  // Empty it again and every Donate button falls back to the end of The Seed page, where people leave their email.
+  donateUrl: 'https://www.backabuddy.co.za/campaign/the-seed',
   target: 999999,                 // what we are raising to build The Seed, in rand
   buildWeek: [2027, 3, 22],       // the first day of build week: year, month counted from 0 (3 is April), day
   // The Mahala Temple Builder Nominations & Applications sheet, through the "Mahala applications backend" web app

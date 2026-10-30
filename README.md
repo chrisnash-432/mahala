@@ -10,4 +10,4 @@ Everything you see of The Seed is a concept visualisation, rendered live from th
 
 - `index.html`: the front page. The Seed's story, a line at a time, then the Mahalaverse.
 - `camp.html` and `seed.html`: The camp and The Seed. From the front page they open over it, and Close returns you to where you were.
-- `site.js`: settings the pages share. These are the crowdfunding link (`donateUrl`, empty until the page is live), the amount being raised, the first day of build week, and the Google Sheet that sign-ups go to.
+- `site.js`: settings the pages share. These are the crowdfunding link (`donateUrl`, The Seed's BackaBuddy page), the amount being raised, the first day of build week, and the Google Sheet that sign-ups go to.

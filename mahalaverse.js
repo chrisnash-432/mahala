@@ -115,7 +115,7 @@ const CONFIG = {
   campPay: null,   // the camp fee checkout (local or abroad rate, 1, 2 or 4 instalments)
   call: null,      // welcome call booking
   home: null,      // the member home: a personal link with the checklist, the documents and the dates
-  donate: null,    // the standalone donation page, into the same pool
+  donate: (window.MAHALA_SITE || {}).donateUrl || null,   // the crowdfunding page for The Seed (BackaBuddy), set in site.js
   principles: 'https://www.afrikaburn.org/about/our-guiding-principles/',
 };
 const PANELS_N = 143;
@@ -1754,10 +1754,10 @@ const HANDOFF = {
   campPay: ['The camp fee page', 'The camp fee page is being set up. A camp mate will send your link.'],
   call: ['Welcome call booking', 'Welcome call booking is being set up. A camp mate will be in touch to find a time.'],
   home: ['Your member home', 'Your member home is being set up. Your personal link will come by email.'],
-  donate: ['The donation page', 'The donation page is being set up: the camp is choosing who runs payments.'],
+  donate: ['The crowdfunding page', 'The crowdfunding page is being set up.'],
 };
 function handoff(key) {
-  if (key === 'donate') { openJoin('back'); return; }   // v7 copy: the gates take gifts now
+  if (key === 'donate' && !CONFIG.donate) { openJoin('back'); return; }   // no crowdfunding page: the gates take gifts
   const url = CONFIG[key], [name, wait] = HANDOFF[key];
   if (url) { try { window.open(url, '_blank', 'noopener'); } catch (e) { } toast(`${name} opened in a new tab.`); } else toast(wait);
 }
@@ -3325,7 +3325,7 @@ function renderRaise() {
   $('#raiseBar').style.width = Math.max(1.5, pct).toFixed(1) + '%';
   $('#raiseBtn').setAttribute('aria-label', `${money(R.raised, R.cur)} raised of ${money(R.target, R.cur)} for The Seed. See the ways to give.`);
 }
-$('#raiseBtn').addEventListener('click', () => openJoin('back'));
+$('#raiseBtn').addEventListener('click', () => { if (CONFIG.donate) handoff('donate'); else openJoin('back'); });   // the raise opens the crowdfunding page once it is live
 
 /* ---------- the gates: ways to give, each with its gift. They lock nothing ---------- */
 function gateCard(g) {
