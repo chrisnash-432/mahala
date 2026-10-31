@@ -163,6 +163,7 @@
       nominatedBy: A.nominatedBy, hp: ($('jHp') && $('jHp').value) || ''
     };
     (SITE.post ? SITE.post(row) : Promise.reject(new Error('no sheet'))).then(function () {
+      toRecord(row);
       step = 5;
       stepEl.textContent = '';
       var who = (A.name || '').split(/\s+/)[0];
@@ -179,6 +180,18 @@
       $('jErr').textContent = 'That did not go through. Please check your connection and try again.';
       g.removeAttribute('aria-disabled'); g.textContent = 'Send my application';
     });
+  }
+
+  // Signed in: the application also joins the person's thread in the member record. The sheet keeps the contact
+  // details and the fee choices; the record never holds either (Mahala OS platform/docs/ARCHITECTURE.md).
+  function toRecord(row) {
+    var M = window.MahalaMembers; if (!M) return;
+    var keep = ['id', 'name', 'livesIn', 'travelFrom', 'skills', 'crew', 'bigCoil', 'payIn', 'agreements', 'callTimes', 'message', 'nominatedBy'];
+    M.info().then(function (i) {
+      if (!i.signedIn) return;
+      var a = {}; keep.forEach(function (k) { if (row[k] !== undefined && row[k] !== '' && row[k] !== null) a[k] = row[k]; });
+      return M.rpc('submit_application', { p_answers: a });
+    }).catch(function () { /* the sheet has it; the record can catch up */ });
   }
 
   var opener = null;
