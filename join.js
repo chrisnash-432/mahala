@@ -186,7 +186,7 @@
   // details and the fee choices; the record never holds either (Mahala OS platform/docs/ARCHITECTURE.md).
   function toRecord(row) {
     var M = window.MahalaMembers; if (!M) return;
-    var keep = ['id', 'name', 'livesIn', 'travelFrom', 'skills', 'crew', 'bigCoil', 'payIn', 'agreements', 'callTimes', 'message', 'nominatedBy'];
+    var keep = ['id', 'name', 'livesIn', 'travelFrom', 'skills', 'crew', 'bigCoil', 'agreements', 'callTimes', 'message', 'nominatedBy'];
     M.info().then(function (i) {
       if (!i.signedIn) return;
       var a = {}; keep.forEach(function (k) { if (row[k] !== undefined && row[k] !== '' && row[k] !== null) a[k] = row[k]; });

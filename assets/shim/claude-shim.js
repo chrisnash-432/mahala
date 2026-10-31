@@ -25,6 +25,7 @@
 
   var RULES_VERSION = '746824445fc6';
   var SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
+  var SUPABASE_SRI = 'sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o';   // that exact file, so a changed copy never runs
   var STORE_KEY = 'mahala-auth', EDITION = 'mahala.edition', THREAD = 'mahala.thread', AFTER = 'mahala.after';
   var POLL_MS = Number(window.__MV_POLL_MS) > 0 ? Number(window.__MV_POLL_MS) : 30000;
   var MAX_SUBS = 64;
@@ -42,7 +43,7 @@
   (function keepToken() {
     try {
       var u = new URL(location.href), t = u.searchParams.get('thread');
-      if (t && /^[A-Za-z0-9_-]{20,200}$/.test(t)) { ls.set(THREAD, t); ss.set('mahala.fromLetter', '1'); }
+      if (t && /^[A-Za-z0-9_-]{20,200}$/.test(t)) { ls.set(THREAD, JSON.stringify({ t: t, at: Date.now() })); ss.set('mahala.fromLetter', '1'); }
       if (t !== null || u.searchParams.has('signin')) {
         u.searchParams.delete('thread'); u.searchParams.delete('signin');
         history.replaceState(null, '', u.pathname + (u.search || '') + (/access_token|error_description/.test(u.hash) ? '' : u.hash));
@@ -54,7 +55,7 @@
   function loadScript(src) {
     return new Promise(function (ok, fail) {
       if (window.supabase && window.supabase.createClient) return ok();
-      var s = document.createElement('script'); s.src = src; s.async = true; s.crossOrigin = 'anonymous';
+      var s = document.createElement('script'); s.src = src; s.async = true; s.crossOrigin = 'anonymous'; s.integrity = SUPABASE_SRI;
       s.onload = function () { ok(); }; s.onerror = function () { fail(new Error('supabase-js did not load')); };
       (document.head || document.documentElement).appendChild(s);
     });
@@ -67,6 +68,12 @@
     });
   });
 
+  // The letter's token waits here for at most an hour, for the sign-in it was opened for (a token left in a
+  // shared browser must not claim a thread for whoever signs in next).
+  function letterToken() {
+    try { var o = JSON.parse(ls.get(THREAD) || 'null'); if (o && o.t && Date.now() - o.at < 3600 * 1000) return o.t; } catch (e) { }
+    ls.set(THREAD, null); return null;
+  }
   var startUser = undefined;          // the sign-in this page started as (a change starts the page again)
   var info = null;                    // whoami(), after claiming
   var authFns = [];
@@ -94,14 +101,15 @@
         if (ev === 'INITIAL_SESSION' || ev === 'TOKEN_REFRESHED' || ev === 'USER_UPDATED') return;
         if (now === startUser) return;
         startUser = now;
-        if (!now) { ls.set(EDITION, null); }
+        if (!now) { ls.set(EDITION, null); ls.set(THREAD, null); }
         authFns.slice().forEach(function (f) { try { f({ signedIn: !!now }); } catch (e) { } });
         setTimeout(restart, 900);
       });
       if (!s) return { signedIn: false, level: 0, rulesVersion: null };
       return rpc('whoami').then(function (w) {
-        if (w.claimed) return w;
-        return rpc('claim_thread', { p_token: ls.get(THREAD) || null }).then(function (w2) { ls.set(THREAD, null); return w2; });
+        if (w.claimed) { ls.set(THREAD, null); return w; }
+        var tok = letterToken(); ls.set(THREAD, null);
+        return rpc('claim_thread', { p_token: tok });
       });
     });
   }).then(function (w) {
@@ -470,7 +478,7 @@
     },
     onChange: function (fn) { if (typeof fn === 'function') authFns.push(fn); return function () { authFns = authFns.filter(function (f) { return f !== fn; }); }; },
     open: function (mode) { return infoP.then(function () { UI.open(mode); }); },
-    signOut: function () { return clientP.then(function (c) { ls.set(EDITION, null); return c.auth.signOut(); }).then(function () { }); },
+    signOut: function () { return clientP.then(function (c) { ls.set(EDITION, null); ls.set(THREAD, null); return c.auth.signOut(); }).then(function () { }); },
     invoke: function (name, body) {
       return clientP.then(function (c) { return c.functions.invoke(name, { body: body || {} }); }).then(function (r) {
         if (r.error) throw { code: 'unavailable', message: String(r.error.message || r.error) };
@@ -668,11 +676,39 @@
           if (k === 'delete') del();
           if (k === 'notice') { e.preventDefault(); showNotice(); }
         });
-        if (info.isSteward) rpc('steward_pending').then(function (list) {
-          var pe = el.querySelector('[data-k="pending"]'); if (!pe) return;
-          pe.textContent = list.length ? list.length + (list.length === 1 ? ' new sign-in is' : ' new sign-ins are') + ' waiting for a steward: ' + list.map(function (x) { return x.name || 'no name yet'; }).join(', ') + '. Match them in Mahala OS (members_sync.py link).' : 'Nobody is waiting to be welcomed in.';
-        }, function () { });
+        if (info.isSteward) stewardList(el);
       }, function () { el.innerHTML = '<button type="button" class="mvs-x" data-k="close" aria-label="Close">&times;</button><h2>Account and privacy</h2><p>Your thread could not be loaded. Try again in a little while.</p>'; });
+    }
+
+    // For stewards: new sign-ins nobody has confirmed. Match one to the person Mahala OS knows (their id, as on
+    // their page in community/people/), let them in as they are, or block them.
+    function stewardList(el) {
+      var pe = el.querySelector('[data-k="pending"]'); if (!pe) return;
+      rpc('steward_pending').then(function (list) {
+        if (!list.length) { pe.textContent = 'Nobody is waiting to be welcomed in.'; return; }
+        var box = document.createElement('div');
+        box.innerHTML = '<p>' + list.length + (list.length === 1 ? ' new sign-in is' : ' new sign-ins are') + ' waiting.</p>' + list.map(function (x, i) {
+          var addrs = (x.signIns || []).map(function (s) { return esc(s.address) + ' (' + esc(s.method) + ')'; }).join(', ');
+          return '<div class="mvs-row" data-i="' + i + '" style="border-top:1px solid var(--l);padding-top:10px">' +
+            '<b>' + (addrs || 'No address') + '</b><small>Calls themselves: ' + esc(x.name || 'no name given') + '. Match on the address, never the name.</small>' +
+            '<div class="mvs-two"><input type="text" data-pid placeholder="Their Mahala OS id: p-firstname-surname" aria-label="Mahala OS id for ' + esc(x.name || 'this sign-in') + '">' +
+            '<button type="button" class="mvs-b q" data-s="link" style="margin:0;width:auto">This is them</button></div>' +
+            '<div class="mvs-two"><button type="button" class="mvs-b q" data-s="member" style="margin:0">Let them in</button><button type="button" class="mvs-b q" data-s="blocked" style="margin:0;width:auto">Block</button></div></div>';
+        }).join('');
+        pe.replaceWith(box);
+        box.addEventListener('click', function (e) {
+          var b = e.target.closest('[data-s]'); if (!b) return;
+          var row = b.closest('[data-i]'), x = list[+row.getAttribute('data-i')], k = b.getAttribute('data-s'), done;
+          if (k === 'link') {
+            var pid = row.querySelector('[data-pid]').value.trim();
+            if (!/^p-[a-z0-9][a-z0-9-]{0,80}$/.test(pid)) { msg(el, 'That does not look like a Mahala OS id (p-firstname-surname).'); return; }
+            done = rpc('steward_link', { p_pending: x.personId, p_person: pid });
+          } else done = rpc('steward_set_access', { p_person: x.personId, p_access: k });
+          b.disabled = true;
+          done.then(function () { row.remove(); msg(el, k === 'link' ? 'Linked. Their thread is theirs now.' : k === 'member' ? 'Let in.' : 'Blocked.'); },
+            function (er) { b.disabled = false; msg(el, (er && er.message) || 'That did not work.'); });
+        });
+      }, function () { pe.textContent = 'The list of new sign-ins could not be loaded.'; });
     }
 
     function del() {
