@@ -44,6 +44,9 @@ const YL = (x, y, z) => V3(x, y, z).applyMatrix4(YARD_M);
 /* ---------- the one data object (the portal's lists will fill this later) ---------- */
 const DATA = {
   quests: [
+    { id: 'Q-07', name: 'Share the film', crew: 'Story crew', stage: 'Fund', where: 'PETAL_A01', tone: 'y', pin: V3(10, 6.5, -9),
+      goal: 'The first quest, and the easiest: send the film to the people who would love to build or back the temple.',
+      steps: ['Watch the film', 'Send it to three people who would love it', 'Share it on Instagram or in a WhatsApp group'], skills: 'None needed', open: true },
     { id: 'Q-01', name: 'Fund a ring of glass', crew: 'Glass crew', stage: 'Fund', where: 'RING_E', tone: 'm', pin: V3(-7, 9, -5),
       goal: 'Each ring of the zome is one colour of cast acrylic. Help fund the sheets for one ring.',
       steps: ['Choose a gate that suits you', 'Share the film with three people', 'See your ring glow on the night'], skills: 'None needed', open: true },
@@ -62,28 +65,23 @@ const DATA = {
     { id: 'Q-06', name: 'Make the first light box', crew: 'Temple Tech crew', stage: 'Fabricate', where: 'BENCH', tone: 'c', pin: V3(YARD.x - 9, 5.5, YARD.z + 7.5),
       goal: 'Prototype a small light box: a gift for the gates and the first step of the Temple Tech research into light and geometry.',
       steps: ['Model it in 3D, in Blender', 'Cut a prototype', 'Test it with a light inside'], skills: '3D modelling, making, electronics' },
-    { id: 'Q-07', name: 'Share the film', crew: 'Story crew', stage: 'Fund', where: 'PETAL_A01', tone: 'y', pin: V3(10, 6.5, -9),
-      goal: 'Send the 30 s film to people who would love to build or back the temple.',
-      steps: ['Watch the film', 'Share it with your community', 'Point them to the three doors'], skills: 'Story, sharing', open: true },
   ],
-  gates: [
-    { n: 1, id: 'GATE_1', name: 'The fire', amount: '$10', space: 'fire', col: 'yellow', gift: 'The Seed giver badge in Your path, and the camp\'s thanks', builds: 'The community of temple builders' },
-    { n: 2, id: 'GATE_2', name: 'The Lotus Mahal', amount: '$100', space: 'mahal', col: 'cyan', gift: 'A copper coil pendant or a T-shirt', extra: 'Sound journeys, and a live online workshop with a guest speaker (to be announced)', builds: 'The first Temple Tech gifts, and The Seed', rd: true },
-    { n: 3, id: 'GATE_3', name: 'The theme camp', amount: '$500', space: 'camp', col: 'magenta', gift: 'Camp access, a pendant and a T-shirt', extra: 'What camp access covers at AfrikaBurn 2027 is still being set by the camp', builds: 'The camp and the temple build' },
-    { n: 4, id: 'GATE_4', name: 'The zome', amount: '$1,000', space: 'zome', col: 'yellow', gift: 'A big coil, an art piece cut by a computer-controlled (CNC) router, or a Temple Tech light box', builds: 'The Temple Tech research behind the gifts, and The Seed', rd: true },
-    { n: 5, id: 'GATE_5', name: 'Honorary builder', amount: '$10,000', space: 'all', col: 'cyan', badge: 'Honorary builder', gift: 'A pendant, a CNC-cut art piece, a big coil and a light box', extra: 'You carry the honorary builder badge', builds: 'The temple and the camp', rd: true },
-    { n: 6, id: 'GATE_6', name: 'Cosmic architect', amount: '$50,000', space: 'beyond', col: 'magenta', badge: 'Cosmic architect', gift: 'The cosmic architect badge', extra: 'A view beyond the zome, to the bigger vision: the temple of 2030', builds: 'The camp and The Seed: a first step towards the temple of 2030, a vision' },
-    { n: 7, id: 'GATE_7', name: 'The lighthouses', amount: '$100,000 to $10,000,000', space: 'lighthouse', col: 'yellow', badge: 'Lighthouse builder', gift: 'The lighthouse badge', extra: 'The much bigger picture, a vision: a permanent temple in Cape Town, and lighthouse temples seeded around the world', builds: 'The camp and The Seed, and the vision of temples to come' },
+  gates: [   // Nov 2026: gates open online spaces and gifts of thanks, never badges, titles or privileges on the playa
+    { n: 1, id: 'GATE_1', name: 'The fire', amount: '$10', space: 'fire', col: 'yellow', gift: 'Poems and stories by the fire', thanks: 'A gift of thanks in Your path, and the camp\'s thanks', builds: 'The community of temple builders' },
+    { n: 2, id: 'GATE_2', name: 'The Lotus Mahal', amount: '$100', space: 'mahal', col: 'cyan', gift: 'A copper coil pendant or a Seed T-shirt (waitlist)', extra: 'Sound journeys, and a live online workshop with a guest speaker (to be announced)', builds: 'The first Temple Tech gifts, and The Seed', rd: true },
+    { n: 3, id: 'GATE_3', name: 'The theme camp', amount: 'Invite only', invite: true, space: 'camp', col: 'magenta', gift: 'Apply to join the camp', extra: 'The camp is invite only and is never bought. Invited builders apply and pay their camp fee in one go; everyone else joins the waitlist, and a camp lead calls', builds: 'The camp and the temple build' },
+    { n: 4, id: 'GATE_4', name: 'The zome', amount: '$1,000', space: 'zome', col: 'yellow', gift: 'A big coil, an art piece cut by a computer-controlled (CNC) router, or a Temple Tech light box (waitlist)', builds: 'The Temple Tech research behind the gifts, and The Seed', rd: true },
+    { n: 5, id: 'GATE_5', name: 'Honorary builder', amount: '$10,000', space: 'all', col: 'cyan', gift: 'A pendant, a CNC-cut art piece, a big coil and a light box (waitlist)', thanks: 'A gift of thanks in Your path', builds: 'The temple and the camp', rd: true },
+    { n: 6, id: 'GATE_6', name: 'Cosmic architect', amount: '$50,000', space: 'beyond', col: 'magenta', gift: 'Everything below, and a gift of thanks', extra: 'A view beyond the zome, to the bigger vision: the temple of 2030', builds: 'The camp and The Seed: a first step towards the temple of 2030, a vision' },
+    { n: 7, id: 'GATE_7', name: 'The lighthouses', amount: '$100,000 to $10,000,000', space: 'lighthouse', col: 'yellow', gift: 'Everything below, and a gift of thanks', extra: 'The much bigger picture, a vision: a permanent temple in Cape Town, and lighthouse temples seeded around the world', builds: 'The camp and The Seed, and the vision of temples to come' },
   ],
-  events: [
-    { id: 'E-01', name: 'Seed of Hope talks', format: 'Online, in the virtual temple', ticket: 'To be set', date: 'To be announced', speaker: 'Guest speaker to be announced', where: 'PETAL_A01',
-      text: 'The temple is a seed of hope. In these online talks, thinkers and makers share what that means to them. You walk in through the arch of the virtual temple, and the call link appears for ticket holders.' },
-    { id: 'E-02', name: 'Sound journeys', format: 'At the camp, and online', ticket: 'To be set', date: 'To be announced', where: 'CAMP_LOTUS',
-      text: 'Sound journeys to gather the builders and raise money for the build.' },
-    { id: 'E-03', name: 'Theatrical dinner', format: 'Dinner and a performance at the camp kitchen', ticket: 'To be set', date: 'To be announced', where: 'CAMP_KITCHEN',
-      text: 'A dinner and a performance in one evening, in aid of the temple.' },
-    { id: 'E-04', name: 'Gatherings in the Lotus Mahal', format: 'A space for gatherings', ticket: 'Free', date: 'Site being chosen', where: 'CAMP_LOTUS',
-      text: "The camp's three-bell lotus tent, for gatherings. Where it goes up for these events is still being chosen." },
+  events: [   // Nov 2026: the camp's next gatherings. Dates are set by the stewards; nothing here is dated until they are.
+    { id: 'E-01', name: 'New moon online call', format: 'Online, free, for the wider community', ticket: 'Free', date: 'To be announced', where: 'CAMP_LOTUS',
+      text: 'A free call on the new moon for everyone who feels the pull of the temple: the wider community of temple builders, wherever you are. The sign-up link is shared here once it is set.' },
+    { id: 'E-02', name: 'Fundraising sound journeys', format: 'Three evenings in Cape Town', ticket: 'To be set', date: 'To be announced', where: 'CAMP_LOTUS',
+      text: 'Three sound journeys in Cape Town that gather the community and raise money for The Seed. Dates are announced once they are set.' },
+    { id: 'E-03', name: 'Build days', format: 'Three days in Cape Town', ticket: 'Free', date: 'To be announced', where: 'YARD',
+      text: 'Three build days in Cape Town where the temple takes shape by many hands. Dates are announced once they are set.' },
   ],
   crews: [
     { id: 'CR-1', name: 'Frame crew', what: 'The timber frame, panel by panel', where: 'FRAME', build: true },
@@ -254,6 +252,8 @@ const FIRESIDE = [
     ['The words of sages point the way to this place of knowing. Knowing in the marrow of the bones of the living and the dust of the crumbling bones of the dead.'],
     ['The knowing from which all unknowing is born, and to which all unknowing returns like the fallen leaves of the Tree of Life, ready to decompose, disintegrate and dissolve, ready to be reabsorbed and resolved,', 'so that every bit of darkness, every bit of fear, every bit of joy and every bit of love can be fully become, fully experienced, fully understood and fully integrated, so that the ultimate knowing can be known ultimately.']] },
 ];
+// Nov 2026: the seven chapters of the story are told as one story by the fire, not as a path through the world
+FIRESIDE.push({ id: 'S-REMEMBER', kind: 'Story', title: 'Do you remember?', prose: true, stanzas: STORY.map(c => c.lines) });
 const FIRE_BY = Object.fromEntries(FIRESIDE.map(p => [p.id, p]));
 /* verses from the camp, on stones along the way: each one an opening from a fireside poem */
 let inside = false, insideAt = null, clockAnim = null; const story = { on: false, i: 0 }; const fire = { on: false, piece: null, page: 0, prevClock: null, saved: null };
@@ -370,8 +370,8 @@ function renderStepper(el, mobile = false) {
 }
 renderStepper($('#stepper'));
 
-const TABS = [['story', 'Story'], ['gates', 'Gates'], ['events', 'Events'], ['quests', 'Quests'], ['crews', 'Crews'], ['roles', 'Roles'], ['tech', 'Temple Tech']];
-let tab = 'story';
+const TABS = [['gates', 'Gates'], ['events', 'Events'], ['quests', 'Quests'], ['tech', 'Temple Tech']];   // Nov 2026: Story, Crews and Roles leave the menu; the story is told at the fire
+let tab = 'gates';
 const EXPLORE = { open: false }, V5_LIVE = [];
 const pinOn = () => !story.on && !fire.on && !inside && ((EXPLORE.open && tab === 'quests') || !!(current && /^Q-/.test(current)));    // v5: the lists stay closed until you open one; layers that wait for the shared database
 function renderTabs() {
@@ -380,7 +380,7 @@ function renderTabs() {
   const P = $('#panel'), N = $('#panelNote');
   const r = (id, lead, title, sub, right) => `<button class="row" data-sel="${id}">${lead}<span><b>${esc(title)}</b><small>${sub}</small></span>${right}${icon('right')}</button>`;
   if (tab === 'quests') { P.innerHTML = DATA.quests.map(q => r(q.id, `<span class="lead ${q.tone}">${q.id.slice(2)}</span>`, q.name, `${q.crew} · ${q.stage}`, ME.quests[q.id] ? `<span class="chip done">Yours</span>` : q.open ? `<span class="chip open">Open to all</span>` : `<span class="chip wait">Crew</span>`)).join(''); N.textContent = 'Two quests are open to everyone. The rest belong to a crew: join one from the camp.'; }
-  if (tab === 'gates') { P.innerHTML = DATA.gates.map(g => r(g.id, `<span class="lead ${'ycm'[(g.n - 1) % 3]}">${g.n}</span>`, g.name, esc(spaceOf(g)), `<span class="amt">${esc(g.amount.replace(' to ', ' to\u00a0'))}</span>`)).join(''); N.textContent = 'Each gate is a way to give, with its own gift. Working amounts, not final. No payment is taken here yet.'; }
+  if (tab === 'gates') { P.innerHTML = DATA.gates.map(g => r(g.id, `<span class="lead ${'ycm'[(g.n - 1) % 3]}">${g.n}</span>`, g.name, esc(g.gift), `<span class="amt">${esc(g.amount.replace(' to ', ' to\u00a0'))}</span>`)).join(''); N.textContent = 'Each gate is a way to give, with its own gift. Working amounts, not final. No payment is taken here yet.'; }
   if (tab === 'events') { P.innerHTML = DATA.events.map(e => r(e.id, `<span class="lead g">${icon('cal')}</span>`, e.name, esc(e.format), (LIVE.leads.events || {})[e.id] ? `<span class="chip done">${esc(LIVE.leads.events[e.id])}</span>` : `<span class="chip wait">${e.date === 'Site being chosen' ? 'Planning' : 'To be set'}</span>`)).join(''); N.textContent = 'Dates and guests are announced once they are confirmed.'; }
   if (tab === 'crews') { P.innerHTML = DATA.crews.map(c => r(c.id, `<span class="lead g">${icon('users')}</span>`, c.name, esc(c.what), ME.crew === c.id ? `<span class="chip done">${ME.crewOk ? 'Yours' : 'Asked'}</span>` : c.build ? `<span class="chip c-cyan">Build crew</span>` : `<span class="chip now">Forming</span>`)).join(''); N.textContent = 'Choose a crew and join it from its card.'; }
   if (tab === 'roles') { P.innerHTML = DATA.roles.map(x => r(x.id, `<span class="lead g">${icon('star')}</span>`, x.name, esc(x.crew), `<span class="chip open">Open</span>`)).join(''); N.textContent = 'Roles are open to anyone with the skills and the time.'; }
@@ -1482,7 +1482,7 @@ function renderInspector(it) {
     <div class="actions"><button class="btn primary" data-act="givegate">${icon('gift')}Help raise The Seed</button><button class="btn" data-act="join">${icon('gate')}Take part</button></div></div>`;
   if (k === 'frame') h = head(k, 'The temple · structure', 'The frame', 'Every timber cut to the exact zome geometry') + `<div class="insp-body"><div class="chips">${chip('Design final', 'done')}${chip('Engineer sign-off pending', 'now')}</div>
     <p>Pine timbers spiralling up from the ground. The top two rings stay open timber: a star of sky at the crown.</p>
-    ${links([['CR-1', 'Crew', 'Frame crew'], ['Q-02', 'Q-02', 'Cut the crown star'], ['RO-2', 'Role', 'Rigger']])}</div>`;
+    ${links([['CR-1', 'Crew', 'Frame crew'], ['Q-02', 'Q-02', 'Cut the crown star']])}</div>`;
   if (k === 'cap') h = head(k, 'The temple · crown', 'The finial cap', 'Above the open crown') + `<div class="insp-body"><p>Plywood rings and a gold-painted finial, standing over the open timber star at the top of the dome.</p>
     <div class="tiles">${tile('img:K6', 'assets/K6.jpg', 'The crown from inside')}${tile('img:K7a', 'assets/K7a.jpg', 'Sunset on the finial')}</div></div>`;
   if (k === 'grid') h = head(k, 'The temple · the ground', 'The Golden Seed of Life', 'Painted on the playa around the temple') + `<div class="insp-body"><p>Lines of colour on the cracked clay around the temple, in copper, sea teal, amber and pearl. The coloured light falls across them by day and at night.</p>
@@ -1497,10 +1497,9 @@ function renderInspector(it) {
   }
   if (k === 'petal') {
     const way = it.id === 'PETAL_A01', beside = it.id === 'PETAL_B01' || it.id === 'PETAL_B06';
-    if (way) h = head(k, 'Petal A01 · east', 'The way in', 'And the door to the online talks') + `<div class="insp-body"><div class="chips">${chip('East door', 'done')}${chip('Talks: dates to be announced', 'wait')}</div>
+    if (way) h = head(k, 'Petal A01 · east', 'The way in', 'And the door to the online talks') + `<div class="insp-body"><div class="chips">${chip('East door', 'done')}</div>
       <div class="tiles">${tile('img:K4m', 'assets/K4m.jpg', 'At the arch')}${tile('inside', 'assets/K5b.jpg', 'Step inside')}${tile('floorfilm', 'assets/K1b.jpg', 'A day on the floor', true)}</div>
-      <p>Online, this arch is the door to the Seed of Hope talks: you walk in through it, and the call link appears for ticket holders.</p>
-      ${links([['E-01', 'Event', 'Seed of Hope talks'], ['Q-07', 'Q-07', 'Share the film']])}</div>`;
+      ${links([['Q-07', 'Q-07', 'Share the film']])}</div>`;
     else h = head(k, `Petal ${it.row}0${it.num} · ${it.row === 'A' ? 'inner' : 'outer'} row`, `Petal ${it.row}0${it.num}`, beside ? 'Beside the way in, shaped around the arch' : `One of six in the ${it.row === 'A' ? 'inner' : 'outer'} row`) + `<div class="insp-body"><div class="chips">${chip('Fixed half open', 'done')}</div>
       <p>Petals of plywood fretwork wrap the base of the dome like the bracts of a king protea.</p>${links([['CR-3', 'Crew', 'Petal crew'], ['PETAL_A01', 'East', 'The way in']])}</div>`;
   }
@@ -1512,7 +1511,7 @@ function renderInspector(it) {
     <div class="sect"><h4>The Sacred Agreements</h4>${sacredHTML()}<p class="note">With the TUNING sequence for conflict, from the camp's Harmonic Framework. And <a href="${esc(CONFIG.principles)}" target="_blank" rel="noopener">AfrikaBurn's guiding principles</a>.</p></div>
     ${links([['CAMP_TENT', 'Place', 'The main tent: playlists and sets'], ['CAMP_KITCHEN', 'Place', 'The camp kitchen: meal shifts'], ['CREWS', 'Crews', 'Join a crew'], ['CAMP_LOTUS', 'Place', 'The Lotus Mahal'], ['CAMP_DRIFT', 'Place', 'Blissfull Drift']])}
     <div class="actions"><button class="btn primary" data-act="join:camp">${icon('tent')}Apply to join the camp</button></div></div>`;
-  if (k === 'kitchen') h = head(k, 'Mahala camp', 'The build kitchen', 'Feeds the crew through build week') + `<div class="insp-body"><p>The heart of the camp, and the home of the theatrical dinner.</p>${links([['Q-05', 'Q-05', 'Host the build kitchen'], ['E-03', 'Event', 'Theatrical dinner']])}</div>`;
+  if (k === 'kitchen') h = head(k, 'Mahala camp', 'The build kitchen', 'Feeds the crew through build week') + `<div class="insp-body"><p>The heart of the camp: a kitchen inside a big container, beside the main chill space with its piano.</p></div>`;
   if (k === 'lotus') h = head(k, 'Mahala camp', 'The Lotus Mahal', "The camp's temple tent. A mahal is a palace, or a gathering place") + `<div class="insp-body">
     <div class="chips">${chip('Three bells', 'c-cyan')}${chip('You can step inside', 'open')}</div>
     <div class="tiles two">${tile('img:photo_lotus_tent', 'assets/photo_lotus_tent.jpg', 'At the camp')}${tile('img:photo_coil_pole', 'assets/photo_coil_pole.jpg', 'The big coil on its pole')}</div>
@@ -1523,7 +1522,7 @@ function renderInspector(it) {
   if (k === 'drift') h = head(k, 'Mahala camp', 'Blissfull Drift', 'The camp boat, from the years the camp was called State of Bliss') + `<div class="insp-body"><div class="chips">${chip('Camp structure', 'done')}${chip('Fireside inside', 'c-yellow')}</div>
     <div class="tiles">${tile('img:photo_drift_day', 'assets/photo_drift_day.jpg', 'By day')}${tile('img:photo_drift_sunset', 'assets/photo_drift_sunset.jpg', 'At sunset')}${tile('img:photo_drift_night', 'assets/photo_drift_night.jpg', 'At night')}</div>
     <p>A wooden boat on a sea of dust: a curled prow with a crescent moon, a ship's wheel, white posts and a rope rail, and bunting and fairy lights strung from the bow to the mast. The hull is open. Inside it, tiers of seats step down like a small amphitheatre to a fire pit shaped like a king protea.</p>
-    <div class="actions"><button class="btn primary" data-act="fire">${icon('flame')}Sit by the fire</button><button class="btn" data-act="story:2">${icon('book')}Its chapter in the story</button></div>
+    <div class="actions"><button class="btn primary" data-act="fire">${icon('flame')}Sit by the fire</button><button class="btn" data-act="story:2">${icon('book')}The story, by the fire</button></div>
     ${links([['CAMP_FIRE', 'Fireside', 'Poems and camp stories'], ['CAMP_LOTUS', 'Place', 'The Lotus Mahal'], ['CAMP', 'Camp', 'Mahala camp']])}</div>`;
   if (k === 'fire') h = head(k, 'Blissfull Drift · the fireside', 'The fireside', 'Poems and camp stories, around the protea fire') + `<div class="insp-body"><div class="chips">${chip(FIRESIDE.length + ' pieces', 'c-yellow')}${chip('Best after dark', 'wait')}</div>
     <p>In the hull of the boat, tiers of seats step down to a steel fire pit shaped like a king protea. Sit by the fire and read the poems and stories camp mates have written.</p>
@@ -1539,10 +1538,10 @@ function renderInspector(it) {
   if (k === 'portal') h = head(k, 'Mahala camp', 'The MAHALA portal', 'The way into the camp') + `<div class="insp-body">
     <div class="tiles two">${tile('img:photo_portal', 'assets/photo_portal.jpg', 'The portal, lit')}</div>
     <p>A timber gate with the lotus and MAHALA on an onion-shaped sign, lit from behind at night, a planked door beside it, and a spiral of thick rope on the ground, with lanterns, to walk in along.</p>
-    <div class="actions"><button class="btn primary" data-act="join:camp">${icon('tent')}Apply to join the camp</button><button class="btn" data-act="story:1">${icon('book')}The call</button></div></div>`;
+    <div class="actions"><button class="btn primary" data-act="join:camp">${icon('tent')}Apply to join the camp</button><button class="btn" data-act="story:1">${icon('book')}The story, by the fire</button></div></div>`;
   if (k === 'pod' || k === 'centre' || k === 'coil' || k === 'pendant') { const sp = SPOT[it.id];
-    const extra = k === 'pod' ? links([[PODS_INFO[it.key].opp, 'Faces it', PODS_INFO[PODS_INFO[it.key].opp.slice(4)].name], ['CENTRE', 'Inside', 'The centrepiece']])
-      : k === 'centre' ? links([['MAHAL_COIL', 'Same winding', 'The big coil at the camp'], ['COIL_140', 'Same winding', 'The 140 mm coil'], ['PENDANT', 'Same winding', 'The pendants'], ['POD_VE', 'Around', 'The six copper forms']])
+    const extra = k === 'pod' ? links([['FORMS', 'All six', 'The six copper forms']])
+      : k === 'centre' ? ''
       : k === 'coil' ? (it.id === 'COIL_140' ? links([['MAHAL_COIL', 'Bigger', 'The big coil'], ['PENDANT', 'Smaller', 'The pendants'], ['GATE_4', 'Gate 4', 'The zome: a big coil']]) : links([['COIL_140', 'Smaller', 'The 140 mm coil'], ['PENDANT', 'Smallest', 'The pendants'], ['CENTRE', 'In the temple', 'The centrepiece'], ['GATE_4', 'Gate 4', 'The zome: a big coil']]))
       : links([['GATE_2', 'Gate 2', 'The Lotus Mahal: a pendant'], ['COIL_140', 'Bigger', 'The 140 mm coil'], ['BENCH', 'Made at', 'The Temple Tech bench']]);
     const pics = (sp.render ? [sp.render] : []).concat(sp.photos || []);
@@ -1550,12 +1549,11 @@ function renderInspector(it) {
     h = head(k, sp.eye, sp.title, k === 'pod' ? `${PODS_INFO[it.key].element} · ${PODS_INFO[it.key].faces}` : '') + `<div class="insp-body"><div class="chips">${sp.chips.map(([t, tone]) => chip(t, tone)).join('')}</div>
       ${photos}<p>${sp.what}</p>
       <div class="actions"><button class="btn primary" data-act="spot:${it.id}">${icon('spot')}Spotlight</button>${k === 'centre' ? (inside && insideAt === 'temple' ? `<button class="btn" data-act="leave">${icon('gate')}Leave the temple</button>` : `<button class="btn" data-act="enter">${icon('gate')}Step inside</button>`) : it.id === 'MAHAL_COIL' ? (inside && insideAt === 'mahal' ? `<button class="btn" data-act="leave">${icon('gate')}Leave the Mahal</button>` : `<button class="btn" data-act="mahal">${icon('gate')}Step into the Mahal</button>`) : ''}</div>
-      ${extra}
-      <p class="note">Temple Tech pieces are art and research in copper, geometry and craft. They make no medical claims.</p></div>`; }
+      ${extra}</div>`; }
   if (k === 'verse') { const p = FIRE_BY[it.v.piece];
     h = head(k, 'A verse from the camp', p.title, it.v.where) + `<div class="insp-body"><div class="chips">${chip(p.kind, 'c-yellow')}${p.when ? chip(p.when, 'wait') : ''}</div>
     <div class="verse">${it.v.lines.map(l => `<p>${esc(l)}</p>`).join('')}</div><p class="note">The opening of ${esc(p.title)}, by a Mahala camp mate.</p>
-    <div class="actions"><button class="btn primary" data-fire="${p.id}">${icon('flame')}Read it by the fire</button><button class="btn" data-act="story:${it.v.ch - 1}">${icon('book')}Its chapter in the story</button></div></div>`; }
+    <div class="actions"><button class="btn primary" data-fire="${p.id}">${icon('flame')}Read it by the fire</button><button class="btn" data-act="story:${it.v.ch - 1}">${icon('book')}Its part of the story</button></div></div>`; }
   if (k === 'yard') h = head(k, 'Fabrication', 'The build yard', 'Where the frame is cut and the glass is prepared') + `<div class="insp-body"><div class="chips">${chip('Fabricate: next', 'open')}${chip('Illustrative layout', 'wait')}</div>
     <p>The frame is cut to the zome's geometry and the glass is prepared here, by volunteers with hand tools, a cutting service and a skilled workshop.</p>
     <div class="actions"><button class="btn primary" data-sel="GUIDE">${icon('book')}The build guideline</button><button class="btn" data-act="buildfilm">${icon('film')}Watch the build</button></div>
@@ -2019,7 +2017,7 @@ const PLACE = {
   mahal: { home: 'MAHAL_COIL', leave: 'Leave the Mahal', lim: [0.6, 3.4],
     approach: () => ({ t: MAHAL_DOOR.clone().setY(0.95), d: 9, p: 1.52, a: Math.atan2(MAHAL_OUT.x, MAHAL_OUT.z) }),
     out: () => ({ t: MAHAL_DOOR.clone().addScaledVector(MAHAL_OUT, 0.8).setY(0.95), d: 8, p: 1.5, a: Math.atan2(MAHAL_OUT.x, MAHAL_OUT.z) }), after: () => REG.CAMP_LOTUS.focus(),
-    bar: [['coil', 'torus', 'The big coil'], ['peaks', 'up', 'Look up'], ['lanterns', 'moon', 'Light the lanterns']] },
+    bar: [['coil', 'torus', 'The big coil'], ['peaks', 'up', 'Look up'], ['lanterns', 'moon', 'Light the lanterns'], ['camp', 'tent', 'Go to Mahala camp']] },
 };
 const IN_VIEWS = { centre: () => REG.CENTRE.focus(), up: () => ({ t: V3(0, 4.4, 0), d: 3.1, p: 2.2 }), light: () => ({ t: V3(0, 0.5, 0), d: 3.4, p: 0.78, a: 2.9 }),
   peaks: () => ({ t: V3(CAMP.x, 3.5, CAMP.z), d: 3.2, p: 2.62, a: Math.atan2(MAHAL_OUT.x, MAHAL_OUT.z) }) };
@@ -2060,6 +2058,7 @@ $('#insideBar').addEventListener('click', e => {
   if (k === 'leave') { leavePlace(); if (!current) showWelcome(); return; }
   if (k === 'centre') { select('CENTRE'); return; }
   if (k === 'coil') { select('MAHAL_COIL'); return; }
+  if (k === 'camp') { goWay(WAY_BY.camp); return; }
   if (k === 'up') { flyTo(IN_VIEWS.up(), 1.6); toast('The open timber star at the crown, and the glass around it.'); return; }
   if (k === 'peaks') { flyTo(IN_VIEWS.peaks(), 1.6); toast('The centre pole and the three bells, from the floor of the Mahal.'); return; }
   if (k === 'lanterns') { playing = false; clockAnim = { from: clock, to: 20 * 60 + 30, t0: performance.now(), dur: 2600 }; toast('Evening: the lanterns are lit and the canvas glows.'); return; }
@@ -2100,9 +2099,9 @@ function leaveFireside(goTo = true) {
 }
 function renderCircle() {
   fire.piece = null; DKX.on = false; DKX.drawn = null; FI.el.querySelector('.fire-card').classList.remove('dk-mode'); FI.eye.textContent = 'The fireside · Blissfull Drift'; FI.title.textContent = 'Around the fire';
-  FI.body.innerHTML = `<p class="fi-meta" style="margin:0">Poems and stories written by Mahala camp mates. Choose one to read by the fire.</p>
+  FI.body.innerHTML = `<p class="fi-lead">Choose one to read by the fire. ${TOUCH ? 'Tap' : 'Click'} the fire directly to add a log.</p><p class="fi-meta" style="margin:0">Poems and stories written by Mahala camp mates.</p>
     <div class="fi-list">${FIRESIDE.map(p => `<button class="fi-item" data-piece="${p.id}"><span class="k">${p.kind}${p.when ? ' · ' + p.when : ''}</span><b>${esc(p.title)}</b><small>${esc(p.stanzas[0][0])}</small></button>`).join('')}</div>`;
-  FI.foot.innerHTML = `<span class="note">Click the fire to add a log.</span><button class="btn" data-fi="book">${icon('book')}The Book of Mahala</button><button class="btn" data-fi="deck">${icon('star')}Draw a card</button><button class="btn primary" data-fi="random">${icon('shuffle')}Let the fire choose</button>`;
+  FI.foot.innerHTML = `<button class="btn primary" data-fi="random">${icon('shuffle')}Let the fire choose</button>`;
 }
 function readPiece(id, page) {
   markDone(1, 'read'); DKX.on = false; DKX.drawn = null; FI.el.querySelector('.fire-card').classList.remove('dk-mode'); const p = FIRE_BY[id]; fire.piece = id; fire.page = page; const n = p.stanzas.length;
@@ -2168,7 +2167,7 @@ function drawCard(key, how = 'draw') {
   const flip = () => FI.body.querySelector('.dk-card')?.classList.add('flipped'); if (REDUCED) flip(); else setTimeout(flip, 420);
   const kept = DKX.kept === key;
   FI.foot.innerHTML = `<span class="note">Book of Mahala, page ${a.page}.</span><button class="btn" data-fi="inbook">${icon('book')}In the book</button>
-    <button class="btn" data-fi="share">${icon('users')}Pass it round</button><button class="btn" data-fi="keep" aria-pressed="${kept}">${icon(kept ? 'check' : 'star')}${kept ? 'Your archetype' : 'Keep as my archetype'}</button>
+    <button class="btn" data-fi="keep" aria-pressed="${kept}">${icon(kept ? 'check' : 'star')}${kept ? 'Your archetype' : 'Keep as my archetype'}</button>
     <button class="btn primary" data-fi="deck">${icon('shuffle')}Draw again</button>`;
 }
 function keepCard(key) { DKX.kept = DKX.kept === key ? null : key; try { if (DKX.kept) localStorage.setItem('mahala.archetype', DKX.kept); else localStorage.removeItem('mahala.archetype'); } catch (e) { } showKept(); }
@@ -2198,8 +2197,8 @@ function updateDeck(dt, t) {
     c.g.visible = vis; c.g.children.forEach(m => m.visible = vis); if (!vis) { c.init = false; return; }
     const drawn = DKX.drawn === c.a.key, slot = DKX.order.indexOf(i), ang = slot / N * Math.PI * 2 + DKX.spin;
     if (drawn) {   // the drawn card lifts out of the ring and hangs in the air before you, above the words
-      _dkP.set(0, 0.53 + 0.012 * Math.sin(t * 1.1), 0.5).unproject(camera).sub(camera.position).normalize().multiplyScalar(3.8).add(camera.position); _dkM.lookAt(camera.position, _dkP, _dkUp); }
-    else { _dkP.set(C.x + Math.cos(ang) * R, C.y + 0.45 + DKX.rise * 1.25 + 0.045 * Math.sin(t * 1.3 + i * 0.9), C.z + Math.sin(ang) * R);
+      _dkP.set(0, 0.34 + 0.012 * Math.sin(t * 1.1), 0.5).unproject(camera).sub(camera.position).normalize().multiplyScalar(3.8).add(camera.position); _dkM.lookAt(camera.position, _dkP, _dkUp); }
+    else { _dkP.set(C.x + Math.cos(ang) * R, C.y + 0.4 + DKX.rise * 0.85 + 0.045 * Math.sin(t * 1.3 + i * 0.9), C.z + Math.sin(ang) * R);
       _dkC.copy(_dkP).sub(camera.position).setY(0).normalize().add(_dkP); _dkM.lookAt(_dkC, _dkP, _dkUp); }   // face down: each card turns its back to you
     _dkQ.setFromRotationMatrix(_dkM);
     if (!c.init) { c.g.position.copy(C).setY(C.y + 0.4); c.g.quaternion.copy(_dkQ); c.init = true; }
@@ -2622,7 +2621,8 @@ function budgetBar(full = false) {
   const R0 = raiseNow(), t = +R0.target || 0;
   if (!t) return full ? '<p class="note">The target for The Seed is being set.</p>' : '';
   const r = Math.max(0, +R0.raised || 0), c = R0.cur === '$' ? '$' : 'R';
-  return `<div class="livebar"><div class="lab"><span>Raised for The Seed</span><span class="mono">${money(r, c)} of ${money(t, c)}</span></div><div class="bar"><span style="width:${Math.min(100, r / t * 100).toFixed(1)}%"></span></div>${full ? '<small class="note">Entered by the camp\'s accounts keeper: camp fees and donations, in one pool.</small>' : ''}</div>`;
+  const both = (n) => (window.MAHALA_SITE && window.MAHALA_SITE.both) ? window.MAHALA_SITE.both(n, c, { short: true }) : money(n, c);   // Nov 2026: the visitor's currency first
+  return `<div class="livebar"><div class="lab"><span>Raised for The Seed</span><span class="mono">${both(r)} of ${both(t)}</span></div><div class="bar"><span style="width:${Math.min(100, r / t * 100).toFixed(1)}%"></span></div>${full ? '<small class="note">Entered by the camp\'s accounts keeper: camp fees and donations, in one pool.</small>' : ''}</div>`;
 }
 function refreshLight(celebrate = true) {
   const n = litNow(), shown = Math.min(PANELS_N, n), was = LIT.shown;
@@ -2847,8 +2847,7 @@ async function leadAction(k, arg, btn) {
 const WM = $('#writeModal'); let W = null;
 const KIND_T = { reflect: 'A reflection', poem: 'A poem', art: 'A drawing', line: 'A line for the fire' };
 function openWrite(kind, gate = ME.gate) {
-  /* v7 me: with the dashboard, every gate's prompts are open */ if (!HOOK7.openPath) if (gate > ME.gate) { showGate(gate); return; }
-  if (kind === 'line' && !canEnter('fire')) { showGate(1, () => openWrite(kind, gate)); return; }
+  /* Nov 2026: writing in your book and leaving a line for the fire are never gated: we want people's words */
   const P = PATHS[gate] || PATHS[0], a = DKX.kept && ARCH_BY[DKX.kept];
   const prompt = kind === 'line' ? (a && a.q ? a.q : 'Leave one line for the fire: a hope, a thanks, or what your card asked of you.') : kind === 'reflect' && gate === 1 && a && a.q ? a.q : P[kind];
   W = { kind, gate, prompt }; lastFocus = document.activeElement;
@@ -3108,13 +3107,11 @@ function v4Act(act, a) {
 const _drawCard = drawCard;
 drawCard = function (key, how = 'draw') {
   _drawCard(key, how); markDone(1, 'draw');
-  const a = ARCH_BY[key], pair = ARCH_CREW[key]; if (!pair) return;
-  const crew = CREW_BY(pair[0]), q = pair[1] && DATA.quests.find(z => z.id === pair[1]);
-  const box = document.createElement('div'); box.className = 'sect'; box.style.marginTop = '10px';
-  box.innerHTML = `<h4>Where this card is needed</h4><div class="linklist"><button data-sel="${crew.id}"><span class="k">Crew</span>${esc(crew.name)}${icon('right')}</button>${q ? `<button data-sel="${q.id}"><span class="k">${q.id}</span>${esc(q.name)}${icon('right')}</button>` : ''}</div>
-    <p class="note">Drawn, not assigned: yours for this season, and you can draw again. A draft pairing for the camp to agree.</p>
-    <div class="actions" style="margin-top:6px"><button class="btn" data-fi="write">${icon('pen')}Answer its question in your book</button><button class="btn" data-fi="line">${icon('flame')}Leave a line for the fire</button></div>`;
-  const t = FI.body.querySelector('.dk-text'); if (t) t.insertBefore(box, t.querySelector('.dk-sh'));
+  if (!ARCH_BY[key]) return;
+  const box = document.createElement('div'); box.className = 'sect dk-after'; box.style.marginTop = '12px';
+  box.innerHTML = `<h4>When you have read both sides</h4><div class="actions" style="margin-top:6px"><button class="btn" data-fi="write">${icon('pen')}Answer its question in your book</button><button class="btn" data-fi="line">${icon('flame')}Leave a line for the fire</button></div>
+    <p class="note">Drawn, not assigned: yours for this season, and you can draw again.</p>`;
+  const t = FI.body.querySelector('.dk-text'); if (t) t.appendChild(box);
 };
 shareCard = async function (a) { await shareText(a.title, `By the fire in the Mahalaverse I drew ${a.title}: "${a.cap}." ${a.q || a.sq || ''}`.trim(), 'card=' + a.key); };
 FI.el.addEventListener('click', e => {
@@ -3134,7 +3131,7 @@ renderCircle = function () {
     ${H.length ? `<span class="eyebrow">Lines left at the fire</span>${H.map(h2 => `<p>"${esc(h2.text)}"<br><small>${esc(h2.name || 'A camp mate')}${h2.card && ARCH_BY[h2.card] ? ' · ' + esc(ARCH_BY[h2.card].title) : ''}</small></p>`).join('')}` : ''}
     ${Object.keys(cards).length ? `<small>Cards at the fire this week: ${Object.entries(cards).map(([c, n]) => `${esc(ARCH_BY[c]?.title || c)} ${n}`).join(', ')}</small>` : ''}`;
   FI.body.appendChild(extra);
-  FI.foot.innerHTML = FI.foot.innerHTML.replace('<span class="note">Click the fire to add a log.</span>', `<span class="note">${TOUCH ? 'Tap' : 'Click'} the fire to add a log.</span><button class="btn" data-fi="line">${icon('pen')}Leave a line</button>`);
+  FI.foot.insertAdjacentHTML('afterbegin', `<button class="btn" data-fi="line">${icon('pen')}Leave a line for the fire</button>`);
 };
 
 /* ---------- a gentle hand on the modals: focus moves in, and stays in ---------- */
@@ -3184,26 +3181,26 @@ const WAY = [
     acts: [['fire', 'flame', 'Sit by the fire'], ['firechoose', 'shuffle', 'Let the fire choose']] },
   { id: 'mahal', short: 'Mahal', eye: 'The temple tent', name: 'The Lotus Mahal', clock: 12 * 60 + 30,
     view: () => ({ t: V3(CAMP.x, 2.2, CAMP.z), d: 28, p: 1.02, a: 0.4 }),
-    lines: ['Three bell tents joined around a taller centre, pegged out like a lotus. On the centre pole, at heart height, sits a big hand-wound copper coil.', 'Sound journeys gather here. Listen to Sunrise at the Mahal, by Gustav Loubser.'],
-    photos: [['photo_lotus_tent', 'The Lotus Mahal'], ['photo_coil_pole', 'The coil on its pole']],
-    acts: [['mahal', 'gate', 'Step inside'], ['coil', 'torus', 'See the coil'], ['album', 'sound', 'Sunrise at the Mahal']] },
+    lines: ['Three bell tents joined around a taller centre, pegged out like a lotus: the camp\'s temple tent, where sound journeys gather.', 'Step inside to sit beneath the big copper coil on the centre pole, and listen to Sunrise at the Mahal.'],
+    photos: [['photo_lotus_tent', 'The Lotus Mahal']],
+    acts: [['mahal', 'gate', 'Step inside']] },
   { id: 'camp', short: 'Camp', eye: 'Home for the builders', name: 'The camp', clock: 15 * 60 + 30,
     view: () => ({ t: V3(CAMP.x + 1, 1, CAMP.z + 2), d: 66, p: 0.92, a: 2.45 }),
-    lines: ['Bell tents, the kitchen and the main tent: home for the builders through build week and the burn.', 'Camp mates apply for their place, then choose how they will help.'],
-    acts: [['apply', 'tent', 'Apply to the camp'], ['tent', 'sound', 'The main tent: playlists and sets'], ['kitchen', 'users', 'The kitchen: meal shifts'], ['crews', 'users', 'Join a crew'], ['camppage', 'right', 'The camp in detail']] },
+    lines: ['Canvas tents, a kitchen inside a big container and a main chill space with a piano: home for the builders through build week and the burn.', 'The camp is invite only. Camp mates apply for their place, then choose how they will help.'],
+    acts: [['campcard', 'tent', 'Go to Mahala camp'], ['kitchen', 'users', 'Go to the camp kitchen'], ['tent', 'sound', 'The main tent: music and sets'], ['campapply', 'right', 'Apply to join the camp']] },
   { id: 'yard', short: 'Yard', eye: 'Where it is made', name: 'The build yard', clock: 17 * 60 + 15,
     view: () => ({ t: V3(YARD.x, 1, YARD.z), d: 52, p: 1.0, a: 0.95 }),
-    lines: ['The frame would be made here, panel by panel, and the thank-you gifts for supporters at the Temple Tech bench.', 'Then it would all travel to the playa and rise in five days.'],
-    acts: [['guide', 'book', 'The build guideline'], ['buildfilm', 'film', 'Watch the build']] },
+    lines: ['The frame would be made here, panel by panel, by the build crew. Everything you need to know about the build lives here.', 'Then it would all travel to the playa and rise in five days.'],
+    acts: [['guide', 'book', 'The build guideline'], ['buildfilm', 'film', 'Watch the build'], ['bigcoil', 'torus', 'See the big coil'], ['bench', 'tools', 'The Temple Tech bench'], ['cnc', 'forms', 'The CNC cutting table'], ['shifts', 'cal', 'Build shifts and build days']] },
   { id: 'seed', short: 'The Seed', eye: 'The temple', name: 'The Seed', clock: 20 * 60 + 45,
     view: () => ({ t: V3(0, 1.2, 0), d: 58, p: 0.86, a: Math.PI / 2 - 0.42 }),
     lines: ['A temple of coloured glass Mahala proposes for AfrikaBurn 2027, opening like a king protea.', 'At night the lantern inside throws a wheel of colour across the playa. Help us raise it.'],
-    acts: [['inside', 'gate', 'Step inside'], ['give', 'gift', 'Help raise The Seed']], bar: true },
+    acts: [['inside', 'gate', 'Step inside'], ['forms', 'forms', 'The six copper forms'], ['seedpage', 'book', 'Learn more about The Seed'], ['donate', 'gift', 'Donate to The Seed']], bar: true },
 ];
 const WAY_BY = Object.fromEntries(WAY.map((s, i) => [s.id, i]));
 // where each thing in the world sits on the way, so the bar follows you when you go there another way
 const WAY_OF = { BOOK: 'book', DECK: 'book', CAMP_PORTAL: 'portal', CAMP_DRIFT: 'drift', CAMP_FIRE: 'drift', CAMP_LOTUS: 'mahal', MAHAL_COIL: 'mahal',
-  CAMP: 'camp', CAMP_KITCHEN: 'camp', CAMP_TENT: 'camp', CREWS: 'camp', YARD: 'yard', YARD_CNC: 'yard', BENCH: 'yard', GUIDE: 'yard', COIL_140: 'yard', PENDANT: 'yard',
+  CAMP: 'camp', CAMP_KITCHEN: 'camp', CAMP_TENT: 'camp', CREWS: 'camp', YARD: 'yard', YARD_CNC: 'yard', BENCH: 'yard', GUIDE: 'yard', COIL_140: 'camp', PENDANT: 'camp', FORMS: 'seed',
   TEMPLE: 'seed', CENTRE: 'seed', FRAME: 'seed', CAP: 'seed', FLOOR_GRID: 'seed' };
 const wayOf = id => WAY_OF[id] || (/^RING_|^PETAL_|^GATE_|^POD_/.test(id || '') ? 'seed' : null);
 const WY = { i: clamp(+ME.way || 0, 0, WAY.length - 1), el: $('#way'), bar: $('#wayBar'), fold: false, more: false, autoFold: false };
@@ -3217,7 +3214,7 @@ function renderWay() {
   const pics = s.photos ? `<div class="tiles way-tiles${s.photos.length === 1 ? ' one' : ' two'}">${s.photos.map(([f, l]) => tile('img:' + f, `assets/${f}.jpg`, l)).join('')}</div>` : '';
   WY.el.innerHTML = `<div class="way-in">
       <div class="way-top"><span class="eyebrow">${WY.i + 1} of ${n} · ${esc(s.eye)}</span>
-        <button class="iconbtn way-fold" type="button" data-w="fold" aria-expanded="${!WY.fold}" aria-label="${WY.fold ? 'Show the whole card' : 'Fold the card away'}">${icon(WY.fold ? 'up' : 'down')}</button></div>
+        ${ME.walked ? `<button class="iconbtn way-x" type="button" data-w="freely" aria-label="Close the card and explore freely">${icon('x')}</button>` : ''}</div>
       <h2>${esc(s.name)}</h2>
       <div class="way-lines">${s.lines.map(l => `<p>${esc(l)}</p>`).join('')}</div>
       ${s.lines.length > 1 || pics ? `<button class="linkish way-more" type="button" data-w="more" aria-expanded="${WY.more}">${WY.more ? 'Less' : 'More'}</button>` : ''}
@@ -3227,7 +3224,7 @@ function renderWay() {
     </div>
     <div class="way-foot">${pv ? `<button class="btn ghost" type="button" data-w="prev">${icon('left')}${esc(pv.short)}</button>` : '<span></span>'}
       ${nx ? `<button class="btn way-next" type="button" data-w="next">Next: ${esc(nx.short)}${icon('right')}</button>`
-        : `<button class="btn way-next" type="button" data-w="again">${icon('path')}Walk it again</button>`}</div>`;
+        : `<button class="btn way-next" type="button" data-w="freely">${icon('star')}Explore freely</button>`}</div>`;
   WY.el.classList.toggle('fold', WY.fold); WY.el.classList.toggle('more', WY.more);
 }
 /* the bar along the bottom: the seven stops */
@@ -3273,7 +3270,17 @@ function wayAct(k, el) {
   if (a === 'next') { if (WY.i < WAY.length - 1) goWay(WY.i + 1); return; }
   if (a === 'prev') { if (WY.i > 0) goWay(WY.i - 1); return; }
   if (a === 'go') { goWay(+x); return; }
-  if (a === 'again') { goWay(0); return; }
+  if (a === 'again') { WY.free = false; document.body.classList.remove('way-free'); goWay(0); return; }
+  if (a === 'freely') { wayFree(); return; }
+  if (a === 'campcard') { select('CAMP'); return; }
+  if (a === 'campapply') { openCampPane('join'); return; }
+  if (a === 'bigcoil') { openSpot('MAHAL_COIL'); return; }
+  if (a === 'bench') { select('BENCH'); return; }
+  if (a === 'cnc') { select('YARD_CNC'); return; }
+  if (a === 'shifts') { select('SHIFTS'); return; }
+  if (a === 'forms') { select('FORMS'); return; }
+  if (a === 'seedpage') { openSitePane('seed'); return; }
+  if (a === 'donate') { handoff('donate'); return; }
   if (a === 'fold') { WY.fold = !WY.fold; WY.autoFold = false; renderWay(); return; }
   if (a === 'more') { WY.more = !WY.more; renderWay(); const b = WY.el.querySelector('.way-more'); if (b) b.focus(); return; }
   if (a === 'book') { openBook(0); return; }
@@ -3331,25 +3338,25 @@ $('#raiseBtn').addEventListener('click', () => { if (CONFIG.donate) handoff('don
 function gateCard(g) {
   const N = DATA.gates.length;
   return head('gate', `Gate ${g.n} of ${N} · a way to give`, g.name, 'A gateway on the way to The Seed') + `<div class="insp-body">
-    <div class="amount"><b>${esc(g.amount)}</b>${chip('Working figure', 'wait')}</div>${payCur7(g.n)}
-    <ul class="opens"><li>${icon('gift')}<span><b>Our thank-you:</b> ${esc(g.gift)}</span></li><li>${icon('dome')}<span><b>What it builds:</b> ${esc(g.builds)}</span></li>${g.badge ? `<li>${icon('star')}<span><b>Badge:</b> ${esc(g.badge)}</span></li>` : ''}</ul>
+    <div class="amount"><b>${esc(gateAmt(g))}</b>${g.invite ? chip('Never bought', 'done') : chip('Working figure', 'wait')}</div>${g.invite ? '' : `<p class="give-more">or give more</p>`}
+    <ul class="opens"><li>${icon('gift')}<span><b>${g.invite ? 'The way in' : 'What it opens'}:</b> ${esc(g.gift)}</span></li><li>${icon('dome')}<span><b>What it builds:</b> ${esc(g.builds)}</span></li>${g.thanks ? `<li>${icon('star')}<span><b>Our thank-you:</b> ${esc(g.thanks)}</span></li>` : ''}</ul>
     ${g.extra ? `<p>${esc(g.extra)}.</p>` : ''}
     ${budgetBar()}
-    <div class="actions"><button class="btn primary" data-act="pledge:${g.n}">${icon('gift')}Choose this gate</button>${g.n > 1 ? `<button class="btn" data-sel="GATE_${g.n - 1}">Gate ${g.n - 1}</button>` : ''}${g.n < N ? `<button class="btn" data-sel="GATE_${g.n + 1}">Gate ${g.n + 1}</button>` : ''}</div>
+    <div class="actions">${g.invite ? `<button class="btn primary" data-act="campapply">${icon('tent')}Apply to join the camp</button>` : `<button class="btn primary" data-act="pledge:${g.n}">${icon('gift')}Choose this gate</button>`}${g.n > 1 ? `<button class="btn" data-sel="GATE_${g.n - 1}">Gate ${g.n - 1}</button>` : ''}${g.n < N ? `<button class="btn" data-sel="GATE_${g.n + 1}">Gate ${g.n + 1}</button>` : ''}</div>
     <p class="note strong">Amounts are working figures and may change. ${payNote7('card', g.n)}</p></div>`;
 }
 showGate = function (n) {
   const g = GATE_BY(n); if (!g || !n) { openJoin('back'); return; } gateN = n; gateThen = null; lastFocus = document.activeElement;
   $('#gateTitle').textContent = `Gate ${n}: ${g.name}`;
-  $('#gateBody').innerHTML = `<div class="gate-hero"><span class="gate-lamp" style="background:${GATE_COL[g.col] || 'var(--yellow)'}">${n}</span><div><div class="amount"><b>${esc(g.amount)}</b>${chip('Working figure', 'wait')}</div>${payCur7(n)}<small class="note">One of seven gates on the way in to The Seed</small></div></div>
-    <ul class="opens"><li>${icon('gift')}<span><b>Our thank-you:</b> ${esc(g.gift)}</span></li>${g.builds ? `<li>${icon('dome')}<span><b>What it builds:</b> ${esc(g.builds)}</span></li>` : ''}${g.badge ? `<li>${icon('star')}<span><b>Badge:</b> ${esc(g.badge)}</span></li>` : ''}</ul>
+  $('#gateBody').innerHTML = `<div class="gate-hero"><span class="gate-lamp" style="background:${GATE_COL[g.col] || 'var(--yellow)'}">${n}</span><div><div class="amount"><b>${esc(gateAmt(g))}</b>${g.invite ? chip('Never bought', 'done') : chip('Working figure', 'wait')}</div>${g.invite ? '' : `<p class="give-more">or give more</p>`}<small class="note">One of seven gates on the way in to The Seed</small></div></div>
+    <ul class="opens"><li>${icon('gift')}<span><b>${g.invite ? 'The way in' : 'What it opens'}:</b> ${esc(g.gift)}</span></li>${g.builds ? `<li>${icon('dome')}<span><b>What it builds:</b> ${esc(g.builds)}</span></li>` : ''}${g.thanks ? `<li>${icon('star')}<span><b>Our thank-you:</b> ${esc(g.thanks)}</span></li>` : ''}</ul>
     ${g.extra ? `<p>${esc(g.extra)}.</p>` : ''}${g.rd ? '<p class="note">The gifts are also research and development: the gates fund the first batch of pendants, coils and light boxes.</p>' : ''}
     ${n >= 6 ? `<p class="note">A vision, not a plan.</p>` : ''}`;
   $('#gateFoot').innerHTML = `<span class="note strong">Working amounts, not final. ${payNote7('sheet', n)}</span>
-    <button class="btn" data-g="close">Not now</button><button class="btn primary" data-g="pledge">${icon('gift')}Choose this gate</button>`;
+    <button class="btn" data-g="close">Not now</button>${g.invite ? `<button class="btn primary" data-g="apply">${icon('tent')}Apply to join the camp</button>` : `<button class="btn primary" data-g="pledge">${icon('gift')}Choose this gate</button>`}`;
   GM.hidden = false; setTimeout(() => ($('[data-g="pledge"]', GM) || $('#gateClose')).focus(), 30);
 };
-GM.addEventListener('click', e => { const b = e.target.closest('[data-g="pledge"]'); if (!b) return; const n = gateN; closeGate(); openJoin('back', n); });
+GM.addEventListener('click', e => { if (e.target.closest('[data-g="apply"]')) { closeGate(); openCampPane('join'); return; } const b = e.target.closest('[data-g="pledge"]'); if (!b) return; const n = gateN; closeGate(); openJoin('back', n); });
 
 /* ---------- the camp: the main tent, the kitchen and the crews ---------- */
 reg('CAMP_TENT', { kind: 'tent', title: 'The main tent', chip: 'Playlists and sets', obj: null, anchor: 'CAMP',
@@ -4276,6 +4283,253 @@ $('#soundBtn').addEventListener('click', () => musicMix(true));
 setInterval(() => { const w = SND.on ? musicWant() : null; if (w !== MUSIC.now) musicMix(false); }, 700);
 setTimeout(() => { if (SND.on) musicMix(false); }, 1200);       // arriving with Sound already on
 window.__mahalaMusic = () => ({ want: MUSIC.now, playing: Object.keys(MUSIC.el).filter((k) => !MUSIC.el[k].paused), sound: SND.on });   // for the tests
+
+/* ====================== Stage 1, November 2026: the first walk, the spaces and the money ======================
+   From the Mahalaverse review (Mahala Website Review and Edits, Mahalaverse Review tab) and the gates brief of 31 Oct.
+   No backend: what each visitor has walked, agreed and chosen is kept in this browser (ME), as before.
+   - the first walk: a welcome card before the book, the way card open the whole way, the lists hidden until the walk
+     is done, then Explore freely, with Walk it again beside the bar
+   - one way to close: every panel has an X, with "Close to keep going" beside it
+   - the spaces: the Lotus Mahal from outside and from inside (the big coil, its field, Sunrise at the Mahal), the camp,
+     the build yard, The Seed and its six copper forms
+   - money in rand and dollars, the raised bar from site.js, gates as gifts of thanks
+   - the camp application and The Seed page open over the world, so Close brings you back where you were */
+const SITE1 = window.MAHALA_SITE || {};
+
+/* ---------- money: both currencies, one rate from site.js ---------- */
+const amtBoth = (n, from = 'R', short = false) => SITE1.both ? SITE1.both(n, from, { short }) : money(n, from);
+// a gate's amount, "$100" or "$100,000 to $10,000,000", in both currencies; words such as "Invite only" stay as they are
+function gateAmt(g, short = false) {
+  if (!/\$\d/.test(g.amount)) return g.amount;
+  const parts = g.amount.split(' to ').map(p => +p.replace(/[^0-9.]/g, ''));
+  if (parts.length > 1) return parts.map(v => amtBoth(v, '$', true)).join(' to ');
+  return amtBoth(parts[0], '$', short);
+}
+Object.assign(CONFIG, { raise: { raised: SITE1.raisedTotal ? SITE1.raisedTotal() : CONFIG.raise.raised, target: SITE1.target || CONFIG.raise.target, cur: 'R' } });
+renderRaise = function () {
+  const R = raiseNow(), pct = R.target ? Math.min(100, R.raised / R.target * 100) : 0, from = R.cur === '$' ? '$' : 'R';
+  $('#raiseNow').textContent = amtBoth(R.raised, from, true); $('#raiseGoal').textContent = amtBoth(R.target, from, true);
+  $('#raiseBar').style.width = Math.max(1.5, pct).toFixed(1) + '%';
+  const r = SITE1.raised || {};
+  $('#raiseBtn').title = `${amtBoth(R.raised, from)} raised of ${amtBoth(R.target, from)} for The Seed: ${money(+r.carried || 0)} carried from 2026 and ${money(+r.backabuddy || 0)} on BackaBuddy${r.enteredOn ? ', as of ' + r.enteredOn : ''}.`;
+  $('#raiseBtn').setAttribute('aria-label', `${amtBoth(R.raised, from)} raised of ${amtBoth(R.target, from)} for The Seed. Donate now.`);
+  const cb = $('#curBtn'); if (cb) { const side = SITE1.side ? SITE1.side() : 'R'; cb.dataset.side = side; cb.setAttribute('aria-label', side === 'R' ? 'Amounts shown in rand first. Show dollars first.' : 'Amounts shown in dollars first. Show rand first.'); }
+};
+$('#curBtn')?.addEventListener('click', () => { const side = SITE1.side ? SITE1.side() : 'R'; if (SITE1.setSide) SITE1.setSide(side === 'R' ? '$' : 'R'); });
+addEventListener('mahala:cur', () => { renderRaise(); if (EXPLORE.open) renderTabs(); if (current && REG[current]) refreshCard(current); });
+renderRaise();
+
+/* ---------- the first walk ---------- */
+const walkSync = () => { document.body.classList.toggle('walking', !ME.walked); document.body.classList.toggle('walked', !!ME.walked); };
+walkSync();
+function walkDone(quiet) {
+  if (ME.walked) return; ME.walked = true; saveMe(); walkSync(); renderWay();
+  if (!quiet) toast('You have walked the whole way. Explore freely: every place is a click away.');
+}
+function wayFree() {
+  walkDone(true); WY.free = true; document.body.classList.add('way-free');
+  closePops(); if (fire.on) leaveFireside(false); if (!$('#spotModal').hidden) closeSpot();
+}
+{ const _gw = goWay; goWay = function (i, o) { WY.free = false; document.body.classList.remove('way-free'); _gw(i, o); if (WY.i >= WAY.length - 1) walkDone(); }; }
+{ const _wa = wayAt; wayAt = function (k) { _wa(k); if (WY.i >= WAY.length - 1) walkDone(); }; }
+// Walk it again sits beside the bar once the walk is done
+{ const b = document.createElement('button'); b.type = 'button'; b.className = 'btn walk-again'; b.dataset.w = 'again'; b.innerHTML = `${icon('path')}Walk it again`;
+  b.addEventListener('click', () => wayAct('again', b)); (WY.bar.parentElement || document.body).appendChild(b); }
+
+/* the welcome card, before the book and the card */
+const INTRO = document.createElement('div'); INTRO.className = 'modal intro-modal'; INTRO.id = 'introModal'; INTRO.hidden = true;
+INTRO.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+  <div class="sheet-body intro-body">
+    <span class="eyebrow">An interactive journey</span>
+    <h3 id="introTitle">Welcome to the Mahalaverse</h3>
+    <p class="intro-lead">This is the online home of Mahala, a community of temple builders raising The Seed for AfrikaBurn 2027, on the way to a full temple in 2030.</p>
+    <p>You walk a winding way across the playa, from the Book of Mahala to the door of The Seed. Read the book and draw a card. Sit by the fire. Step into the Lotus Mahal, visit the camp and the build yard, and stand inside the temple.</p>
+    <p>Everything here is made to be played with. ${TOUCH ? 'Tap' : 'Click'} anything to look closer. In time, the camp's own plans will live here too.</p>
+    <button class="btn primary intro-go" type="button" data-intro="go">${icon('star')}I agree to play every step of the way</button>
+    <p class="note">Your walk is kept in this browser.</p>
+  </div></div>`;
+document.body.appendChild(INTRO);
+function openIntro() {
+  const nm = String(ME.name || '').trim();
+  INTRO.querySelector('#introTitle').textContent = nm ? `Welcome to the Mahalaverse, ${nm}` : 'Welcome to the Mahalaverse';
+  INTRO.hidden = false; setTimeout(() => INTRO.querySelector('[data-intro="go"]').focus(), 40);
+}
+INTRO.addEventListener('click', e => { if (!e.target.closest('[data-intro="go"]')) return; ME.agreed = Date.now(); saveMe(); INTRO.hidden = true; chime('soft'); });
+{ const _ew = enterWorld; enterWorld = function (arrival) { const was = WORLD.entered; _ew(arrival); if (!was && !ME.agreed) setTimeout(openIntro, 350); }; }
+
+/* the lists: hidden on the first walk; afterwards a single Explore button, and an open list with its X at the top right */
+{ const L = $('.lists'); if (L) {
+  L.setAttribute('aria-label', 'Explore: the gates, events, quests and Temple Tech');
+  L.insertAdjacentHTML('afterbegin', `<button class="lists-open" id="listsOpen" type="button" aria-expanded="false">${icon('search')}Explore</button><div class="lists-head"><b>Explore</b><button class="iconbtn lists-x" id="listsX" type="button" aria-label="Close the list">${icon('x')}</button></div>`);
+  $('#listsOpen').addEventListener('click', () => { EXPLORE.open = true; renderTabs(); });
+  $('#listsX').addEventListener('click', () => { EXPLORE.open = false; renderTabs(); }); } }
+{ const _rt = renderTabs; renderTabs = function () {
+  _rt(); const P = $('#panel'), N = $('#panelNote');
+  $('#listsOpen')?.setAttribute('aria-expanded', String(EXPLORE.open));
+  if (tab === 'gates') {
+    P.innerHTML = DATA.gates.map(g => `<button class="row" data-sel="${g.id}"><span class="lead ${'ycm'[(g.n - 1) % 3]}">${g.n}</span><span><b>${esc(g.name)}</b><small>${esc(g.gift)}</small></span><span class="amt">${esc(gateAmt(g))}</span>${icon('right')}</button>`).join('');
+    N.textContent = 'Each gate opens a space online and a gift of thanks, never a privilege on the playa. Working amounts, not final. No payment is taken here yet.';
+  }
+  if (tab === 'events') N.textContent = 'Dates are announced once the stewards set them.';
+  if (tab === 'quests') N.textContent = 'Share the film first: it is the easiest way to help. Crew quests open when the crews form.';
+  if (tab === 'tech') N.textContent = 'Temple Tech, an art and research practice, works with light, coils and sacred geometry, in copper, wood and craft.';
+  $$('.row', P).forEach(b => b.classList.toggle('sel', b.dataset.sel === current));
+}; }
+renderTabs();
+
+/* one way to close: "Close to keep going" beside the X of the fire, the spotlight and the book */
+for (const id of ['fiClose', 'spotClose', 'bookClose']) {
+  const x = document.getElementById(id); if (!x) continue;
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'keepgoing'; b.textContent = 'Close to keep going';
+  b.addEventListener('click', () => x.click()); x.insertAdjacentElement('beforebegin', b);
+}
+/* the sun clock closes with its own X */
+$('#sunX')?.addEventListener('click', e => { e.stopPropagation(); $('#sunctl').classList.remove('open'); });
+
+/* ---------- pages that open over the world: the camp application and The Seed ---------- */
+const PANE = document.createElement('div'); PANE.className = 'mvpane'; PANE.id = 'mvPane'; PANE.hidden = true; PANE.setAttribute('role', 'dialog'); PANE.setAttribute('aria-modal', 'true');
+document.body.appendChild(PANE);
+let paneFrom1 = null;
+function openSitePane(name, hash = '') {
+  const url = { camp: 'camp.html', seed: 'seed.html' }[name]; if (!url) return;
+  paneFrom1 = document.activeElement; PANE.textContent = '';
+  const f = document.createElement('iframe'); f.title = name === 'camp' ? 'The camp' : 'The Seed'; f.src = url + (hash ? '#' + hash : '');
+  PANE.appendChild(f); PANE.setAttribute('aria-label', f.title); PANE.hidden = false; requestAnimationFrame(() => PANE.classList.add('open'));
+  f.addEventListener('load', () => { try { f.focus(); } catch (e) { } }, { once: true });
+  if (typeof SND !== 'undefined' && SND.on) MUSIC.level = 0.25, musicMix(false);
+}
+function openCampPane(hash = 'join') { openSitePane('camp', hash); }
+function closeSitePane() {
+  if (PANE.hidden) return; PANE.classList.remove('open');
+  setTimeout(() => { PANE.hidden = true; PANE.textContent = ''; }, 320);
+  MUSIC.level = 0.6; if (typeof SND !== 'undefined' && SND.on) musicMix(false);
+  if (paneFrom1 && document.contains(paneFrom1)) paneFrom1.focus();
+}
+addEventListener('message', e => { if (e.origin === location.origin && e.data && e.data.mahala === 'close') closeSitePane(); });
+addEventListener('keydown', e => { if (e.key === 'Escape' && !PANE.hidden) closeSitePane(); });
+
+/* ---------- photos from the camp, in the same lightbox as the renders ---------- */
+const CAMP_PICS = [['camp-media/photos/g26-main-tent-drums.jpg', 'The main tent', 'Drums in the main tent.'], ['camp-media/photos/g24-whole-camp.jpg', 'The whole camp', 'The whole camp on the playa.'], ['camp-media/photos/g16-camp-dusk.jpg', 'The camp at dusk', 'The camp at dusk.']];
+function openPic(src, cap) {
+  lastFocus = document.activeElement; $('#filmEnd').hidden = true; FV.pause(); FV.removeAttribute('src'); FV.hidden = true;
+  let im = $('.film img', FM); if (!im) { im = document.createElement('img'); im.style.cssText = 'display:block;width:100%;height:auto;max-height:calc(100vh - 140px);object-fit:contain;background:#000'; $('.film', FM).prepend(im); }
+  im.src = src; im.alt = cap; $('#filmCap').textContent = cap + ' Photo from the camp.'; FM.hidden = false; $('#filmClose').focus();
+}
+const picTile = (src, label, cap) => `<button class="tile" data-act="pic:${esc(src)}|${esc(cap)}"><span class="im"><img src="${esc(src)}" alt="" loading="lazy"></span>${esc(label)}</button>`;
+
+/* ---------- new places: the six copper forms, and the build shifts ---------- */
+reg('FORMS', { kind: 'forms', title: 'The six copper forms', chip: 'Around The Seed', obj: null, anchor: 'TEMPLE', focus: () => ({ t: V3(0, 1, 0), d: 44, p: 0.86, a: Math.PI / 2 - 0.3 }) });
+reg('SHIFTS', { kind: 'shifts', title: 'Build shifts and build days', chip: 'Build yard', obj: null, anchor: 'YARD', focus: () => REG.YARD.focus() });
+INDEX.push({ id: 'FORMS', label: 'The six copper forms', sub: 'Around The Seed', key: '' }, { id: 'SHIFTS', label: 'Build shifts and build days', sub: 'Build yard', key: '' });
+GLYPH.forms = GLYPH.forms || 'forms'; GLYPH.shifts = GLYPH.shifts || 'cal';
+const FORM_ORDER = ['TETRA', 'ICOSA', 'OCTA', 'VE', 'DODECA', 'CUBE'];
+
+/* ---------- the cards, as the review asks ---------- */
+const spotifyEmbed = () => { const m = /open\.spotify\.com\/(album|track|playlist)\/([A-Za-z0-9]+)/.exec(CONFIG.album || ''); return m
+  ? `<div class="sect"><h4>Sunrise at the Mahal</h4><iframe class="spotify" title="Sunrise at the Mahal, by Gustav Loubser, on Spotify" src="https://open.spotify.com/embed/${m[1]}/${m[2]}?utm_source=generator&theme=0" height="152" loading="lazy" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe><p class="note">By Gustav Loubser, a camp mate: music that grew out of the camp.</p></div>` : ''; };
+HOOK7.cardIn.push(it => {
+  const k = it.kind;
+  if (k === 'lotus') return head('lotus', 'Mahala camp', 'The Lotus Mahal', "The camp's temple tent. A mahal is a palace, or a gathering place") + `<div class="insp-body">
+    <div class="tiles two">${tile('img:photo_lotus_tent', 'assets/photo_lotus_tent.jpg', 'The Lotus Mahal at the camp')}</div>
+    <p>Three bell tents joined around a taller centre, with six petals to each bell pegged out like a lotus. The door faces the temple.</p>
+    <p class="note strong">Sound journeys gather here. Dates and guests are announced once they are confirmed.</p>
+    <div class="actions"><button class="btn primary" data-act="mahal">${icon('gate')}Step inside</button></div></div>`;
+  if (k === 'coil' && it.id === 'MAHAL_COIL') { const sp = SPOT.MAHAL_COIL;
+    return head('coil', 'Inside the Lotus Mahal', 'The big coil', 'On the centre pole, at heart height') + `<div class="insp-body">
+    <div class="tiles two">${tile('img:photo_coil_pole', 'assets/photo_coil_pole.jpg', 'The coil on its pole')}</div>
+    <p>${sp.what}</p>
+    <div class="actions"><button class="btn primary" data-act="spot:MAHAL_COIL">${icon('spot')}Learn more about the coil</button><button class="btn" data-act="field">${icon('light')}${TORUS.boost ? 'Soften the field' : 'See its field'}</button></div>
+    ${spotifyEmbed()}
+    <div class="actions"><button class="btn" data-act="gocamp">${icon('tent')}Go to Mahala camp</button>${inside && insideAt === 'mahal' ? '' : `<button class="btn" data-act="mahal">${icon('gate')}Step into the Mahal</button>`}</div></div>`; }
+  if (k === 'pendant') return null;
+  if (k === 'centre') { const sp = SPOT.CENTRE;
+    return head('centre', 'Inside The Seed', 'The centrepiece', 'At the very centre, under the open crown') + `<div class="insp-body">
+    <div class="tiles two">${tile('img:K6', 'assets/K6.jpg', 'The crown from inside')}${tile('floorfilm', 'assets/K1b.jpg', 'A day on the floor', true)}</div>
+    <p>${sp.what}</p>
+    <div class="actions"><button class="btn primary" data-act="spot:CENTRE">${icon('spot')}Spotlight the centrepiece</button>${inside && insideAt === 'temple' ? `<button class="btn" data-act="leave">${icon('gate')}Leave the temple</button>` : `<button class="btn" data-act="enter">${icon('gate')}Step inside</button>`}</div></div>`; }
+  if (k === 'temple') return head('temple', 'The art piece · AfrikaBurn 2027', 'The Seed', 'Quaggafontein, Tankwa Karoo') + `<div class="insp-body">
+    <div class="tiles">${tile('film', 'assets/film_poster.jpg', 'Watch the 30 s film', true)}${tile('inside', 'assets/K5b.jpg', 'Step inside', true)}${tile('night', 'assets/K8d.jpg', 'See it at night')}</div>
+    <p>A zome: a dome of coloured glass panels spiralling up, inspired by the king protea. By day the sun paints the floor and the people inside in fields of colour. At night a lantern inside throws a wheel of coloured rays across the desert floor.</p>
+    ${budgetBar()}
+    <div class="actions"><button class="btn primary" data-act="seedpage">${icon('book')}Learn more about The Seed</button><button class="btn" data-sel="FORMS">${icon('forms')}The six copper forms</button><button class="btn" data-act="inside">${icon('gate')}Step inside</button><button class="btn" data-act="donate">${icon('gift')}Donate to The Seed</button></div></div>`;
+  if (k === 'forms') return head('forms', 'Around The Seed · Temple Tech', 'The six copper forms', 'Five Platonic solids and the vector equilibrium') + `<div class="insp-body">
+    <p class="spine">Around The Seed stand six space frames of copper tube. Each is a form people have held sacred for thousands of years. Read what each one is, then visit them one by one.</p>
+    <ol class="forms-list">${FORM_ORDER.map((key, i) => { const f = PODS_INFO[key]; return `<li><div class="fm-h"><span class="lead ${'ycm'[i % 3]}">${i + 1}</span><span><b>${esc(f.name)}</b><small>${esc(f.element)} · ${esc(f.faces)}</small></span></div>
+      <p>${esc(f.means)}</p><div class="actions"><button class="btn" data-sel="POD_${key}">${icon('pin')}Go to it</button><button class="btn" data-act="spot:POD_${key}">${icon('spot')}Spotlight</button></div></li>`; }).join('')}</ol>
+    <p class="note">The forms are shown in a first arrangement. Which form stands where is still open.</p></div>`;
+  if (k === 'camp') return head('camp', 'Theme camp · AfrikaBurn 2027', 'Mahala camp', 'Home for the builders during the build and the burn') + `<div class="insp-body">
+    <div class="tiles">${CAMP_PICS.map(([src, l, c]) => picTile(src, l, c)).join('')}</div>
+    <p>You come in through the MAHALA portal. Inside: canvas tents, a kitchen inside a big container and a main chill space with a piano, beside the Lotus Mahal and Blissfull Drift. Camp members help build the temple.</p>
+    <div class="actions"><button class="btn" data-sel="CAMP_KITCHEN">${icon('users')}Go to the camp kitchen</button><button class="btn" data-sel="CAMP_TENT">${icon('sound')}The main tent: music and sets</button><button class="btn" data-sel="CREWS">${icon('users')}Join a crew</button></div>
+    ${kv(DATES.map(([k2, v2]) => [k2, esc(v2)]))}
+    <div class="sect"><h4>Camping supplies to rent</h4><ul class="plain"><li>Canvas tents and camping mattresses, when you need them</li><li>Stretchers</li></ul>
+      <p class="note">These cost extra and are not part of the camp fee. They are there so builders coming from far away need not bring their own.</p></div>
+    <div class="sect"><h4>Your coil</h4><p>Every camp member wears one: a copper coil wound on the same grooved ring as the temple's heart. Anyone, in the camp or not, can also receive a pendant as a gift of thanks at Gate 2.</p>
+      <div class="actions"><button class="btn" data-act="spot:PENDANT">${icon('spot')}See the pendant</button><button class="btn" data-act="spot:COIL_140">${icon('spot')}See the coil you hold</button></div></div>
+    <p class="note strong">The camp is invite only. Invited builders apply and pay in one go; everyone else joins the waitlist, and a camp lead calls.</p>
+    <div class="actions"><button class="btn primary" data-act="campapply">${icon('tent')}Apply to join the camp</button></div></div>`;
+  if (k === 'kitchen') return head('kitchen', 'Mahala camp · the kitchen', 'The camp kitchen', 'One main dinner a day, cooked together') + `<div class="insp-body">
+    <p>The camp kitchen lives inside a big container, beside the main chill space with its piano. The camp shares one main dinner a day, cooked by a team of camp mates.</p>
+    <p class="note">Camp members choose the night they cook here, once sign-in opens.</p>
+    <div class="actions"><button class="btn" data-sel="CAMP">${icon('tent')}Go to Mahala camp</button><button class="btn" data-sel="CAMP_TENT">${icon('sound')}The main tent</button></div></div>`;
+  if (k === 'yard') return head('yard', 'Fabrication', 'The build yard', 'Where The Seed is made') + `<div class="insp-body">
+    <p>The frame is cut to the zome's geometry and the glass is prepared here, by volunteers with hand tools, a cutting service and a skilled workshop. Everything you need to know about the build lives here.</p>
+    <div class="actions yard-acts"><button class="btn primary" data-sel="GUIDE">${icon('book')}The build guideline</button><button class="btn" data-act="buildfilm">${icon('film')}Watch the build</button><button class="btn" data-act="spot:MAHAL_COIL">${icon('torus')}See the big coil</button><button class="btn" data-sel="BENCH">${icon('tools')}The Temple Tech bench</button><button class="btn" data-sel="YARD_CNC">${icon('forms')}The CNC cutting table</button><button class="btn" data-sel="SHIFTS">${icon('cal')}Build shifts and build days</button></div>
+    <p class="note">For the build crew. Build shift sign-up opens here for camp members once sign-in is live.</p></div>`;
+  if (k === 'bench') return head('bench', 'The build yard', 'The Temple Tech bench', 'Where the coils are wound') + `<div class="insp-body">
+    <p>Temple Tech, an art and research practice, works with light, coils and sacred geometry. At its bench the coils are wound by hand. Last year camp mates learned to wind them here, and the winding guide joins the yard with the build crew.</p>
+    <div class="actions"><button class="btn primary" data-act="spot:MAHAL_COIL">${icon('spot')}See the big coil</button><button class="btn" data-sel="YARD">${icon('left')}The build yard</button></div></div>`;
+  if (k === 'shifts') return head('shifts', 'The build yard · the build crew', 'Build shifts and build days', 'Building The Seed by many hands') + `<div class="insp-body">
+    <p>Three build days in Cape Town are being planned. Dates are announced once the stewards set them.</p>
+    <p>Build shift sign-up opens here for camp members once sign-in is live: choose your days in the workshop and on the playa.</p>
+    <div class="actions"><button class="btn primary" data-sel="GUIDE">${icon('book')}The build guideline</button><button class="btn" data-sel="E-03">${icon('cal')}Build days</button><button class="btn" data-sel="YARD">${icon('left')}The build yard</button></div></div>`;
+  if (k === 'tent') return injectTop(tentCard(), `<p class="note strong">The camp's theme space: DJ sets, music and art from camp mates, open to the whole online community.</p>`);
+  return null;
+});
+// the pendant: every camp member wears one
+{ const _ci1 = v4CardIn; v4CardIn = function (it, h) { const o = _ci1(it, h); return it.kind === 'pendant' && it.id === 'PENDANT' ? injectTop(o, `<p class="note strong">Every camp member wears one. Anyone can receive one as a gift of thanks at Gate 2.</p>`) : o; }; }
+HOOK7.act.push((act, a) => {
+  const [k, x] = act.split(':');
+  if (k === 'campapply') { openCampPane('join'); return true; }
+  if (k === 'seedpage') { openSitePane('seed'); return true; }
+  if (k === 'donate') { handoff('donate'); return true; }
+  if (k === 'gocamp') { goWay(WAY_BY.camp); return true; }
+  if (k === 'field') { TORUS.boost = !TORUS.boost; refreshCard(current); toast(TORUS.boost ? 'The field of the coil, drawn as light: a picture of the idea, not a measurement.' : 'The field softens back.'); return true; }
+  if (k === 'pic') { const [src, cap] = act.slice(4).split('|'); openPic(src, cap || ''); return true; }
+  if (k === 'story') { const i = x == null ? 0 : clamp(+x || 0, 0, STORY.length - 1); openFireside('S-REMEMBER'); setTimeout(() => readPiece('S-REMEMBER', i), 60); return true; }
+  return false;
+});
+
+/* ---------- the toroidal field: light flowing around the big coil, up through its heart and out round the Mahal ---------- */
+const TORUS = { boost: false, k: 0, group: new THREE.Group(), mats: [], dots: null, dotT: null };
+{ const C0 = ZONES.MAHAL_COIL ? ZONES.MAHAL_COIL.userData.c.clone() : V3(CAMP.x, 1.3, CAMP.z);
+  const LOOPS = 20, PTS = 96, R = 0.42, A = 0.42;          // a horn torus: every loop passes through the coil's heart
+  const loopPt = (phi, t, out = V3()) => { const r = R + A * Math.cos(t); return out.set(Math.cos(phi) * r, A * 1.25 * Math.sin(t), Math.sin(phi) * r); };
+  const cols = [new THREE.Color(0xff9a4a), new THREE.Color(0x3fd6e0), new THREE.Color(0xffd84a)];
+  for (let i = 0; i < LOOPS; i++) {
+    const phi = i / LOOPS * Math.PI * 2, pts = [];
+    for (let j = 0; j <= PTS; j++) pts.push(loopPt(phi, j / PTS * Math.PI * 2));
+    const m = new THREE.LineBasicMaterial({ color: cols[i % 3], transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false });
+    TORUS.mats.push(m); TORUS.group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), m));
+  }
+  // sparks that ride the loops, so the field visibly flows
+  const N = LOOPS * 6, pos = new Float32Array(N * 3); TORUS.dotT = Array.from({ length: N }, (_, i) => ({ phi: (i % LOOPS) / LOOPS * Math.PI * 2, t: Math.random() * Math.PI * 2 }));
+  const dg = new THREE.BufferGeometry(); dg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  TORUS.dotMat = new THREE.PointsMaterial({ color: 0xfff1c8, size: 0.035, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false });
+  TORUS.dots = new THREE.Points(dg, TORUS.dotMat); TORUS.group.add(TORUS.dots);
+  TORUS.group.position.copy(C0); TORUS.group.visible = false; TORUS.group.renderOrder = 7; scene.add(TORUS.group);
+  const tmp = V3();
+  FRAME_HOOKS.push((dt, T) => {
+    const want = inside && insideAt === 'mahal' ? (TORUS.boost ? 1 : 0.55) : (TORUS.boost && current === 'MAHAL_COIL' ? 0.8 : 0);
+    TORUS.k += (want - TORUS.k) * Math.min(1, dt * 2.2); TORUS.group.visible = TORUS.k > 0.01; if (!TORUS.group.visible) return;
+    const pulse = REDUCED ? 1 : 0.8 + 0.2 * Math.sin(T * 1.6);
+    TORUS.mats.forEach((m, i) => { m.opacity = TORUS.k * pulse * (0.32 + 0.18 * Math.sin(T * 0.9 + i)); });
+    TORUS.dotMat.opacity = TORUS.k * 0.95; if (!REDUCED) TORUS.group.rotation.y += dt * 0.12;
+    const p = TORUS.dots.geometry.attributes.position;
+    TORUS.dotT.forEach((d, i) => { if (!REDUCED) d.t += dt * 0.9; loopPt(d.phi, d.t, tmp); p.setXYZ(i, tmp.x, tmp.y, tmp.z); });
+    p.needsUpdate = true;
+  });
+}
 
 import('./assets/together.js').then(m => m.start(window.__mahala)).catch(e => console.warn('The together layer did not start:', e));
 import('./assets/v7/index.js').then(m => m.start(window.__mahala)).catch(e => console.warn('The v7 plugins did not start:', e));
