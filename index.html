@@ -1,11 +1,11 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><meta name="robots" content="noindex,nofollow"><meta name="description" content="Mahala at AfrikaBurn 2027: The Seed, a temple of light and glass, and the Mahalaverse. Concept visualisations."></head><body>
 <script>window.__V7_ONLY = ['platform', 'world']; window.__MAHALA_PUBLIC = true;</script>
-<script src="site.js?v=3"></script>
+<script src="site.js?v=4"></script>
 <style id="publicEdition">
 /* the public edition (for AfrikaBurn's Art Committee): no sign-ups, payments, crew or shift sign-ups, testing buttons or claude.ai links */
 .testbtn, [data-act="join"], [data-act^="join:"], [data-act="givegate"], [data-act^="give:"], [data-act^="pledge:"], [data-act^="crewjoin:"],
 [data-act^="shift:"], [data-act^="notify:"], [data-g="give"], [data-g="test"], a[href^="https://claude.ai/"], #takePart, .topbar .who,
-[data-w="take"], [data-w="path"], [data-w="apply"], [data-w="kitchen"], [data-w="tent"], [data-w="crews"], [data-w="guide"], [data-w="give"], [data-w="gate6"], [data-act^="take:"], [data-act^="step:"], [data-choose] { display: none !important; }
+[data-w="take"], [data-w="path"], [data-w="apply"], [data-w="crews"], [data-w="give"], [data-w="gate6"], [data-act^="take:"], [data-act^="step:"], [data-choose] { display: none !important; }
 /* no letter on the public page */
 #envRest { display: none !important; }
 #menuPop [data-m="take"], #menuPop [data-m="path"], #youBtn, #bellBtn, #kpiPathCard { display: none !important; }
@@ -1430,6 +1430,83 @@ body:has(#menuPop:not([hidden])) #tg, body:has(#menuPop:not([hidden])) .tg-call 
 
 /* arriving from The Seed: the lobby is only the temple being raised */
 body.from-seed .lobby .eyebrow, body.from-seed #lobbyLine, body.from-seed .lobby .in > p:nth-of-type(2), body.from-seed .lobby-acts, body.from-seed .lobby-doors { display: none; }
+
+
+/* ======== Stage 1, November 2026: the first walk, closes, the spaces, money ======== */
+/* the first walk: nothing beside the way card and the bar; afterwards a single Explore button opens the lists */
+body.walking .lists { display: none !important; }
+.lists-open, .lists-head { display: none; }
+body.walked .lists:not(.open) { width: auto; max-height: none; background: none; border: 0; box-shadow: none; backdrop-filter: none; padding: 0; }
+body.walked .lists:not(.open) .tabs, body.walked .lists:not(.open) .panel, body.walked .lists:not(.open) .panel-note { display: none; }
+body.walked .lists:not(.open) .lists-open { display: inline-flex; align-items: center; gap: 7px; height: 38px; padding: 0 15px 0 12px; border-radius: 999px; border: 1px solid var(--card-line); background: var(--card-strong); box-shadow: var(--shadow); color: var(--ink); font: inherit; font-size: 13.5px; font-weight: 500; cursor: pointer; }
+.lists-open:hover, .lists-open:focus-visible { background: var(--hover); }
+.lists-open svg.i { width: 15px; height: 15px; }
+.lists.open .lists-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 10px 0 16px; flex: none; }
+.lists-head b { font-family: var(--display); font-weight: 400; font-size: 17px; }
+.lists-x { width: 32px; height: 32px; }
+.lists .tabs-x { display: none !important; }
+/* the way card: once the walk is done it can close (Explore freely), and Walk it again waits beside the bar */
+.way-x { width: 30px; height: 30px; flex: none; }
+body.way-free .way { opacity: 0; pointer-events: none; transform: translateX(-10px); }
+.walk-again { display: none; position: absolute; left: 16px; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); z-index: 3; height: 36px; font-size: 13px; background: var(--card-strong); box-shadow: var(--shadow); }
+body.way-free .walk-again { display: inline-flex; }
+body.inside .walk-again, body.firemode .walk-again { display: none; }
+/* the welcome card */
+.intro-modal .sheet { width: min(520px, 100%); }
+.intro-body { display: grid; gap: 12px; padding: 26px 26px 22px; }
+.intro-body h3 { font-family: var(--display); font-weight: 400; font-size: 28px; line-height: 1.15; margin: 0; }
+.intro-body p { margin: 0; line-height: 1.55; color: var(--ink-2); }
+.intro-body .intro-lead { font-size: 16px; color: var(--ink); }
+.intro-go { justify-self: start; margin-top: 6px; height: auto; min-height: 44px; padding: 10px 18px; font-size: 15px; white-space: normal; text-align: left; }
+/* one way to close: "Close to keep going" beside the X */
+.keepgoing { border: 0; background: none; padding: 4px 6px; margin-left: auto; font: inherit; font-size: 12.5px; color: var(--ink-3); cursor: pointer; border-radius: 8px; white-space: nowrap; }
+.keepgoing:hover, .keepgoing:focus-visible { color: var(--ink); background: var(--hover); }
+.fire-top .keepgoing + .x { margin-left: 0; }
+#spotModal .keepgoing { position: absolute; top: 18px; right: 58px; z-index: 2; background: var(--card-strong); }
+#bookModal .keepgoing { margin-left: auto; }
+/* the sun clock closes with its own X, only while it is open */
+.sun-x { display: none !important; }
+.sunctl.open .sun-x { display: grid !important; }
+/* the fireside: the hint is part of the heading */
+.fi-lead { margin: 0 0 4px; font-family: var(--display); font-size: 19px; line-height: 1.3; color: var(--ink); }
+.dk-after h4 { margin: 0 0 2px; }
+/* money: Donate now on the raised bar, and the R / $ toggle */
+.raise { grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; }
+.raise .raise-n, .raise .bar { grid-column: 1; }
+.raise-cta { grid-column: 2; grid-row: 1 / span 2; align-self: center; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 11px; border-radius: 999px; background: var(--ink); color: var(--ground); font-size: 12.5px; font-weight: 500; white-space: nowrap; }
+.raise-cta svg.i { width: 14px; height: 14px; }
+.curbtn { display: inline-flex; align-items: center; height: 30px; padding: 2px; margin-left: -4px; border-radius: 999px; border: 1px solid var(--card-line); background: none; font: inherit; font-size: 12px; cursor: pointer; flex: none; }
+.curbtn span { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: var(--ink-3); }
+.curbtn[data-side="R"] span[data-c="R"], .curbtn[data-side="$"] span[data-c="$"] { background: var(--ink); color: var(--ground); }
+.give-more { margin: -2px 0 0; font-size: 12.5px; color: var(--ink-3); }
+/* the glass panels counter is gone */
+#kpiLitCard { display: none !important; }
+/* the gates list scrolls, so Gate 7 is always in reach */
+.lists.open .panel { overscroll-behavior: contain; }
+/* the six copper forms */
+.forms-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.forms-list li { display: grid; gap: 6px; padding-bottom: 12px; border-bottom: 1px solid var(--card-line); }
+.forms-list li:last-child { border-bottom: 0; }
+.fm-h { display: flex; align-items: center; gap: 10px; }
+.fm-h small { display: block; color: var(--ink-3); font-size: 12px; }
+.forms-list p { margin: 0; }
+ul.plain { margin: 4px 0 6px; padding-left: 18px; display: grid; gap: 3px; }
+.yard-acts { display: grid; grid-template-columns: minmax(0, 1fr); }
+.yard-acts .btn { justify-content: flex-start; }
+.fm-h .lead { width: 26px; height: 26px; flex: none; border-radius: 50%; display: grid; place-items: center; font-family: var(--display); font-size: 13px; background: var(--hover); color: var(--ink); }
+/* Sunrise at the Mahal, inside the Mahal */
+iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-radius: 12px; margin: 4px 0 2px; }
+/* pages that open over the world */
+.mvpane { position: fixed; inset: 0; z-index: 40; background: var(--scrim); opacity: 0; transition: opacity .3s; }
+.mvpane.open { opacity: 1; }
+.mvpane iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; background: var(--card-strong); }
+@media (max-width: 760px) {
+  .raise-cta { display: none; }
+  .curbtn { display: none; }
+  body.walked .lists:not(.open) { display: flex !important; left: auto; right: 8px; bottom: auto; top: calc(66px + env(safe-area-inset-top, 0px)); width: auto; border-radius: 999px; }
+  .walk-again { left: 8px; bottom: calc(86px + env(safe-area-inset-bottom, 0px)); }
+  #spotModal .keepgoing { display: none; }
+}
 </style>
 <script>addEventListener('hashchange', () => { if (!/^#mahalaverse$/i.test(location.hash) || document.body.classList.contains('from-seed')) return; if (window.__seed && window.__seed.stepIn) window.__seed.stepIn({ quick: true }); else location.reload(); });</script>
 <script>if (/^#(mahalaverse|enter|play)$/i.test(location.hash) || /(^#|&)(door|gate|card|fire|book|story|tour|sel|place|path|way)=/.test(location.hash)) document.documentElement.classList.add('to-mv');</script>
@@ -1834,10 +1911,12 @@ body.from-seed .lobby .eyebrow, body.from-seed #lobbyLine, body.from-seed .lobby
         <span><b>Mahalaverse</b><small>Temple builders</small></span>
       </button>
 
-      <button class="raise" id="raiseBtn" type="button" aria-label="Raised for The Seed so far. See the ways to give.">
+      <button class="raise" id="raiseBtn" type="button" aria-label="Raised for The Seed so far. Donate now.">
         <span class="raise-n"><b id="raiseNow">R0</b><small>raised of <span class="mono" id="raiseGoal">R0</span><span class="for"> for The Seed</span></small></span>
         <span class="bar"><span id="raiseBar"></span></span>
+        <span class="raise-cta"><svg class="i"><use href="#i-gift"/></svg>Donate now</span>
       </button>
+      <button class="curbtn" id="curBtn" type="button" aria-label="Show amounts in rand or dollars"><span data-c="R">R</span><span data-c="$">$</span></button>
 
       <div class="search" id="search">
         <label for="q"><svg class="i"><use href="#i-search"/></svg><input id="q" type="search" placeholder="Search The Seed, the camp, crews, quests..." autocomplete="off" aria-label="Search the world"><span class="kbd">/</span></label>
@@ -1856,6 +1935,7 @@ body.from-seed .lobby .eyebrow, body.from-seed #lobbyLine, body.from-seed .lobby
         <span class="d">29 Apr 2027</span>
         <input type="range" id="clock" min="300" max="1380" step="1" value="580" aria-label="Time of day on 29 April 2027">
         <button class="iconbtn playbtn" id="playBtn" aria-label="Play one day" style="width:30px;height:30px"><svg class="i"><use href="#i-play"/></svg></button>
+        <button class="iconbtn sun-x" id="sunX" type="button" aria-label="Close the sun clock" style="width:28px;height:28px"><svg class="i"><use href="#i-x"/></svg></button>
       </div>
 
       <button class="btn primary takepart" id="takePart" aria-label="Take part"><svg class="i"><use href="#i-gate"/></svg><span class="tp-long">Take part</span><span class="tp-short">Join</span></button>
