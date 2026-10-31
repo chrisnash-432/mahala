@@ -12,6 +12,12 @@ of art). What people offer makes the world richer for the next visitor, and what
 Your account remembers all of it: your gates, your offerings, your badges, your application and your payments, so the
 world opens itself to you as you take part.
 
+## The line we hold
+
+Gates open online spaces, recognition and handmade gifts. They never buy a privilege on the playa: AfrikaBurn's own
+guidance says paying a project should not buy privilege. The camp place stays invite or apply only, and every lower
+gate can be opened without money, by offering something of your own. (Sources in [RESEARCH.md](RESEARCH.md).)
+
 ## Three ways money and value move
 
 | Door | What it is | Where it happens | Why there |
@@ -36,8 +42,12 @@ How "visitor's side" is chosen: the account's "where do you live" answer if we h
 with a small toggle (R / $) the visitor can flip. The rate is fixed by the camp once a month in one setting, so a gate
 does not change price day to day. PayFast always charges in rand; the page says so beside the button.
 
-**Decision:** gates are priced in dollars (and converted to rand), or set in rand with round numbers per currency
-(a round dollar figure and a round rand figure, each set by hand). Round numbers in both read better; a single source currency is simpler to run.
+**Decision:** which figure is the real price. Recommended: rand, because PayFast charges and pays out in rand only;
+the dollar figure is a guide at the camp's monthly rate, labelled "about". The gate names keep their dollar amounts
+as the headline for visitors abroad, with the rand price beside them.
+
+Every gate lets people give more than its amount ("Give $100, or more"). Where people can choose to pay above a
+minimum, about four in ten do (Bandcamp's figures, in RESEARCH.md).
 
 ## Who is looking: the account levels
 
@@ -158,7 +168,7 @@ When that loop feels effortless, the same pattern goes on Gate 2, then the rest.
 
 ## Open decisions, in one list
 
-1. Gates priced in dollars, rand, or round numbers in each.
+1. The real price in rand (recommended) with dollars as a monthly guide, or the other way round.
 2. What a camp member opens (proposed: Gates 1 to 4, crews and the yard).
 3. Card drawing: free at the threshold, paid at the fire, or both.
 4. Pods: part of Gate 2, or their own gate.
@@ -167,5 +177,6 @@ When that loop feels effortless, the same pattern goes on Gate 2, then the rest.
 7. Whether an offering opens its gate as soon as it is sent (with a steward able to take it back), or only once a
    steward has read it. Proposed: as soon as it is sent.
 8. What counts towards the public total: everything given, or only what goes to the build (about half of a gate with a gift).
-9. The front page line "The Mahalaverse is open ... Freely" now meets paywalls. Proposed: "The way in is free. Some
+9. Whether to show money raised outside BackaBuddy in its "Offline donations" line, so both totals match.
+10. The front page line "The Mahalaverse is open ... Freely" now meets paywalls. Proposed: "The way in is free. Some
    spaces open with a gift of money, or of your own making."

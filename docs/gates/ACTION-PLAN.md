@@ -1,6 +1,6 @@
 # Gates, accounts and payments: action plan
 
-Draft v0.1, 31 October 2026. The build plan that turns [the journey map](JOURNEY-MAP.md) into the live Mahalaverse.
+Draft v0.2, 31 October 2026. Sources for every outside fact are in [RESEARCH.md](RESEARCH.md). The build plan that turns [the journey map](JOURNEY-MAP.md) into the live Mahalaverse.
 Written so Claude (or Chris) can pick up any task and implement it. Each task lists where it lands and how we know it
 is done. Nothing here is live: this file sits on the `plan/gates-and-payments` branch.
 
@@ -57,7 +57,7 @@ The open list at the end of the journey map, plus:
 
 Small, safe changes to what people already see. Claude can do these now in the source.
 
-1. **Dual currency everywhere.** Add one `fx` setting to `site.js` (rate, date set) and one helper
+1. **Dual currency everywhere.** Add one `fx` setting to `site.js` (the camp's monthly USD to ZAR rate and the date it was set) and one helper
    `MAHALA_SITE.both(amount, from)` that returns "$100 (about R …)" or "R … (about $100)" by the visitor's side
    (`navigator.language`/region, a saved R/$ toggle). Use it for the gates, the target, the raised bar, the camp fees.
    *Done when* every amount on the front page, the camp page, The Seed page and the Mahalaverse shows both, and changing
@@ -73,16 +73,18 @@ Small, safe changes to what people already see. Claude can do these now in the s
 3. **Remove the glass panels KPI** ("Glass panels lit, 0 of 143") and the panel lighting tied to it.
 4. **The raised bar.** Replace the R 70 000 placeholder with a real figure from the keeper's ledger (and fix the
    "R0 raised of R0" header). Until the ledger is live, show the BackaBuddy total entered by hand in `site.js`.
-5. **The front page line** about the Mahalaverse being open "Freely" (Decision 9 in the journey map).
+5. **The front page line** about the Mahalaverse being open "Freely" (Decision 10 in the journey map).
 6. **BackaBuddy.** Add a short paragraph and a campaign update (draft in [BACKABUDDY-COPY.md](BACKABUDDY-COPY.md)).
    Meredith posts it; Claude does not have access.
 
 ## Phase 2. Turn the shared Mahalaverse on
 
-1. Create (or confirm) the Supabase project; region and owner per Phase 0. Run the rules files and migrations.
+1. Create (or confirm) the Supabase project in Frankfurt (no African region), on the paid plan once payments are live
+   (free projects pause after a week of quiet). Run the rules files and migrations.
 2. Load `claude-shim.js` on `index.html` so the platform plugin runs in "standalone" mode.
 3. Load the same shim on `camp.html`, so the camp page and the Mahalaverse share one sign-in.
-4. Email sign-in by magic link, from a Mahala address, with a privacy notice and a consent tick (POPIA: what we keep,
+4. Email sign-in by magic link, sent through a proper email sender (Brevo or Resend) from a Mahala address, because
+   Supabase's built-in sender allows only about two emails an hour, with a privacy notice and a consent tick (POPIA: what we keep,
    why, who sees it, how to delete it). Consent and its date are stored on the profile.
 5. *Done when* a builder signs in on a phone, draws a card, and sees the same card and path on a laptop.
 
@@ -112,7 +114,8 @@ Tasks:
 3. **Entitlements function.** `recompute_entitlements(uid)` runs after any payment, offering, application stage change
    or steward grant. Rules:
    - a confirmed gate payment for gate N opens gates 1 to N (and N's space list in `SPACE`)
-   - an offering of a kind listed for gate 1 or 2 opens that gate as soon as it is sent; if a steward takes it back,
+   - an offering of a kind listed for gate 1 or 2 (with the maker's separate tick allowing Mahala to show it, with
+     credit) opens that gate as soon as it is sent; if a steward takes it back,
      the gate closes again unless something else opens it
    - membership (accepted and a fee payment or plan started) opens Gates 1 to 4, the crews and the yard (Decision 2)
    - stewards and camp leads open everything
@@ -129,15 +132,19 @@ Tasks:
 2. **Gate checkout.** `pay-checkout` builds the PayFast form server-side: `amount` in rand from the gate's price and the
    month's rate (the giver may add more, never less), `m_payment_id` = the pledge reference,
    `custom_str1` = uid, `custom_str2` = gate, `custom_str3` = gift choice and size, `notify_url` = `pay-webhook`.
-3. **Webhook.** `pay-webhook` validates the ITN (signature with the passphrase, PayFast's server confirmation, source,
-   amount matches the checkout), writes `payments`, creates the `gift_reservations` row, recomputes entitlements, and
+3. **Webhook.** `pay-webhook` validates the ITN (signature with the passphrase, PayFast's server confirmation, source
+   host, amount matches the checkout, and a 200 answer within about ten seconds; check every step against PayFast's
+   official developer docs, which the research could not open), writes `payments`, creates the `gift_reservations` row, recomputes entitlements, and
    updates the online total. Idempotent on `pf_payment_id`.
 4. **Camp fee.** For `invited` or `accepted` people only: full payment, or a PayFast subscription of 2 or 4 monthly
    cycles; EFT option showing the account details and the person's reference, with an "I've paid" proof upload.
    Coupons (build crew discount) are applied server-side before the checkout is built.
 5. **Sandbox first.** Run every path on PayFast's sandbox (gate, gate plus extra, cancel, failed card, camp fee in full,
    instalments, coupon). *Done when* each one lands in the right table and opens the right gate with no human step.
-6. Card fees: absorbed or added (Phase 0 decision, already open in the payments doc).
+6. Card fees: absorbed or added (Phase 0 decision, already open in the payments doc). PayFast's card fee is 3.2% + R2
+   before VAT; money is free to pay out 48 hours after payment, from R1 000.
+7. If PayFast will not open the Individual account on the interim account, switch the provider to Paystack: the pay
+   plugin already supports it, so it is a settings change plus its own webhook check.
 
 ## Phase 5. The beta: Gate 1, the fire
 
@@ -161,11 +168,13 @@ Tasks:
 
 ## Phase 7. Totals, gifts and the stewards' view
 
-1. **One public total** on the front page, The Seed page and the Mahalaverse: BackaBuddy total (a steward enters it, or
-   a small scheduled function reads the campaign page if BackaBuddy allows it) plus the build share of confirmed gates
+1. **One public total** on the front page, The Seed page and the Mahalaverse: BackaBuddy total (a steward enters it;
+   BackaBuddy has no API we could find) plus the build share of confirmed gates
    and fees. Both currencies. The same figure everywhere (Decision 8).
-2. **Gift waitlists** for stewards: counts per gift and size, addresses, status; a "mark as sent" that emails the person.
-3. **Weekly reconciliation:** PayFast payouts against `payments`, BackaBuddy against the entered total.
+2. **BackaBuddy's Offline donations line** can carry the build share raised through the Mahalaverse, entered by a
+   steward when they update the total, so BackaBuddy and the website show the same figure (Decision 9).
+3. **Gift waitlists** for stewards: counts per gift and size, addresses, status; a "mark as sent" that emails the person.
+4. **Weekly reconciliation:** PayFast payouts against `payments`, BackaBuddy against the entered total.
 
 ## How Claude works this plan
 
