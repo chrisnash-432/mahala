@@ -137,6 +137,59 @@ section.shut .head { margin-bottom: 0; }
 .foldall button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
 [hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) { h2 .fold .chev { transition: none; } }
+
+/* Join the tribe: the introduction, over the page */
+button.act { cursor: pointer; background: transparent; }
+button.act.solid { background: var(--ink); }
+.act.quiet { border-color: transparent; color: var(--ink-2); }
+.act.quiet:hover { background: transparent; color: var(--ink); border-color: var(--rule); }
+.act[aria-disabled="true"] { opacity: .45; }
+.act:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.top-acts { justify-content: center; margin-top: 30px; }
+.door-note { margin: 14px 0 0; font-size: 14.5px; color: var(--ink-3); max-width: 40em; }
+html.join-open, html.join-open body { overflow: hidden; }
+.tjoin { position: fixed; inset: 0; z-index: 30; padding: 0; background: var(--paper); color: var(--ink); overflow-y: auto; overscroll-behavior: contain; opacity: 0; transition: opacity .25s ease; -webkit-overflow-scrolling: touch; }
+.tjoin.is-open { opacity: 1; }
+.tjoin .jstep { font: 500 12px/1 var(--text); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); white-space: nowrap; }
+.tj-page { width: min(100% - 32px, 620px); margin: 0 auto; padding: clamp(28px, 5vw, 48px) 0 calc(64px + env(safe-area-inset-bottom, 0px)); }
+.tjoin .h-sub { margin: 0 0 22px; font: 400 clamp(26px, 3.4vw, 34px)/1.15 var(--name); letter-spacing: .14em; text-transform: uppercase; }
+.tjoin .field { margin: 0 0 22px; border: 0; padding: 0; min-width: 0; }
+.tjoin label, .tjoin .flabel { display: block; font: 500 15px/1.35 var(--text); margin: 0 0 8px; padding: 0; }
+.tjoin .flabel small, .tjoin label small { font-weight: 300; color: var(--ink-3); }
+.tjoin .hint { margin: -2px 0 8px; font-size: 14px; color: var(--ink-3); }
+.tjoin input[type=text], .tjoin input[type=email], .tjoin input[type=tel], .tjoin textarea { width: 100%; min-height: 48px; padding: 11px 14px; border: 1px solid #CFC3B2; border-radius: 10px; background: #FFFDF8; color: var(--ink); font: 300 17px/1.45 var(--text); }
+.tjoin textarea { min-height: 120px; resize: vertical; }
+.tjoin input:focus-visible, .tjoin textarea:focus-visible { outline: 2px solid var(--cyan); outline-offset: 1px; border-color: var(--ink); }
+.tjoin .two { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 0 14px; align-items: end; }
+@media (max-width: 480px) { .tjoin .two { grid-template-columns: 1fr; } }
+.chips-pick { display: flex; flex-wrap: wrap; gap: 8px; }
+.pick { min-height: 44px; padding: 10px 16px 9px; border: 1px solid #CFC3B2; border-radius: 999px; background: #FFFDF8; color: var(--ink); font: 400 15.5px/1.2 var(--text); cursor: pointer; text-align: left; }
+.pick:hover { border-color: var(--ink); }
+.pick.on { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.pick:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.opt.tick { display: block; margin: 0 0 12px; cursor: pointer; font-weight: 300; }
+.opt.tick input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.opt.tick span { display: block; position: relative; padding: 13px 16px 12px 48px; border: 1px solid #CFC3B2; border-radius: 12px; background: #FFFDF8; font: 300 15.5px/1.45 var(--text); }
+.opt.tick span b { font-weight: 500; }
+.opt.tick span::before { content: ""; position: absolute; left: 16px; top: 14px; width: 18px; height: 18px; border: 1px solid #b9ab97; border-radius: 4px; background: #fff; text-align: center; font-size: 13px; line-height: 18px; }
+.opt.tick input:checked + span { border-color: var(--ink); }
+.opt.tick input:checked + span::before { content: "\2713"; background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.opt.tick input:focus-visible + span { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px; border: 1px solid #CFC3B2; border-radius: 10px; background: #FFFDF8; }
+.tags input[type=text] { flex: 1 1 160px; border: 0 !important; min-height: 40px !important; padding: 6px 8px !important; background: transparent !important; }
+.tag { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 12px; border: 0; border-radius: 999px; background: var(--ink); color: var(--paper); font: 400 14.5px/1 var(--text); cursor: pointer; }
+.tag span { opacity: .7; font-size: 16px; }
+.seen { color: var(--wax); }
+.camp-wish { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--rule); }
+.camp-wish .small { margin: 2px 0 0; font-size: 14px; color: var(--ink-3); }
+.tjoin .small { font-size: 15px; color: var(--ink-2); }
+.tjoin .centre { text-align: center; margin: -8px 0 22px; }
+.tjoin .err { min-height: 1.4em; margin: 6px 0 0; color: var(--wax); font-size: 14.5px; }
+.j-acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.j-done { outline: none; }
+.j-done .next { margin: 0 0 8px; padding-left: 1.3em; display: grid; gap: 14px; font: 300 17px/1.5 var(--text); }
+.j-done .next b { font-weight: 500; }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 </style>
 </head>
 <body>
@@ -154,6 +207,7 @@ section.shut .head { margin-bottom: 0; }
       <div class="prism" aria-hidden="true"></div>
       <p class="lede" id="lede"></p>
       <div class="tally" id="tally"></div>
+      <div class="acts top-acts"><button class="act solid" type="button" data-tribe-join>Join the tribe</button></div>
     </header>
 
     <figure class="reelwrap" style="margin-inline:auto">
@@ -201,13 +255,22 @@ section.shut .head { margin-bottom: 0; }
       <div class="body" id="bNeed">
         <ul class="needs" id="needs"></ul>
         <p class="strong" id="strong"></p>
-        <div class="acts"><a class="act solid" href="camp.html#join">Join the camp</a><a class="act" href="seed.html">About The Seed</a></div>
+        <div class="acts"><button class="act solid" type="button" data-tribe-join>Join the tribe</button><a class="act" href="seed.html" data-open="seed">About The Seed</a></div>
+        <p class="door-note">Anyone can join the tribe. The camp at AfrikaBurn is by invitation: join, tell us you would love to come, and the camp leads read every introduction.</p>
       </div>
     </section>
 
     <p class="how" id="how"></p>
   </div>
 </main>
+<section class="tjoin" id="tjoin" role="dialog" aria-modal="true" aria-labelledby="tjoinH" hidden>
+  <div class="bar">
+    <button class="back" type="button" id="tjoinClose"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>Close</button>
+    <span class="ttl" id="tjoinH">Join the tribe</span>
+    <span class="side"><span class="jstep" id="tjoinStep"></span></span>
+  </div>
+  <div class="tj-page"><div id="tjoinBody"></div></div>
+</section>
 <script id="tribe-data" type="application/json">/*TRIBE-DATA*/{"asOf":"2026-11-01","people":817,"read":360,"placed":310,"years":[2013,2027],"skills":[["music",94],["facilitation",89],["logistics",64],["leadership",62],["build",54],["wellness",50],["kitchen",42],["hosting",35],["healing",33],["tech",33],["visual-art",32],["performance",29],["design",27],["business",25],["writing",24],["dance",22],["care",21],["textiles",19],["media",18],["ritual",17],["coaching",15],["engineering",15],["finance",13],["marketing",12],["sound-tech",11],["ecology",8],["lighting",8],["electrical",4]],"offers":[["workshop",61],["music-set",52],["build-help",47],["wellness-session",46],["sound-journey",33],["food",32],["bar-tea",30],["performance",21],["decor",18],["art-piece",16],["ritual",16],["tech-help",8],["care",7],["talk",6],["dj-set",6]],"values":[["connection",82],["service",58],["play",50],["creativity",47],["learning",32],["healing",24],["freedom",20],["spirit",17],["presence",17],["nature",16],["beauty",13],["inclusion",11],["legacy",3]],"interests":[["yoga",22],["dance",17],["guitar",17],["meditation",16],["cooking",15],["sound journeys",15],["piano",13],["breathwork",13],["singing",12],["storytelling",11],["poetry",11],["painting",9],["music jams",8],["photography",7],["decor",7],["massage",7],["costumes",6],["djing",6],["movement",4],["carpentry",4],["stargazing",4],["drumming",4],["handpan",4],["salsa",3],["theatre",3],["interior design",3],["ceremony",3],["bodywork",3],["piano lounge",3],["games",3],["songwriting",3],["authentic relating",3]],"seed":[["sound",74],["structure",50],["logistics",45],["story",34],["art-direction",31],["care",24],["ritual-programme",24],["glass-light",12],["fundraising",7],["power",4]],"countries":[["710","South Africa",111],["840","United States",37],["276","Germany",31],["826","United Kingdom",19],["404","Kenya",12],["250","France",10],["724","Spain",10],["756","Switzerland",9],["528","The Netherlands",7],["36","Australia",7],["360","Indonesia",7],["784","United Arab Emirates",6],["124","Canada",5],["682","Saudi Arabia",5],["620","Portugal",4],["56","Belgium",4],["752","Sweden",3],["422","Lebanon",3]],"otherCountries":17,"otherCountryPeople":20,"countryNums":["124","180","250","276","288","31","32","356","36","360","40","404","422","442","508","516","528","56","620","642","643","682","686","703","710","724","748","752","756","764","784","792","826","834","840"],"cities":[["Cape Town",-33.926,18.423,68],["Johannesburg",-26.202,28.044,24],["London",51.509,-0.126,9],["Nairobi",-1.283,36.817,6],["Berlin",52.524,13.411,5],["Dubai",25.077,55.309,5]]}/*END*/</script>
 <script>
 (function () {
@@ -221,7 +284,8 @@ section.shut .head { margin-bottom: 0; }
   document.querySelectorAll('[data-page-close]').forEach(function (b) { b.addEventListener('click', closePage); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && EMBED) closePage(); });
   // links to the camp and The Seed open in the same frame; on the front page they replace this pane
-  if (EMBED) document.querySelectorAll('.acts a').forEach(function (a) { a.target = '_top'; a.href = './#' + (a.getAttribute('href').indexOf('seed') === 0 ? 'seed' : 'camp'); });
+  // over the front page, a link to another page asks the front page to open it there
+  if (EMBED) document.querySelectorAll('[data-open]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); parent.postMessage({ mahala: 'open', pane: a.dataset.open }, location.origin); }); });
 
 
   // the faces reel: poster at once, plays muted while on screen, sound when asked
@@ -341,5 +405,7 @@ section.shut .head { margin-bottom: 0; }
     'nothing finer than a city, and nothing shared by fewer than three people. Countries with fewer than three of us are counted together.';
 })();
 </script>
+<script src="site.js?v=3"></script>
+<script src="tribe-join.js"></script>
 </body>
 </html>

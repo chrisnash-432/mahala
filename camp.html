@@ -574,6 +574,7 @@ html.join-open, html.join-open body { overflow: hidden; }
 .join-done .next b { font-weight: 500; }
 .give .intro { margin-bottom: clamp(18px, 3vw, 26px); }
 .give .nums b { color: var(--ink); }
+.by-invite { margin-top: clamp(40px, 6vw, 64px); }
 </style>
 </head>
 <body>
@@ -668,14 +669,19 @@ html.join-open, html.join-open body { overflow: hidden; }
 
     <h2 class="h-sec">What skills do you bring</h2>
     <ul class="chips" id="skillsShow"><li>Building and carpentry</li><li>Electrics, lighting and power</li><li>Sound, DJing and music production</li><li>Live instruments and voice</li><li>Art, painting and decor</li><li>Kitchen and feeding the tribe</li><li>Healing, bodywork and breathwork</li><li>Ceremony and space holding</li><li>Movement, dance and performance</li><li>Logistics and getting things done</li></ul>
-    <p class="small centre" style="margin-top: 14px">Camp mates choose theirs when they apply.</p>
+    <p class="small centre" style="margin-top: 14px">Tribe members choose theirs when they join.</p>
 
     <h2 class="h-sec">We live by six SACRED agreements</h2>
     <ol class="sacred" id="sacredShow"><li><b>S</b><span>Seeking understanding before interpretation</span></li><li><b>A</b><span>Assuming good intent</span></li><li><b>C</b><span>Choosing presence over reaction</span></li><li><b>R</b><span>Radical responsibility for what we feel</span></li><li><b>E</b><span>Empowered expression of our needs</span></li><li><b>D</b><span>Discernment of gossip as distortion</span></li></ol>
 
 
+    <div class="by-invite" id="byInvite">
+      <h2 class="h-sec">The camp is by invitation</h2>
+      <p class="small centre">About 50 to 60 of us camp together, and it starts with the tribe. Join the tribe, tell us you would love to come, and the camp leads read every introduction. Invitations go out in waves, each with a letter.</p>
+    </div>
     <div class="page-acts">
-      <button class="primary" type="button" data-join>Join the camp</button>
+      <button class="primary" type="button" data-join hidden>Accept your invitation</button>
+      <a class="primary" href="tribe.html#join" data-open-tribe>Join the tribe</a>
       <button class="secondary" type="button" data-page-close>Close</button>
     </div>
   </div>
@@ -703,6 +709,7 @@ html.join-open, html.join-open body { overflow: hidden; }
   document.querySelectorAll('[data-page-close]').forEach(function (b) { b.addEventListener('click', closePage); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && EMBED) closePage(); });
   if (EMBED) setTimeout(function () { var c = document.querySelector('.bar [data-page-close]'); if (c) c.focus({ preventScroll: true }); }, 80);
+  if (EMBED) document.querySelectorAll('[data-open-tribe]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); parent.postMessage({ mahala: 'open', pane: 'tribe', hash: 'join' }, location.origin); }); });
   document.querySelectorAll('[data-fill="target"]').forEach(function (el) { if (SITE.money) el.textContent = SITE.money(SITE.target); });
   document.querySelectorAll('[data-fill="days"]').forEach(function (el) { if (SITE.daysToBuild) el.textContent = String(SITE.daysToBuild()); });
 
