@@ -1456,6 +1456,7 @@ body.from-seed .lobby .eyebrow, body.from-seed #lobbyLine, body.from-seed .lobby
   <nav class="menu" aria-label="Menu">
     <a class="menu-door" href="camp.html" data-pane="camp">The camp</a>
     <a class="menu-door" href="seed.html" data-pane="seed">The Seed</a>
+    <a class="menu-door" href="tribe.html" data-pane="tribe">The tribe</a>
     <a class="menu-door" id="toVerse" href="#mahalaverse">Mahalaverse<svg viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg></a>
     <a class="menu-door" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give>Donate</a>
   </nav>
@@ -2581,7 +2582,7 @@ function railShow(near) {
 // ----------------------------------------------------------------------------------------------------------- the camp and The Seed
 // Each opens over the page in a pane. Close (or Back) takes it away and leaves you exactly where you were.
 const SITE = window.MAHALA_SITE || {};
-const PANES = { camp: ['camp.html', 'The camp'], seed: ['seed.html', 'The Seed'] };
+const PANES = { camp: ['camp.html', 'The camp'], seed: ['seed.html', 'The Seed'], tribe: ['tribe.html', 'The tribe'] };
 const pane = $('pane');
 let paneName = null, paneY = 0, panePushed = false, paneFrom = null;
 function openPane(name, hash = '', from = null, fromLink = false) {
@@ -2606,7 +2607,7 @@ function hidePane() {
   document.documentElement.style.overflow = '';
   scrollTo({ top: paneY, behavior: 'instant' }); readScroll();
   music.duck(false);
-  if (!panePushed && /^#(camp|seed|give)$/i.test(location.hash)) history.replaceState(null, '', location.pathname + location.search);
+  if (!panePushed && /^#(camp|seed|give|tribe)$/i.test(location.hash)) history.replaceState(null, '', location.pathname + location.search);
   panePushed = false;
   setTimeout(() => { if (!paneName) { pane.hidden = true; pane.textContent = ''; } }, 380);
   if (paneFrom && paneFrom.focus) paneFrom.focus({ preventScroll: true });
@@ -2617,8 +2618,8 @@ addEventListener('popstate', (e) => {
   else if (!paneName && e.state && e.state.pane && !S.gone) { openPane(e.state.pane, '', null, true); panePushed = true; }      // forward again
 });
 addEventListener('hashchange', () => {      // a #camp, #seed or #give typed or followed while on the page
-  const pl = /^#(camp|seed|give)$/i.exec(location.hash);
-  if (pl && !paneName && !S.gone && !(history.state && history.state.pane)) openPane(pl[1].toLowerCase() === 'camp' ? 'camp' : 'seed', pl[1].toLowerCase() === 'give' ? 'give' : '', null, true);
+  const pl = /^#(camp|seed|give|tribe)$/i.exec(location.hash);
+  if (pl && !paneName && !S.gone && !(history.state && history.state.pane)) { const k = pl[1].toLowerCase(); openPane(k === 'give' ? 'seed' : k, k === 'give' ? 'give' : '', null, true); }
 });
 addEventListener('message', (e) => { if (e.origin === location.origin && e.data && e.data.mahala === 'close') closePane(); });
 document.querySelectorAll('[data-give]').forEach((a) => { if (SITE.donateUrl) { a.href = SITE.donateUrl; a.target = '_blank'; a.rel = 'noopener'; a.removeAttribute('data-pane'); } });
@@ -2784,7 +2785,7 @@ function hhmm(m) { m = Math.round(m); return `${String(Math.floor(m / 60)).padSt
 function clockText(m, el) { const e = Math.round(el); return e >= 0 ? `${hhmm(m)}, sun ${e}° up` : `${hhmm(m)}, sun ${-e}° down`; }
 
 let THREE = null;
-if (!MV_LINK) { const pl = /^#(camp|seed|give)$/i.exec(location.hash); if (pl) openPane(pl[1].toLowerCase() === 'camp' ? 'camp' : 'seed', pl[1].toLowerCase() === 'give' ? 'give' : '', null, true); }
+if (!MV_LINK) { const pl = /^#(camp|seed|give|tribe)$/i.exec(location.hash); if (pl) { const k = pl[1].toLowerCase(); openPane(k === 'give' ? 'seed' : k, k === 'give' ? 'give' : '', null, true); } }
 if (MV_LINK) stepIn({ quick: true, now: true });           // a link straight into the Mahalaverse: The Seed stays out of the way
 else { try { THREE = await import('three'); } catch (e) { S.errors.push('three: ' + e.message); } }
 const canGL = (() => { try { return !!document.createElement('canvas').getContext('webgl2'); } catch (e) { return false; } })();
