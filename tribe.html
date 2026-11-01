@@ -406,7 +406,7 @@ html.join-open, html.join-open body { overflow: hidden; }
   function scaleMarks(k) {
     marks.forEach(function (m) {
       if (!m.label) { m.e.setAttribute('r', m.r / Math.pow(k, m.p)); return; }
-      m.e.style.display = k >= 1.3 || m.big ? '' : 'none';
+      m.e.style.display = k >= 1.3 ? '' : 'none';   // names only in the regional views, never on the whole world
       m.e.style.fontSize = (11.5 / k) + 'px'; m.e.style.strokeWidth = (3 / k) + 'px';
       m.e.setAttribute('x', m.x + 4 / k); m.e.setAttribute('y', m.y - 4 / k);
     });
