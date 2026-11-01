@@ -15,6 +15,10 @@ window.MAHALA_SITE = {
   // Raised so far for The Seed, entered by a steward until the ledger is live: money carried from 2026 (Mahala OS T-005)
   // plus the BackaBuddy total (BackaBuddy has no API, so someone copies it here). Change enteredOn when you update it.
   raised: { carried: 70000, backabuddy: 0, enteredOn: '2026-10-31' },
+  // Accounts ("claim your thread"): the member database's address and its public anon key, from the Supabase project's
+  // API settings (Mahala OS platform/docs/SETUP.md). Both are public by design: the database's own rules decide what
+  // anyone may read or write. Left empty, there are no accounts and the site runs exactly as before.
+  members: { url: '', anonKey: '' },
 };
 
 (function (S) {

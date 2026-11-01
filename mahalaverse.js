@@ -4356,6 +4356,14 @@ function openIntro() {
 }
 INTRO.addEventListener('click', e => { if (!e.target.closest('[data-intro="go"]')) return; ME.agreed = Date.now(); saveMe(); INTRO.hidden = true; chime('soft'); });
 { const _ew = enterWorld; enterWorld = function (arrival) { const was = WORLD.entered; _ew(arrival); if (!was && !ME.agreed) setTimeout(openIntro, 350); }; }
+/* Stage 2: with accounts on, the Mahalaverse asks for an account before anyone steps onto the playa (making one is
+   the way in). Without accounts (site.js members empty), or if the member database cannot be reached, the walk
+   opens as before. */
+{ const _ewGate = enterWorld; enterWorld = function (arrival) {
+  const M = window.MahalaMembers;
+  if (!M || WORLD.entered) { _ewGate(arrival); return; }
+  M.info().then(i => { if (i && i.signedIn) _ewGate(arrival); else M.gate(); }, () => _ewGate(arrival));
+}; }
 
 /* the lists: hidden on the first walk; afterwards a single Explore button, and an open list with its X at the top right */
 { const L = $('.lists'); if (L) {
