@@ -587,11 +587,11 @@ html.join-open, html.join-open body { overflow: hidden; }
     <p class="intro">Mahala is a theme camp at AfrikaBurn, and almost a thousand people have passed through it.</p>
 
     <div class="narrow">
-      <div class="reel" id="facesReel">
-        <video muted loop playsinline preload="none" data-poster="camp-media/faces-reel-poster.jpg" data-src="camp-media/faces-reel.mp4" aria-label="We are Mahala: faces from the camp"></video>
-        <button class="r-sound" type="button" data-reel-sound aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h2.5l3.5-3v10l-3.5-3H2z"/><path d="M10.5 5.8c.8.6 1.2 1.3 1.2 2.2s-.4 1.6-1.2 2.2"/></svg><span>Tap for sound</span></button>
+      <div class="reel" id="campReel">
+        <video muted loop playsinline preload="none" data-poster="camp-media/camp-reel-poster.jpg" data-src="camp-media/camp-reel.mp4" aria-label="Flower of Life: the camp at AfrikaBurn"></video>
+        <button class="r-sound" type="button" data-reel-full><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h2.5l3.5-3v10l-3.5-3H2z"/><path d="M10.5 5.8c.8.6 1.2 1.3 1.2 2.2s-.4 1.6-1.2 2.2M12.4 4c1.3 1 2 2.4 2 4s-.7 3-2 4"/></svg><span>Watch with sound</span></button>
       </div>
-      <p class="reel-cap"><span>We are Mahala</span><span>49 s</span></p>
+      <p class="reel-cap"><span>Flower of Life</span><span>53 s</span></p>
     </div>
 
     <h2 class="h-sub" style="margin-top: clamp(40px, 6vw, 64px)">You are part of all of it.</h2>
@@ -673,13 +673,6 @@ html.join-open, html.join-open body { overflow: hidden; }
     <h2 class="h-sec">We live by six SACRED agreements</h2>
     <ol class="sacred" id="sacredShow"><li><b>S</b><span>Seeking understanding before interpretation</span></li><li><b>A</b><span>Assuming good intent</span></li><li><b>C</b><span>Choosing presence over reaction</span></li><li><b>R</b><span>Radical responsibility for what we feel</span></li><li><b>E</b><span>Empowered expression of our needs</span></li><li><b>D</b><span>Discernment of gossip as distortion</span></li></ol>
 
-    <div class="narrow" style="margin-top: clamp(46px, 7vw, 76px)">
-      <div class="reel" id="campReel">
-        <video muted loop playsinline preload="none" data-poster="camp-media/camp-reel-poster.jpg" data-src="camp-media/camp-reel.mp4" aria-label="Flower of Life: the camp at AfrikaBurn"></video>
-        <button class="r-sound" type="button" data-reel-full><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h2.5l3.5-3v10l-3.5-3H2z"/><path d="M10.5 5.8c.8.6 1.2 1.3 1.2 2.2s-.4 1.6-1.2 2.2M12.4 4c1.3 1 2 2.4 2 4s-.7 3-2 4"/></svg><span>Watch with sound</span></button>
-      </div>
-      <p class="reel-cap"><span>Flower of Life</span><span>53 s</span></p>
-    </div>
 
     <div class="page-acts">
       <button class="primary" type="button" data-join>Join the camp</button>
@@ -742,22 +735,16 @@ html.join-open, html.join-open body { overflow: hidden; }
 })();
 </script>
 <script>
-// the reels: their posters at once, each plays (muted) while it is on screen, with sound when asked
+// the camp reel: its poster at once, plays (muted) while it is on screen, full screen with sound when asked
 (function () {
-  var faces = document.querySelector('#facesReel video'), camp = document.querySelector('#campReel video');
-  var vids = [faces, camp];
-  vids.forEach(function (v) { if (v.dataset.poster) { v.poster = v.dataset.poster; } });
+  var camp = document.querySelector('#campReel video');
+  if (camp.dataset.poster) camp.poster = camp.dataset.poster;
   var load = function (v) { if (v.dataset.src && !v.getAttribute('src')) v.src = v.dataset.src; };
   if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function (ents) {
+    new IntersectionObserver(function (ents) {
       ents.forEach(function (e) { var v = e.target; if (e.isIntersecting) { load(v); v.play().catch(function () {}); } else v.pause(); });
-    }, { threshold: 0.35 });
-    vids.forEach(function (v) { io.observe(v); });
-  } else vids.forEach(load);
-  var sb = document.querySelector('#facesReel [data-reel-sound]');
-  var sound = function (on) { faces.muted = !on; sb.setAttribute('aria-pressed', String(on)); sb.querySelector('span').textContent = on ? 'Sound on' : 'Tap for sound'; if (on) { load(faces); faces.play().catch(function () {}); } };
-  sb.addEventListener('click', function () { sound(faces.muted); });
-  faces.addEventListener('click', function () { sound(faces.muted); });
+    }, { threshold: 0.35 }).observe(camp);
+  } else load(camp);
   document.querySelector('#campReel [data-reel-full]').addEventListener('click', function () {
     load(camp); camp.muted = false; camp.currentTime = 0; camp.play().catch(function () {});
     if (camp.requestFullscreen) camp.requestFullscreen().catch(function () {});
