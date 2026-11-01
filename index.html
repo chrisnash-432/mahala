@@ -1456,6 +1456,7 @@ body.from-seed .lobby .eyebrow, body.from-seed #lobbyLine, body.from-seed .lobby
   <nav class="menu" aria-label="Menu">
     <a class="menu-door" href="camp.html" data-pane="camp">The camp</a>
     <a class="menu-door" href="seed.html" data-pane="seed">The Seed</a>
+    <a class="menu-door" href="tribe.html" data-pane="tribe">The tribe</a>
     <a class="menu-door" id="toVerse" href="#mahalaverse">Mahalaverse<svg viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg></a>
     <a class="menu-door" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give>Donate</a>
   </nav>
@@ -1569,7 +1570,7 @@ body.from-seed .lobby .eyebrow, body.from-seed #lobbyLine, body.from-seed .lobby
 </div>
 <div class="moment low-band end-band" data-m="7" inert>
   <div class="end-acts">
-    <a class="act" href="camp.html" data-pane="camp">Join the camp</a>
+    <a class="act" href="tribe.html#join" data-pane="tribe" data-hash="join">Join the tribe</a>
     <a class="act step" id="stepIn" href="#mahalaverse"><svg viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg>Step into the Mahalaverse</a>
     <a class="act" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give>Donate to The Seed</a>
   </div>
@@ -1680,12 +1681,13 @@ body.from-seed .lobby .eyebrow, body.from-seed #lobbyLine, body.from-seed .lobby
     <svg class="arch-head" viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg>
     <h2 id="campWayH">Join the camp</h2>
     <p class="epi">Plant the seed with us at AfrikaBurn 2027.</p>
+    <p>The camp is by invitation, and about 50 to 60 of us camp together. It starts with the tribe: <a href="tribe.html#join" data-pane="tribe" data-hash="join">join the tribe</a>, tell us you would love to come, and the camp leads read every introduction.</p>
     <p>Live and build with us in the Tankwa Karoo, from Monday 19 April for the build and through the burn, 26 April to 2 May 2027.</p>
     <p class="label" id="liveQ">Where do you live?</p>
     <div class="choice" role="group" aria-labelledby="liveQ"><button type="button" data-live="za" aria-pressed="false">South Africa</button><button type="button" data-live="away" aria-pressed="false">Elsewhere</button></div>
     <div class="reveal" id="campReveal" hidden>
       <p style="margin-top: 1.2em">One main dinner a day and seven litres of water, bell tents to rent.</p>
-      <button class="primary" type="button" data-choose="camp">Join the camp</button>
+      <button class="primary" type="button" data-choose="camp">I would love to come</button>
     </div>
   </article>
 </div>
@@ -2108,7 +2110,7 @@ onOpen.film = () => { film(true); }; onClose.film = () => film(false);
 
 // four ways in, and home: one of them, or all of the above
 const WAY_SHEET = { build: 'build', camp: 'camp-way', support: 'support', talks: 'talks' };
-const WAY_NAME = { build: 'Join the build', camp: 'Join the camp', support: 'Support the temple', talks: 'Talks and events' };
+const WAY_NAME = { build: 'Join the build', camp: 'The camp, by invitation', support: 'Support the temple', talks: 'Talks and events' };
 const chosen = [];
 const listAnd = (a) => (a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a.at(-1));
 document.querySelectorAll('[data-way]').forEach((b) => b.addEventListener('click', () => open(WAY_SHEET[b.dataset.way], b)));
@@ -2581,7 +2583,7 @@ function railShow(near) {
 // ----------------------------------------------------------------------------------------------------------- the camp and The Seed
 // Each opens over the page in a pane. Close (or Back) takes it away and leaves you exactly where you were.
 const SITE = window.MAHALA_SITE || {};
-const PANES = { camp: ['camp.html', 'The camp'], seed: ['seed.html', 'The Seed'] };
+const PANES = { camp: ['camp.html', 'The camp'], seed: ['seed.html', 'The Seed'], tribe: ['tribe.html', 'The tribe'] };
 const pane = $('pane');
 let paneName = null, paneY = 0, panePushed = false, paneFrom = null;
 function openPane(name, hash = '', from = null, fromLink = false) {
@@ -2606,7 +2608,7 @@ function hidePane() {
   document.documentElement.style.overflow = '';
   scrollTo({ top: paneY, behavior: 'instant' }); readScroll();
   music.duck(false);
-  if (!panePushed && /^#(camp|seed|give)$/i.test(location.hash)) history.replaceState(null, '', location.pathname + location.search);
+  if (!panePushed && /^#(camp|seed|give|tribe|join)$/i.test(location.hash)) history.replaceState(null, '', location.pathname + location.search);
   panePushed = false;
   setTimeout(() => { if (!paneName) { pane.hidden = true; pane.textContent = ''; } }, 380);
   if (paneFrom && paneFrom.focus) paneFrom.focus({ preventScroll: true });
@@ -2617,10 +2619,15 @@ addEventListener('popstate', (e) => {
   else if (!paneName && e.state && e.state.pane && !S.gone) { openPane(e.state.pane, '', null, true); panePushed = true; }      // forward again
 });
 addEventListener('hashchange', () => {      // a #camp, #seed or #give typed or followed while on the page
-  const pl = /^#(camp|seed|give)$/i.exec(location.hash);
-  if (pl && !paneName && !S.gone && !(history.state && history.state.pane)) openPane(pl[1].toLowerCase() === 'camp' ? 'camp' : 'seed', pl[1].toLowerCase() === 'give' ? 'give' : '', null, true);
+  const pl = /^#(camp|seed|give|tribe|join)$/i.exec(location.hash);
+  if (pl && !paneName && !S.gone && !(history.state && history.state.pane)) { const k = pl[1].toLowerCase(); openPane(k === 'give' ? 'seed' : k === 'join' ? 'tribe' : k, k === 'give' ? 'give' : k === 'join' ? 'join' : '', null, true); }
 });
-addEventListener('message', (e) => { if (e.origin === location.origin && e.data && e.data.mahala === 'close') closePane(); });
+addEventListener('message', (e) => {
+  if (e.origin !== location.origin || !e.data) return;
+  if (e.data.mahala === 'close') closePane();
+  if (e.data.mahala === 'open' && PANES[e.data.pane]) openPane(e.data.pane, e.data.hash || '', null, true);
+  if (e.data.mahala === 'go' && e.data.hash === 'mahalaverse') { hidePane(); location.hash = '#mahalaverse'; }
+});
 document.querySelectorAll('[data-give]').forEach((a) => { if (SITE.donateUrl) { a.href = SITE.donateUrl; a.target = '_blank'; a.rel = 'noopener'; a.removeAttribute('data-pane'); } });
 document.addEventListener('click', (e) => {
   const a = e.target instanceof Element && e.target.closest('[data-pane]'); if (!a || S.gone) return;
@@ -2784,7 +2791,7 @@ function hhmm(m) { m = Math.round(m); return `${String(Math.floor(m / 60)).padSt
 function clockText(m, el) { const e = Math.round(el); return e >= 0 ? `${hhmm(m)}, sun ${e}° up` : `${hhmm(m)}, sun ${-e}° down`; }
 
 let THREE = null;
-if (!MV_LINK) { const pl = /^#(camp|seed|give)$/i.exec(location.hash); if (pl) openPane(pl[1].toLowerCase() === 'camp' ? 'camp' : 'seed', pl[1].toLowerCase() === 'give' ? 'give' : '', null, true); }
+if (!MV_LINK) { const pl = /^#(camp|seed|give|tribe|join)$/i.exec(location.hash); if (pl) { const k = pl[1].toLowerCase(); openPane(k === 'give' ? 'seed' : k === 'join' ? 'tribe' : k, k === 'give' ? 'give' : k === 'join' ? 'join' : '', null, true); } }
 if (MV_LINK) stepIn({ quick: true, now: true });           // a link straight into the Mahalaverse: The Seed stays out of the way
 else { try { THREE = await import('three'); } catch (e) { S.errors.push('three: ' + e.message); } }
 const canGL = (() => { try { return !!document.createElement('canvas').getContext('webgl2'); } catch (e) { return false; } })();

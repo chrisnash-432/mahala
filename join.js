@@ -1,4 +1,4 @@
-// Join the camp: the application, in four steps, on the camp page. The answers go to the camp's Google Sheet
+// Join the camp: the application, in four steps, on the camp page, for people holding an invitation letter. The answers go to the camp's Google Sheet
 // (its Applications tab) through site.js. Nothing is paid here: once a camp lead has confirmed a place, they send
 // a payment link. Figures are working figures, and say so.
 (function () {
@@ -197,6 +197,13 @@
   $('joinClose').addEventListener('click', closeJoin);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) { e.stopImmediatePropagation(); closeJoin(); } }, true);
   document.querySelectorAll('[data-join]').forEach(function (b) { b.addEventListener('click', function () { openJoin(b); }); });
-  if (/^#(join|apply)$/i.test(location.hash)) openJoin();
+  // the camp is by invitation: the application opens only from an invitation letter's link (it carries ?ref=, ?inv= or ?by=)
+  var INVITED = /[?&](ref|inv|by)=/.test(location.search);
+  if (INVITED) {
+    document.querySelectorAll('[data-join]').forEach(function (b) { b.hidden = false; });
+    document.querySelectorAll('[data-open-tribe]').forEach(function (a) { a.hidden = true; });
+    var bi = $('byInvite'); if (bi) bi.hidden = true;
+    if (/^#(join|apply)$/i.test(location.hash)) openJoin();
+  }
   window.__join = { open: openJoin, state: function () { return { step: step, A: A }; } };
 })();
