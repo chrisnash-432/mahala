@@ -27,15 +27,17 @@ Static files, no build step. Preview with `python3 -m http.server` and check at 
 | `seed.html`, `camp.html` | The Seed and The camp. They open over the front page; Close returns to the same place. `camp.html` holds the four-step Join the camp application |
 | `mahalaverse.js` | The public edition of the Mahalaverse (no accounts; members' features hidden) |
 | `join.js` | The application form logic |
-| `site.js` | Settings every page shares: `donateUrl`, `target`, `buildWeek`, `sheet` |
+| `site.js` | Settings every page shares: `donateUrl`, `target`, `buildWeek`, `sheet`, `fx`, `raised`, `members` |
+| `assets/shim/claude-shim.js` | Accounts: sign-in, "claim your thread", and the game's data on the member database. Built from Mahala OS `platform/shim/`; never edit this copy. It does nothing until `site.js` `members` has the project's address |
 | `apps-script-standalone.gs` | A copy of the applications backend that runs in Google Apps Script. Change the live script first, then this copy, so they always match |
 | `assets/`, `camp-media/`, `seed-media/`, `seed/` | Images, audio, films and the 3D model. `seed/model/` holds vendor code |
 
 Changing settings:
 
 - **Target or donate link:** change `site.js`. The Donate buttons in `index.html` and `seed.html` also carry the BackaBuddy link inline, so change those too.
-- **Raised so far:** `CONFIG.raise` in `mahalaverse.js` (Mahala OS task T-005).
-- **After any change to `site.js`:** bump its version in every page (`site.js?v=3` becomes `?v=4`) so browsers fetch the new file.
+- **Raised so far:** `raised` in `site.js` (the money carried from 2026, Mahala OS T-005, plus the BackaBuddy total a steward copies in, with `enteredOn`).
+- **After any change to `site.js`:** bump its version in every page (`site.js?v=5` becomes `?v=6`) so browsers fetch the new file. The same goes for `assets/shim/claude-shim.js?v=1` when the shim is rebuilt.
+- **Accounts:** `members: { url, anonKey }` in `site.js` turns them on (Mahala OS `platform/docs/SETUP.md`). The anon key is public by design; the service key never comes near this repo.
 
 ## Standing rules
 

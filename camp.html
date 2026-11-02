@@ -581,7 +581,7 @@ html.join-open, html.join-open body { overflow: hidden; }
   <div class="bar">
     <button class="back" type="button" data-page-close><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>Close</button>
     <h1 class="ttl" id="campH">The camp</h1>
-    <span class="side"></span>
+    <span class="side"><button type="button" data-mahala-account hidden></button></span>
   </div>
   <div class="page">
     <p class="intro">Mahala is a theme camp at AfrikaBurn, and almost a thousand people have passed through it.</p>
@@ -695,7 +695,8 @@ html.join-open, html.join-open body { overflow: hidden; }
   </div>
   <div class="page join-page"><div id="joinBody"></div></div>
 </section>
-<script src="site.js?v=4"></script>
+<script src="site.js?v=5"></script>
+<script src="assets/shim/claude-shim.js?v=1"></script>
 <script>
 (function () {
   var SITE = window.MAHALA_SITE || {};
