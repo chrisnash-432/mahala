@@ -189,7 +189,10 @@
     requestAnimationFrame(function () { box.classList.add('open'); });
     draw(true);
   }
+  // opened straight onto the application from inside the Mahalaverse: closing it hands you back to the world
+  var direct = /^#(join|apply)$/i.test(location.hash);
   function closeJoin() {
+    if (direct && window.parent !== window) { try { if (window.parent.location.origin === location.origin) { window.parent.postMessage({ mahala: 'close' }, location.origin); return; } } catch (e) { /* not ours */ } }
     box.classList.remove('open'); document.documentElement.classList.remove('join-open');
     setTimeout(function () { box.hidden = true; }, 250);
     if (opener && opener.focus) opener.focus({ preventScroll: true });

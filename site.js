@@ -9,6 +9,12 @@ window.MAHALA_SITE = {
   // (an Apps Script project in Chris's BioHarmonic account; its code is apps-script-standalone.gs). Camp applications go
   // to its Applications tab, and sign-ups for news to its Email list tab.
   sheet: 'https://script.google.com/macros/s/AKfycbzghj0pcukOFS6AyXr7xgEEFx192BIIZYrjOZqCbZvHDwh986SsGEZor4r8l5M8b9o/exec',
+  // The camp's rate for showing money in both currencies, set once a month by a steward. Rand is what PayFast charges;
+  // the dollar figure beside it is a guide. Working rate: the 30 Oct 2026 close (Pound Sterling Live), until a steward sets one.
+  fx: { usdZar: 16.7, set: '2026-10-30' },
+  // Raised so far for The Seed, entered by a steward until the ledger is live: money carried from 2026 (Mahala OS T-005)
+  // plus the BackaBuddy total (BackaBuddy has no API, so someone copies it here). Change enteredOn when you update it.
+  raised: { carried: 70000, backabuddy: 0, enteredOn: '2026-10-31' },
 };
 
 (function (S) {
@@ -29,4 +35,27 @@ window.MAHALA_SITE = {
     return fetch(S.sheet, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
   };
   S.joinList = function (row) { return S.post(Object.assign({ path: 'list', keepPosted: 'yes' }, row)); };
+
+  // Money in both currencies. The visitor's side decides which comes first: rand for South Africa, dollars for everyone
+  // else. A choice made with the R / $ toggle wins; otherwise the browser's time zone and language decide.
+  S.raisedTotal = function () { var r = S.raised || {}; return (+r.carried || 0) + (+r.backabuddy || 0); };
+  S.side = function () {
+    try { var c = localStorage.getItem('mahala.cur'); if (c === 'R' || c === '$') return c; } catch (e) { /* storage blocked */ }
+    var tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { /* old browser */ }
+    if (/^Africa\/Johannesburg$/.test(tz) || /-ZA$/i.test(navigator.language || '')) return 'R';
+    return '$';
+  };
+  S.setSide = function (c) {
+    try { localStorage.setItem('mahala.cur', c === 'R' ? 'R' : '$'); } catch (e) { /* storage blocked */ }
+    try { window.dispatchEvent(new CustomEvent('mahala:cur', { detail: c })); } catch (e) { /* old browser */ }
+  };
+  function grp(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  // both(100, '$') gives "$100 (about R1,670)" abroad and "R1,670 (about $100)" in South Africa
+  S.both = function (amount, from, opts) {
+    var rate = (S.fx && +S.fx.usdZar) || 0, zar = from === '$' ? amount * rate : amount, usd = from === '$' ? amount : (rate ? amount / rate : 0);
+    if (!rate) return from === '$' ? '$' + grp(amount) : 'R' + grp(amount);
+    var side = (opts && opts.side) || S.side(), r = 'R' + grp(zar), d = '$' + grp(usd);
+    if (opts && opts.short) return side === 'R' ? r : d;
+    return side === 'R' ? r + ' (about ' + d + ')' : d + ' (about ' + r + ')';
+  };
 })(window.MAHALA_SITE);
