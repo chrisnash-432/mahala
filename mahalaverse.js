@@ -63,7 +63,7 @@ const DATA = {
       goal: 'Prototype a small light box: a gift for the gates and the first step of the Temple Tech research into light and geometry.',
       steps: ['Model it in 3D, in Blender', 'Cut a prototype', 'Test it with a light inside'], skills: '3D modelling, making, electronics' },
     { id: 'Q-07', name: 'Share the film', crew: 'Story crew', stage: 'Fund', where: 'PETAL_A01', tone: 'y', pin: V3(10, 6.5, -9),
-      goal: 'Send the 30 s film to people who would love to build or back the temple.',
+      goal: 'Send the film to people who would love to build or back the temple.',
       steps: ['Watch the film', 'Share it with your community', 'Point them to the three doors'], skills: 'Story, sharing', open: true },
   ],
   gates: [
@@ -1476,7 +1476,7 @@ function renderInspector(it) {
   let h = '';
   const k = it.kind;
   if (k === 'temple') h = head(k, 'The art piece · AfrikaBurn 2027', 'The Seed', 'Quaggafontein, Tankwa Karoo') + `<div class="insp-body">
-    <div class="tiles">${tile('film', 'assets/film_poster.jpg', 'Watch the 30 s film', true)}${tile('inside', 'assets/K5b.jpg', 'Step inside', true)}${tile('night', 'assets/K8d.jpg', 'See it at night')}</div>
+    <div class="tiles">${tile('film', 'assets/film_poster.jpg', 'Watch the film', true)}${tile('inside', 'assets/K5b.jpg', 'Step inside', true)}${tile('night', 'assets/K8d.jpg', 'See it at night')}</div>
     <p>A zome: a dome of coloured glass panels spiralling up, inspired by the king protea. By day the sun paints the floor and the people inside in fields of colour. At night a lantern inside throws a wheel of coloured rays across the desert floor.</p>
     ${links([['CENTRE', 'Inside', 'The centrepiece: a glass egg on a copper coil'], ['POD_VE', 'Around', 'The six copper forms']])}
     <div class="actions"><button class="btn primary" data-act="givegate">${icon('gift')}Help raise The Seed</button><button class="btn" data-act="join">${icon('gate')}Take part</button></div></div>`;
@@ -1609,7 +1609,7 @@ INS.addEventListener('click', e => {
   if (act === 'fire:deck') { openFireside('deck'); return; }
   if (act === 'book') { openBook(0); return; }
   if (act === 'close') { deselect(); INS.classList.add('leave'); setTimeout(() => { if (!current) INS.hidden = true; }, 200); return; }
-  if (act === 'film') openFilm('assets/mahala_30s.mp4', 'Mahala, 30 seconds. Concept visualisation: rendered from the 3D model, with motion added by AI.', true);
+  if (act === 'film') openFilm('seed/media/film_wide.mp4', 'The Seed, 60 seconds. Concept visualisation: rendered from the 3D model, some of its motion added by AI.', true);
   if (act === 'inside' || act === 'enter') select('CENTRE');
   if (act === 'leave') leaveTemple();
   if (act === 'floorfilm') openFilm('assets/floor_day.mp4', 'A day on the floor, 09:00 to 16:30: sunlight through the acrylic paints the floor.', false, true);
@@ -2703,7 +2703,7 @@ function testOpen(n, then) {
 function goGate(n) { ({ 1: () => openFireside(), 2: () => select('MAHAL_COIL'), 3: () => select('CAMP'), 4: () => select('CENTRE'), 5: () => openPath(), 6: () => goBeyond(6), 7: () => goBeyond(7) }[n] || (() => openPath()))(); }
 
 /* ---------- the free path: the teaser, the story, the tour, the book, the portal ---------- */
-function playTeaser(over = false) { openFilm('assets/mahala_30s.mp4', 'The Mahala teaser, 30 seconds. Concept visualisation: rendered from the 3D model, with motion added by AI.', true); FM.classList.toggle('over', over); markDone(0, 'teaser'); }
+function playTeaser(over = false) { openFilm('seed/media/film_wide.mp4', 'The Seed, 60 seconds. Concept visualisation: rendered from the 3D model, some of its motion added by AI.', true); FM.classList.toggle('over', over); markDone(0, 'teaser'); }
 FV.addEventListener('ended', () => markDone(0, 'teaser'));
 const TOUR = [
   { title: 'The way in', clock: 18 * 60 + 10, view: () => ({ t: V3(2, 2.6, 0), d: 46, p: 1.3, a: Math.PI / 2 - 0.15 }),
