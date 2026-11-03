@@ -279,6 +279,9 @@ a.act { color: inherit; text-decoration: none; }
 .act svg path { fill: none; stroke: currentColor; stroke-width: 1.15; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
 .acts { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 1.5em; }
 .acts .act { margin-top: 0; }
+.first-acts { margin-top: 1.4em; }
+.first-acts .act { padding: 10px 16px 9px; font-size: 10.5px; letter-spacing: .16em; }
+.menu .menu-door[data-give] { border: 1px solid currentColor; border-radius: 999px; padding: 8px 12px; margin-left: 4px; }
 .moment.on .acts .act { pointer-events: auto; }
 .moment[data-m="3"]::before, .moment[data-m="4"]::before, .moment[data-m="7"]::before { content: ""; position: absolute; left: 50%; top: 50%; width: 118%; height: 300%; transform: translate(-50%, -50%); z-index: -1; pointer-events: none;
   background: radial-gradient(closest-side, rgba(18, 12, 8, .34), rgba(18, 12, 8, .16) 55%, rgba(18, 12, 8, 0)); }
@@ -1587,6 +1590,7 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
   <p class="kicker v">An invitation for you, dearest soul.</p>
   <h1 class="big" id="m0h" aria-label="MAHALA"><span aria-hidden="true" style="--i:-2.5">M</span><span aria-hidden="true" style="--i:-1.5">A</span><span aria-hidden="true" style="--i:-0.5">H</span><span aria-hidden="true" style="--i:0.5">A</span><span aria-hidden="true" style="--i:1.5">L</span><span aria-hidden="true" style="--i:2.5">A</span></h1>
   <p class="sub v">Reviving the art of temple building, through reverential play</p>
+  <div class="acts first-acts"><a class="act" href="tribe.html#join" data-pane="tribe" data-hash="join">Join the tribe</a><a class="act" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give>Donate to The Seed</a></div>
   <p class="vh">The Seed at first light: a dome of coloured panes on the open clay, the sun coming up behind it.</p>
 </div>
 <div class="moment low-band env-band arrive sunrise" data-m="0" inert>
@@ -1621,7 +1625,6 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
 <div class="moment top-band inked" data-m="5" inert>
   <h2 class="held" id="m5h">And oh, what fun awaits.</h2>
   <p class="sub">AfrikaBurn, Tankwa Karoo, 26 April to 2 May 2027</p>
-  <a class="act" href="camp.html" data-pane="camp">The camp</a>
   <p class="vh">The Seed at sunset, glowing gold.</p>
 </div>
 <div class="moment top-band" data-m="6" id="m6" inert>
@@ -1731,7 +1734,7 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
       <li><i style="background: var(--cyan)"></i><span><b>Strike</b>, 2 and 3 May. Everything comes home, nothing left on the clay.</span></li>
       <li><i style="background: none; border: 1px solid var(--ink)"></i><span><b>Between burns.</b> Calls, build days, and the Great Unpack in Cape Town after the burn.</span></li>
     </ul>
-    <p>Included: one main dinner a day and seven litres of water. Bell tents to rent.</p>
+    <p>Included: one main dinner a day and seven litres of water. Camping gear to rent for an extra fee (canvas tents, mattresses, stretchers), which you put up and take down yourself.</p>
     <p class="label">We live by six SACRED agreements</p>
     <ul class="sacred">
       <li><b>S</b>Seek understanding before interpretation.</li>
@@ -1773,7 +1776,7 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
     <p class="label" id="liveQ">Where do you live?</p>
     <div class="choice" role="group" aria-labelledby="liveQ"><button type="button" data-live="za" aria-pressed="false">South Africa</button><button type="button" data-live="away" aria-pressed="false">Elsewhere</button></div>
     <div class="reveal" id="campReveal" hidden>
-      <p style="margin-top: 1.2em">One main dinner a day and seven litres of water, bell tents to rent.</p>
+      <p style="margin-top: 1.2em">One main dinner a day and seven litres of water. Camping gear to rent for an extra fee, which you put up and take down yourself.</p>
       <button class="primary" type="button" data-choose="camp">I would love to come</button>
     </div>
   </article>
