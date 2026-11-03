@@ -79,6 +79,7 @@ button { font: inherit; color: inherit; }
 #poster.gone { opacity: 0; }
 #load { position: fixed; left: 0; top: 0; height: 1px; width: 0; background: var(--warm); z-index: 6; transition: width .5s var(--ease), opacity 1s ease; }
 #grain { position: fixed; inset: 0; z-index: 2; pointer-events: none; opacity: .09; mix-blend-mode: overlay; background: var(--grain) repeat; background-size: 160px 160px; animation: grain 1s steps(5) infinite; }
+@media (max-width: 760px) { #grain { animation: none; } }
 @keyframes grain { 0% { background-position: 0 0; } 20% { background-position: -47px 31px; } 40% { background-position: 63px -18px; } 60% { background-position: -22px -71px; } 80% { background-position: 39px 57px; } }
 
 /* the scroll track: eight moments, and the lines between them (each section's length is set from the words it carries) */
@@ -91,17 +92,19 @@ button { font: inherit; color: inherit; }
 .sub.v { font: italic 400 clamp(18px, 2.1vw, 24px)/1.38 var(--verse); letter-spacing: .01em; max-width: 26em; }
 .verse { position: fixed; z-index: 3; left: 50%; top: 15svh; transform: translateX(-50%); width: min(92vw, 880px); pointer-events: none; text-align: center; color: var(--warm); transition: color .8s ease; }
 .breath { position: absolute; left: 0; right: 0; top: 0; margin: 0; font: italic 400 clamp(24px, 3.25vw, 40px)/1.3 var(--verse); letter-spacing: .004em; text-wrap: balance;
-  text-shadow: 0 0 22px var(--halo), 0 0 3px var(--halo); transition: text-shadow .8s ease; }
+  text-shadow: 0 0 12px var(--halo), 0 0 3px var(--halo); transition: text-shadow .8s ease; }
 .breath .ln { display: block; }
 .breath .ln + .ln { margin-top: .1em; }
-.breath .w { display: inline-block; opacity: 0; filter: blur(5px); transform: translateY(.26em); transition: opacity .55s ease, filter .55s ease, transform .7s ease; }
-.breath.on .w { opacity: 1; filter: blur(0); transform: none; transition: opacity 1.1s ease, filter 1.1s ease, transform 1.4s var(--ease); transition-delay: calc(var(--d, 0) * 1s); }
+.breath .w { display: inline-block; opacity: 0; transform: translateY(.12em); transition: opacity .25s ease, transform .3s ease; }
+.breath.on .w { opacity: 1; transform: none; transition: opacity .6s cubic-bezier(.22, .61, .36, 1), transform .7s var(--ease); transition-delay: calc(var(--d, 0) * 1s); }
+/* in a fast glide the lines are glimpsed whole and quietly; the full reveal plays on the line you land on */
+.verse.fast .breath .w, .verse.fast .breath.on .w { transition: opacity .18s ease, transform .18s ease; transition-delay: 0s; }
 .breath::before { content: ""; position: absolute; left: 50%; top: 50%; width: 116%; height: 250%; transform: translate(-50%, -50%); z-index: -1; pointer-events: none; opacity: 0; transition: opacity .9s ease, background .8s ease;
   background: radial-gradient(closest-side, rgba(18, 12, 8, .34), rgba(18, 12, 8, .15) 55%, rgba(18, 12, 8, 0)); }
 .breath.on::before { opacity: 1; }
 .verse.inked .breath::before { background: radial-gradient(closest-side, rgba(250, 244, 235, .34), rgba(250, 244, 235, .13) 55%, rgba(250, 244, 235, 0)); }
 .verse.inked { color: var(--ink); }
-.verse.inked .breath { text-shadow: 0 0 26px rgba(250, 244, 235, .44), 0 0 2px rgba(250, 244, 235, .3); }
+.verse.inked .breath { text-shadow: 0 0 14px rgba(250, 244, 235, .44), 0 0 2px rgba(250, 244, 235, .3); }
 .sign { font: 400 clamp(34px, 4.6vw, 56px)/1.1 var(--script); margin: .15em 0 0; letter-spacing: 0; }
 .step { font: 400 clamp(15px, 1.7vw, 18px)/1 var(--name); letter-spacing: .1em; text-transform: none; padding: 16px 26px 15px; gap: 12px; }
 .step svg { width: 13px; height: 18px; overflow: visible; }
@@ -121,22 +124,22 @@ button { font: inherit; color: inherit; }
 
 /* words of the moments */
 .moment { position: fixed; z-index: 3; left: 50%; transform: translateX(-50%); width: min(92vw, 820px); text-align: center; pointer-events: none;
-  opacity: 0; filter: blur(4px); transition: opacity .8s ease, filter .8s ease; text-shadow: 0 0 22px var(--halo), 0 0 3px var(--halo); }
-.moment.on { opacity: 1; filter: blur(0); }
-.moment > * { transition: opacity .9s ease, filter .9s ease, transform 1.1s var(--ease); }
-.moment:not(.on) > * { opacity: 0; filter: blur(3px); transform: translateY(6px); }
-.moment.on > *:nth-child(2) { transition-delay: .18s, .18s, .18s, 0s, 0s, 0s; } .moment.on > *:nth-child(3) { transition-delay: .36s, .36s, .36s, 0s, 0s, 0s; } .moment.on > *:nth-child(4) { transition-delay: .54s, .54s, .54s, 0s, 0s, 0s; }
+  opacity: 0; transition: opacity .35s ease; text-shadow: 0 0 22px var(--halo), 0 0 3px var(--halo); }
+.moment.on { opacity: 1; }
+.moment > * { transition: opacity .7s ease, transform .8s var(--ease); }
+.moment:not(.on) > * { opacity: 0; transform: translateY(6px); transition-duration: .3s, .3s; }
+.moment.on > *:nth-child(2) { transition-delay: .1s, .1s; } .moment.on > *:nth-child(3) { transition-delay: .2s, .2s; } .moment.on > *:nth-child(4) { transition-delay: .3s, .3s; }
 /* the arrival: the first words come slowly, with the sunrise, and the name gathers itself */
-.moment.arrive > * { transition-duration: 1.6s, 1.6s, 2s, .3s, .3s, .3s; }
-.moment.arrive.on > :nth-child(1) { transition-delay: .4s, .4s, .4s, 0s, 0s, 0s; }
-.moment.arrive.on > :nth-child(2) { transition-delay: 1.3s, 1.3s, 1.3s, 0s, 0s, 0s; }
-.moment.arrive.on > :nth-child(3) { transition-delay: 2.9s, 2.9s, 2.9s, 0s, 0s, 0s; }
-.moment.arrive.on > :nth-child(4) { transition-delay: 3.8s, 3.8s, 3.8s, 0s, 0s, 0s; }
-.moment.arrive.sunrise.on > :nth-child(1) { transition-delay: .3s, .3s, .3s, 0s, 0s, 0s; }
-.moment.arrive.sunrise.on > :nth-child(2) { transition-delay: 3.9s, 3.9s, 3.9s, 0s, 0s, 0s; }
-.moment.arrive.sunrise.on > :nth-child(3) { transition-delay: 5.5s, 5.5s, 5.5s, 0s, 0s, 0s; }
-.moment.arrive.sunrise.on > :nth-child(4) { transition-delay: 6.3s, 6.3s, 6.3s, 0s, 0s, 0s; }
-.moment.arrive > .big { transition-duration: 2.4s, 2.4s, 2.4s; }
+.moment.arrive > * { transition-duration: 1.6s, 2s; }
+.moment.arrive.on > :nth-child(1) { transition-delay: .4s, .4s; }
+.moment.arrive.on > :nth-child(2) { transition-delay: 1.3s, 1.3s; }
+.moment.arrive.on > :nth-child(3) { transition-delay: 2.9s, 2.9s; }
+.moment.arrive.on > :nth-child(4) { transition-delay: 3.8s, 3.8s; }
+.moment.arrive.sunrise.on > :nth-child(1) { transition-delay: .3s, .3s; }
+.moment.arrive.sunrise.on > :nth-child(2) { transition-delay: 3.9s, 3.9s; }
+.moment.arrive.sunrise.on > :nth-child(3) { transition-delay: 5.5s, 5.5s; }
+.moment.arrive.sunrise.on > :nth-child(4) { transition-delay: 6.3s, 6.3s; }
+.moment.arrive > .big { transition-duration: 2.4s, 2.4s; }
 .big span { display: inline-block; transition: transform 3.6s var(--ease); }
 .moment.arrive:not(.on) .big span { transform: translateX(calc(var(--i) * .2em)); }
 .moment.arrive.on .big span { transition-delay: 1.3s; }
@@ -174,8 +177,8 @@ button { font: inherit; color: inherit; }
 .lantern-btn { font: 400 clamp(16px, 1.9vw, 20px)/1 var(--name); letter-spacing: .07em; text-transform: none; padding: 16px 28px 15px; }
 .lantern-btn .glow { width: 9px; height: 9px; border-radius: 50%; background: var(--warm); box-shadow: 0 0 10px 3px rgba(255, 236, 200, .8); }
 .light-wrap[hidden] { display: none; }
-.call { transition: opacity 1.2s ease .2s, filter 1.2s ease .2s; }
-.call[data-show="false"] { opacity: 0; filter: blur(8px); pointer-events: none; visibility: hidden; }
+.call { transition: opacity 1.2s ease .2s; }
+.call[data-show="false"] { opacity: 0; pointer-events: none; visibility: hidden; }
 .call .sub { margin-top: .5em; }
 .ways { display: flex; justify-content: center; align-items: flex-start; gap: clamp(14px, 3vw, 34px); flex-wrap: nowrap; }
 .way { background: none; border: 0; cursor: pointer; display: grid; justify-items: center; align-content: start; gap: 10px; width: 108px; padding: 0; transition: opacity .9s ease; }
@@ -318,7 +321,7 @@ a.act { color: inherit; text-decoration: none; }
 .env-rest:hover .env, .env-rest:focus-visible .env { transform: rotate(-1deg) translateY(-6px); }
 .env-cap { font: 400 10.5px/1 var(--text); letter-spacing: .22em; text-transform: uppercase; opacity: .9; }
 .moment.env-band { width: auto; left: auto; right: max(5vw, 22px); transform: none; bottom: calc(92px + env(safe-area-inset-bottom, 0px)); }
-.moment.env-band.arrive.on > * { transition-delay: 7.2s, 7.2s, 7.2s, 0s, 0s, 0s; }
+.moment.env-band.arrive.on > * { transition-delay: 7.2s, 7.2s; }
 .moment.env-band:not(.on) > * { transform: translateY(18px); }
 @media (prefers-reduced-motion: no-preference) { .moment.env-band.on .env-rest .env { animation: bob 6s ease-in-out infinite 8s; } }
 @keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -4px; } }
@@ -552,7 +555,7 @@ a.act { color: inherit; text-decoration: none; }
 .breath.low::before, .verse.inked .breath.low::before, .verse.inked .breath.light::before { background: radial-gradient(closest-side, rgba(18, 12, 8, .5), rgba(18, 12, 8, .22) 60%, rgba(18, 12, 8, 0)); }
 /* these keep warm letters on a dark halo whatever the sky does: the low ones sit on the ground, the late ones on the night */
 .verse.inked .breath.low, .verse.inked .breath.light { color: var(--warm); text-shadow: 0 0 22px var(--halo), 0 0 3px var(--halo); }
-@media (max-width: 760px), (orientation: portrait) { .breath.low-tall { top: 56svh; } .verse.inked .breath.low-tall { color: var(--warm); text-shadow: 0 0 22px var(--halo), 0 0 3px var(--halo); } }
+@media (max-width: 760px), (orientation: portrait) { .breath.low-tall { top: calc(85svh - 104px); transform: translateY(-100%); } .verse.inked .breath.low-tall { color: var(--warm); text-shadow: 0 0 22px var(--halo), 0 0 3px var(--halo); } }
 /* on a wide screen the verse sits a little higher, clear of the dome in the views from above */
 @media (min-width: 761px) and (orientation: landscape) { .verse { top: 11svh; } .breath.low { top: 60svh; } }
 /* moment 3 on a wide screen: to the right, over the sky, away from the dome */
@@ -575,6 +578,7 @@ a.act { color: inherit; text-decoration: none; }
 .rail.inked button::after { border-color: rgba(42, 34, 28, .7); background: rgba(250, 244, 235, .5); }
 .rail.inked button.seen::after { background: rgba(42, 34, 28, .7); }
 .rail.inked button.here::after { background: var(--ink); border-color: var(--ink); box-shadow: 0 0 8px rgba(250, 244, 235, .9); }
+@media (max-width: 640px) { .rail button.br { pointer-events: none; } }
 @media (max-width: 640px) { .rail { right: calc(3px + env(safe-area-inset-right, 0px)); width: 18px; height: min(52svh, 460px); } .rail button { width: 18px; } .rail button::after { width: 4px; height: 4px; } .rail button.mo::after { width: 7px; height: 7px; } }
 /* the book: back to the beginning */
 .book-nav { position: relative; }
@@ -1576,13 +1580,13 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
 
 <!-- the verse between the moments: one breath at a time, each line of a breath on its own line -->
 <div class="verse" id="verse" aria-hidden="true">
-  <template data-after="0"><p>There is a calling as old as time.</p><p>To gather.</p><p>To offer hearts and hands in service.</p><p>To build something beautiful, together.</p></template>
-  <template data-after="1"><p>Beckoning you to join in unity.</p><p>Inviting you to make real the feeling<br>held deep in the core of your being,</p></template>
+  <template data-after="0"><p>There is a calling as old as time.</p><p>To gather.<br>To offer hearts and hands in service.<br>To build something beautiful, together.</p></template>
+  <template data-after="1"><p>Beckoning you to join in unity.<br>Inviting you to make real the feeling<br>held deep in the core of your being,</p></template>
   <template data-after="2"><p data-place="low">This is that call.</p></template>
   <template data-after="3"><p data-place="low">and raise a temple in celebration of life,<br>of love, of freedom, and of all that is possible.</p></template>
-  <template data-after="4"><p data-place="low">so that it shines as a beacon,<br>inspiring others to remember for themselves.</p><p data-place="low-tall">To plant the Seed of Hope,<br>the beginnings of a great new garden.</p></template>
-  <template data-after="5"><p>Roaring cosmic belly laughs fill the air<br>as we work and play with glowing smiles and sparkling eyes,</p><p>the very things that set our souls ablaze.</p><p>At AfrikaBurn 2027, the first structure<br>of the temple complex will rise.</p><p>We call it The Seed.</p><p>It is year one of a four-year vision<br>to bring this temple to life.</p><p>Since 2024, Mahala has raised tented temples<br>and filled them with immersive sound, story and vibrational technology.</p><p>Now the page turns, and a new chapter begins.</p></template>
-  <template data-after="6"><p>It is a role you have been preparing for your whole life,<br>and perhaps for many lifetimes before.</p><p>For how often in a lifetime<br>are we called to be a temple builder?</p><p>This is an entirely non-profit offering.</p><p>We give of ourselves freely,<br>just as Unconditional Love is offered to us freely,</p><p>and we gift this experience<br>to all who wander into our ambitious tale.</p><p>The Mahalaverse is open, an evolving world<br>that welcomes you into the story of this temple,<br>and lets you craft your own part in it.</p></template>
+  <template data-after="4"><p data-place="low-tall">so that it shines as a beacon,<br>inspiring others to remember for themselves.<br>To plant the Seed of Hope,<br>the beginnings of a great new garden.</p></template>
+  <template data-after="5"><p>Roaring cosmic belly laughs fill the air<br>as we work and play with glowing smiles and sparkling eyes,<br>the very things that set our souls ablaze.</p><p>At AfrikaBurn 2027, the first structure<br>of the temple complex will rise.<br>We call it The Seed.</p><p>It is year one of a four-year vision<br>to bring this temple to life.</p><p>Since 2024, Mahala has raised tented temples<br>and filled them with immersive sound, story and vibrational technology.<br>Now the page turns, and a new chapter begins.</p></template>
+  <template data-after="6"><p>It is a role you have been preparing for your whole life,<br>and perhaps for many lifetimes before.<br>For how often in a lifetime<br>are we called to be a temple builder?</p><p>This is an entirely non-profit offering.<br>We give of ourselves freely,<br>just as Unconditional Love is offered to us freely,</p><p>and we gift this experience<br>to all who wander into our ambitious tale.<br>The Mahalaverse is open, an evolving world<br>that welcomes you into the story of this temple,<br>and lets you craft your own part in it.</p></template>
 </div>
 
 <noscript><style>.moment[data-m="0"], .moment[data-m="0"] > *, .moment[data-m="0"] .big span { opacity: 1; filter: none; transform: none; }</style></noscript>
@@ -1666,7 +1670,7 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
   </div>
 </div>
 
-<div class="cue" id="cue" aria-hidden="true"><span>Scroll slowly to learn more</span><svg viewBox="0 0 16 10" aria-hidden="true"><path d="M2 2l6 6 6-6"/></svg></div>
+<div class="cue" id="cue" aria-hidden="true"><span>Scroll gently to read, faster to glide</span><svg viewBox="0 0 16 10" aria-hidden="true"><path d="M2 2l6 6 6-6"/></svg></div>
 <footer class="ui foot">
   <div class="clock" id="seedClock">07:20, sun 1° up</div>
   <div class="centre">
@@ -2539,7 +2543,8 @@ const breathEls = [];
 const PLACES = [...verseEl.querySelectorAll('template')].map((t) => [...t.content.querySelectorAll('p')].map((x) => x.dataset.place || ''));
 BREATHS.forEach((list, i) => list.forEach((lines, j) => {
   const el = document.createElement('p'); el.className = 'breath' + (PLACES[i][j] ? ' ' + PLACES[i][j] : '') + (i >= 6 ? ' light' : '');
-  el.innerHTML = lines.map((ln, l) => '<span class="ln">' + ln.trim().split(/\s+/).map((w, k) => `<span class="w" style="--d:${(0.12 + 0.42 * l + 0.05 * k).toFixed(2)}">${w}</span>`).join(' ') + '</span>').join('');
+  const nW = lines.reduce((t, ln) => t + ln.trim().split(/\s+/).length, 0), st = Math.min(0.035, 0.28 / Math.max(1, nW - 1)); let wi = 0;
+  el.innerHTML = lines.map((ln, l) => '<span class="ln">' + ln.trim().split(/\s+/).map((w) => `<span class="w" style="--d:${(0.05 + 0.1 * l + st * wi++).toFixed(3)}">${w}</span>`).join(' ') + '</span>').join('');
   verseEl.appendChild(el); breathEls.push({ el, i, j, on: false });
 }));
 const segs = [];
@@ -2554,11 +2559,18 @@ const holdOf = (i) => segs[2 * i];
 document.querySelectorAll('#track section').forEach((sec, i) => { const g = segs[2 * i + 1]; sec.style.height = `${((g ? g.b : S_END + 1) - holdOf(i).a) * 100}svh`; });
 const ease = (f) => 0.35 * f + 0.65 * f * f * (3 - 2 * f);
 let along = 0, q = 0;             // along: how far along the journey (screens); q: where the camera is (0 to 7, a moment at each whole number)
-function readScroll() {
-  const max = document.documentElement.scrollHeight - innerHeight;
-  along = max > 0 ? clamp(scrollY / max, 0, 1) * S_END : 0;
+// One motion owns `along`: a spring that follows a target. Wheel, swipe and keys move the target; the spring starts at
+// once, keeps its speed when the target changes, and never drops input. The document scroll is kept in step with it, so
+// the scroll bar, anchors and focus still work; a scroll the page did not make itself (dragging the bar) takes over.
+const M = { pos: 0, vel: 0, target: 0, cap: 2.2, hold: false, y: 0, moving: false, glide: false, ext: 0 };
+let scrollMax = 0;
+const measure = () => { scrollMax = Math.max(0, document.documentElement.scrollHeight - innerHeight); };
+const px2a = () => (scrollMax > 0 ? S_END / scrollMax : 0);
+function readScroll() {          // take the position from the document (after a pane closes, on load, after the bar is dragged)
+  measure(); M.y = scrollY;
+  along = scrollMax > 0 ? clamp(scrollY / scrollMax, 0, 1) * S_END : 0;
+  M.pos = M.target = along; M.vel = 0; M.glide = false;
 }
-addEventListener('scroll', readScroll, { passive: true });
 function qAt(x) {
   for (const g of segs) {
     if (x >= g.b && g !== segs.at(-1)) continue;
@@ -2590,7 +2602,7 @@ const STOPS = [];
       for (let j = 0; j < sg.n; j++, n++) { const b = breathEls[n]; b.stop = STOPS.length; STOPS.push({ at: sg.a + EDGE + (j + 0.5) * w, m: -1, label: b.el.textContent.replace(/\s+/g, ' ').trim() }); } }
   } }
 const rail = $('rail'), seen = new Set();
-let stopAt = 0, hereAt = -1, glide = null, wheelHush = 0, wheelSum = 0, wheelLast = 0;
+let hereAt = -1;
 STOPS.forEach((st, k) => {
   const b = document.createElement('button'); b.type = 'button'; b.className = st.m >= 0 ? 'mo' : 'br';
   b.setAttribute('aria-label', st.label); b.title = st.label.length > 60 ? st.label.slice(0, 57).replace(/\s+\S*$/, '') + '...' : st.label;
@@ -2599,55 +2611,124 @@ STOPS.forEach((st, k) => {
 });
 const visit = (k) => { if (k >= 0 && !seen.has(k)) { seen.add(k); STOPS[k].el.classList.add('seen'); } };
 const steppable = () => !S.gone && !openSheet && !paneName;
-const yOf = (k) => Math.round((document.documentElement.scrollHeight - innerHeight) * STOPS[k].at / S_END);
-const nearestStop = () => { let best = 0, bd = 1e9; STOPS.forEach((st, k) => { const d = Math.abs(along - st.at); if (d < bd) { bd = d; best = k; } }); return best; };
+const nearestStop = (x = along) => { let best = 0, bd = 1e9; STOPS.forEach((st, k) => { const d = Math.abs(x - st.at); if (d < bd) { bd = d; best = k; } }); return best; };
+// the lines a fast glide still pauses on, going down: the first screen, "This is that call", The Seed at AfrikaBurn,
+// the lantern and the ask, and the end
+const MUST = new Set(STOPS.map((st, k) => (st.m === 0 || st.m === 6 || st.m === 7 || /^This is that call|^At AfrikaBurn 2027/.test(st.label) ? k : -1)).filter((k) => k >= 0));
+const LANTERN = STOPS.findIndex((st) => st.m === 6);
+function barrierAfter(k) {        // the furthest a downward glide that started at stop k may go
+  for (let j = k + 1; j < STOPS.length; j++) if (MUST.has(j) || (j === LANTERN && !lanternGoal)) return j;
+  return STOPS.length - 1;
+}
+const gapAt = (k, d) => { const j = clamp(k + d, 0, STOPS.length - 1); return Math.abs(STOPS[j].at - STOPS[k].at) || 0.6; };
+function aim(x, fast) {           // move the target; the spring does the rest (a long way goes faster, so it never drags)
+  M.target = clamp(x, 0, S_END); M.cap = fast ? clamp(Math.abs(M.target - M.pos) / 1.3, 6, 16) : 2.2; M.glide = !!fast;
+}
 function toStop(k, jump) {
   if (k < 0) return;
-  k = clamp(k, 0, STOPS.length - 1); stopAt = k;
-  if (glide) { cancelAnimationFrame(glide.raf); glide = null; }
-  const y1 = yOf(k), y0 = scrollY, dist = Math.abs(y1 - y0);
-  if (jump || REDUCED || dist < 2) { scrollTo({ top: y1, behavior: 'instant' }); readScroll(); return; }
-  const dur = clamp(820 + dist * 0.45, 1000, 1800), t0 = performance.now();
-  const ease2 = (u) => (u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2);
-  const tick = (now) => {
-    const u = clamp((now - t0) / dur, 0, 1);
-    scrollTo({ top: Math.round(y0 + (y1 - y0) * ease2(u)), behavior: 'instant' }); readScroll();
-    if (u < 1) glide.raf = requestAnimationFrame(tick); else { glide = null; wheelHush = performance.now(); }
-  };
-  glide = { raf: requestAnimationFrame(tick) };
+  k = clamp(k, 0, STOPS.length - 1);
+  if (jump || REDUCED) { M.pos = M.target = STOPS[k].at; M.vel = 0; M.glide = false; along = M.pos; return; }
+  aim(STOPS[k].at, Math.abs(k - nearestStop(M.target)) > 2);
 }
+// where the target sits: on a stop, or (after a drag) between two
+const targetStop = () => nearestStop(M.target);
 function step(d) {
-  // off the stops (after dragging the scroll bar, say): the next stop on from here
-  let k = stopAt;
-  if (Math.abs(along - STOPS[k].at) > 0.03) { k = d > 0 ? STOPS.findIndex((st) => st.at > along + 0.01) : STOPS.findLastIndex((st) => st.at < along - 0.01); if (k < 0) return; toStop(k); return; }
-  // at the lantern, the first move on lights it, and The Seed's ask comes up before the story goes on
-  if (d > 0 && STOPS[k].m === 6 && !lanternGoal) { lightLantern(); return; }
-  if (k + d >= 0 && k + d < STOPS.length) toStop(k + d);
+  let k = targetStop();
+  if (Math.abs(M.target - STOPS[k].at) > 0.03) {          // between stops: the next one on from here
+    k = d > 0 ? STOPS.findIndex((st) => st.at > M.target + 0.01) : STOPS.findLastIndex((st) => st.at < M.target - 0.01);
+    if (k < 0) return false; aim(STOPS[k].at); return true;
+  }
+  // at the lantern, unlit: the first move on lights it, and The Seed's ask comes up before the story goes on
+  if (d > 0 && k === LANTERN && !lanternGoal) { if (Math.abs(M.pos - STOPS[k].at) < 0.12) lightLantern(); return false; }
+  if (k + d < 0 || k + d >= STOPS.length) return false;
+  aim(STOPS[k + d].at); return true;
 }
-S.step = step; S.toStop = toStop; S.stops = () => STOPS.map((st, k) => ({ k, at: st.at, m: st.m, label: st.label, seen: seen.has(k) }));
+S.step = step; S.toStop = toStop; S.stops = () => STOPS.map((st, k) => ({ k, at: st.at, m: st.m, label: st.label, seen: seen.has(k), must: MUST.has(k) }));
+S.motion = () => ({ pos: M.pos, vel: M.vel, target: M.target, glide: M.glide, moving: M.moving });
+// where a glide comes to rest: the stop nearest where it is heading, the one ahead if it is close
+function settleFrom(x, dir, k0) {
+  let k = nearestStop(x);
+  if (dir) { const ahead = dir > 0 ? STOPS.findIndex((st) => st.at >= x) : STOPS.findLastIndex((st) => st.at <= x);
+    if (ahead >= 0 && Math.abs(STOPS[ahead].at - x) < 0.35 * gapAt(ahead, -dir)) k = ahead; }
+  if (dir > 0 && k0 !== undefined) k = Math.min(k, barrierAfter(k0));
+  return k;
+}
+// ---- the wheel and the trackpad: gentle input moves a line at a time, a strong fling glides
+const G = { on: false, last: 0, sum: 0, dir: 0, k0: 0, x0: 0, steps: 0, t0: 0, v: 0, timer: 0, glide: false };
+function wheelEnd() {
+  G.on = false;
+  if (G.glide) { const k = settleFrom(M.pos + M.vel * 0.22, G.dir, G.k0); aim(STOPS[k].at, true); }
+}
 addEventListener('wheel', (e) => {
   if (!steppable() || e.ctrlKey) return;
   if (e.target instanceof Element && e.target.closest('.dial')) return;
   e.preventDefault();
-  const now = performance.now(), gap = now - wheelLast; wheelLast = now;
-  if (glide || now - wheelHush < 180) { wheelHush = glide ? wheelHush : now; wheelSum = 0; return; }      // the rest of the same flick
-  if (gap > 400) wheelSum = 0;
-  wheelSum += e.deltaMode === 1 ? e.deltaY * 18 : e.deltaMode === 2 ? e.deltaY * innerHeight : e.deltaY;
-  if (Math.abs(wheelSum) >= 22) { const d = Math.sign(wheelSum); wheelSum = 0; wheelHush = now; step(d); }
+  const dy = e.deltaMode === 1 ? e.deltaY * 18 : e.deltaMode === 2 ? e.deltaY * innerHeight : e.deltaY;
+  if (!dy) return;
+  const now = performance.now(), dir = Math.sign(dy), gap = now - G.last;
+  if (!G.on || gap > 160 || dir !== G.dir) {
+    G.on = true; G.dir = dir; G.sum = 0; G.steps = 0; G.t0 = now; G.glide = false; G.v = 0;
+    G.k0 = targetStop(); G.x0 = M.target;
+  }
+  G.last = now; G.sum += Math.abs(dy);
+  const v = Math.abs(dy) / clamp(gap, 8, 60); G.v = G.v ? G.v * 0.6 + v * 0.4 : v;
+  const gapPx = gapAt(G.k0, dir) / Math.max(px2a(), 1e-6);
+  if (!G.glide && !REDUCED && (G.v > 2.5 || (G.sum > 1.5 * gapPx && now - G.t0 < 300))) G.glide = true;
+  if (G.glide) {
+    let x = G.x0 + dir * G.sum * 1.2 * px2a();
+    if (dir > 0) x = Math.min(x, STOPS[barrierAfter(G.k0)].at);
+    aim(x, true);
+  } else {
+    const want = G.sum < 4 ? 0 : REDUCED ? 1 : 1 + Math.floor((G.sum - 4) / (0.8 * gapPx));
+    while (G.steps < want) { if (!step(dir)) { G.steps = want; break; } G.steps++; }
+  }
+  clearTimeout(G.timer); G.timer = setTimeout(wheelEnd, 130);
 }, { passive: false });
-let touch0 = null;
+// ---- touch: the page follows the finger, then carries its speed into the settle
+let T = null;
 addEventListener('touchstart', (e) => {
-  touch0 = null;
+  T = null;
   if (!steppable() || e.touches.length !== 1) return;
   if (e.target instanceof Element && e.target.closest('.dial, input, textarea, select')) return;
-  touch0 = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  const t = e.touches[0];
+  T = { x0: t.clientX, y0: t.clientY, pos0: M.pos, k0: nearestStop(M.pos), axis: null, pts: [[performance.now(), t.clientY]] };
 }, { passive: true });
-addEventListener('touchmove', (e) => { if (touch0 && steppable() && e.cancelable) e.preventDefault(); }, { passive: false });
+addEventListener('touchmove', (e) => {
+  if (!T || !steppable()) return;
+  const t = e.touches[0], dx = t.clientX - T.x0, dy = T.y0 - t.clientY;
+  if (e.cancelable) e.preventDefault();
+  if (!T.axis) { if (Math.hypot(dx, dy) < 8) return; T.axis = Math.abs(dy) > Math.abs(dx) * 1.1 ? 'y' : 'x'; }
+  if (T.axis !== 'y' || REDUCED) return;
+  const now = performance.now(); T.pts.push([now, t.clientY]); if (T.pts.length > 8) T.pts.shift();
+  let x = clamp(T.pos0 + dy * px2a(), 0, S_END);
+  const bar = STOPS[barrierAfter(T.k0)].at; if (x > bar) x = bar + (x - bar) * 0.3;          // a soft stop at the next must-see line
+  M.hold = true; M.pos = M.target = x; M.vel = 0; M.glide = false;
+}, { passive: false });
 addEventListener('touchend', (e) => {
-  if (!touch0) return;
-  const t = e.changedTouches[0], dx = touch0.x - t.clientX, dy = touch0.y - t.clientY; touch0 = null;
-  if (!glide && Math.abs(dy) > 30 && Math.abs(dy) > Math.abs(dx) * 1.2) step(Math.sign(dy));
+  if (!T) return;
+  const tt = T; T = null; M.hold = false;
+  if (tt.axis !== 'y') return;
+  const t = e.changedTouches[0], dy = tt.y0 - t.clientY;
+  if (REDUCED) { if (Math.abs(dy) > 30) toStop(tt.k0 + Math.sign(dy), true); return; }
+  // the finger's speed over its last moment on the glass, in screens of journey a second
+  const now = performance.now(), pts = tt.pts.filter((p) => now - p[0] < 110); let v = 0;
+  if (pts.length > 1) { const p0 = pts[0], p1 = pts.at(-1); v = -(p1[1] - p0[1]) / Math.max(16, p1[0] - p0[0]) * 1000 * px2a(); }
+  const moved = M.pos - tt.pos0, dir = Math.sign(moved) || Math.sign(v);
+  let k;
+  const pxPerMs = Math.abs(v) / (1000 * Math.max(px2a(), 1e-9));
+  if (pxPerMs < 0.4) {
+    k = nearestStop(M.pos);          // a slow drag: where you let go, or one on if you nudged
+    if (k === tt.k0 && Math.abs(dy) > 40) k = clamp(tt.k0 + dir, 0, STOPS.length - 1);
+    if (dir > 0) k = Math.min(k, barrierAfter(tt.k0));
+    if (dir > 0 && tt.k0 === LANTERN && !lanternGoal) { lightLantern(); k = LANTERN; }
+    M.vel = 0; aim(STOPS[k].at);
+  } else {
+    k = settleFrom(M.pos + v * 0.4, dir, tt.k0);
+    if (dir > 0 && tt.k0 === LANTERN && !lanternGoal) { lightLantern(); k = LANTERN; }
+    M.vel = v; aim(STOPS[k].at, true);
+  }
 }, { passive: true });
+addEventListener('touchcancel', () => { if (T) { T = null; M.hold = false; aim(STOPS[nearestStop(M.pos)].at); } }, { passive: true });
 document.addEventListener('keydown', (e) => {
   if (paneName && e.key === 'Escape') { closePane(); return; }
   if (!steppable() || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
@@ -2659,12 +2740,45 @@ document.addEventListener('keydown', (e) => {
   else if (e.key === 'Home') { e.preventDefault(); toStop(0); return; } else if (e.key === 'End') { e.preventDefault(); toStop(STOPS.length - 1); return; }
   if (!d || (e.key === ' ' && t && t.closest('button, a'))) return;
   e.preventDefault();
-  if (glide && !(d > 0 && STOPS[stopAt].m === 6 && !lanternGoal)) { if (stopAt + d >= 0 && stopAt + d < STOPS.length) toStop(stopAt + d); return; }
-  step(d);
+  step(d);          // held keys add a line each time, and the spring carries on without a stall
 });
-// dragging the scroll bar still works: where it lets go becomes the stop you are at
-addEventListener('scroll', () => { if (!glide) { clearTimeout(S.reStop); S.reStop = setTimeout(() => { if (!glide) stopAt = nearestStop(); }, 120); } }, { passive: true });
-addEventListener('resize', () => { if (!glide && steppable()) setTimeout(() => { if (!glide) toStop(stopAt, true); }, 60); });
+// a scroll the page did not make (the scroll bar dragged, find on page): it takes over, and after a pause the page
+// settles on a line if one is close
+addEventListener('scroll', () => {
+  if (!steppable() || Math.abs(scrollY - M.y) < 3) return;
+  readScroll(); M.ext = performance.now();
+  clearTimeout(S.reStop); S.reStop = setTimeout(() => { if (!steppable() || M.hold) return; const k = nearestStop(M.pos); if (Math.abs(STOPS[k].at - M.pos) < 0.25) aim(STOPS[k].at); }, 220);
+}, { passive: true });
+addEventListener('resize', () => { if (!steppable()) return; const k = nearestStop(M.target); setTimeout(() => { measure(); toStop(k, true); M.y = -1; }, 60); });
+// at the lantern, a moment's rest lights it, so the ask comes up without using a scroll
+let lanternRest = 0;
+// the spring, once a frame, before anything reads `along`
+const W_SPRING = 7.5;
+let mLast = performance.now();
+function motion(now) {
+  const dt = Math.min(0.05, Math.max(0, (now - mLast) / 1000)); mLast = now;
+  if (!M.hold && steppable()) {
+    const n = Math.max(1, Math.ceil(dt * 120)), h = dt / n;
+    for (let i = 0; i < n; i++) {
+      const acc = W_SPRING * W_SPRING * (M.target - M.pos) - 2 * W_SPRING * M.vel;
+      M.vel = clamp(M.vel + acc * h, -M.cap, M.cap); M.pos += M.vel * h;
+    }
+    if (Math.abs(M.target - M.pos) < 0.0015 && Math.abs(M.vel) < 0.02) { M.pos = M.target; M.vel = 0; if (M.glide && !G.on) M.glide = false; if (M.cap > 2.2 && !G.on) M.cap = 2.2; }
+  }
+  M.moving = M.hold || Math.abs(M.vel) > 0.004 || Math.abs(M.target - M.pos) > 0.002;
+  along = M.pos;
+  // the lines are glimpsed whole in a fast glide; the full reveal plays where you land
+  const fast = !REDUCED && (M.glide || Math.abs(M.vel) > 1.6);
+  if (verseEl.classList.contains('fast') !== fast) verseEl.classList.toggle('fast', fast);
+  // keep the scroll bar in step
+  if (steppable() && scrollMax > 0) { const y = Math.round(along / S_END * scrollMax); if (y !== M.y) { M.y = y; scrollTo(0, y); } }
+  // the lantern lights after a moment's rest in front of it
+  if (!lanternGoal && LANTERN >= 0 && !M.moving && Math.abs(along - STOPS[LANTERN].at) < 0.05 && steppable()) {
+    if (!lanternRest) lanternRest = now; else if (now - lanternRest > 1200) lightLantern();
+  } else lanternRest = 0;
+}
+const motionLoop = (now) => { if (S.gone) return; requestAnimationFrame(motionLoop); motion(now); };
+requestAnimationFrame(motionLoop);
 function railShow(near) {
   if (near >= 0) visit(STOPS.findIndex((st) => st.m === near));
   for (const b of breathEls) if (b.on) visit(b.stop);
@@ -2682,7 +2796,7 @@ let paneName = null, paneY = 0, panePushed = false, paneFrom = null;
 function openPane(name, hash = '', from = null, fromLink = false) {
   if (!PANES[name] || S.gone) return;
   if (openSheet) close(true);
-  if (glide) { cancelAnimationFrame(glide.raf); glide = null; }
+  M.target = M.pos; M.vel = 0; M.glide = false; M.hold = false;
   const [url, label] = PANES[name];
   if (!paneName) { paneY = scrollY; paneFrom = from || document.activeElement; }
   // a new frame each time, so the page inside never adds steps to the browser's history
@@ -2755,7 +2869,7 @@ function words() {
   for (let i = 0; i < N_M; i++) { const g = holdOf(i); if (along >= g.a - EDGE * 0.55 && along <= g.b + EDGE * 0.55) near = i; }
   for (const b of breathEls) {
     const g = segs[2 * b.i + 1], w = (g.b - g.a - 2 * EDGE) / g.n, a = g.a + EDGE + b.j * w;
-    const on = along > a + w * 0.08 && along < a + w * 0.92;
+    const on = along > a + w * 0.04 && along < a + w * 0.96;
     if (on !== b.on) { b.on = on; b.el.classList.toggle('on', on); }
     if (on) at = b.i;
   }
@@ -3454,7 +3568,8 @@ async function start3D() {
   const KEY_MIN = [[0, 440], [1, 470], [2, 510], [2.7, 570], [3, 600], [3.85, 670], [4, 690], [4.6, 900], [5, 1060], [5.5, 1110], [6, 1170], [7, 1170]];
   const minuteAtQ = (x) => { for (let i = 0; i < KEY_MIN.length - 1; i++) { const [a, ma] = KEY_MIN[i], [b, mb] = KEY_MIN[i + 1]; if (x <= b) return mix(ma, mb, clamp((x - a) / (b - a), 0, 1)); } return KEY_MIN.at(-1)[1]; };
   const cr = (a, b, c, d, u) => { const u2 = u * u, u3 = u2 * u; return 0.5 * (2 * b + (-a + c) * u + (2 * a - 5 * b + 4 * c - d) * u2 + (-a + 3 * b - 3 * c + d) * u3); };
-  const tall = () => innerWidth < innerHeight;
+  let VW = innerWidth, VH = innerHeight; addEventListener('resize', () => { VW = innerWidth; VH = innerHeight; });
+  const tall = () => VW < VH;
   function poseAt(x, out) {
     let k = 0; while (k < P.length - 2 && x > P[k + 1][0]) k++;
     const a = P[Math.max(0, k - 1)], b = P[k], c = P[k + 1], d = P[Math.min(P.length - 1, k + 2)];
@@ -3482,7 +3597,7 @@ async function start3D() {
 
   // ------------------------------------------------------------------------------------------------- time of day
   let grade = null;
-  const shown = { minute: -1, envAt: -999, N: -1 };
+  const shown = { minute: -1, envAt: -999, N: -1, maskAt: -999 };
   const tmp = V3(0, 0, 0), sd = V3(0, 1, 0), hzCol = new THREE.Color(), znCol = new THREE.Color(), fd = V3(1, 0, 0), fd2 = V3(1, 0, 0);
   function setTime(m) {
     const s = sunAt(m), d = sunDir(s.az, s.el); sd.copy(d);
@@ -3497,7 +3612,8 @@ async function start3D() {
     sun.intensity = strength;
     sun.position.copy(d).multiplyScalar(80).add(sun.target.position);
     s.sheets.forEach((c, j) => filters[j].setRGB(...c.map((v, k) => clamp(v / Math.max(s.rgb[k], 1e-3), 0, 1)), THREE.LinearSRGBColorSpace));
-    if (strength > 0.001) {
+    if (strength > 0.001 && (!M.moving || Math.abs(m - shown.maskAt) > 1.2)) {
+      shown.maskAt = m;
       maskCam.position.copy(d).multiplyScalar(60).add(sun.target.position);
       maskCam.up.set(0, 1, 0); if (Math.abs(d.y) > 0.98) maskCam.up.set(0, 0, -1);
       maskCam.lookAt(sun.target.position); maskCam.updateMatrixWorld(); maskCam.updateProjectionMatrix();
@@ -3505,7 +3621,7 @@ async function start3D() {
       renderer.setRenderTarget(maskRT); renderer.setClearColor(0xffffff, 1); renderer.clear(); renderer.render(maskScene, maskCam);
       renderer.setRenderTarget(null); renderer.setClearColor(0x000000, 1);
       renderer.shadowMap.needsUpdate = true;
-    }
+    } else if (strength <= 0.001) shown.maskAt = m;
     // the sky's own colours, day sky and twilight dome together, for the haze, the mountains and the ambient light
     tw = twilight(s.el);
     const hz = [0, 0, 0];
@@ -3516,14 +3632,14 @@ async function start3D() {
     const nu = nightMat.uniforms;
     nu.uA.value = tw.A; nu.uGK.value = tw.gk; nu.uSunH.value.set(Math.sin(s.az * D2R), 0, -Math.cos(s.az * D2R));
     nu.uZen.value.setRGB(...tw.zen, THREE.LinearSRGBColorSpace); nu.uHor.value.setRGB(...tw.hor, THREE.LinearSRGBColorSpace); nu.uGlow.value.setRGB(...tw.glow, THREE.LinearSRGBColorSpace);
-    nightDome.visible = tw.A > 0.001;
+    nightDome.visible = tw.A > 0.001; sky.visible = tw.A < 0.999;
     stars.uniforms.uN.value = smooth(0.35, 1, N); nu.uMW.value = smooth(0.7, 1, N);
     mtnMat.forEach((mm) => mm.color.copy(hzCol));
     GL.uH.value.copy(hzCol); GL.uZ.value.copy(znCol);
     GL.uSun.value.copy(d); GL.uSunC.value.setRGB(...s.rgb, THREE.LinearSRGBColorSpace).multiplyScalar(strength / 10);
     GL.uSunGlow.value.setRGB(...s.rgb, THREE.LinearSRGBColorSpace).multiplyScalar(smooth(-1.5, 1.5, s.el) * (0.4 + 1.3 * lowSun));
     const nowEnv = performance.now();
-    if ((Math.abs(m - shown.envAt) > 6 || Math.abs(N - shown.N) > 0.08) && (nowEnv - (shown.envT || 0) > 280 || Math.abs(m - shown.envAt) > 90)) {
+    if ((Math.abs(m - shown.envAt) > 6 || Math.abs(N - shown.N) > 0.08) && ((!M.moving && nowEnv - (shown.envT || 0) > 280) || Math.abs(m - shown.envAt) > 60)) {
       shown.envAt = m; shown.N = N; shown.envT = nowEnv;
       envMat.uniforms.uH.value.copy(hzCol); envMat.uniforms.uZ.value.copy(znCol);
       envMat.uniforms.uG.value.setRGB(0.5 * (0.25 * hzCol.r + 0.05 * strength * s.rgb[0]), 0.4 * (0.25 * hzCol.g + 0.05 * strength * s.rgb[1]), 0.31 * (0.25 * hzCol.b + 0.05 * strength * s.rgb[2]), THREE.LinearSRGBColorSpace);
@@ -3668,9 +3784,10 @@ async function start3D() {
     const now = performance.now(), dt = Math.min(0.1, (now - last) / 1000); last = now;
     const t = clk.getElapsedTime();
     const k = 1 - Math.exp(-dt * (REDUCED ? 30 : 4.5));
-    // scroll eases the journey along
+    // the journey follows the motion closely (the spring has already smoothed it); a dragged scroll bar is eased more
+    const kq = 1 - Math.exp(-dt * (REDUCED ? 30 : now - M.ext < 500 ? 4.5 : 16));
     const qGoal = S.lockQ !== undefined ? S.lockQ : qAt(along);
-    q = first ? qGoal : q + (qGoal - q) * k;
+    q = first ? qGoal : q + (qGoal - q) * kq;
     if (Math.abs(q - qGoal) < 1e-4) q = qGoal;
     // the hands let go when you scroll away
     if (near(6) < 0.01) { user.orbitAz *= 1 - k; user.orbitEl *= 1 - k; }
@@ -3700,7 +3817,7 @@ async function start3D() {
     { const a = user.spin * near(7);
       if (Math.abs(a) > 1e-5) { const c = Math.cos(a), sn = Math.sin(a);
         for (const v of [pose.pos, pose.at]) { const x = v.x, z = v.z; v.x = x * c + z * sn; v.z = -x * sn + z * c; } } }
-    const kc = first ? 1 : Math.min(1, k * 1.6);
+    const kc = first ? 1 : Math.min(1, kq * 1.25);
     camPos.lerp(pose.pos, kc); camAt.lerp(pose.at, kc); camFov += (pose.fov - camFov) * kc;
     // breath and a little parallax, so the scene is never quite still
     look.x += (pointer.x - look.x) * k * 0.3; look.y += (pointer.y - look.y) * k * 0.3;
@@ -3724,7 +3841,7 @@ async function start3D() {
       if (q > 0.35 && S.arriveAt === undefined) ARRIVE.k = 1;          // scrolled on: the day is already up
     }
     const m = journeyMinute();
-    if (Math.abs(m - shown.minute) > 0.04) setTime(m);
+    if (Math.abs(m - shown.minute) > 0.04 || (!M.moving && (Math.abs(shown.maskAt - shown.minute) > 0.01 || Math.abs(shown.envAt - shown.minute) > 6))) setTime(m);
     // the lantern
     const nowS = S.lanternT !== undefined && lanternStart < Infinity ? lanternStart + S.lanternT : now / 1000;
     if (lanternGoal && nowS > lanternStart) { const u = clamp((nowS - lanternStart) / lanternRise, 0, 1); lanternLevel = REDUCED ? 1 : u * u * (3 - 2 * u); }
@@ -3756,7 +3873,8 @@ async function start3D() {
     const grab = near(2) > 0.5 || near(6) > 0.5 || near(7) > 0.5;
     if (canvas.classList.contains('grab') !== grab) canvas.classList.toggle('grab', grab);
     words(); placeHots();
-    composer.render();
+    const busy = first || M.moving || S.dragging || S.testing || ARRIVE.k < 1 || demo.state === 1 || (lanternGoal && nowS - lanternStart < lanternRise + 10);
+    if (busy || (S.frames & 1) === 0) composer.render();
     // ink or warm white: a few pixels of the frame just drawn, where the menu and the verse sit, read back a frame or
     // two later so the reading never holds the picture up
     if (!ink.fence && (S.frames % 8 === 4 || S.testing)) inkRead();
@@ -3782,8 +3900,8 @@ async function start3D() {
   const perf = { n: 0, sum: 0 };
 
   // hooks for the scripted test walk
-  S.at = (i) => { const g = holdOf(i); along = (g.a + g.b) / 2; q = i; first = true; };
-  S.q = (x) => { along = alongAt(x); q = x; S.lockQ = x; first = true; };
+  S.at = (i) => { const g = holdOf(i); along = (g.a + g.b) / 2; M.pos = M.target = along; M.vel = 0; q = i; first = true; };
+  S.q = (x) => { along = alongAt(x); M.pos = M.target = along; M.vel = 0; q = x; S.lockQ = x; first = true; };
   S.minute = (which, m) => { user[which] = m; };
   S.orbit = (az, el) => { user.orbitAz = az; user.orbitEl = el; };
   S.lightNow = () => { lanternGoal = 1; lanternLevel = 1; lanternStart = 0; const w = $('lightBtn').closest('.light-wrap'); w.hidden = true; $('call').dataset.show = 'true'; $('callWays').dataset.show = 'true'; };
