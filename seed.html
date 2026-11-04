@@ -574,6 +574,17 @@ html.join-open, html.join-open body { overflow: hidden; }
 .join-done .next b { font-weight: 500; }
 .give .intro { margin-bottom: clamp(18px, 3vw, 26px); }
 .give .nums b { color: var(--ink); }
+/* The Seed in one minute: for someone who wants the short version before the film (camp lead feedback, Nov 2026) */
+.minute { max-width: 34em; margin: 4px auto clamp(34px, 5vw, 52px); }
+.minute h2 { display: flex; align-items: center; justify-content: center; gap: 12px; font: 400 13px/1.2 var(--text); letter-spacing: .24em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 14px; padding-left: .24em; }
+.minute h2 i { display: inline-flex; gap: 4px; } .minute h2 i b { width: 7px; height: 7px; border-radius: 50%; }
+.minute dl { margin: 0; border-top: 1px solid var(--rule); }
+.minute dl > div { display: grid; grid-template-columns: 6.2em minmax(0, 1fr); gap: 16px; align-items: baseline; padding: 11px 2px 10px; border-bottom: 1px solid var(--rule); }
+.minute dt { font: 500 11.5px/1.2 var(--text); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); }
+.minute dd { margin: 0; font: 400 clamp(18px, 2.2vw, 21px)/1.35 var(--verse); text-wrap: pretty; }
+.minute dd b { font-weight: 600; white-space: nowrap; }
+.minute .page-acts { margin-top: 22px; }
+@media (max-width: 440px) { .minute dl > div { grid-template-columns: 1fr; gap: 4px; } }
 </style>
 </head>
 <body>
@@ -585,6 +596,20 @@ html.join-open, html.join-open body { overflow: hidden; }
   </div>
   <div class="page">
     <div class="seed-hero"><h1 id="seedH">THE SEED</h1><p>AfrikaBurn 2027</p></div>
+    <section class="minute" aria-labelledby="minuteH">
+      <h2 id="minuteH"><i aria-hidden="true"><b style="background: var(--yellow)"></b><b style="background: var(--cyan)"></b><b style="background: var(--magenta)"></b></i>The Seed in one minute</h2>
+      <dl>
+        <div><dt>What</dt><dd>A temple open to all, shaped like the closed bud of the King Protea and glazed in yellow, cyan and magenta.</dd></div>
+        <div><dt>Where</dt><dd>AfrikaBurn 2027, in the Tankwa Karoo, 26 April to 2 May.</dd></div>
+        <div><dt>Why</dt><dd>It is year one of a four-year path to the full temple in 2030. It does not burn: it comes home, and grows a little further each year.</dd></div>
+        <div><dt>Who</dt><dd>Many hands: temple builders, each called in by someone who saw something in them.</dd></div>
+        <div><dt>Needs</dt><dd><b data-fill="target">R 718 875</b> to build it, with <b><span data-fill="days">178</span> days</b> to build week.</dd></div>
+      </dl>
+      <div class="page-acts">
+        <a class="primary" data-donate href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-count="Donate" data-count-where="The Seed in one minute">Donate to The Seed</a>
+        <a class="secondary" id="minuteJoin" href="tribe.html#join" data-count="Join" data-count-where="The Seed in one minute">Join the tribe</a>
+      </div>
+    </section>
     <div class="narrow film-box" id="filmBox">
       <video id="seedFilm" controls playsinline preload="none" aria-label="The film of The Seed"></video>
       <p class="reel-cap"><span>Concept visualisation: rendered from the 3D model, some of its motion added by AI.</span><span>60 s</span></p>
@@ -654,7 +679,7 @@ html.join-open, html.join-open body { overflow: hidden; }
         <div><b data-fill="days">178</b><span>days to build week</span></div>
       </div>
       <div class="page-acts">
-        <a class="primary" id="donateBtn" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener">Donate</a>
+        <a class="primary" id="donateBtn" data-donate href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-count="Donate" data-count-where="The Seed page">Donate</a>
         <button class="secondary" type="button" data-page-close>Close</button>
       </div>
 
@@ -702,10 +727,16 @@ html.join-open, html.join-open body { overflow: hidden; }
   if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { if (es[0].isIntersecting) film.play().catch(function () {}); else if (film.muted) film.pause(); }, { threshold: 0.4 }).observe(film);
   else film.play().catch(function () {});
   // Donate: straight to the crowdfunding page on BackaBuddy (site.js can point it elsewhere)
-  var d = document.getElementById('donateBtn');
-  if (SITE.donateUrl) d.href = SITE.donateUrl;
+  if (SITE.donateUrl) document.querySelectorAll('[data-donate]').forEach(function (d) { d.href = SITE.donateUrl; });
+  // Join the tribe: over the front page, it opens the tribe there; on its own, the tribe page
+  var mj = document.getElementById('minuteJoin');
+  if (mj && window.parent !== window) mj.addEventListener('click', function (e) {
+    try { if (window.parent.location.origin !== location.origin) return; } catch (x) { return; }
+    e.preventDefault(); parent.postMessage({ mahala: 'open', pane: 'tribe', hash: 'join' }, location.origin);
+  });
   if (location.hash === '#give') setTimeout(function () { document.getElementById('give').scrollIntoView(); }, 120);
 })();
 </script>
+<script src="analytics.js?v=1"></script>
 </body>
 </html>

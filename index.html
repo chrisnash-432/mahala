@@ -285,6 +285,10 @@ a.act { color: inherit; text-decoration: none; }
 .first-acts { margin-top: 1.4em; }
 .first-acts .act { padding: 10px 16px 9px; font-size: 10.5px; letter-spacing: .16em; }
 .menu .menu-door[data-give] { border: 1px solid currentColor; border-radius: 999px; padding: 8px 12px; margin-left: 4px; }
+/* Join: the one filled button, top right, beside Donate (camp lead feedback, Nov 2026) */
+.menu .menu-door.menu-join { border: 1px solid var(--warm); background: var(--warm); color: var(--ink); text-shadow: none; border-radius: 999px; padding: 8px 14px; margin-left: 8px; opacity: 1; }
+.menu .menu-door.menu-join:hover { background: #fff; border-color: #fff; }
+.top.inked .menu .menu-door.menu-join { background: var(--ink); border-color: var(--ink); color: var(--warm); }
 .moment.on .acts .act { pointer-events: auto; }
 .moment[data-m="3"]::before, .moment[data-m="4"]::before, .moment[data-m="7"]::before { content: ""; position: absolute; left: 50%; top: 50%; width: 118%; height: 300%; transform: translate(-50%, -50%); z-index: -1; pointer-events: none;
   background: radial-gradient(closest-side, rgba(18, 12, 8, .34), rgba(18, 12, 8, .16) 55%, rgba(18, 12, 8, 0)); }
@@ -471,12 +475,13 @@ a.act { color: inherit; text-decoration: none; }
 }
 
 /* ---------------------------------------------------------------------------------- the review of October 2026 */
-/* the menu: The camp, The Seed, Mahalaverse, Donate. On a phone it takes the whole top line. */
+/* the menu: The camp, The Seed, Mahalaverse, then Join and Donate as buttons. On a phone it takes the whole top line. */
 @media (max-width: 640px) {
   .top .mark { display: none; }
   .top { justify-content: center; padding-left: 8px; padding-right: 8px; }
   .menu { gap: 0; }
   .menu .menu-door { padding: 10px 7px; letter-spacing: .13em; font-size: 10.5px; }
+  .menu .menu-door.menu-join, .menu .menu-door[data-give] { padding: 8px 10px; margin-left: 5px; }
 }
 @media (max-width: 360px) { .menu .menu-door { padding: 10px 5px; letter-spacing: .08em; } .menu .menu-door svg { display: none; } }
 /* the sound: its own button, bottom right */
@@ -1548,11 +1553,11 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
 <header class="ui top">
   <button class="mark" type="button" id="toTop" aria-label="Mahala, back to the start">MAHALA</button>
   <nav class="menu" aria-label="Menu">
-    <a class="menu-door" href="camp.html" data-pane="camp">The camp</a>
-    <a class="menu-door" href="seed.html" data-pane="seed">The Seed</a>
-    <a class="menu-door" href="tribe.html" data-pane="tribe">The tribe</a>
-    <a class="menu-door" id="toVerse" href="#mahalaverse">Mahalaverse<svg viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg></a>
-    <a class="menu-door" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give>Donate</a>
+    <a class="menu-door" href="camp.html" data-pane="camp" data-count="The camp" data-count-where="top bar">The camp</a>
+    <a class="menu-door" href="seed.html" data-pane="seed" data-count="The Seed" data-count-where="top bar">The Seed</a>
+    <a class="menu-door" id="toVerse" href="#mahalaverse" data-count="Mahalaverse" data-count-where="top bar">Mahalaverse<svg viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg></a>
+    <a class="menu-door menu-join" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Join" data-count-where="top bar">Join</a>
+    <a class="menu-door" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give data-count="Donate" data-count-where="top bar">Donate</a>
   </nav>
 </header>
 
@@ -1594,7 +1599,7 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
   <p class="kicker v">An invitation for you, dearest soul.</p>
   <h1 class="big" id="m0h" aria-label="MAHALA"><span aria-hidden="true" style="--i:-2.5">M</span><span aria-hidden="true" style="--i:-1.5">A</span><span aria-hidden="true" style="--i:-0.5">H</span><span aria-hidden="true" style="--i:0.5">A</span><span aria-hidden="true" style="--i:1.5">L</span><span aria-hidden="true" style="--i:2.5">A</span></h1>
   <p class="sub v">Reviving the art of temple building, through reverential play</p>
-  <div class="acts first-acts"><a class="act" href="tribe.html#join" data-pane="tribe" data-hash="join">Join the tribe</a><a class="act" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give>Donate to The Seed</a></div>
+  <div class="acts first-acts"><a class="act" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Join" data-count-where="first screen">Join the tribe</a><a class="act" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give data-count="Donate" data-count-where="first screen">Donate to The Seed</a></div>
   <p class="vh">The Seed at first light: a dome of coloured panes on the open clay, the sun coming up behind it.</p>
 </div>
 <div class="moment low-band env-band arrive sunrise" data-m="0" inert>
@@ -1652,7 +1657,7 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
           <div><b data-fill="target">R 718 875</b><span>to build The Seed</span></div>
           <div><b data-fill="days">178</b><span>days to build week</span></div>
         </div>
-        <div class="ask-acts"><a class="act solid" href="seed.html" data-pane="seed">Learn more about The Seed</a><a class="act" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give>Donate</a></div>
+        <div class="ask-acts"><a class="act solid" href="seed.html" data-pane="seed" data-count="The Seed" data-count-where="the ask">Learn more about The Seed</a><a class="act" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give data-count="Donate" data-count-where="the ask">Donate</a></div>
       </div>
     </div>
   </div>
@@ -1664,9 +1669,9 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
 </div>
 <div class="moment low-band end-band" data-m="7" inert>
   <div class="end-acts">
-    <a class="act" href="tribe.html#join" data-pane="tribe" data-hash="join">Join the tribe</a>
-    <a class="act step" id="stepIn" href="#mahalaverse"><svg viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg>Step into the Mahalaverse</a>
-    <a class="act" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give>Donate to The Seed</a>
+    <a class="act" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Join" data-count-where="the end">Join the tribe</a>
+    <a class="act step" id="stepIn" href="#mahalaverse" data-count="Mahalaverse" data-count-where="the end"><svg viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg>Step into the Mahalaverse</a>
+    <a class="act" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give data-count="Donate" data-count-where="the end">Donate to The Seed</a>
   </div>
 </div>
 
@@ -1930,7 +1935,7 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
         <span><b>Mahalaverse</b><small>Temple builders</small></span>
       </button>
 
-      <button class="raise" id="raiseBtn" type="button" aria-label="Raised for The Seed so far. Donate now.">
+      <button class="raise" id="raiseBtn" type="button" aria-label="Raised for The Seed so far. Donate now." data-count="Donate" data-count-where="Mahalaverse">
         <span class="raise-n"><b id="raiseNow">R0</b><small>raised of <span class="mono" id="raiseGoal">R0</span><span class="for"> for The Seed</span></small></span>
         <span class="bar"><span id="raiseBar"></span></span>
         <span class="raise-cta"><svg class="i"><use href="#i-gift"/></svg>Donate now</span>
@@ -2609,7 +2614,9 @@ STOPS.forEach((st, k) => {
   if (st.m < 0) b.tabIndex = -1;
   b.addEventListener('click', () => toStop(k)); rail.appendChild(b); st.el = b;
 });
-const visit = (k) => { if (k >= 0 && !seen.has(k)) { seen.add(k); STOPS[k].el.classList.add('seen'); } };
+const visit = (k) => { if (k >= 0 && !seen.has(k)) { seen.add(k); STOPS[k].el.classList.add('seen');
+  // how far people read: each of the eight scenes, counted the first time it is reached (analytics.js)
+  if (STOPS[k].m >= 0 && window.mahalaCount) window.mahalaCount('Scene', { scene: (STOPS[k].m + 1) + ' ' + STOPS[k].label }); } };
 const steppable = () => !S.gone && !openSheet && !paneName;
 const nearestStop = (x = along) => { let best = 0, bd = 1e9; STOPS.forEach((st, k) => { const d = Math.abs(x - st.at); if (d < bd) { bd = d; best = k; } }); return best; };
 // the lines a fast glide still pauses on, going down: the first screen, "This is that call", The Seed at AfrikaBurn,
@@ -2973,6 +2980,7 @@ let lanternGoal = 0, lanternLevel = 0, lanternStart = Infinity, lanternRise = 3.
 function lightLantern() {
   if (lanternGoal) return;
   lanternGoal = 1;
+  if (window.mahalaCount) window.mahalaCount('Lantern lit');
   const wait = music.lantern();              // seconds until the swell starts (0 without sound)
   lanternStart = performance.now() / 1000 + wait; lanternRise = wait ? 2.5 : 3.0;
   const wrap = $('lightBtn').closest('.light-wrap');
@@ -3917,5 +3925,6 @@ async function start3D() {
   frame();
 }
 </script>
+<script src="analytics.js?v=1"></script>
 
 </body></html>
