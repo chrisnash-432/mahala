@@ -574,6 +574,29 @@ html.join-open, html.join-open body { overflow: hidden; }
 .join-done .next b { font-weight: 500; }
 .give .intro { margin-bottom: clamp(18px, 3vw, 26px); }
 .give .nums b { color: var(--ink); }
+/* Five milestones: the build in stages, each unlocked by the fund (camp lead feedback, Nov 2026) */
+.stages { margin-top: clamp(40px, 6vw, 64px); }
+.stages-lead { font: 400 clamp(19px, 2.3vw, 23px)/1.4 var(--verse); text-align: center; max-width: 30em; margin: 0 auto 22px; text-wrap: balance; }
+.meter { position: relative; height: 8px; border-radius: 999px; background: var(--rule); max-width: 680px; margin: 0 auto; overflow: hidden; }
+.meter-fill { position: absolute; inset: 0 auto 0 0; width: 0; background: linear-gradient(90deg, var(--yellow), var(--magenta)); border-radius: 999px; transition: width 1.2s var(--ease); }
+.meter-line { font: 400 14px/1.4 var(--text); letter-spacing: .02em; color: var(--ink-2); text-align: center; margin: 10px auto 26px; }
+.meter-line b { color: var(--ink); font-weight: 600; }
+.stage-list { list-style: none; margin: 0 auto; padding: 0; display: grid; gap: clamp(18px, 3vw, 28px); max-width: 860px; }
+.stage { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(16px, 3vw, 32px); align-items: center; }
+.st-img { margin: 0; } .st-img img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 6px; box-shadow: 0 10px 26px rgba(40, 25, 12, .18); }
+.st-text { min-width: 0; }
+.st-n { display: flex; align-items: center; gap: 9px; font: 500 12px/1.2 var(--text); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 6px; }
+.st-dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--ink-2); flex: none; }
+.st-state { margin-left: 4px; color: var(--magenta); }
+.stage.reached .st-dot { background: var(--ink); border-color: var(--ink); }
+.stage.reached .st-state { color: var(--ok); }
+.stage.next .st-dot { border-color: var(--magenta); box-shadow: 0 0 0 4px rgba(216, 25, 127, .14); }
+.stage h3 { font: 400 clamp(22px, 2.8vw, 28px)/1.15 var(--name); letter-spacing: .06em; margin: 0 0 6px; }
+.stage p { margin: 0; font-size: 16px; line-height: 1.5; }
+.st-at { margin-top: 8px !important; font-size: 15px !important; color: var(--ink-2); }
+.st-at b { font: 400 21px/1 var(--name); color: var(--ink); letter-spacing: .02em; }
+.stages-note { font: 400 13px/1.5 var(--text); color: var(--ink-3, var(--ink-2)); max-width: 46em; margin: 24px auto 0; text-align: center; text-wrap: pretty; }
+@media (max-width: 620px) { .stage { grid-template-columns: 1fr; gap: 10px; } }
 /* The Seed in one minute: for someone who wants the short version before the film (camp lead feedback, Nov 2026) */
 .minute { max-width: 34em; margin: 4px auto clamp(34px, 5vw, 52px); }
 .minute h2 { display: flex; align-items: center; justify-content: center; gap: 12px; font: 400 13px/1.2 var(--text); letter-spacing: .24em; text-transform: uppercase; color: var(--ink-2); margin: 0 0 14px; padding-left: .24em; }
@@ -596,7 +619,11 @@ html.join-open, html.join-open body { overflow: hidden; }
   </div>
   <div class="page">
     <div class="seed-hero"><h1 id="seedH">THE SEED</h1><p>AfrikaBurn 2027</p></div>
-    <section class="minute" aria-labelledby="minuteH">
+    <div class="narrow film-box" id="filmBox">
+      <video id="seedFilm" controls playsinline preload="none" aria-label="The film of The Seed"></video>
+      <p class="reel-cap"><span>Concept visualisation: rendered from the 3D model, some of its motion added by AI.</span><span>60 s</span></p>
+    </div>
+    <section class="minute" style="margin-top: clamp(26px, 4vw, 40px)" aria-labelledby="minuteH">
       <h2 id="minuteH"><i aria-hidden="true"><b style="background: var(--yellow)"></b><b style="background: var(--cyan)"></b><b style="background: var(--magenta)"></b></i>The Seed in one minute</h2>
       <dl>
         <div><dt>What</dt><dd>A temple open to all, shaped like the closed bud of the King Protea and glazed in yellow, cyan and magenta.</dd></div>
@@ -610,10 +637,6 @@ html.join-open, html.join-open body { overflow: hidden; }
         <a class="secondary" id="minuteJoin" href="tribe.html#join" data-count="Join" data-count-where="The Seed in one minute">Join the tribe</a>
       </div>
     </section>
-    <div class="narrow film-box" id="filmBox">
-      <video id="seedFilm" controls playsinline preload="none" aria-label="The film of The Seed"></video>
-      <p class="reel-cap"><span>Concept visualisation: rendered from the 3D model, some of its motion added by AI.</span><span>60 s</span></p>
-    </div>
     <p class="intro" style="margin-top: clamp(30px, 5vw, 48px)">A seed holds the whole tree.<br>The Seed holds a temple: its geometry, its craft and, above all, its people.</p>
 
     <h2 class="h-sec">A temple, open to all</h2>
@@ -672,6 +695,60 @@ html.join-open, html.join-open body { overflow: hidden; }
     <p class="intro" style="margin-top: clamp(34px, 5vw, 52px)">It is raised by many hands: by builders who were each called in by someone who saw something in them, and told them, you are a seed of hope.</p>
     <p class="intro seed-close">This is the seed. The temple is what it grows into.</p>
 
+    <section class="stages" id="stages" aria-labelledby="stagesH">
+      <h2 class="h-sec" id="stagesH">Five milestones</h2>
+      <p class="stages-lead">The Seed is built in stages. Every milestone the fund reaches adds something you can see, until the whole design stands on the playa.</p>
+      <div class="meter" id="stageMeter" aria-hidden="true"><span class="meter-fill" id="stageFill"></span></div>
+      <p class="meter-line" id="stageLine">Raised so far, and the next milestone, appear here.</p>
+      <ol class="stage-list">
+        <li class="stage" data-at="293235">
+          <figure class="st-img"><img src="seed-media/img/stages/stage-a.jpg" width="720" height="405" alt="The timber frame and gold cap, plain panels round the base, at golden hour" loading="lazy"></figure>
+          <div class="st-text">
+            <p class="st-n"><span class="st-dot" aria-hidden="true"></span>Milestone 1<span class="st-state"></span></p>
+            <h3>Frame</h3>
+            <p>The timber shell, the low doorway and the gold cap, open above, with plain panels round the base against wind and dust.</p>
+            <p class="st-at">at <b>R 293 235</b></p>
+          </div>
+        </li>
+        <li class="stage" data-at="346913">
+          <figure class="st-img"><img src="seed-media/img/stages/stage-b.jpg" width="720" height="405" alt="The frame with its three lowest rings glazed in colour, casting coloured light on the ground" loading="lazy"></figure>
+          <div class="st-text">
+            <p class="st-n"><span class="st-dot" aria-hidden="true"></span>Milestone 2<span class="st-state"></span></p>
+            <h3>Shelter</h3>
+            <p>The three lowest rings glazed in colour: a coloured wind break at seated head height, open to the sky above.</p>
+            <p class="st-at">at <b>R 346 913</b></p>
+          </div>
+        </li>
+        <li class="stage" data-at="497356">
+          <figure class="st-img"><img src="seed-media/img/stages/stage-c.jpg" width="720" height="405" alt="Every ring glazed in colour, a coloured shadow across the clay" loading="lazy"></figure>
+          <div class="st-text">
+            <p class="st-n"><span class="st-dot" aria-hidden="true"></span>Milestone 3<span class="st-state"></span></p>
+            <h3>Lantern</h3>
+            <p>Every ring glazed in colour, and the heart: the egg of clear water on its carved column. A coloured shell by day, a lantern by night.</p>
+            <p class="st-at">at <b>R 497 356</b></p>
+          </div>
+        </li>
+        <li class="stage" data-at="581278">
+          <figure class="st-img"><img src="seed-media/img/stages/stage-d.jpg" width="720" height="405" alt="The glazed Seed with twelve fretwork petals opened around its base" loading="lazy"></figure>
+          <div class="st-text">
+            <p class="st-n"><span class="st-dot" aria-hidden="true"></span>Milestone 4<span class="st-state"></span></p>
+            <h3>The full Seed</h3>
+            <p>Twelve fretwork petals open around its base. The Seed itself, complete.</p>
+            <p class="st-at">at <b>R 581 278</b></p>
+          </div>
+        </li>
+        <li class="stage" data-at="718875">
+          <figure class="st-img"><img src="seed-media/img/stages/stage-e.jpg" width="720" height="405" alt="From the air: The Seed at the centre of a grid of circles, six copper forms on the outer circles" loading="lazy"></figure>
+          <div class="st-text">
+            <p class="st-n"><span class="st-dot" aria-hidden="true"></span>Milestone 5<span class="st-state"></span></p>
+            <h3>Copper and grid</h3>
+            <p>Six copper forms stand around it on a floor grid of interlocking circles: everything in the design.</p>
+            <p class="st-at">at <b>R 718 875</b></p>
+          </div>
+        </li>
+      </ol>
+      <p class="stages-note">Every milestone includes making it and getting it there: the workshop, tools, transport to the Tankwa, lighting and the build crew, about R&nbsp;205&nbsp;000 of the first. That is why the first is the biggest step. Rand, including VAT, from the build budget of October 2026. Pictures are concept visualisations, rendered from the 3D model.</p>
+    </section>
     <div class="give" id="give">
       <p class="intro">To build it we are raising <span class="nowrap" data-fill="target">R 718 875</span>.</p>
       <div class="nums" role="group" aria-label="The ask">
@@ -721,6 +798,7 @@ html.join-open, html.join-open body { overflow: hidden; }
     film.poster = tall ? 'seed/img/film_tall.jpg' : 'seed/img/film_wide.jpg'; film.src = src;
     if (was) film.play().catch(function () {});
   }
+  var heard = false; film.addEventListener('volumechange', function () { if (!film.muted && !heard && window.mahalaCount) { heard = true; window.mahalaCount('Seed film with sound'); } });
   film.muted = true; film.loop = true; film.setAttribute('playsinline', ''); film.preload = 'auto';
   shape(); (phone.addEventListener ? phone.addEventListener('change', shape) : phone.addListener(shape));
   // it plays, without sound, while it is on screen; the controls give the sound
@@ -728,6 +806,28 @@ html.join-open, html.join-open body { overflow: hidden; }
   else film.play().catch(function () {});
   // Donate: straight to the crowdfunding page on BackaBuddy (site.js can point it elsewhere)
   if (SITE.donateUrl) document.querySelectorAll('[data-donate]').forEach(function (d) { d.href = SITE.donateUrl; });
+  // Five milestones: raised so far (site.js raised: carried plus BackaBuddy) against each milestone
+  (function () {
+    var r = SITE.raised || {}, raised = (r.carried || 0) + (r.backabuddy || 0), top = SITE.target || 718875;
+    var money = SITE.money || function (n) { return 'R ' + n; };
+    var stages = [].slice.call(document.querySelectorAll('.stage')), next = null;
+    stages.forEach(function (li) {
+      var at = +li.getAttribute('data-at'), st = li.querySelector('.st-state');
+      if (raised >= at) { li.classList.add('reached'); st.textContent = '· reached'; }
+      else if (!next) { next = li; li.classList.add('next'); st.textContent = '· next'; }
+    });
+    var fill = document.getElementById('stageFill'), line = document.getElementById('stageLine');
+    if (fill) requestAnimationFrame(function () { fill.style.width = Math.min(100, raised / top * 100).toFixed(1) + '%'; });
+    if (line) {
+      line.textContent = '';
+      var b = document.createElement('b'); b.textContent = money(raised); line.appendChild(b);
+      line.appendChild(document.createTextNode(' raised so far' + (next ? '. ' + money(+next.getAttribute('data-at') - raised) + ' to go to the next milestone: ' + next.querySelector('h3').textContent + '.' : '. Every milestone reached.')));
+    }
+    if ('IntersectionObserver' in window && window.mahalaCount) {
+      var io = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { window.mahalaCount('Seed milestones seen'); io.disconnect(); } }, { threshold: 0.25 });
+      var sec = document.getElementById('stages'); if (sec) io.observe(sec);
+    }
+  })();
   // Join the tribe: over the front page, it opens the tribe there; on its own, the tribe page
   var mj = document.getElementById('minuteJoin');
   if (mj && window.parent !== window) mj.addEventListener('click', function (e) {
@@ -737,6 +837,6 @@ html.join-open, html.join-open body { overflow: hidden; }
   if (location.hash === '#give') setTimeout(function () { document.getElementById('give').scrollIntoView(); }, 120);
 })();
 </script>
-<script src="analytics.js?v=1"></script>
+<script src="analytics.js?v=2"></script>
 </body>
 </html>

@@ -37,6 +37,15 @@
     window.mahalaCount(el.getAttribute('data-count'), where ? { where: where } : undefined);
   }, true);
 
+  // accounts: someone asks for a sign-in link (the email itself is never counted), and someone arrives back from one
+  document.addEventListener('submit', function (e) {
+    var f = e.target; if (f && f.matches && f.matches('.mvs form[data-k="email"]')) window.mahalaCount('Asked for a sign-in link');
+  }, true);
+  try {
+    var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+    if (nav && /[?&]signin=1\b/.test(nav.name)) window.mahalaCount('Came back signed in');
+  } catch (e) { /* fine */ }
+
   // sign-ups: the tribe, the camp application and the news list all go to the sheet through MAHALA_SITE.post. Only the
   // kind of sign-up is counted, never what was written in it.
   var SITE = window.MAHALA_SITE;
