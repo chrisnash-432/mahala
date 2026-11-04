@@ -8,18 +8,20 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500&family=Marcellus&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400&family=Jost:wght@300;400;500&family=Marcellus&display=swap">
 <style>
-/* Your Mahala: one page about you, the same on the site and in the Mahalaverse.
-   PROTOTYPE. The people on this page are made up, so the page can be tried before anything is built.
-   Nothing is read from or saved to the member database. Mahala OS: strategy/your-mahala-accounts-plan-2026-11-04.md */
+/* Your Mahala, prototype 2 (4 Nov 2026). One page about you, the same on the site and in the Mahalaverse.
+   The people here are made up; nothing is read from or saved to the member database.
+   The events come from Mahala OS operations/2027/events.yaml (public rows and public fields only, as export_events.py
+   writes them) and the deck from the Mahalaverse's own archetype cards.
+   Mahala OS: strategy/your-mahala-accounts-plan-2026-11-04.md and strategy/your-mahala-panel-review-2026-11-04.md */
 :root {
   color-scheme: light;
-  --ink: #2A221C; --ink-2: #5B5047; --ink-3: #7A6D60;
-  --warm: #F4EFE6; --paper: #F7F2EA; --paper-2: #EFE7DA; --sheet: #FBF8F3; --rule: #DCD2C3;
-  --yellow: #FFD81F; --cyan: #14A8E0; --magenta: #D8197F; --ok: #2E6B4F; --wax: #8E1B45;
-  --yellow-ink: #7A5F00; --cyan-ink: #0B6E95; --magenta-ink: #A3105E;
-  --name: "Marcellus", "Cormorant Garamond", Georgia, serif;
+  --ink: #2A221C; --ink-2: #5B5047; --ink-3: #6F6357;
+  --warm: #F4EFE6; --paper: #F7F2EA; --paper-2: #EFE7DA; --sheet: #FBF8F3; --rule: #DCD2C3; --rule-2: #C9BCA9;
+  --yellow: #FFD81F; --cyan: #14A8E0; --magenta: #D8197F; --ok: #2E6B4F;
+  --yellow-ink: #6E5600; --cyan-ink: #0B6E95; --magenta-ink: #A3105E;
+  --name: "Marcellus", Georgia, serif;
   --text: "Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
   --verse: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
   --ease: cubic-bezier(.2, .7, .1, 1);
@@ -29,429 +31,657 @@ body { margin: 0; background: var(--warm); color: var(--ink); font: 400 16px/1.5
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--warm); }
 a { color: inherit; }
 button { font: inherit; color: inherit; }
-section, .panel { scroll-margin-top: 84px; }
-:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; border-radius: 6px; }
-.dots { display: inline-flex; gap: 4px; vertical-align: middle; }
-.dots i { width: 7px; height: 7px; border-radius: 50%; display: block; }
+:focus-visible { outline: 2px solid var(--cyan-ink); outline-offset: 3px; border-radius: 6px; }
+section, details, .chapter, .ticket { scroll-margin-top: 80px; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* the top bar, as on the rest of the site */
+/* top bar */
 .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: color-mix(in srgb, var(--warm) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--rule);
-  padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-.top-in { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.mark { font: 400 19px/1 var(--name); letter-spacing: .18em; text-decoration: none; }
-.top .where { color: var(--ink-3); font-size: 13px; letter-spacing: .04em; }
-.top .sp { flex: 1; }
-.chipname { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--rule); background: var(--sheet); border-radius: 999px; padding: 4px 12px 4px 4px; font-size: 14px; }
-.chipname svg { width: 26px; height: 26px; border-radius: 50%; display: block; }
+  padding-block: 8px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.top-in { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; gap: 10px; }
+.mark { font: 400 18px/1 var(--name); letter-spacing: .18em; text-decoration: none; }
+.sp { flex: 1; }
+.tellbtn { border: 0; background: var(--magenta); color: #fff; border-radius: 999px; padding: 8px 14px; font-size: 14px; cursor: pointer; min-height: 40px; }
+.chipname { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--rule); background: var(--sheet); border-radius: 999px; padding: 4px 12px 4px 4px; font-size: 14px; cursor: pointer; min-height: 40px; }
+.chipname svg { width: 30px; height: 30px; border-radius: 50%; display: block; }
 
-/* the prototype strip: who you are viewing as */
-.proto { background: var(--ink); color: var(--warm); padding-block: 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-.proto-in { max-width: 1080px; margin: 0 auto; display: flex; gap: 10px 18px; align-items: center; flex-wrap: wrap; font-size: 14px; }
-.proto b { font-weight: 500; letter-spacing: .06em; text-transform: uppercase; font-size: 12px; color: var(--yellow); }
-.seg { display: inline-flex; border: 1px solid rgba(244, 239, 230, .35); border-radius: 999px; padding: 3px; gap: 2px; flex-wrap: wrap; }
-.seg a { text-decoration: none; padding: 5px 12px; border-radius: 999px; font-size: 14px; color: rgba(244, 239, 230, .8); }
-.seg a[aria-current="page"] { background: var(--warm); color: var(--ink); }
-.proto small { color: rgba(244, 239, 230, .7); font-size: 13px; }
+/* prototype strip */
+.proto { background: var(--ink); color: var(--warm); padding-block: 8px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.proto-in { max-width: 1080px; margin: 0 auto; display: flex; gap: 6px 14px; align-items: center; flex-wrap: wrap; font-size: 13.5px; }
+.proto b { font-weight: 500; letter-spacing: .1em; text-transform: uppercase; font-size: 11.5px; color: var(--yellow); }
+.seg { display: inline-flex; gap: 2px; flex-wrap: wrap; }
+.seg a { text-decoration: none; padding: 6px 12px; border-radius: 999px; color: rgba(244, 239, 230, .85); border: 1px solid rgba(244, 239, 230, .3); }
+.seg a[aria-current="page"] { background: var(--warm); color: var(--ink); border-color: var(--warm); }
+.proto small { color: rgba(244, 239, 230, .75); }
 
-.wrap { max-width: 1080px; margin: 0 auto; padding-block: 28px 120px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 28px 80px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 
-/* 1. You */
-.you { display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 28px 40px; align-items: start; padding-bottom: 32px; border-bottom: 1px solid var(--rule); }
-.you-id { display: flex; gap: 20px; align-items: center; min-width: 0; }
-.sigil { width: 96px; height: 96px; flex: none; border-radius: 50%; display: block; box-shadow: 0 0 0 1px var(--rule), 0 10px 30px -18px rgba(42, 34, 28, .6); }
-.hello { font: italic 400 19px/1.2 var(--verse); color: var(--ink-2); margin: 0 0 2px; }
-h1 { font: 400 clamp(32px, 6vw, 48px)/1.05 var(--name); letter-spacing: .04em; margin: 0; text-wrap: balance; }
-.playa { margin: 6px 0 0; color: var(--ink-2); font-size: 15px; }
-.playa i { font-family: var(--verse); font-size: 18px; color: var(--ink); }
-.years { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
-.yr { font-size: 12.5px; letter-spacing: .03em; border: 1px solid var(--rule); border-radius: 999px; padding: 3px 10px; background: var(--sheet); color: var(--ink-2); }
-.yr.role { border-color: transparent; background: var(--ink); color: var(--warm); }
-.card { margin: 0; justify-self: end; width: 210px; }
-.card img { width: 100%; height: auto; display: block; border-radius: 12px; box-shadow: 0 18px 40px -22px rgba(42, 34, 28, .7); aspect-ratio: 5 / 8; object-fit: cover; background: var(--paper-2); }
-.card figcaption { font-size: 13px; color: var(--ink-3); margin-top: 8px; text-align: center; }
+/* the altar: card, name, protea */
+.altar { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); grid-template-areas: "card head" "card rest"; gap: 0 56px; align-items: start; }
+.cardzone { grid-area: card; } .whohead { grid-area: head; min-width: 0; } .whorest { grid-area: rest; min-width: 0; }
+.cardzone { display: grid; justify-items: center; gap: 14px; position: relative; padding-top: 6px; }
+.cardstage { position: relative; display: flex; gap: 14px; align-items: flex-start; justify-content: center; }
+.halo { position: absolute; inset: -18px -26px; background: conic-gradient(from 200deg, var(--yellow), var(--cyan), var(--magenta), var(--yellow)); opacity: .2; filter: blur(26px); border-radius: 40%; pointer-events: none; }
+.card { position: relative; width: 168px; aspect-ratio: 300 / 406; perspective: 900px; }
+.card .face { position: absolute; inset: 0; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px -22px rgba(42, 34, 28, .75); background: var(--paper-2); backface-visibility: hidden; transition: transform .6s var(--ease); }
+.card .face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card .back { transform: rotateY(180deg); background: var(--ink); color: var(--warm); padding: 14px 12px; display: flex; flex-direction: column; gap: 6px; overflow: auto; }
+.card.turned .front { transform: rotateY(-180deg); }
+.card.turned .back { transform: rotateY(0); }
+.card.own { transform: rotate(-3deg); }
+.card .back b { font: 400 15px/1.2 var(--name); letter-spacing: .05em; }
+.card .back p { margin: 0; font-size: 12.5px; line-height: 1.45; }
+.card .back q { font: italic 400 16px/1.25 var(--verse); quotes: none; }
+.cardname { text-align: center; font-size: 14px; color: var(--ink-2); max-width: 30ch; }
+.cardname b { display: block; font: 400 17px/1.2 var(--name); letter-spacing: .06em; color: var(--ink); }
+.cardbtns { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.draw { width: 168px; }
+.drawn { display: grid; justify-items: center; gap: 8px; text-align: center; max-width: 340px; }
+.drawn .msg { background: var(--sheet); border: 1px solid var(--rule); border-radius: 14px; padding: 12px 14px; font-size: 14.5px; text-align: left; }
+.drawn .msg q { display: block; font: italic 400 19px/1.3 var(--verse); quotes: none; margin-bottom: 6px; color: var(--ink); }
+.drawn .msg span { display: block; font-size: 13px; color: var(--ink-3); margin-top: 6px; }
 
-/* where you stand: the one ladder */
-.stand { grid-column: 1 / -1; }
-.label { font: 500 11.5px/1.2 var(--text); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
-.ladder { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); position: relative; }
-.ladder::before { content: ""; position: absolute; left: 8%; right: 8%; top: 13px; height: 2px; background: linear-gradient(90deg, var(--yellow), var(--cyan), var(--magenta)); opacity: .35; }
-.ladder li { text-align: center; position: relative; font-size: 13px; color: var(--ink-3); padding: 0 2px; }
-.ladder .node { width: 28px; height: 28px; margin: 0 auto 8px; border-radius: 50%; background: var(--warm); border: 2px solid var(--rule); position: relative; display: grid; place-items: center; }
-.ladder li.done .node { border-color: var(--ink-2); background: var(--ink-2); }
-.ladder li.done .node::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--warm); }
-.ladder li.here { color: var(--ink); font-weight: 500; }
-.ladder li.here .node { border: 0; background: conic-gradient(var(--yellow), var(--cyan), var(--magenta), var(--yellow)); box-shadow: 0 0 0 5px color-mix(in srgb, var(--cyan) 18%, transparent); }
-.ladder li.here .node::after { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--warm); }
-.ladder small { display: block; font-weight: 400; color: var(--ink-3); font-size: 12px; margin-top: 2px; }
-.next { margin-top: 22px; display: flex; gap: 14px 18px; align-items: center; flex-wrap: wrap; background: var(--sheet); border: 1px solid var(--rule); border-radius: 16px; padding: 14px 16px 14px 20px; }
-.next p { margin: 0; flex: 1 1 260px; min-width: 0; }
-.next p span { display: block; font-size: 13px; color: var(--ink-3); }
-.btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 10px 18px; border: 1px solid var(--ink); background: var(--ink); color: var(--warm); text-decoration: none; cursor: pointer; font-size: 15px; }
-.btn.ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
+/* beads beside the card */
+.beads { display: flex; flex-direction: column; gap: 10px; padding-top: 8px; }
+.bead { width: 22px; height: 22px; border-radius: 50%; border: 0; padding: 0; cursor: pointer; box-shadow: inset -3px -4px 6px rgba(0, 0, 0, .18), inset 2px 3px 4px rgba(255, 255, 255, .5); position: relative; }
+.bead.big { width: 28px; height: 28px; }
+.bead[aria-expanded="true"] { outline: 2px solid var(--ink); outline-offset: 2px; }
+.bead::after { content: ""; position: absolute; left: 50%; top: 100%; width: 1px; height: 10px; background: var(--rule-2); }
+.bead:last-child::after { display: none; }
+.beadsay { font-size: 13.5px; color: var(--ink-2); min-height: 1.4em; text-align: center; max-width: 34ch; }
+
+.who { min-width: 0; }
+.hello { font: italic 400 21px/1.2 var(--verse); color: var(--ink-2); margin: 0; }
+h1 { font: 400 clamp(38px, 7vw, 56px)/1.02 var(--name); letter-spacing: .04em; margin: 2px 0 0; text-wrap: balance; }
+.playa { margin: 6px 0 0; color: var(--ink-2); }
+.playa i { font-family: var(--verse); font-size: 19px; color: var(--ink); }
+.sleeps { margin: 10px 0 0; font-size: 14px; color: var(--ink-3); letter-spacing: .02em; }
+.hats { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.hat { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; border: 1px solid var(--rule-2); border-radius: 999px; padding: 4px 11px; background: var(--sheet); color: var(--ink-2); }
+.hat svg { width: 14px; height: 14px; }
+
+/* the protea: six ways of belonging, no top */
+.protea { margin-top: 22px; display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 8px 22px; align-items: center; }
+.protea svg { width: 200px; height: 200px; overflow: visible; }
+.petal { cursor: pointer; }
+.petal path { transition: transform .6s var(--ease), opacity .3s; transform-box: fill-box; transform-origin: 50% 100%; }
+.petal.open path { stroke: none; }
+.petal.bud path { fill: transparent; stroke: var(--rule-2); stroke-width: 1.2; stroke-dasharray: 3 3; }
+.petal:focus-visible { outline: none; }
+.petal:focus-visible path, .petal.sel path { stroke: var(--ink); stroke-width: 2; stroke-dasharray: none; }
+.petal.unfold path { animation: unfold .9s var(--ease) both; }
+@keyframes unfold { from { transform: scale(.55); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.ring { fill: none; stroke: var(--rule-2); stroke-width: 1; }
+.seedc { fill: var(--ink); }
+.seedt { font: 400 7.5px var(--name); letter-spacing: .1em; fill: var(--warm); text-anchor: middle; }
+.season { font-size: 15px; color: var(--ink-2); }
+.season b { display: block; font: 400 12px/1.2 var(--text); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 6px; }
+.petalsay { margin-top: 10px; padding: 10px 12px; border-left: 3px solid var(--cyan); background: var(--sheet); border-radius: 0 10px 10px 0; font-size: 14.5px; min-height: 3em; }
+.petalsay strong { font-weight: 500; }
+.rings { font-size: 13px; color: var(--ink-3); margin-top: 6px; }
+
+/* the invitation */
+.letter { margin-top: 26px; background: var(--sheet); border: 1px solid var(--rule); border-radius: 18px; padding: 18px 20px; position: relative; }
+.letter::before { content: ""; position: absolute; left: 20px; top: -6px; width: 34px; height: 12px; border-radius: 6px; background: linear-gradient(90deg, var(--yellow), var(--cyan), var(--magenta)); }
+.letter .from { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+.letter p { margin: 6px 0 12px; font-size: 16.5px; max-width: 58ch; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 999px; padding: 10px 18px; border: 1px solid var(--ink); background: var(--ink); color: var(--warm); text-decoration: none; cursor: pointer; font-size: 15px; min-height: 44px; }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--rule-2); }
+.btn.small { padding: 7px 14px; font-size: 14px; min-height: 40px; }
 .btn[aria-pressed="true"] { background: var(--ok); border-color: var(--ok); color: #fff; }
-.btn.small { padding: 6px 14px; font-size: 14px; }
+.link { background: none; border: 0; padding: 4px 0; color: var(--cyan-ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font-size: 14.5px; min-height: 32px; }
+.said { font-size: 14px; color: var(--ok); min-height: 1.4em; margin: 8px 0 0; }
 
-/* the sections */
-.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; }
-section.s { padding-block: 30px 6px; border-bottom: 1px solid var(--rule); min-width: 0; }
-.grid section.s:nth-last-child(-n+2) { border-bottom: 0; }
-section.s.wide { grid-column: 1 / -1; }
-.s h2 { font: 400 23px/1.15 var(--name); letter-spacing: .05em; margin: 0 0 4px; display: flex; align-items: baseline; gap: 12px; }
-.s h2 .n { font: 500 12px/1 var(--text); color: var(--ink-3); letter-spacing: .1em; }
-.s .lede { margin: 0 0 16px; color: var(--ink-2); font-size: 15px; max-width: 60ch; }
-.list { list-style: none; margin: 0 0 24px; padding: 0; }
-.list > li { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 4px 12px; align-items: start; padding: 11px 0; border-top: 1px solid color-mix(in srgb, var(--rule) 70%, transparent); }
-.list > li:first-child { border-top: 0; }
-.list .dot { width: 9px; height: 9px; border-radius: 50%; margin-top: 8px; background: var(--rule); }
-.list b { font-weight: 500; }
-.list .sub { display: block; font-size: 13.5px; color: var(--ink-3); }
-.tag { font-size: 12px; letter-spacing: .03em; border-radius: 999px; padding: 3px 10px; white-space: nowrap; border: 1px solid var(--rule); color: var(--ink-2); background: var(--sheet); align-self: center; }
-.tag.y { background: color-mix(in srgb, var(--yellow) 22%, var(--sheet)); border-color: transparent; color: var(--yellow-ink); }
-.tag.c { background: color-mix(in srgb, var(--cyan) 14%, var(--sheet)); border-color: transparent; color: var(--cyan-ink); }
-.tag.m { background: color-mix(in srgb, var(--magenta) 12%, var(--sheet)); border-color: transparent; color: var(--magenta-ink); }
-.tag.ok { background: color-mix(in srgb, var(--ok) 13%, var(--sheet)); border-color: transparent; color: var(--ok); }
-.empty { color: var(--ink-3); font-style: italic; font-family: var(--verse); font-size: 18px; margin: 0 0 24px; }
+/* role doors */
+details.door { margin-top: 14px; border-radius: 18px; background: var(--ink); color: var(--warm); overflow: hidden; }
+details.door summary { list-style: none; cursor: pointer; padding: 16px 20px; display: flex; align-items: center; gap: 12px; min-height: 56px; }
+details.door summary::-webkit-details-marker { display: none; }
+details.door summary b { font: 400 20px/1.2 var(--name); letter-spacing: .05em; font-weight: 400; }
+details.door summary span { font-size: 13.5px; color: rgba(244, 239, 230, .75); }
+details.door summary::after { content: "+"; margin-left: auto; font-size: 22px; line-height: 1; }
+details.door[open] summary::after { content: "\2212"; }
+.doorin { padding: 0 20px 18px; }
+.doorin p { margin: 0 0 12px; color: rgba(244, 239, 230, .85); font-size: 15px; max-width: 62ch; }
+.doorin ul { list-style: none; margin: 0 0 14px; padding: 0; }
+.doorin li { display: flex; justify-content: space-between; gap: 10px; padding: 10px 0; border-top: 1px solid rgba(244, 239, 230, .14); font-size: 15px; }
+.doorin li small { display: block; color: rgba(244, 239, 230, .7); font-size: 13px; }
+.pill { font-size: 12.5px; border-radius: 999px; padding: 3px 10px; background: rgba(244, 239, 230, .12); align-self: center; white-space: nowrap; }
+.doorin .btn { background: var(--warm); color: var(--ink); border-color: var(--warm); }
+.doorin .btn.ghost { background: transparent; color: var(--warm); border-color: rgba(244, 239, 230, .4); }
+.doorin .said { color: #BDEBD2; }
 
-/* quest */
-.quest { background: var(--sheet); border: 1px solid var(--rule); border-radius: 16px; padding: 16px 18px; margin-bottom: 24px; }
-.quest h3 { margin: 0; font: 500 17px/1.3 var(--text); }
+/* movements */
+.movement { margin-top: 56px; position: relative; }
+.movement > h2 { font: 400 clamp(26px, 4vw, 32px)/1.1 var(--name); letter-spacing: .05em; margin: 0; }
+.movement > .lede { margin: 6px 0 20px; color: var(--ink-2); max-width: 60ch; }
+.curve { display: block; width: 100%; height: 40px; margin-top: 48px; }
+.curve path { fill: none; stroke: var(--rule-2); stroke-width: 1; }
+.cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 48px; }
+h3 { font: 400 19px/1.2 var(--name); letter-spacing: .05em; margin: 0 0 4px; }
+.sub { color: var(--ink-3); font-size: 14px; margin: 0 0 14px; }
+
+/* gatherings as tickets */
+.tickets { display: grid; gap: 12px; }
+.ticket { --notch: radial-gradient(circle at 0 50%, transparent 9px, #000 9.5px) left / 51% 100% no-repeat, radial-gradient(circle at 100% 50%, transparent 9px, #000 9.5px) right / 51% 100% no-repeat;
+  -webkit-mask: var(--notch); mask: var(--notch); background: var(--sheet); border: 1px solid var(--rule); border-radius: 14px; }
+.ticket > button.head { width: 100%; text-align: left; background: none; border: 0; padding: 14px 18px 14px 20px; display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; gap: 14px; align-items: center; cursor: pointer; }
+.tdate { text-align: center; line-height: 1; border-right: 1px dashed var(--rule-2); padding-right: 12px; }
+.tdate b { display: block; font: 400 28px/1 var(--name); }
+.tdate span { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+.ttitle b { display: block; font-weight: 500; font-size: 16px; }
+.ttitle span { font-size: 13.5px; color: var(--ink-3); }
+.stamp { font-size: 12px; letter-spacing: .06em; border-radius: 999px; padding: 4px 10px; border: 1px solid var(--rule-2); color: var(--ink-2); white-space: nowrap; }
+.stamp.going { background: var(--ok); border-color: var(--ok); color: #fff; animation: stamp .25s var(--ease); }
+.stamp.held { background: color-mix(in srgb, var(--yellow) 30%, var(--sheet)); border-color: transparent; color: var(--yellow-ink); }
+@keyframes stamp { from { transform: scale(1.4); } to { transform: scale(1); } }
+.tbody { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .35s var(--ease); }
+.ticket.open .tbody { grid-template-rows: 1fr; }
+.tbody > div { overflow: hidden; }
+.tin { padding: 0 20px 18px 20px; border-top: 1px dashed var(--rule-2); margin: 0 10px; padding-top: 14px; display: grid; gap: 10px; font-size: 15px; }
+.tin dl { margin: 0; display: grid; grid-template-columns: 90px minmax(0, 1fr); gap: 6px 12px; }
+.tin dt { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); padding-top: 3px; }
+.tin dd { margin: 0; }
+.tin dd small { display: block; color: var(--ink-3); font-size: 13.5px; }
+.tq { font: italic 400 20px/1.3 var(--verse); margin: 0; padding-left: 14px; border-left: 3px solid var(--magenta); }
+.ask { background: var(--paper); border-radius: 12px; padding: 12px; display: grid; gap: 8px; }
+.ask label, .ask legend { font-size: 14px; color: var(--ink-2); }
+.ask fieldset { border: 0; margin: 0; padding: 0; display: grid; gap: 8px; }
+.choice { display: flex; gap: 6px; flex-wrap: wrap; }
+.choice input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.choice label { border: 1px solid var(--rule-2); border-radius: 999px; padding: 6px 12px; cursor: pointer; background: var(--sheet); font-size: 14px; color: var(--ink); min-height: 36px; display: inline-flex; align-items: center; }
+.choice input:checked + label { background: var(--ink); color: var(--warm); border-color: var(--ink); }
+.choice input:focus-visible + label { outline: 2px solid var(--cyan-ink); outline-offset: 2px; }
+.ask textarea { font: inherit; font-size: 15px; border: 1px solid var(--rule-2); border-radius: 10px; padding: 8px 10px; background: #fff; color: var(--ink); width: 100%; }
+.only { font-size: 13px; color: var(--ink-3); }
+.season-link { margin-top: 12px; }
+
+/* your path: one thread */
+.thread { list-style: none; margin: 0; padding: 0 0 0 26px; position: relative; }
+.thread::before { content: ""; position: absolute; left: 9px; top: 6px; bottom: 6px; width: 2px; background: linear-gradient(var(--yellow), var(--cyan), var(--magenta)); opacity: .45; border-radius: 2px; }
+.knot { position: relative; padding: 0 0 18px; }
+.knot::before { content: ""; position: absolute; left: -24px; top: 5px; width: 14px; height: 14px; border-radius: 50%; background: var(--warm); border: 2px solid var(--ink-2); }
+.knot.chapter::before { width: 18px; height: 18px; left: -26px; top: 3px; background: var(--ink); border-color: var(--ink); }
+.knot.glow::before { border-color: var(--cyan-ink); box-shadow: 0 0 0 5px color-mix(in srgb, var(--cyan) 22%, transparent); }
+.knot.waiting::before { border-style: dashed; animation: breathe 4s ease-in-out infinite; }
+@keyframes breathe { 50% { opacity: .4; } }
+.knot b { font-weight: 500; }
+.knot.chapter b { font: 400 18px/1.3 var(--name); letter-spacing: .04em; font-weight: 400; }
+.knot span { display: block; font-size: 14.5px; color: var(--ink-2); }
+.quest { margin-top: 8px; background: var(--sheet); border: 1px solid var(--rule); border-radius: 14px; padding: 12px 14px; }
 .quest .crew { font-size: 13px; color: var(--ink-3); }
-.steps { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 8px; }
-.steps li { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; }
-.steps button { flex: none; width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid var(--ink-3); background: transparent; cursor: pointer; padding: 0; display: grid; place-items: center; }
-.steps button[data-s="mine"] { background: var(--cyan); border-color: var(--cyan); }
-.steps button[data-s="ok"] { background: var(--ok); border-color: var(--ok); cursor: default; }
-.steps button svg { width: 14px; height: 14px; stroke: #fff; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
-.steps small { display: block; font-size: 12.5px; color: var(--ink-3); }
+.steps { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 4px; }
+.steps button { width: 100%; display: flex; gap: 10px; align-items: flex-start; text-align: left; background: none; border: 0; padding: 6px 4px; border-radius: 8px; cursor: pointer; min-height: 44px; }
+.steps button:hover { background: var(--paper); }
+.steps .box { flex: none; width: 24px; height: 24px; border-radius: 7px; border: 1.5px solid var(--ink-2); display: grid; place-items: center; font-size: 12px; margin-top: 1px; }
+.steps [data-s="mine"] .box { background: var(--cyan-ink); border-color: var(--cyan-ink); color: #fff; }
+.steps [data-s="ok"] .box { background: var(--ok); border-color: var(--ok); color: #fff; }
+.steps [data-s="ok"] { cursor: default; }
+.steps svg { width: 14px; height: 14px; stroke: #fff; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.steps small { display: block; font-size: 13px; color: var(--ink-3); }
 
-/* what you bring */
-.bring { display: grid; gap: 14px; margin-bottom: 24px; }
-.bring dt { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
-.bring dd { margin: 2px 0 0; }
-.from { font-size: 13px; color: var(--ink-3); }
-.edit { font-size: 13px; color: var(--cyan-ink); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+/* what you carry */
+.gifts { margin: 0; display: grid; gap: 12px; }
+.gifts dt { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+.gifts dd { margin: 2px 0 0; }
+.gifts dd small { color: var(--ink-3); font-size: 13px; }
+.seedring { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 16px; align-items: center; }
+.seedring svg { width: 170px; height: 170px; }
+.seedring ul { list-style: none; margin: 0; padding: 0; font-size: 14px; display: grid; gap: 4px; }
+.seedring li span { color: var(--ink-3); }
+.mine { margin-top: 12px; font-size: 14.5px; padding: 10px 12px; border-radius: 12px; border: 1px dashed var(--rule-2); }
+.mine small { display: block; color: var(--ink-3); font-size: 13px; }
 
-/* your seed */
-.seed { margin-bottom: 24px; }
-.bar { height: 10px; border-radius: 999px; background: var(--paper-2); overflow: hidden; margin: 10px 0 8px; position: relative; }
-.bar i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, var(--yellow), var(--cyan), var(--magenta)); border-radius: inherit; }
-.bar b { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); }
-.seedrow { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; color: var(--ink-2); flex-wrap: wrap; }
-.mine { margin-top: 14px; font-size: 14.5px; padding: 12px 14px; border-radius: 12px; border: 1px dashed var(--rule); }
-.mine span { display: block; font-size: 12.5px; color: var(--ink-3); }
+.portal { margin-top: 56px; display: flex; gap: 16px 24px; align-items: center; flex-wrap: wrap; padding: 22px; border-radius: 22px; background:
+  radial-gradient(120% 160% at 100% 0%, color-mix(in srgb, var(--magenta) 14%, transparent), transparent 55%), radial-gradient(120% 160% at 0% 100%, color-mix(in srgb, var(--cyan) 14%, transparent), transparent 55%), var(--sheet); border: 1px solid var(--rule); }
+.portal p { margin: 0; flex: 1 1 280px; min-width: 0; color: var(--ink-2); }
+.portal p b { display: block; color: var(--ink); font: 400 21px/1.2 var(--name); letter-spacing: .04em; font-weight: 400; margin-bottom: 2px; }
 
-/* thread */
-.thread { border-left: 2px solid var(--rule); margin: 0 0 18px 6px; padding: 0 0 0 18px; list-style: none; }
-.thread li { position: relative; padding: 0 0 16px; }
-.thread li::before { content: ""; position: absolute; left: -25px; top: 7px; width: 12px; height: 12px; border-radius: 50%; background: var(--warm); border: 2px solid var(--ink-3); }
-.thread b { font: 400 17px/1.3 var(--name); letter-spacing: .04em; font-weight: 400; }
-.thread span { display: block; font-size: 14px; color: var(--ink-2); }
-
-/* choices */
-.choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 48px; margin-bottom: 24px; }
-.field { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 0; border-top: 1px solid color-mix(in srgb, var(--rule) 70%, transparent); font-size: 15px; }
+/* sheets: your choices, tell us */
+dialog.sheet { border: 0; padding: 0; margin: auto auto 0; width: min(640px, 100%); max-height: 88vh; border-radius: 22px 22px 0 0; background: var(--warm); color: var(--ink); box-shadow: 0 -20px 60px -20px rgba(0, 0, 0, .4); }
+@media (min-width: 760px) { dialog.sheet { margin: auto; border-radius: 22px; } }
+dialog.sheet::backdrop { background: rgba(20, 14, 10, .5); }
+.sheetin { padding: 20px max(18px, env(safe-area-inset-left, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-right, 0px)); overflow: auto; max-height: 88vh; }
+.sheethead { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+.sheethead h2 { font: 400 26px/1.1 var(--name); letter-spacing: .05em; margin: 0; flex: 1; }
+.x { border: 1px solid var(--rule-2); background: var(--sheet); border-radius: 999px; padding: 8px 14px; cursor: pointer; min-height: 40px; }
+.sheet h3 { margin-top: 22px; }
+.field { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--rule); font-size: 15px; }
 .field small { display: block; color: var(--ink-3); font-size: 13px; }
-select { font: inherit; font-size: 14px; border: 1px solid var(--rule); border-radius: 999px; padding: 5px 10px; background: var(--sheet); color: var(--ink); }
-.sw { position: relative; width: 44px; height: 26px; flex: none; }
-.sw input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
-.sw span { position: absolute; inset: 0; border-radius: 999px; background: var(--rule); transition: background .2s; pointer-events: none; }
-.sw span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .2s var(--ease); box-shadow: 0 1px 3px rgba(0, 0, 0, .2); }
-.sw input:checked + span { background: var(--ok); }
-.sw input:checked + span::after { transform: translateX(18px); }
-.sw input:focus-visible + span { outline: 2px solid var(--cyan); outline-offset: 2px; }
-.actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 6px 0 24px; }
-.said { font-size: 13.5px; color: var(--ok); min-height: 1.4em; margin: 0 0 18px; }
-
-/* role panels */
-.roles { margin-top: 34px; display: grid; gap: 22px; }
-.panel { border-radius: 20px; padding: 22px 22px 8px; background: var(--ink); color: var(--warm); position: relative; overflow: hidden; }
-.panel::after { content: ""; position: absolute; right: -60px; top: -60px; width: 200px; height: 200px; border-radius: 50%; background: conic-gradient(from 90deg, var(--yellow), var(--cyan), var(--magenta), var(--yellow)); opacity: .16; filter: blur(2px); pointer-events: none; }
-.panel h2 { font: 400 24px/1.15 var(--name); letter-spacing: .05em; margin: 0; }
-.panel .why { margin: 4px 0 16px; color: rgba(244, 239, 230, .75); font-size: 15px; max-width: 62ch; }
-.panel .list > li { border-top-color: rgba(244, 239, 230, .14); }
-.panel .list .sub { color: rgba(244, 239, 230, .62); }
-.panel .tag { background: rgba(244, 239, 230, .1); border-color: transparent; color: var(--warm); }
-.panel .tag.ok { background: color-mix(in srgb, #7FD3A8 25%, transparent); color: #CFF2DE; }
-.panel .tag.c { background: color-mix(in srgb, var(--cyan) 30%, transparent); color: #CDEFFC; }
-.panel .tag.y { background: color-mix(in srgb, var(--yellow) 26%, transparent); color: #FFF0A8; }
-.panel .btn { background: var(--warm); color: var(--ink); border-color: var(--warm); }
-.panel .btn.ghost { background: transparent; color: var(--warm); border-color: rgba(244, 239, 230, .35); }
-.panel .note { font-size: 13.5px; color: rgba(244, 239, 230, .7); margin: 0 0 16px; }
-.nums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
-.nums div { background: rgba(244, 239, 230, .07); border-radius: 12px; padding: 12px; }
-.nums b { display: block; font: 400 26px/1.1 var(--name); }
-.nums span { font-size: 12.5px; color: rgba(244, 239, 230, .7); }
-
-/* the Mahalaverse, and Tell us */
-.verse { margin-top: 34px; display: flex; gap: 16px 24px; align-items: center; flex-wrap: wrap; padding: 20px 22px; border-radius: 20px; border: 1px solid var(--rule); background:
-  radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--cyan) 12%, transparent), transparent 60%), var(--sheet); }
-.verse p { margin: 0; flex: 1 1 300px; min-width: 0; color: var(--ink-2); }
-.verse p b { display: block; color: var(--ink); font: 400 20px/1.2 var(--name); letter-spacing: .04em; font-weight: 400; margin-bottom: 2px; }
-.tell { position: fixed; z-index: 6; right: max(16px, calc(env(safe-area-inset-right, 0px) + 16px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); }
-.tell > button { border-radius: 999px; padding: 11px 18px; border: 0; background: var(--magenta); color: #fff; cursor: pointer; box-shadow: 0 10px 28px -12px rgba(216, 25, 127, .8); font-size: 15px; }
-.tellbox { position: fixed; z-index: 7; right: max(16px, calc(env(safe-area-inset-right, 0px) + 16px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 70px); width: min(360px, calc(100vw - 32px)); background: var(--sheet); border: 1px solid var(--rule); border-radius: 18px; padding: 16px; box-shadow: 0 24px 60px -30px rgba(42, 34, 28, .7); }
-.tellbox h3 { margin: 0 0 2px; font: 400 19px/1.2 var(--name); letter-spacing: .04em; }
-.tellbox p { margin: 0 0 10px; font-size: 13.5px; color: var(--ink-3); }
-.tellbox label { font-size: 13px; color: var(--ink-2); display: block; margin: 8px 0 4px; }
+.field small.carried { color: var(--cyan-ink); }
+select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border-radius: 999px; padding: 6px 10px; background: var(--sheet); color: var(--ink); min-height: 38px; }
+.sw { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; color: var(--ink-2); }
+.sw input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.sw .track { position: relative; width: 46px; height: 28px; border-radius: 999px; background: var(--paper-2); border: 1.5px solid var(--ink-3); transition: background .2s; }
+.sw .track::after { content: ""; position: absolute; top: 3px; left: 3px; width: 19px; height: 19px; border-radius: 50%; background: var(--ink-3); transition: transform .2s var(--ease); }
+.sw input:checked + .track { background: var(--ok); border-color: var(--ok); }
+.sw input:checked + .track::after { transform: translateX(18px); background: #fff; }
+.sw input:focus-visible + .track { outline: 2px solid var(--cyan-ink); outline-offset: 2px; }
+.sw .yn { min-width: 2em; }
+.keeps { margin: 0; padding: 0; list-style: none; font-size: 14.5px; }
+.keeps li { padding: 8px 0; border-top: 1px solid var(--rule); }
+.keeps li small { display: block; color: var(--ink-3); font-size: 13px; }
+.leave { display: grid; gap: 10px; }
+.leave .btn { justify-content: flex-start; text-align: left; }
+.tellbox label { display: block; font-size: 14px; color: var(--ink-2); margin: 12px 0 4px; }
 .tellbox select, .tellbox textarea { width: 100%; }
-.tellbox textarea { font: inherit; font-size: 15px; border: 1px solid var(--rule); border-radius: 12px; padding: 8px 10px; background: #fff; color: var(--ink); resize: vertical; }
-.tellbox .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px; }
+.tellbox textarea { font: inherit; font-size: 15px; border: 1px solid var(--rule-2); border-radius: 12px; padding: 8px 10px; background: #fff; color: var(--ink); }
+.yours { list-style: none; padding: 0; margin: 8px 0 0; font-size: 14px; }
+.yours li { padding: 8px 0; border-top: 1px solid var(--rule); }
+.yours li small { display: block; color: var(--ink-3); }
 
-@media (max-width: 760px) {
-  .you { grid-template-columns: minmax(0, 1fr); }
-  .card { justify-self: start; width: 150px; display: flex; gap: 14px; align-items: end; width: auto; }
-  .card img { width: 84px; border-radius: 8px; }
-  .card figcaption { text-align: left; align-self: center; }
-  .grid, .choices { grid-template-columns: minmax(0, 1fr); }
-  .grid section.s:nth-last-child(-n+2) { border-bottom: 1px solid var(--rule); }
-  .grid section.s:last-child { border-bottom: 0; }
-  .nums { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 860px) {
+  .altar { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "card" "rest"; gap: 22px; }
+  .whohead { text-align: center; }
+  .hats { justify-content: center; }
+  .protea { grid-template-columns: minmax(0, 1fr); justify-items: center; text-align: center; }
+  .petalsay { text-align: left; width: 100%; }
+  .cols { grid-template-columns: minmax(0, 1fr); }
 }
-@media (max-width: 520px) {
-  .sigil { width: 72px; height: 72px; }
-  .ladder { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 14px; }
-  .ladder::before { display: none; }
+@media (max-width: 420px) {
+  .card, .draw { width: 140px; }
+  .tellbtn { padding: 8px 12px; }
   .top .where { display: none; }
-  .tell > button { padding: 9px 15px; font-size: 14px; }
-  .you-id { align-items: flex-start; }
+  .ticket > button.head { grid-template-columns: 50px minmax(0, 1fr); }
+  .ticket .stamp { grid-column: 2; justify-self: start; }
+  .seedring { grid-template-columns: minmax(0, 1fr); justify-items: center; }
+  .tin dl { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .tin dd { margin-bottom: 8px; }
 }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body>
-
 <header class="top"><div class="top-in">
-  <a class="mark" href="index.html">MAHALA</a><span class="where">Your Mahala</span><span class="sp"></span>
-  <span class="chipname" id="chip"></span>
+  <a class="mark" href="index.html">MAHALA</a><span class="sp"></span>
+  <button type="button" class="tellbtn" id="tellBtn" aria-haspopup="dialog">Tell us</button>
+  <button type="button" class="chipname" id="chip" aria-haspopup="dialog"></button>
 </div></header>
 
 <div class="proto" role="region" aria-label="About this prototype"><div class="proto-in">
-  <b>Prototype</b>
-  <span>View as</span>
-  <nav class="seg" id="people" aria-label="Sample person"></nav>
-  <small>Made-up people. Nothing here is saved.</small>
+  <b>Prototype 2</b><span>Viewing as</span><nav class="seg" id="people" aria-label="Sample person"></nav><small>Made-up people. Nothing is saved.</small>
 </div></div>
 
 <main class="wrap" id="page"></main>
 
-<div class="tell"><button type="button" id="tellBtn" aria-expanded="false" aria-controls="tellBox">Tell us</button></div>
-<div class="tellbox" id="tellBox" hidden role="dialog" aria-labelledby="tellH">
-  <h3 id="tellH">Tell us</h3>
-  <p>Something unclear, missing or lovely? It goes to the stewards with the page and section filled in.</p>
-  <label for="tellWhere">Which part</label>
-  <select id="tellWhere"></select>
-  <label for="tellText">What you noticed</label>
-  <textarea id="tellText" rows="3"></textarea>
-  <div class="row"><button type="button" class="btn ghost small" id="tellCancel">Not now</button><button type="button" class="btn small" id="tellSend">Send</button></div>
+<dialog class="sheet" id="choices" aria-labelledby="choicesH"><div class="sheetin" id="choicesIn"></div></dialog>
+<dialog class="sheet tellbox" id="tell" aria-labelledby="tellH"><div class="sheetin">
+  <div class="sheethead"><h2 id="tellH">Tell us</h2><button type="button" class="x" data-close>Close</button></div>
+  <p class="sub">During the beta, everything you send goes to the stewards with the part of the page filled in. You will see what happened to it below, usually within a week.</p>
+  <label for="tellWhere">Which part</label><select id="tellWhere"></select>
+  <label for="tellText">What you noticed</label><textarea id="tellText" rows="3"></textarea>
+  <label for="tellRank">Did anything here make you feel ranked or measured? (optional)</label><textarea id="tellRank" rows="2"></textarea>
+  <div class="row" style="margin-top:12px"><button type="button" class="btn" id="tellSend">Send</button></div>
   <p class="said" id="tellSaid" aria-live="polite"></p>
-</div>
+  <h3>What you have told us</h3><ul class="yours" id="yours"></ul>
+</div></dialog>
 
 <script>
 (function () {
-  // ------------------------------------------------------------------ the archetype cards (Mahala's own deck)
-  var CARD = { seeker: 'assets/deck/seeker.jpg', conductor: 'assets/deck/conductor.jpg', sage: 'assets/deck/sage.jpg' };
-
-  // ------------------------------------------------------------------ the public figures, as on The Seed page
+  // ------------------------------------------------------------------ data from Mahala OS (public rows and fields only)
+  var EVENTS = /*EVENTS-DATA*/{"asOf":"2026-11-04","events":[{"id":"ev-mecca","title":"Road to Mecca, a Mahala fundraiser","kind":"gathering","date":"2026-11-13","where":"Hollow Tree","blurb":"Our first gathering of the season, and a fundraiser for The Seed. A few words at the end about what is coming.","set":true},{"id":"ev-talk-1","title":"Temple Builders, talk 1","kind":"talk","date":"2026-11-29","time":"19:00","where":"Online","blurb":"A monthly talk with people who raise sacred structures. A guest, an hour, and your questions at the end. Guest to be announced.","question":"What is this calling to build temples?","set":true},{"id":"ev-dec-dinner","title":"Dinner and a sound journey","kind":"gathering","date":"2026-12-05","where":"Cape Town, venue to be announced","blurb":"A long table and a sound journey under the Mahala tent as the sun goes down. The first full taste of what Mahala gathers for.","set":true},{"id":"ev-talk-2","title":"Temple Builders, talk 2","kind":"talk","date":"2026-12-13","time":"19:00","where":"Online","blurb":"A guest from the temple builders' world. From this talk on it may also run from a room in Muizenberg, with cushions and a small audience.","question":"What does it take to raise one with many hands?","set":false},{"id":"ev-talk-3","title":"Temple Builders, talk 3","kind":"talk","date":"2027-01-10","time":"19:00","where":"Online","blurb":"Living temples: places built to be lived in, not only visited.","question":"Can a temple be lived in, not only visited?","set":false},{"id":"ev-dunes-jan","title":"Sound Journey in the Dunes","kind":"gathering","date":"2027-01-22","end":"2027-01-24","where":"The dunes near Cape Town, shared with ticket holders","blurb":"Three full moon nights in the dunes. A slow meal, a sound journey lying down, then a second journey that rises into dance, with fire and poetry to close. Come for one night.","set":true},{"id":"ev-build-1","title":"Build day 1","kind":"build","date":"2027-01-30","time":"morning","where":"Cape Town, place to be announced","blurb":"A morning with your hands in it: a coffee rave to wake up, then crews for planting, digging, composting and work on The Seed, then a shared lunch.","set":false},{"id":"ev-build-2","title":"Build day 2","kind":"build","date":"2027-02-07","time":"morning","where":"Cape Town, place to be announced","blurb":"Another morning of building together, then the evening talk opens with footage from the day.","set":false},{"id":"ev-talk-4","title":"Temple Builders, talk 4","kind":"talk","date":"2027-02-07","time":"19:00","where":"Online","blurb":"Sacred geometry, and how form holds meaning.","question":"How does form hold meaning?","set":false},{"id":"ev-dunes-feb","title":"Sound Journey in the Dunes","kind":"gathering","date":"2027-02-19","end":"2027-02-21","where":"The dunes near Cape Town, shared with ticket holders","blurb":"The second full moon weekend in the dunes, with a new chef at the fire. Three nights; come for one.","set":false},{"id":"ev-build-3","title":"Build day 3","kind":"build","date":"2027-03-13","time":"morning","where":"Cape Town, place to be announced","blurb":"The last build morning before The Seed is packed for the desert.","set":false},{"id":"ev-talk-5","title":"Temple Builders, talk 5","kind":"talk","date":"2027-03-21","time":"19:00","where":"Online","blurb":"Temples, silence and ritual theatre, with temple builders from Cape Town.","question":"Why are temples so often silent, and can they hold ritual too?","set":false},{"id":"ev-buildweek","title":"Build week: The Seed rises","kind":"burn","date":"2027-04-19","end":"2027-04-25","where":"Tankwa Karoo","blurb":"The camp arrives and The Seed goes up in the desert.","set":true},{"id":"ev-burn","title":"AfrikaBurn 2027","kind":"burn","date":"2027-04-26","end":"2027-05-02","where":"Tankwa Karoo","blurb":"The Seed stands at Mahala, open day and night.","set":true}]}/*END*/;
+  var DECK = [{"k":"alchemist","t":"The Alchemist","cap":"Transformation Master turning ideas into reality","g":"This card calls on you to recognize the tools already within your grasp (your knowledge, experience, passion, and vision) and begin the sacred process of transformation. Trust the process. Mix, mold, test, refine. What once lived only in your imagination is ready to be brought to life.","q":"What are you being called to bring into the world?","s":"When the Alchemist is out of alignment, the pursuit of transformation can become obsession or manipulation. You may be attempting to control outcomes, forcing growth without honoring the process. Or perhaps you are stuck in endless planning, endlessly dreaming, never taking action. This can look like perfectionism, burnout, or staying lost in the planning stage, never grounding the vision. Alternatively, it may be the misuse of one's gifts, crafting illusions instead of truth. The shadow Alchemist becomes a trickster, promising gold but delivering nothing but dust.","sq":"Where are you trying to skip the sacred mess of the creative process?"},{"k":"conductor","t":"The Conductor","cap":"Aligning visions into a cohesive masterpiece, guiding every note into perfect harmony","g":"This card represents leadership, coordination, and the ability to bring disparate elements into harmony, suggesting you are in a position to lead, to align people with a shared vision, and create something greater than the sum of its parts. Whether in work, relationships, or personal projects, you are being asked to direct with purpose, balancing structure with intuition while allowing space for improvisation. Trust in your ability to hold the vision while allowing the inputs and perspectives of others weave into the symphony.","q":"Where are you being asked to step up as the leader of a great vision?","s":"In their shadow, the Conductor may become overly controlling and rigid, micromanaging every detail to the point of stifling spontaneity and creativity. Instead of guiding with fluidity, they may impose rigid structures, fearing that without their control, everything will fall apart. In this state, the Conductor might struggle with trusting others, feeling the need to oversee every step instead of allowing the natural rhythm of collaboration to play its song. Their obsession with timelines and precision can cause them to miss the beauty of imperfection, rejecting moments of unpredictability that could lead to even greater magic.","sq":"How can you lead with clarity while leaving space for spontaneity?"},{"k":"entertainer","t":"The Entertainer","cap":"Setting the stage for connection with presence & flair","g":"This card is calling you to embrace your personal power, to shine without fear, and to create space for others to feel seen and uplifted. The Entertainer understands that joy is a gateway to transformation. By stepping fully into your role as a conduit for wonder, you invite others to do the same.","q":"Where are you playing small or afraid to be seen under the spotlight?","s":"The shadow of the Entertainer emerges when the need to captivate and uplift others becomes a mask, hiding insecurities of being truly seen, using a persona to avoid vulnerability while keeping others entertained. They may seek validation through applause, relying on external approval rather than genuine self-worth. This ends up draining their energy in an endless cycle of giving without replenishing, overcompensating with exaggerated antics rather than embracing the quiet power of presence. In an attempt to always take center stage, they might not realize where they are taking away the opportunity for someone else to shine.","sq":"How can you use joy as a tool for deeper connection and meaning?"},{"k":"guardian","t":"The Guardian","cap":"Protector of truth, keeper of trust, holder of space","g":"This card appears when you are called to stand in protection, whether of yourself, a loved one, a vision, or a sacred space in your life. You may need to set clearer boundaries, honor your own limits, or watch over something precious. Trust that your presence holds immense power. Stand firm in your values and create space for what truly matters, whether that's a dream, a relationship, a truth, or a place. Know that your strength lies in your devotion.","q":"What boundaries do you need to honor in order to protect something meaningful?","s":"The Guardian's Shadow emerges when protection turns into control, and care becomes suffocation. Operating from fear of harm, change, or loss, they build walls so high that nothing new can enter. It may manifest as distrust, or resistance to allowing others to navigate their own journey.","sq":"Where are you shielding yourself or others from growth?"},{"k":"magician","t":"The Magician","cap":"Master of wonder & awe through the unexpected","g":"This card is calling you to step into your creative power. Recognize the tools at your disposal, and use them with intention. Whether through art, words, or action, you have the ability to inspire and transform. Trust in your craft, embrace the mystery, and remember that magic is not just in what you create but in how you share it with the world.","q":"What illusions are you ready to shatter to reveal the deeper magic within?","s":"The shadow of the Magician archetype emerges whilst the Magician is caught in the endless pursuit of more and forgets to look up. There is stillness between spells and true magic waits, yet they are consumed by the need to prove their power. They chase the next ritual, the next sacred object, the next spark of awe, forgetting that the greatest magic is often found in the ordinary, the breath, the quiet unfolding of now. In the Shadow, they cease to listen, to witness, to BE. They forget that presence is power. That just being, in full authenticity, in heartful stillness, is a portal to the miraculous. They over-identify with doing, performing, crafting... forgetting the inherent magic in their being.","sq":"How can you pay more attention to miracles that are unfolding around you?"},{"k":"muse","t":"The Muse","cap":"Sparks creativity & inspiration with authentic beauty","g":"The Muse reminds us that creation is not just about doing; it's about feeling, believing, and becoming. This card is calling you to embrace your unique magic and share it with the world. Whether through art, words, ideas or energy, you have the power to inspire those around you. Let your presence spark something in others: remind them of what is possible when imagination leads the way.","q":"How can you become a living invitation for inspiration?","s":"The shadow of the Muse is elusiveness, self-doubt, and ungrounded inspiration. While they have the power to ignite creativity in others, they may struggle to channel their own brilliance into tangible action. The Muse's energy can become overwhelming or chaotic, flooding others with too many ideas without grounding them in reality, leaving ideas half-formed and unfinished.","sq":"Are you inspiring others while also nurturing your own creativity?"},{"k":"mother","t":"The Mother","cap":"The heart of creation & the power of love","g":"This card suggests you are in a phase of nurturing something important, whether it's a dream, a community, or your own healing. The Mother reminds you to honor cycles, understanding that all seeds of creation must be planted, tended, and allowed to grow in their own time.","q":"What needs nurturing in your life so that it can flourish?","s":"When reversed, the Mother archetype can indicate self-sacrifice to the point of depletion or over-protection that stifles growth. The shadow of the Mother emerges when nurturing turns into control, martyrdom, or smothering. Instead of fostering growth, she may overprotect, manipulate, or make others dependent on her care. Are you nurturing from a place of abundance, or are you pouring from an empty cup? Are you holding on too tightly to something that needs space to evolve? This could also be a sign of neglect, a reminder that true care must include your own well-being.","sq":"Where do you need to trust the natural flow of growth and change?"},{"k":"sage","t":"The Sage","cap":"Storyteller & keeper of wisdom, finding deeper meaning in every moment","g":"This card calls you to embrace your inner wisdom: not just the knowledge you've gathered from books or teachings, but the deep, intuitive knowing that comes from lived experience. Share this knowledge with others. Your experiences hold value. Who might benefit from your insights?","q":"Where in your life can you embrace a beginner's mindset, allowing curiosity to dissolve old paradigms and reveal a new truth?","s":"Instead of guiding others with insight, the shadow Sage may hoard knowledge rather than share it. The shadow Sage may also develop an over-reliance on intellect, avoiding emotional depth or personal connection. Their endless seeking may trap them in a cycle of learning but not applying, using learning as an escape from action. Or, they may reject perspectives that challenge their beliefs, clinging to rigid opinions and becoming isolated in their pursuit of understanding. Trapped in their own intellectual arrogance, the shadow emerges as dismissive and detached, refusing to acknowledge the wisdom found in different perspectives.","sq":"Where in your life can you embrace a beginner's mindset, allowing curiosity to dissolve old paradigms and reveal a new truth?"},{"k":"seeker","t":"The Seeker","cap":"Follows intuition with a spirit of exploration","g":"This card is calling you to embrace the unknown with wonder, to ask the big questions, and to trust that every step forward reveals new layers of truth. Follow your curiosity, let it lead you beyond the familiar, and open yourself to the lessons hidden in each experience.","q":"What truth is waiting to be uncovered if you dare to look beyond the surface?","s":"While the Seeker embodies curiosity, growth, and the pursuit of deeper truths, its shadow emerges when the journey becomes an endless chase, never satisfied, never arriving. The Seeker becomes restless, ungrounded, and addicted to the quest itself, believing that the next book, the next teacher, or the next experience will finally provide the answers they crave. This can lead to spiritual bypassing, where they avoid sitting with discomfort or integrating what they've already learned.","sq":"What would happen if you stopped searching and allowed yourself to simply be?"},{"k":"trickster","t":"The Trickster","cap":"Playfully unpredictable creating moments of joy & chaos","g":"This card is calling you to shake up your life, embrace spontaneity, release attachment to plans, and find more room for creativity and play.","q":"Where can you surrender to the chaos and discover new solutions where familiar ones are no longer working?","s":"While the Trickster is incredibly intelligent and witty, the shadow side can use wit as a weapon, turning jokes into a tool for hiding vulnerability behind sarcasm. Their cleverness becomes a mask, their surprises a means of control. Constantly caught up in the whirlwind, the Trickster can forget to read the room and tune into the sensitivity or emotional needs of others.","sq":"Where might you have a tendency to distract, creating unnecessary chaos that derails progress rather than sparking transformation?"},{"k":"wildone","t":"The Wild One","cap":"Untamed spirit channeling raw energy embodying liberation & fearless creativity","g":"When this card appears, it is calling you to unleash your inner fire. Your wild ideas and rebellious nature are exactly what is needed. Stop overthinking and start doing. Break the rules that once bound you. The Wild One does not conform: they rewrite the script with courage and joy. Trust your instincts. Creativity doesn't come from playing it safe. Take the leap, say yes to adventure, and let your heart lead the way. Inspire others by being your fullest self. Your authenticity gives others permission to embrace their own.","q":"Where are you craving freedom, and what fears are keeping you from fully stepping into it?","s":"The Wild One's raw and electrifying energy, if unchecked, can turn passion into chaos, freedom into recklessness. Pushing boundaries is powerful, but not at the expense of collaboration. The shadow of this card warns against burning bridges, chasing novelty without depth, or ignoring the impact of your actions. The Wild One's instinct is to roam, but this can turn into running from commitment, dodging accountability, a refusal to listen to others or the inability to see things through. When ungrounded, the Wild One can often mistake impulse for intuition, acting on every whim without discernment.","sq":""}];
+  var IMG = function (k) { return 'assets/deck/' + k + '.jpg'; };   // loaded only when a card is shown or drawn
   var SEED = { raised: 70000, target: 718875, milestones: [['Frame', 293235], ['Shelter', 346913], ['Lantern', 497356], ['The full Seed', 581278], ['Copper and grid', 718875]] };
+  var RISES = new Date('2027-04-19T00:00:00+02:00');   // build week: The Seed rises (events.yaml, fixed)
 
-  var LADDER = ['Visitor', 'Tribe member', 'Invited', 'Applicant', 'Camp member', 'Temple builder'];
+  // six ways of belonging; petals open in any order and none is higher than another
+  var PETALS = [
+    ['fire', 'Round the fire', 'You joined the tribe.', 'Join the tribe and your first petal opens.'],
+    ['gathered', 'Gathered', 'You came to a gathering, talk or call.', 'Come to any gathering, talk or call.'],
+    ['hands', 'Hands on', 'You built with us: a build day, or a quest step witnessed.', 'A build day or a quest step opens this one.'],
+    ['crew', 'In a crew', 'One of the seven crews holds a place for you.', 'Seven crews are looking for hands. Step into the Mahalaverse and one will find you.'],
+    ['camp', 'In the camp', 'You are camping with Mahala this season.', 'The camp door opens when a camp lead calls you in.'],
+    ['gift', 'A gift given', 'You brought something to share: an offering, a poem at the fire, a gift to The Seed.', 'Any offering opens it: a session at camp, a poem at the fire, a gift to The Seed.']
+  ];
+  var BEADKIND = { made: ['var(--yellow)', 'something made'], there: ['var(--cyan)', 'being there'], given: ['var(--magenta)', 'something given'] };
 
   // ------------------------------------------------------------------ three made-up people
   var PEOPLE = {
     newcomer: {
-      tab: 'Newcomer', hello: 'Welcome,', first: 'Naledi', playa: 'Dune Moth', hue: ['#FFD81F', '#14A8E0'], card: 'seeker', cardName: 'The Seeker',
-      stand: 1, years: [], roles: [],
-      next: { what: 'Come to the next build day', why: 'Your first step from the tribe towards the camp. No tools needed.', act: 'Yes, I’ll come', yes: true },
-      journey: [['Made your account', 'From the link in the community email', 'Today', 'ok'], ['Joined the tribe', 'Your answers are in What you bring', 'Today', 'ok']],
-      coming: [['Build day in Cape Town', 'Frame crew test-fits the crown timbers', 'Sat · date to set', false], ['Open circle call', 'Meet the camp, ask anything', 'Evening · date to set', false]],
-      quest: { name: 'Share the film', crew: 'Story crew', steps: [['Watch the film', 'mine'], ['Send it to three people who would love it', ''], ['Share it on Instagram or in a WhatsApp group', '']] },
-      bring: [['Where you are based', 'Cape Town', 'the tribe form'], ['Gifts and skills', 'Sewing, sound baths, making things from offcuts', 'the tribe form'], ['Crew that calls you', 'Petal crew', 'the Join the build door'], ['Tools', 'Some', 'the Join the build door'], ['Would love to learn', 'Using the CNC', 'the Join the build door']],
+      tab: 'Newcomer', first: 'Naledi', playa: 'Dune Moth', hue: ['#FFD81F', '#14A8E0'], card: 'seeker',
+      hello: 'Hello, Naledi. You found your way in.', open: ['fire'], newest: 'fire', rings: [], hats: [],
+      season: 'This season you are round the fire. Every petal opens in its own season.',
+      beads: [['there', 'You found your way in, 4 Nov.']],
+      yes: {}, next: 'event',
+      chapters: [['2027 · The Seed', 'Still being written.', [['You found your way in', '4 Nov, from the community email']], 'waiting']],
+      before: false,
+      quest: { name: 'Share the film', crew: 'Story crew', steps: [['Watch the film', ''], ['Send it to three people who would love it', ''], ['Share it on Instagram or in a WhatsApp group', '']] },
+      gifts: [['Where you are based', 'Cape Town', 'the tribe form'], ['What you love making', 'Sewing, sound baths, things from offcuts', 'the tribe form']],
       gave: null,
-      thread: [],
-      fields: { playa_name: 'members', about: 'me', gifts: 'members', offering: 'members', home_base: 'stewards', link: 'me' },
-      consent: { news: true, whatsapp: false, directory: false, photo: false, name: true },
-      panels: []
+      fields: { playa_name: 'stewards', about: 'stewards', gifts: 'stewards', offering: 'stewards', home_base: 'stewards', link: 'me', beads: 'me' },
+      consent: { news: [true, 'You said yes on the tribe form, 4 Nov'], whatsapp: [false], directory: [false], photo: [false], name: [false], nominator: [false] },
+      door: null
     },
     lead: {
-      tab: 'Camp lead', first: 'Tom', playa: 'Copper Owl', hue: ['#14A8E0', '#D8197F'], card: 'conductor', cardName: 'The Conductor',
-      stand: 4, years: ['Mahala 2025 · The Portal', 'Mahala 2026 · Through the Prism'], roles: ['Camp lead 2027', 'Frame crew'],
-      next: { what: 'Follow up three of your nominees', why: 'They have not opened their invitation yet. A personal message helps more than a reminder.', act: 'See your nominees', jump: 'panel-lead' },
-      journey: [['Camp place confirmed for 2027', 'Welcome back', '2 Nov', 'ok'], ['Camp fee paid', 'Thank you', '2 Nov', 'ok'], ['Camp application sent', 'Read by the stewards', '28 Oct', 'ok'], ['Nominated six people', 'Their invitations went out', '20 Oct', '']],
-      coming: [['Leads’ call', 'With the camp leads and the core team', 'Sun · date to set', true], ['Build day in Cape Town', 'Frame crew test-fits the crown timbers', 'Sat · date to set', true]],
+      tab: 'Camp lead', first: 'Tom', playa: 'Copper Owl', hue: ['#14A8E0', '#D8197F'], card: 'conductor',
+      hello: 'Welcome back, Tom.', open: ['fire', 'gathered', 'hands', 'crew', 'camp'], newest: 'camp', rings: ['2025', '2026'],
+      hats: ['Camp lead · until May 2027'],
+      season: 'This season you are in the camp, on the Frame crew, with a hat as camp lead.',
+      beads: [['there', 'Your first camp: The Portal, 2025.', 1], ['there', 'Through the Prism, 2026.', 1], ['given', 'You joined the Frame crew.'], ['made', 'The crown cut list, witnessed by a steward.']],
+      yes: { 'ev-talk-1': 'yes' }, next: 'lead',
+      chapters: [['2027 · The Seed', 'Still being written.', [['Your place in the camp is confirmed', '2 Nov. Welcome back.'], ['Camp fee paid', '2 Nov. Thank you.'], ['You called six people in', 'Their invitations went out on 20 Oct']], ''],
+        ['2026 · Through the Prism', 'Two dawn shifts in the kitchen.'], ['2025 · The Portal', 'Your first year with Mahala. You helped raise the shade.']],
+      before: true,
       quest: { name: 'Cut the crown star', crew: 'Frame crew', steps: [['Learn the cut list for the crown', 'ok'], ['Cut a test set on the CNC', 'mine'], ['Dry-fit one bay of the crown', '']] },
-      bring: [['Gifts and skills', 'Carpentry, logistics, a calm voice at 3am', 'your profile'], ['Crew that calls you', 'Frame crew', 'the Join the build door'], ['Tools', 'A lot', 'the Join the build door'], ['At camp you would offer', 'A sunrise breathwork session', 'the Come to camp door']],
+      gifts: [['What you love making', 'Carpentry, logistics, a calm voice at 3am', 'your page'], ['Crew that calls you', 'Frame crew', 'the Join the build door'], ['Tools', 'A lot', 'the Join the build door'], ['At camp you would offer', 'A sunrise breathwork session', 'the Come to camp door']],
       gave: { when: 'October', towards: 'Frame' },
-      thread: [['2026', 'Through the Prism', 'Kitchen crew, two dawn shifts'], ['2025', 'The Portal', 'First year with Mahala; helped raise the shade']],
-      fields: { playa_name: 'members', about: 'members', gifts: 'members', offering: 'members', home_base: 'stewards', link: 'members' },
-      consent: { news: true, whatsapp: true, directory: true, photo: true, name: true },
-      panels: ['lead']
+      fields: { playa_name: 'members', about: 'members', gifts: 'members', offering: 'members', home_base: 'stewards', link: 'members', beads: 'me' },
+      consent: { news: [true], whatsapp: [true], directory: [true], photo: [true], name: [true], nominator: [false] },
+      door: 'lead'
     },
     core: {
-      tab: 'Core team', first: 'Ama', playa: 'Saltlight', hue: ['#D8197F', '#FFD81F'], card: 'sage', cardName: 'The Sage',
-      stand: 5, depth: 'Contributor', years: ['Mahala 2025 · The Portal', 'Mahala 2026 · Through the Prism'], roles: ['Core team 2027'],
-      next: { what: 'Five decisions are due on 14 Nov', why: 'The stewards’ answers unlock the first build of this page.', act: 'Open the decisions', jump: 'panel-core' },
-      journey: [['Camp place confirmed for 2027', 'Core team', '1 Nov', 'ok'], ['Quest step confirmed', 'Cut the crown star: learn the cut list', '30 Oct', 'ok']],
-      coming: [['Decisions day', 'The five Your Mahala decisions, and the target', '14 Nov', true], ['Community email', 'Everyone finds their page', '14 Dec', false]],
+      tab: 'Core team', first: 'Ama', playa: 'Saltlight', hue: ['#D8197F', '#FFD81F'], card: 'sage',
+      hello: 'Welcome back, Ama.', open: ['fire', 'gathered', 'hands', 'camp', 'gift'], newest: 'gift', rings: ['2025', '2026'],
+      hats: ['Core team · until May 2027'],
+      season: 'This season you are in the camp, with a hat on the core team.',
+      beads: [['there', 'The Portal, 2025.', 1], ['there', 'Through the Prism, 2026. You opened the closing ritual.', 1], ['made', 'Fund a ring of glass: two steps witnessed.'], ['given', 'A gift towards the Frame, September.']],
+      yes: { 'ev-mecca': 'yes', 'ev-dec-dinner': 'yes' }, next: 'core',
+      chapters: [['2027 · The Seed', 'Still being written.', [['Your place in the camp is confirmed', '1 Nov'], ['A quest step witnessed', 'Fund a ring of glass, 30 Oct']], ''],
+        ['2026 · Through the Prism', 'You held the camp as core team, and opened the closing ritual.'], ['2025 · The Portal', 'You held the camp as core team.']],
+      before: true,
       quest: { name: 'Fund a ring of glass', crew: 'Glass crew', steps: [['Choose a gate that suits you', 'ok'], ['Share the film with three people', 'ok'], ['See your ring glow on the night', '']] },
-      bring: [['Gifts and skills', 'Facilitation, budgets, holding the circle', 'your profile'], ['How you would like to help', 'Time and skills', 'the Support the temple door']],
+      gifts: [['What you love making', 'Circles, budgets, ceremony', 'your page'], ['How you would like to help', 'Time and skills', 'the Support the temple door']],
       gave: { when: 'September', towards: 'Frame' },
-      thread: [['2026', 'Through the Prism', 'Core team; opened the closing ritual'], ['2025', 'The Portal', 'Core team'], ['Earlier', 'The camps before Mahala', 'Add the years you were there']],
-      fields: { playa_name: 'members', about: 'members', gifts: 'members', offering: 'members', home_base: 'me', link: 'members' },
-      consent: { news: true, whatsapp: true, directory: true, photo: false, name: true },
-      panels: ['core']
+      fields: { playa_name: 'members', about: 'members', gifts: 'members', offering: 'members', home_base: 'me', link: 'members', beads: 'me' },
+      consent: { news: [true], whatsapp: [true], directory: [true], photo: [false], name: [true], nominator: [false] },
+      door: 'core'
     }
   };
 
-  var FIELD_NAMES = { playa_name: ['Playa name', ''], about: ['About you', 'A line or two'], gifts: ['Gifts and skills', ''], offering: ['What you would offer', ''], home_base: ['Where you are based', ''], link: ['A link', 'Instagram, a website'] };
+  var FIELD_NAMES = { playa_name: ['Playa name', ''], about: ['About you', 'A line or two'], gifts: ['What you love making', ''], offering: ['What you would offer', ''], home_base: ['Where you are based', 'Never shown to anyone outside Mahala'], link: ['A link', 'Instagram, a website'], beads: ['Your beads', 'The moments on your string'] };
   var SEE = [['me', 'Only me'], ['stewards', 'The stewards'], ['members', 'Members'], ['public', 'Anyone']];
-  var CONSENT = [['news', 'Mahala news by email', 'Now and then, never more than you want'], ['whatsapp', 'The camp WhatsApp group', 'Once you are a camp member'], ['directory', 'Appear in the members’ directory', 'So other members can find you'], ['photo', 'Show my picture', 'On your page and in the game'], ['name', 'Show my name to other members', 'Otherwise only your playa name']];
+  var CONSENT = [['news', 'Mahala news by email', 'Now and then, never more than you want'], ['whatsapp', 'The camp WhatsApp group', 'Once you are in the camp'], ['directory', 'Members can find you', 'Your playa name and what you chose to show'], ['photo', 'Show your picture', 'Otherwise your sign is shown'], ['name', 'Show your name to other members', 'Otherwise only your playa name'], ['nominator', 'The camp lead who called you in may see where you are', 'They see what you have done (replied, applied, welcomed), never your words']];
 
+  // ------------------------------------------------------------------ helpers
   var $ = function (id) { return document.getElementById(id); };
   function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
-  function rand(n) { return 'R ' + n.toLocaleString('en-ZA').replace(/,/g, ' '); }
+  function rand(n) { return 'R\u00a0' + n.toLocaleString('en-ZA').replace(/[,\s]/g, '\u00a0'); }
+  var REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var TICK = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';
+  var HAT = '<svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 11.5h12M4 11.5c0-4 1.6-7 4-7s4 3 4 7"/></svg>';
+  var DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function d(iso) { var p = iso.split('-'); return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2], 10)); }
+  function fmt(iso) { var x = d(iso); return DAYS[x.getUTCDay()] + ' ' + x.getUTCDate() + ' ' + MON[x.getUTCMonth()]; }
+  function when(e) { return fmt(e.date) + (e.end ? ' to ' + fmt(e.end) : ''); }
+  function scrollTo2(el) { if (el) el.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' }); }
 
-  // a sigil drawn from two colours: an original geometric mark, standing in for a picture until one is added
-  function sigil(p, size) {
-    var a = p.hue[0], b = p.hue[1], id = 'g' + p.first;
-    var petals = '';
+  // the next new moon after now (mean synodic month from a known new moon; good to within a day)
+  function nextNewMoon(from) { var ref = Date.UTC(2000, 0, 6, 18, 14), syn = 29.530588853 * 864e5; var n = Math.floor((from - ref) / syn) + 1; return new Date(ref + n * syn); }
+
+  function sigil(p, cls) {
+    var id = 'g' + p.first, petals = '';
     for (var i = 0; i < 6; i++) petals += '<ellipse cx="50" cy="30" rx="9" ry="20" transform="rotate(' + (i * 60) + ' 50 50)" fill="none" stroke="#F7F2EA" stroke-width="1.6" opacity=".9"/>';
-    return '<svg class="' + (size || 'sigil') + '" viewBox="0 0 100 100" role="img" aria-label="' + esc(p.first) + '’s sign"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + a + '"/><stop offset="1" stop-color="' + b + '"/></linearGradient></defs>'
-      + '<rect width="100" height="100" fill="url(#' + id + ')"/>' + petals + '<circle cx="50" cy="50" r="7" fill="#2A221C"/><circle cx="50" cy="50" r="40" fill="none" stroke="#2A221C" stroke-opacity=".25"/></svg>';
+    return '<svg class="' + (cls || '') + '" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="' + id + cls + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + p.hue[0] + '"/><stop offset="1" stop-color="' + p.hue[1] + '"/></linearGradient></defs><rect width="100" height="100" fill="url(#' + id + cls + ')"/>' + petals + '<circle cx="50" cy="50" r="7" fill="#2A221C"/></svg>';
   }
 
-  var who = null, P = null, yes = {}, steps = {};
+  // ------------------------------------------------------------------ the protea
+  function protea(p) {
+    var cx = 100, cy = 100, s = '<svg viewBox="0 0 200 200" role="group" aria-label="Your protea: six ways of belonging, open in any order">';
+    s += '<defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + p.hue[0] + '"/><stop offset="1" stop-color="' + p.hue[1] + '"/></linearGradient></defs>';
+    p.rings.forEach(function (r, i) { s += '<circle class="ring" cx="100" cy="100" r="' + (92 + i * 6) + '"/>'; });
+    var start = (p.hue[0].charCodeAt(1) * 7) % 60;   // each person's flower sits at its own angle, so no petal is "the top"
+    PETALS.forEach(function (pt, i) {
+      var open = p.open.indexOf(pt[0]) >= 0, a = start + i * 60;
+      s += '<g class="petal ' + (open ? 'open' : 'bud') + (open && pt[0] === p.newest && !REDUCE ? ' unfold' : '') + '" tabindex="0" role="button" data-petal="' + pt[0] + '" aria-label="' + esc(pt[1]) + ': ' + (open ? 'open' : 'open to you') + '" transform="rotate(' + a + ' 100 100)">'
+        + '<path d="M100 96 C 78 70, 84 30, 100 12 C 116 30, 122 70, 100 96 Z" fill="' + (open ? 'url(#pg)' : 'none') + '" opacity="' + (open ? .92 : 1) + '"/></g>';
+    });
+    s += '<circle class="seedc" cx="100" cy="100" r="22"/><text class="seedt" x="100" y="98">TEMPLE</text><text class="seedt" x="100" y="108">BUILDER</text></svg>';
+    return s;
+  }
 
+  // ------------------------------------------------------------------ the gatherings, from the one events record
+  var TODAY = new Date();
+  function upcoming() { return EVENTS.events.filter(function (e) { return d(e.end || e.date) >= new Date(TODAY.getFullYear(), TODAY.getMonth(), TODAY.getDate()); }); }
+  function kindWord(e) { return { gathering: 'In person', talk: 'Online talk', build: 'Build day', burn: 'The burn' }[e.kind] || e.kind; }
+  function clocks(e) {
+    if (!e.time || !/^\d\d:\d\d$/.test(e.time)) return e.time === 'morning' ? 'A morning, start time to come' : '';
+    var t = e.time + ' in Cape Town', tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (tz && tz !== 'Africa/Johannesburg') {
+      var at = new Date(e.date + 'T' + e.time + ':00+02:00');
+      try { t += ' · ' + at.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', timeZone: tz }) + ' where you are'; } catch (x) { /* one clock is enough */ }
+    }
+    return t;
+  }
+  function askFor(e) {
+    if (e.kind === 'build') return '<fieldset><legend>Which crew pulls you this morning?</legend><div class="choice">' + ['Planting', 'Digging', 'Composting', 'The Seed'].map(function (c, i) { return '<input type="radio" name="ask-' + e.id + '" id="ask-' + e.id + i + '"><label for="ask-' + e.id + i + '">' + c + '</label>'; }).join('') + '</div></fieldset>';
+    if (e.end && e.kind === 'gathering') return '<fieldset><legend>Which night will you come for?</legend><div class="choice">' + nights(e).map(function (c, i) { return '<input type="radio" name="ask-' + e.id + '" id="ask-' + e.id + i + '"><label for="ask-' + e.id + i + '">' + c + '</label>'; }).join('') + '</div></fieldset><div class="choice"><input type="checkbox" id="poem-' + e.id + '"><label for="poem-' + e.id + '">I would read a poem at the fire</label></div>';
+    if (e.kind === 'talk') return '<label for="ask-' + e.id + '">A question for the guest (optional)</label><textarea id="ask-' + e.id + '" rows="2"></textarea>';
+    if (e.kind === 'gathering') return '<label for="ask-' + e.id + '">Anything the kitchen should know? It joins a count with no name on it.</label><textarea id="ask-' + e.id + '" rows="1"></textarea>';
+    return '';
+  }
+  function nights(e) { var out = [], x = d(e.date), y = d(e.end); while (x <= y) { out.push(DAYS[x.getUTCDay()] + ' ' + x.getUTCDate()); x = new Date(x.getTime() + 864e5); } return out; }
+  function ticket(e) {
+    var st = P.yes[e.id] || '', burn = e.kind === 'burn';
+    var stamp = st === 'yes' ? '<span class="stamp going">Going</span>' : st === 'hold' ? '<span class="stamp held">Held for you</span>' : '<span class="stamp">' + (e.set ? 'Date set' : 'Pencilled in') + '</span>';
+    var x = d(e.date);
+    var yesBtn = burn ? (P.open.indexOf('camp') >= 0 ? '' : '<button type="button" class="btn small ghost" data-follow="' + e.id + '">Follow it</button>')
+      : e.tickets ? '<a class="btn small" href="' + esc(e.tickets) + '" target="_blank" rel="noopener">Get a ticket</a>'
+      : '<button type="button" class="btn small" data-yes="' + e.id + '" aria-pressed="' + (st ? 'true' : 'false') + '" aria-label="' + (e.set ? 'Yes, I\u2019ll come: ' : 'Hold it for me: ') + esc(e.title) + '">' + (st === 'yes' ? 'Going' : st === 'hold' ? 'Held for you' : e.set ? 'Yes, I\u2019ll come' : 'Hold it for me') + '</button>';
+    var cal = e.set && !burn ? '<button type="button" class="btn small ghost" data-ics="' + e.id + '">Add to calendar</button>' : '';
+    var placeNote = /announced|ticket holders/.test(e.where) ? '<small>The exact place opens here for those coming, two days before.</small>' : e.kind === 'talk' ? '<small>The room link opens here for those coming, an hour before.</small>' : '';
+    return '<div class="ticket' + (st ? ' open' : '') + '" id="t-' + e.id + '"><button type="button" class="head" aria-expanded="' + (st ? 'true' : 'false') + '" aria-controls="tb-' + e.id + '" data-t="' + e.id + '">'
+      + '<span class="tdate"><b>' + x.getUTCDate() + '</b><span>' + MON[x.getUTCMonth()] + '</span></span>'
+      + '<span class="ttitle"><b>' + esc(e.title) + '</b><span>' + kindWord(e) + ' · ' + esc(e.where) + '</span></span>' + stamp + '</button>'
+      + '<div class="tbody" id="tb-' + e.id + '"' + (st ? '' : ' inert') + '><div><div class="tin">'
+      + (e.question ? '<p class="tq">' + esc(e.question) + '</p>' : '')
+      + '<dl><dt>When</dt><dd>' + when(e) + (clocks(e) ? '<small>' + clocks(e) + '</small>' : '') + '</dd>'
+      + '<dt>Where</dt><dd>' + esc(e.where) + placeNote + '</dd>'
+      + '<dt>What happens</dt><dd>' + esc(e.blurb || '') + '</dd>'
+      + (burn ? '' : '<dt>Bring</dt><dd><small>The hosts will add a line here.</small></dd>') + '</dl>'
+      + '<div class="row">' + yesBtn + cal + '</div>'
+      + (st ? '<div class="ask">' + askFor(e) + '</div>' : '')
+      + (burn ? '' : '<p class="only">Only the hosts see how many are coming, never your name.</p>')
+      + '<p class="said" data-said></p></div></div></div></div>';
+  }
+
+  // ------------------------------------------------------------------ the page
+  var P = null, who = null, steps = [], drawn = null, drawsLeft = 1, myOpen = false;
   function render() {
     var key = (location.hash || '').slice(1); if (!PEOPLE[key]) key = 'newcomer';
-    who = key; P = PEOPLE[key];
-    yes = {}; P.coming.forEach(function (c, i) { yes[i] = c[3]; });
-    steps = P.quest.steps.map(function (s) { return s[1]; });
-    $('people').innerHTML = Object.keys(PEOPLE).map(function (k) { return '<a href="#' + k + '"' + (k === key ? ' aria-current="page"' : '') + '>' + esc(PEOPLE[k].tab) + '</a>'; }).join('');
-    $('chip').innerHTML = sigil(P, 'mini') + '<span>' + esc(P.first) + '</span>';
-    var h = '';
+    who = key; P = JSON.parse(JSON.stringify(PEOPLE[key])); steps = P.quest.steps.map(function (s) { return s[1]; }); drawn = null; drawsLeft = 1; myOpen = false;
+    $('people').innerHTML = Object.keys(PEOPLE).map(function (k) { return '<a href="#' + k + '"' + (k === key ? ' aria-current="page"' : '') + '>' + PEOPLE[k].tab + '</a>'; }).join('');
+    $('chip').innerHTML = sigil(P, 'mini') + '<span>' + esc(P.first) + '</span><span class="vh">: your choices</span>';
+    var sleeps = Math.ceil((RISES - TODAY) / 864e5), h = '';
 
-    // 1. You
-    h += '<section class="you" aria-labelledby="youH"><div class="you-id">' + sigil(P) + '<div><p class="hello">' + (P.hello || 'Welcome back,') + '</p><h1 id="youH">' + esc(P.first) + '</h1>'
-      + '<p class="playa">On the playa: <i>' + esc(P.playa) + '</i></p><div class="years">'
-      + P.roles.map(function (r) { return '<span class="yr role">' + esc(r) + '</span>'; }).join('')
-      + (P.years.length ? P.years.map(function (y) { return '<span class="yr">' + esc(y) + '</span>'; }).join('') : '<span class="yr">New to Mahala</span>')
-      + '</div></div></div>'
-      + '<figure class="card"><img src="' + CARD[P.card] + '" alt="' + esc(P.cardName) + ', from the Mahala Archetype Deck" loading="lazy"><figcaption>Your card: ' + esc(P.cardName) + '</figcaption></figure>'
-      + '<div class="stand"><p class="label"><span class="dots" aria-hidden="true"><i style="background:var(--yellow)"></i><i style="background:var(--cyan)"></i><i style="background:var(--magenta)"></i></span>Where you stand</p><ol class="ladder">'
-      + LADDER.map(function (l, i) { var c = i < P.stand ? 'done' : i === P.stand ? 'here' : ''; return '<li class="' + c + '"' + (i === P.stand ? ' aria-current="step"' : '') + '><span class="node" aria-hidden="true"></span>' + esc(l) + (i === P.stand && P.depth ? '<small>' + esc(P.depth) + '</small>' : '') + (i === P.stand ? '<small>You are here</small>' : '') + '</li>'; }).join('')
-      + '</ol><div class="next"><p><b>' + esc(P.next.what) + '</b><span>' + esc(P.next.why) + '</span></p>'
-      + (P.next.yes ? '<button type="button" class="btn" id="nextBtn" aria-pressed="false">' + esc(P.next.act) + '</button>' : '<a class="btn" href="#' + who + '" data-jump="' + P.next.jump + '">' + esc(P.next.act) + '</a>')
+    // the altar
+    h += '<section class="altar" aria-labelledby="youH"><div class="cardzone">'
+      + '<div class="cardstage"><div class="halo" aria-hidden="true"></div>'
+      + '<div class="card own" id="own"><div class="face front"><img src="' + IMG(P.card) + '" alt="' + esc(deck(P.card).t) + ', your card from the Mahala archetype deck"></div>'
+      + '<div class="face back" aria-live="polite"><b>' + esc(deck(P.card).t) + '</b><q>' + esc(deck(P.card).q) + '</q><p>' + esc(deck(P.card).g) + '</p></div></div>'
+      + '<div class="beads" role="group" aria-label="Your beads, only you see them">' + P.beads.map(function (b, i) { return '<button type="button" class="bead' + (b[2] ? ' big' : '') + '" style="background:' + BEADKIND[b[0]][0] + '" data-bead="' + i + '" aria-expanded="false" aria-label="A bead for ' + BEADKIND[b[0]][1] + '"></button>'; }).join('') + '</div></div>'
+      + '<p class="beadsay" id="beadsay" aria-live="polite">' + (P.beads.length === 1 ? 'Your first bead. Tap it.' : 'Your beads: tap one for its moment. Only you see them.') + '</p>'
+      + '<p class="cardname"><b>' + esc(deck(P.card).t) + '</b>' + esc(deck(P.card).cap) + '</p>'
+      + '<div class="cardbtns"><button type="button" class="btn small ghost" id="turnOwn" aria-pressed="false">Hear your card</button><button type="button" class="btn small" id="drawBtn">Draw a message</button></div>'
+      + '<div class="drawn" id="drawn"></div></div>'
+
+      + '<div class="whohead"><p class="hello">' + esc(P.hello) + '</p><h1 id="youH">' + esc(P.first) + '</h1>'
+      + '<p class="playa">On the playa: <i>' + esc(P.playa) + '</i></p>'
+      + '<p class="sleeps">' + sleeps + ' sleeps until The Seed rises</p>'
+      + (P.hats.length ? '<div class="hats">' + P.hats.map(function (x) { return '<span class="hat">' + HAT + esc(x) + '</span>'; }).join('') + '</div>' : '')
+      + '</div><div class="whorest"><div class="protea">' + protea(P) + '<div><p class="season"><b>Where you are now</b>' + esc(P.season) + '</p>'
+      + '<p class="petalsay" id="petalsay" aria-live="polite">Tap a petal. Each is a way of belonging, open in any order. At the centre, everyone is a temple builder.</p>'
+      + (P.rings.length ? '<p class="rings">The rings around it are your years: ' + P.rings.join(' and ') + '.</p>' : '') + '</div></div>'
+      + letter() + roleDoor() + '</div></section>';
+
+    // now
+    var up = upcoming(), soon = up.filter(function (e) { return e.kind !== 'burn'; }).slice(0, 3);
+    h += curve() + '<section class="movement" id="now" aria-labelledby="nowH"><h2 id="nowH">Gatherings ahead</h2><p class="lede">Build days, talks and evenings together. Open one for the details; say yes and the rest comes closer to the day.</p>'
+      + '<div class="tickets">' + soon.map(ticket).join('') + '</div>'
+      + '<p class="season-link"><a class="link" href="tribe.html#events">The whole season, to the burn</a></p></section>';
+
+    // your path
+    h += curve(true) + '<section class="movement" id="path" aria-labelledby="pathH"><h2 id="pathH">Your thread</h2><p class="lede">Mahala\u2019s story of you, newest first. Something missing? <button type="button" class="link" data-tell="Your thread">Tell the stewards</button>.</p><ol class="thread">';
+    P.chapters.forEach(function (c, i) {
+      h += '<li class="knot chapter"><b>' + esc(c[0]) + '</b><span>' + esc(c[1]) + '</span></li>';
+      if (i === 0) {
+        (c[2] || []).forEach(function (k) { h += '<li class="knot"><b>' + esc(k[0]) + '</b><span>' + esc(k[1]) + '</span></li>'; });
+        var g = Object.keys(P.yes).filter(function (k) { return P.yes[k] === 'yes'; }).map(function (k) { return EVENTS.events.filter(function (e) { return e.id === k; })[0]; }).filter(Boolean);
+        g.forEach(function (e) { h += '<li class="knot glow"><b>' + esc(e.title) + '</b><span>' + fmt(e.date) + '. You said yes; after the day it is tied in here.</span></li>'; });
+        if (c[3] === 'waiting' && !g.length) h += '<li class="knot waiting"><b>Your first gathering ties the next knot</b><span>We\u2019ll tie it together.</span></li>';
+        h += '<li class="knot glow" id="questKnot"><b>Your quest: ' + esc(P.quest.name) + '</b><div class="quest"><span class="crew">' + esc(P.quest.crew) + ' · tick a step when it is done; a steward witnesses it</span><ul class="steps" id="steps">' + stepsHtml() + '</ul></div></li>';
+      }
+    });
+    if (P.before) h += '<li class="knot"><b>Before Mahala</b><span>The Grateful Heart, The State of Bliss, Nowhere\u2019s End. Were you there? <button type="button" class="link" data-tell="Your thread">Add your years</button></span></li>';
+    h += '</ol></section>';
+
+    // what you carry
+    h += curve() + '<section class="movement" id="carry" aria-labelledby="carryH"><h2 id="carryH">What you carry</h2><p class="lede">What you told us once, kept safe so no door asks twice, and The Seed we are growing together.</p><div class="cols">'
+      + '<div><h3>Your gifts</h3><dl class="gifts">' + P.gifts.map(function (g) { return '<div><dt>' + esc(g[0]) + '</dt><dd>' + esc(g[1]) + ' <small>· from ' + esc(g[2]) + '</small></dd></div>'; }).join('') + '</dl>'
+      + '<p><button type="button" class="link" data-choices>Change these, or who sees each one</button></p></div>'
+      + '<div><h3>Growing The Seed</h3>' + seedRing()
+      + (P.gave ? '<p class="mine">You gave in ' + esc(P.gave.when) + ', towards the ' + esc(P.gave.towards) + '. Thank you.<small>Only you see this line, and never an amount.</small></p>' : '<p class="mine">When you give, a line appears here that only you can see.<small><a href="seed.html">The Seed and its milestones</a></small></p>')
       + '</div></div></section>';
 
-    h += '<div class="grid">';
-    // 2. Your journey
-    h += sec(2, 'journey', 'Your journey', 'Each door you have come through, and where it is. Newest first.',
-      '<ul class="list">' + P.journey.map(function (j) { return '<li><span class="dot" style="background:' + (j[3] === 'ok' ? 'var(--ok)' : 'var(--cyan)') + '"></span><span><b>' + esc(j[0]) + '</b><span class="sub">' + esc(j[1]) + '</span></span><span class="tag">' + esc(j[2]) + '</span></li>'; }).join('') + '</ul>');
-    // 3. Coming up
-    h += sec(3, 'coming', 'Coming up', 'Gatherings, calls and build days. Say yes and they show here, and in the Mahalaverse.',
-      '<ul class="list" id="comingList">' + P.coming.map(function (c, i) { return '<li><span class="dot" style="background:var(--yellow)"></span><span><b>' + esc(c[0]) + '</b><span class="sub">' + esc(c[1]) + ' · ' + esc(c[2]) + '</span></span><button type="button" class="btn small ghost" data-yes="' + i + '" aria-pressed="' + c[3] + '">' + (c[3] ? 'Going' : 'Yes') + '</button></li>'; }).join('') + '</ul>');
-    // 4. Quests and crew
-    h += sec(4, 'quests', 'Your quests and crew', 'Tick a step when you have done it. A steward confirms it, and it counts towards where you stand.',
-      '<div class="quest"><h3>' + esc(P.quest.name) + '</h3><span class="crew">' + esc(P.quest.crew) + '</span><ul class="steps" id="steps">' + stepsHtml() + '</ul></div>');
-    // 5. What you bring
-    h += sec(5, 'bring', 'What you bring', 'What you told us once, kept here so no door asks again.',
-      '<dl class="bring">' + P.bring.map(function (b) { return '<div><dt>' + esc(b[0]) + '</dt><dd>' + esc(b[1]) + ' <span class="from">· from ' + esc(b[2]) + '</span></dd></div>'; }).join('') + '</dl><p><button type="button" class="edit" data-jump="choices">Edit, or choose who sees each one</button></p>');
-    // 6. Your Seed
-    var next = SEED.milestones.filter(function (m) { return m[1] > SEED.raised; })[0];
-    h += sec(6, 'seed', 'Your Seed', 'Where The Seed has got to, and your part in it.',
-      '<div class="seed"><div class="seedrow"><span><b>' + rand(SEED.raised) + '</b> raised so far</span><span>of ' + rand(SEED.target) + '</span></div>'
-      + '<div class="bar" aria-hidden="true"><i style="width:' + (SEED.raised / SEED.target * 100).toFixed(1) + '%"></i><b style="left:' + (next[1] / SEED.target * 100).toFixed(1) + '%"></b></div>'
-      + '<div class="seedrow"><span>Next milestone: ' + esc(next[0]) + '</span><span>at ' + rand(next[1]) + '</span></div>'
-      + (P.gave ? '<p class="mine">You gave in ' + esc(P.gave.when) + ', towards the ' + esc(P.gave.towards) + '. Thank you.<span>Only you see this line.</span></p>' : '<p class="mine">When you give, it shows here, only to you.<span><a href="seed.html">The Seed and its milestones</a></span></p>')
-      + '</div>');
+    h += '<div class="portal"><p><b>Step through the portal</b>The same you waits in the Mahalaverse: your card, your beads, your quest. Tick a step there and it shows here.</p><a class="btn ghost" href="index.html#mahalaverse">Into the Mahalaverse</a></div>';
+    h += '<p style="margin-top:28px"><button type="button" class="link" data-choices>Your choices: who sees what, what we keep, and leaving</button></p>';
 
-    // 7. Your thread
-    h += sec(7, 'thread', 'Your thread', 'Mahala’s record of you over the years: camps, roles, moments.',
-      (P.thread.length ? '<ul class="thread">' + P.thread.map(function (t) { return '<li><b>' + esc(t[0]) + ' · ' + esc(t[1]) + '</b><span>' + esc(t[2]) + '</span></li>'; }).join('') + '</ul>' : '<p class="empty">Your thread starts with your first gathering.</p>')
-      + '<p><button type="button" class="edit" id="wrongBtn">Something wrong or missing? Tell the stewards</button></p>');
-    h += '</div>';
-
-    // 8. Your choices
-    h += '<section class="s wide" id="choices" aria-labelledby="h-choices"><h2 id="h-choices"><span class="n">8</span>Your choices</h2><p class="lede">Who sees each part of your page, and what Mahala may send you. You can change these at any time.</p><div class="choices"><div>'
-      + '<p class="label">Who sees what</p>'
-      + Object.keys(FIELD_NAMES).map(function (f) { return '<div class="field"><label for="f-' + f + '">' + FIELD_NAMES[f][0] + (FIELD_NAMES[f][1] ? '<small>' + FIELD_NAMES[f][1] + '</small>' : '') + '</label><select id="f-' + f + '" data-field="' + f + '">' + SEE.map(function (s) { return '<option value="' + s[0] + '"' + (P.fields[f] === s[0] ? ' selected' : '') + '>' + s[1] + '</option>'; }).join('') + '</select></div>'; }).join('')
-      + '</div><div><p class="label">What you say yes to</p>'
-      + CONSENT.map(function (c) { return '<div class="field"><label for="c-' + c[0] + '">' + c[1] + '<small>' + c[2] + '</small></label><span class="sw"><input type="checkbox" role="switch" id="c-' + c[0] + '" data-consent="' + c[0] + '"' + (P.consent[c[0]] ? ' checked' : '') + '><span></span></span></div>'; }).join('')
-      + '</div></div><p class="said" id="choiceSaid" aria-live="polite"></p><div class="actions"><button type="button" class="btn ghost small" data-proto="Download everything: a file with all Mahala holds about you.">Download everything</button><button type="button" class="btn ghost small" data-proto="Delete my account: asks twice, then removes your account and your page.">Delete my account</button></div></section>';
-
-    // role panels
-    if (P.panels.length) {
-      h += '<div class="roles">';
-      if (P.panels.indexOf('lead') >= 0) h += leadPanel();
-      if (P.panels.indexOf('core') >= 0) h += corePanel();
-      h += '</div>';
-    }
-
-    h += '<div class="verse"><p><b>The same you, in the Mahalaverse</b>Your name, card and quests are waiting inside the game. Tick a step there and it shows here.</p><a class="btn ghost" href="index.html#mahalaverse">Step into the Mahalaverse</a></div>';
     $('page').innerHTML = h;
-    $('tellWhere').innerHTML = ['Where you stand', 'Your journey', 'Coming up', 'Your quests and crew', 'What you bring', 'Your Seed', 'Your thread', 'Your choices'].concat(P.panels.indexOf('lead') >= 0 ? ['Your nominees'] : []).concat(P.panels.indexOf('core') >= 0 ? ['Core team'] : []).concat(['Something else']).map(function (x) { return '<option>' + x + '</option>'; }).join('');
+    renderChoices();
+    $('tellWhere').innerHTML = ['Where you are now (the protea)', 'Your card and beads', 'The invitation', 'Gatherings ahead', 'Your thread', 'What you carry', 'Your choices'].concat(P.door === 'lead' ? ['The people you called in'] : P.door === 'core' ? ['Holding the whole'] : []).concat(['Something else']).map(function (x) { return '<option>' + x + '</option>'; }).join('');
+    $('yours').innerHTML = '<li>The ladder felt like a ranking<small>Changed, 4 Nov: it became the protea. Thank you.</small></li>';
     document.title = 'Your Mahala · ' + P.first + ' (sample)';
   }
 
-  function sec(n, id, title, lede, body) { return '<section class="s" id="' + id + '" aria-labelledby="h-' + id + '"><h2 id="h-' + id + '"><span class="n">' + n + '</span>' + title + '</h2><p class="lede">' + lede + '</p>' + body + '</section>'; }
+  function deck(k) { return DECK.filter(function (c) { return c.k === k; })[0]; }
+  function curve(flip) { return '<svg class="curve" viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true"><path d="' + (flip ? 'M0 30 C 300 0, 700 40, 1000 8' : 'M0 8 C 300 40, 700 0, 1000 30') + '"/></svg>'; }
+
+  function letter() {
+    if (P.next === 'event') {
+      var e = upcoming().filter(function (x) { return x.set && x.kind !== 'burn' && !P.yes[x.id]; })[0];
+      if (!e) return '';
+      return '<div class="letter" id="letter"><span class="from">An invitation, in the voice of your card</span><p>' + esc(deck(P.card).t.replace('The ', '')) + 's learn by turning up. ' + esc(e.title) + ', ' + fmt(e.date) + ', ' + esc(e.where) + '. ' + esc(e.blurb.split('. ')[0]) + '.</p>'
+        + '<div class="row"><button type="button" class="btn" data-yes="' + e.id + '" data-from-letter aria-pressed="false">I\u2019ll come</button><button type="button" class="btn ghost" id="notNow">Not this time</button></div><p class="said" data-said></p></div>';
+    }
+    if (P.next === 'lead') return '<div class="letter" id="letter"><span class="from">For you, as camp lead</span><p>Five of the people you called in haven\u2019t replied yet. A warm word from you lands softer than any reminder; the second round goes out on 17 Nov.</p><div class="row"><button type="button" class="btn" data-open-door>The people you called in</button></div></div>';
+    if (P.next === 'core') return '<div class="letter" id="letter"><span class="from">For you, holding the whole</span><p>Five decisions are waiting for your wisdom by 14 Nov. They open the way for everyone\u2019s page.</p><div class="row"><button type="button" class="btn" data-open-door>Sit with the decisions</button></div></div>';
+    return '';
+  }
+
+  function roleDoor() {
+    if (P.door === 'lead') return '<details class="door" id="door"><summary><b>The people you called in</b><span>6 invitations</span></summary><div class="doorin">'
+      + '<p>You see what each person has done (replied, applied, welcomed), never their words. Their name shows only if they chose to share where they are with you.</p>'
+      + '<ul><li><span>Six invitations sent<small>20 Oct</small></span><span class="pill">1 has replied</span></li><li><span>Sipho<small>Chose to share with you</small></span><span class="pill">Applied</span></li><li><span>Five more<small>Their names appear if they choose to share</small></span><span class="pill">Not yet</span></li></ul>'
+      + '<p>The second round on 17 Nov goes to each person on their own. You will hear when it has gone.</p>'
+      + '<div class="row"><button type="button" class="btn small" data-proto="The leads\u2019 call opens here.">Join the leads\u2019 call</button><button type="button" class="btn small ghost" data-proto="The leads\u2019 feedback form opens here.">Share an idea with the core team</button><button type="button" class="btn small ghost" data-proto="Basecamp opens in the camp lead view.">Basecamp, camp lead view</button></div><p class="said" data-said></p></div></details>';
+    if (P.door === 'core') return '<details class="door" id="door"><summary><b>Holding the whole</b><span>What the community asks of you this week</span></summary><div class="doorin">'
+      + '<ul>' + ['The protea\u2019s names', 'The roles for 2027', 'What a camp lead sees about the people they call in', 'Who can find other members', 'Where Basecamp lives'].map(function (x) { return '<li><span>' + x + '<small>On the review page, by 14 Nov</small></span><span class="pill">Waiting</span></li>'; }).join('') + '</ul>'
+      + '<div class="row"><button type="button" class="btn small" data-proto="The five decisions open on the review page.">Sit with the decisions</button><button type="button" class="btn small ghost" data-proto="Basecamp opens in the core view, with the plan, the tasks and the numbers.">Open Basecamp</button></div><p class="said" data-said></p></div></details>';
+    return '';
+  }
 
   function stepsHtml() {
     return P.quest.steps.map(function (s, i) {
-      var st = steps[i], note = st === 'ok' ? 'Confirmed by a steward' : st === 'mine' ? 'Marked by you · waiting for a steward' : '';
-      return '<li><button type="button" data-step="' + i + '" data-s="' + st + '" aria-label="' + esc(s[0]) + (st ? ': ' + note : ': not done yet') + '"' + (st === 'ok' ? ' aria-disabled="true"' : '') + '>' + (st ? TICK : '') + '</button><span>' + esc(s[0]) + (note ? '<small>' + note + '</small>' : '') + '</span></li>';
+      var st = steps[i], note = st === 'ok' ? 'Witnessed by a steward' : st === 'mine' ? 'You did it · a steward will witness it' : 'Tap when it is done';
+      return '<li><button type="button" data-step="' + i + '" data-s="' + st + '" aria-pressed="' + (st ? 'true' : 'false') + '"' + (st === 'ok' ? ' aria-disabled="true"' : '') + '><span class="box">' + (st ? TICK : '') + '</span><span>' + esc(s[0]) + '<small>' + note + '</small></span></button></li>';
     }).join('');
   }
 
-  function leadPanel() {
-    var N = [['Sipho', 'Applied', 'c'], ['Grace', 'Read the invitation', 'y'], ['Ruan', 'Read the invitation', 'y'], ['Kea', 'Not opened yet', ''], ['Mo', 'Not opened yet', ''], ['Lerato', 'Not opened yet', '']];
-    return '<section class="panel" id="panel-lead" aria-labelledby="h-lead"><h2 id="h-lead">Your nominees</h2><p class="why">The six people you nominated, and where each is. You see the stage only, never what they wrote, and only for people who agreed to be followed up.</p>'
-      + '<ul class="list">' + N.map(function (n) { return '<li><span class="dot" style="background:' + (n[2] === 'c' ? 'var(--cyan)' : n[2] === 'y' ? 'var(--yellow)' : 'rgba(244,239,230,.3)') + '"></span><span><b>' + n[0] + '</b><span class="sub">Invited 20 Oct</span></span><span class="tag ' + n[2] + '">' + n[1] + '</span></li>'; }).join('') + '</ul>'
-      + '<p class="note">The second round of invitations goes out on 17 Nov, copying you in. A personal message from you before then helps most.</p>'
-      + '<div class="actions"><button type="button" class="btn small" data-proto="The leads’ call opens here.">Join the leads’ call</button><button type="button" class="btn ghost small" data-proto="The leads’ feedback form opens here.">Share an idea with the core team</button><button type="button" class="btn ghost small" data-proto="Basecamp opens in the camp lead view.">Basecamp, camp lead view</button></div>'
-      + '<p class="note" data-said></p></section>';
+  function seedRing() {
+    var s = '<div class="seedring"><svg viewBox="0 0 170 170" role="img" aria-label="The Seed: ' + rand(SEED.raised) + ' raised of ' + rand(SEED.target) + '"><defs><linearGradient id="sg" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#14A8E0"/><stop offset="1" stop-color="#D8197F"/></linearGradient></defs>';
+    var prev = 0;
+    SEED.milestones.forEach(function (m, i) {
+      var part = Math.max(0, Math.min(1, (SEED.raised - prev) / (m[1] - prev))), a = i * 72;
+      s += '<g transform="rotate(' + a + ' 85 85)"><clipPath id="sc' + i + '"><rect x="60" y="' + (82 - 70 * part) + '" width="50" height="' + (70 * part) + '"/></clipPath>'
+        + '<path d="M85 82 C 68 60, 72 26, 85 12 C 98 26, 102 60, 85 82 Z" fill="none" stroke="var(--rule-2)" stroke-width="1.2"/>'
+        + (part > 0 ? '<path d="M85 82 C 68 60, 72 26, 85 12 C 98 26, 102 60, 85 82 Z" fill="url(#sg)" clip-path="url(#sc' + i + ')"/>' : '') + '</g>';
+      prev = m[1];
+    });
+    s += '<circle cx="85" cy="85" r="13" fill="var(--ink)"/></svg><ul><li><b>' + rand(SEED.raised) + '</b> raised so far, of ' + rand(SEED.target) + '</li>'
+      + SEED.milestones.map(function (m) { return '<li>' + m[0] + ' <span>at ' + rand(m[1]) + '</span></li>'; }).join('') + '</ul></div>';
+    return s;
   }
 
-  function corePanel() {
-    var D = ['The ladder’s names', 'The roles for 2027', 'What a camp lead sees about nominees', 'Who can see other members', 'Where Basecamp lives'];
-    return '<section class="panel" id="panel-core" aria-labelledby="h-core"><h2 id="h-core">Core team</h2><p class="why">What the whole of Mahala needs from the core team this week.</p>'
-      + '<p class="label" style="color:rgba(244,239,230,.6)">Decisions due on 14 Nov</p><ul class="list">' + D.map(function (d) { return '<li><span class="dot" style="background:var(--magenta)"></span><span><b>' + d + '</b><span class="sub">On the review page</span></span><span class="tag">Waiting</span></li>'; }).join('') + '</ul>'
-      + '<p class="label" style="color:rgba(244,239,230,.6)">The site this week (sample numbers)</p><div class="nums"><div><b>412</b><span>visits</span></div><div><b>38</b><span>Join clicks</span></div><div><b>17</b><span>Donate clicks</span></div><div><b>9</b><span>new tribe members</span></div></div>'
-      + '<p class="note">Real numbers appear once the site’s counter is switched on.</p>'
-      + '<div class="actions"><button type="button" class="btn small" data-proto="Basecamp opens in the core view, without asking who you are.">Open Basecamp</button><button type="button" class="btn ghost small" data-proto="The five decisions open on the review page.">The five decisions</button></div><p class="note" data-said></p></section>';
+  // ------------------------------------------------------------------ your choices
+  function renderChoices() {
+    var dir = P.consent.directory[0];
+    var h = '<div class="sheethead"><h2 id="choicesH">Your choices</h2><button type="button" class="x" data-close>Close</button></div><p class="sub">Yours to change, any time. Until you choose, everything stays with the stewards.</p>'
+      + '<h3>What you say yes to</h3>' + CONSENT.map(function (c) { var v = P.consent[c[0]]; return '<div class="field"><span id="cl-' + c[0] + '">' + c[1] + '<small>' + c[2] + '</small>' + (v[1] ? '<small class="carried">' + v[1] + '</small>' : '') + '</span><label class="sw"><input type="checkbox" role="switch" data-consent="' + c[0] + '" aria-labelledby="cl-' + c[0] + '"' + (v[0] ? ' checked' : '') + '><span class="track"></span><span class="yn">' + (v[0] ? 'Yes' : 'No') + '</span></label></div>'; }).join('')
+      + '<h3>Who sees what</h3>' + Object.keys(FIELD_NAMES).map(function (f) {
+        var opts = SEE.filter(function (s) { return !(f === 'home_base' && s[0] === 'public') && !(f === 'beads' && s[0] === 'public'); });
+        return '<div class="field"><label for="f-' + f + '">' + FIELD_NAMES[f][0] + (FIELD_NAMES[f][1] ? '<small>' + FIELD_NAMES[f][1] + '</small>' : '') + '</label><select id="f-' + f + '" data-field="' + f + '">' + opts.map(function (s) { return '<option value="' + s[0] + '"' + (P.fields[f] === s[0] ? ' selected' : '') + (s[0] === 'members' && !dir ? ' disabled' : '') + '>' + s[1] + (s[0] === 'members' && !dir ? ' (needs "Members can find you")' : '') + '</option>'; }).join('') + '</select></div>';
+      }).join('')
+      + '<p class="said" id="choiceSaid" aria-live="polite"></p>'
+      + '<h3>What Mahala keeps about you</h3><ul class="keeps">'
+      + '<li>Your page and choices<small>From you. Here, so you can see and change them.</small></li>'
+      + '<li>Your thread<small>From the camp lists of past years and what you did with us. Something wrong? Tell the stewards.</small></li>'
+      + '<li>Your email address<small>Kept locked away for sign-in and the news you chose. Never shown on any page.</small></li>'
+      + '<li>Gifts and fees<small>Only that they happened, never an amount on any page.</small></li>'
+      + '<li>Visits to the site<small>Counted without knowing who you are.</small></li></ul>'
+      + '<div class="row" style="margin-top:12px"><button type="button" class="btn small ghost" data-proto="Download everything: a readable page and a file of all Mahala keeps about you, sent as a link to your sign-in email.">Download everything</button></div>'
+      + '<h3>Leaving Mahala</h3><div class="leave"><button type="button" class="btn small ghost" data-proto="Close my account: your sign-in and page go; your years stay in the camp\u2019s story under your playa name. Asks you to type your playa name, and can be undone for 14 days.">Close my account<br>Your years stay in the camp\u2019s story under your playa name</button>'
+      + '<button type="button" class="btn small ghost" data-proto="Forget me: everything goes, including the stewards\u2019 records, and Mahala remembers not to add you back. Only the fact of a camp fee stays as long as the books need it.">Forget me<br>Everything goes, and we remember not to add you back</button></div><p class="said" data-said></p>';
+    $('choicesIn').innerHTML = h;
   }
 
   // ------------------------------------------------------------------ what you can try
-  document.addEventListener('click', function (e) {
-    var t = e.target.closest('button, a'); if (!t) return;
-    if (t.id === 'nextBtn') { var on = t.getAttribute('aria-pressed') !== 'true'; t.setAttribute('aria-pressed', String(on)); t.textContent = on ? 'See you there' : P.next.act; var b = document.querySelector('[data-yes="0"]'); if (b) { yes[0] = on; b.setAttribute('aria-pressed', String(on)); b.textContent = on ? 'Going' : 'Yes'; } return; }
-    if (t.dataset.yes != null) { var i = +t.dataset.yes; yes[i] = !yes[i]; t.setAttribute('aria-pressed', String(yes[i])); t.textContent = yes[i] ? 'Going' : 'Yes'; if (i === 0 && $('nextBtn')) { $('nextBtn').setAttribute('aria-pressed', String(yes[0])); $('nextBtn').textContent = yes[0] ? 'See you there' : P.next.act; } return; }
+  function say(el, t) { var s = el.closest('.letter, .tin, .doorin, .sheetin, section, .cardzone'); s = s && s.querySelector('[data-said], .said'); if (s) s.textContent = t; }
+  function open(dlg) { try { dlg.showModal(); } catch (e) { dlg.setAttribute('open', ''); } var f = dlg.querySelector('[data-close], textarea'); if (f) f.focus(); }
+
+  document.addEventListener('click', function (ev) {
+    var t = ev.target.closest('button, a, .petal'); if (!t) return;
+    if (t.matches('[data-close]')) { t.closest('dialog').close(); return; }
+    if (t.id === 'chip' || t.matches('[data-choices]')) { open($('choices')); return; }
+    if (t.id === 'tellBtn') { open($('tell')); return; }
+    if (t.matches('[data-tell]')) { open($('tell')); $('tellWhere').value = t.dataset.tell; return; }
+    if (t.classList.contains('petal')) { petal(t); return; }
+    if (t.dataset.bead != null) { var b = P.beads[+t.dataset.bead]; document.querySelectorAll('.bead').forEach(function (x) { x.setAttribute('aria-expanded', String(x === t)); }); $('beadsay').textContent = b[1]; return; }
+    if (t.id === 'turnOwn') { myOpen = !myOpen; $('own').classList.toggle('turned', myOpen); t.setAttribute('aria-pressed', String(myOpen)); t.textContent = myOpen ? 'Turn it back' : 'Hear your card'; return; }
+    if (t.id === 'drawBtn' || t.id === 'drawAgain') { draw(t.id === 'drawAgain'); return; }
+    if (t.id === 'flipDrawn') { var c = $('dcard'); c.classList.toggle('turned'); return; }
+    if (t.id === 'keepDrawn') { P.beads.push(['given', 'A message kept: ' + drawn.t + '.']); var bs = document.querySelector('.beads'); bs.insertAdjacentHTML('beforeend', '<button type="button" class="bead" style="background:var(--magenta)" data-bead="' + (P.beads.length - 1) + '" aria-expanded="false" aria-label="A bead for something kept"></button>'); $('beadsay').textContent = 'Kept. A bead joins your string, and the message lives in your thread.'; t.disabled = true; return; }
+    if (t.dataset.t) { var tk = $('t-' + t.dataset.t), o = !tk.classList.contains('open'); tk.classList.toggle('open', o); tk.querySelector('.tbody').inert = !o; t.setAttribute('aria-expanded', String(o)); return; }
+    if (t.dataset.yes) { yes(t.dataset.yes, t); return; }
+    if (t.id === 'notNow') { var alt = upcoming().filter(function (x) { return x.set && x.kind === 'talk'; })[0]; t.closest('.letter').querySelector('p').textContent = 'Of course. Here is a gentler door: ' + alt.title + ', ' + fmt(alt.date) + ', online, an hour, from your couch. We won\u2019t ask about the other one again this month.'; t.remove(); var y = document.querySelector('#letter [data-yes]'); y.dataset.yes = alt.id; y.textContent = 'I\u2019ll listen in'; return; }
+    if (t.matches('[data-open-door]')) { var dr = $('door'); dr.open = true; scrollTo2(dr); dr.querySelector('summary').focus({ preventScroll: true }); return; }
     if (t.dataset.step != null) { var k = +t.dataset.step; if (steps[k] === 'ok') return; steps[k] = steps[k] === 'mine' ? '' : 'mine'; $('steps').innerHTML = stepsHtml(); var nb = document.querySelector('[data-step="' + k + '"]'); if (nb) nb.focus(); return; }
-    if (t.dataset.jump) { e.preventDefault(); var el = $(t.dataset.jump); if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.setAttribute('tabindex', '-1'); el.focus({ preventScroll: true }); } return; }
-    if (t.dataset.proto) { var said = t.closest('section').querySelector('[data-said], .said'); if (said) said.textContent = 'In the prototype: ' + t.dataset.proto; return; }
-    if (t.id === 'wrongBtn') { openTell('Your thread'); return; }
+    if (t.dataset.ics) { say(t, 'Added. On the site this saves a calendar file; adding it again updates the same entry. (Nothing downloads in the prototype.)'); return; }
+    if (t.dataset.follow) { say(t, 'You will hear how The Seed rises. The way into the camp is through a camp lead.'); return; }
+    if (t.dataset.proto) { say(t, 'In the prototype: ' + t.dataset.proto); return; }
+    if (t.id === 'tellSend') { var tx = $('tellText').value.trim(); if (!tx) { $('tellSaid').textContent = 'Write a line first, then send.'; return; } $('yours').insertAdjacentHTML('afterbegin', '<li>' + esc(tx) + '<small>Heard. The stewards answer within a week.</small></li>'); $('tellText').value = ''; $('tellRank').value = ''; $('tellSaid').textContent = 'Thank you. It is in the stewards\u2019 feedback log with the part you chose.'; return; }
   });
-  document.addEventListener('change', function (e) {
-    var t = e.target, s = $('choiceSaid'); if (!s) return;
-    if (t.dataset.field) s.textContent = FIELD_NAMES[t.dataset.field][0] + ': now seen by ' + t.options[t.selectedIndex].text.toLowerCase() + '. (Not saved in the prototype.)';
-    if (t.dataset.consent) s.textContent = CONSENT.filter(function (c) { return c[0] === t.dataset.consent; })[0][1] + ': ' + (t.checked ? 'yes' : 'no') + '. (Not saved in the prototype.)';
+  document.addEventListener('keydown', function (ev) { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('petal')) { ev.preventDefault(); petal(ev.target); } });
+  document.addEventListener('change', function (ev) {
+    var t = ev.target;
+    if (t.dataset.consent) { P.consent[t.dataset.consent][0] = t.checked; t.parentNode.querySelector('.yn').textContent = t.checked ? 'Yes' : 'No'; if (t.dataset.consent === 'directory') { var keep = t.checked; renderChoices(); var n = $('choicesIn').querySelector('[data-consent="directory"]'); if (n) n.focus(); $('choiceSaid').textContent = keep ? 'Members can now find you. Choose below what they see.' : 'Hidden from other members. Anything set to Members is back with the stewards.'; if (!keep) Object.keys(P.fields).forEach(function (f) { if (P.fields[f] === 'members') P.fields[f] = 'stewards'; }); } return; }
+    if (t.dataset.field) { P.fields[t.dataset.field] = t.value; $('choiceSaid').textContent = FIELD_NAMES[t.dataset.field][0] + ': now seen by ' + t.options[t.selectedIndex].text.toLowerCase() + '. (Not saved in the prototype.)'; }
   });
 
-  // Tell us: in the beta this goes to the structured feedback log, one entry each, answered there
-  function openTell(where) { $('tellBox').hidden = false; $('tellBtn').setAttribute('aria-expanded', 'true'); if (where) $('tellWhere').value = where; $('tellSaid').textContent = ''; $('tellText').focus(); }
-  function closeTell() { $('tellBox').hidden = true; $('tellBtn').setAttribute('aria-expanded', 'false'); $('tellBtn').focus(); }
-  $('tellBtn').addEventListener('click', function () { if ($('tellBox').hidden) openTell(); else closeTell(); });
-  $('tellCancel').addEventListener('click', closeTell);
-  $('tellSend').addEventListener('click', function () {
-    if (!$('tellText').value.trim()) { $('tellSaid').textContent = 'Write a line first, then send.'; return; }
-    $('tellSaid').textContent = 'Thank you. In the beta this goes to the stewards’ feedback log with the part you chose, and you will see the answer on your page.'; $('tellText').value = '';
-  });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('tellBox').hidden) closeTell(); });
+  function petal(g) {
+    var k = g.dataset.petal, pt = PETALS.filter(function (x) { return x[0] === k; })[0], openP = P.open.indexOf(k) >= 0;
+    document.querySelectorAll('.petal').forEach(function (x) { x.classList.toggle('sel', x === g); });
+    $('petalsay').innerHTML = '<strong>' + esc(pt[1]) + '.</strong> ' + esc(openP ? pt[2] : 'Open to you. ' + pt[3]);
+  }
+
+  function yes(id, btn) {
+    var e = EVENTS.events.filter(function (x) { return x.id === id; })[0]; if (!e) return;
+    var cur = P.yes[id], next = cur ? '' : (e.set ? 'yes' : 'hold');
+    if (next) P.yes[id] = next; else delete P.yes[id];
+    var tk = $('t-' + id), was = tk && tk.classList.contains('open');
+    if (tk) { tk.outerHTML = ticket(e); tk = $('t-' + id); if (next || was) { tk.classList.add('open'); tk.querySelector('.tbody').inert = false; tk.querySelector('.head').setAttribute('aria-expanded', 'true'); } }
+    if (btn && btn.hasAttribute('data-from-letter')) { btn.setAttribute('aria-pressed', String(!!next)); btn.textContent = next ? 'See you there, ' + P.playa : 'I\u2019ll come'; say(btn, next ? 'It\u2019s on your page, in the Mahalaverse, and in the hosts\u2019 count. The details are open below.' : ''); if (next && tk) scrollTo2(tk); }
+    else { var b2 = tk && tk.querySelector('[data-yes]'); if (b2) b2.focus(); if (tk) say(tk.querySelector('[data-said]'), next === 'yes' ? 'Going. It shows on your page and in the Mahalaverse; the hosts see one more in their count.' : next === 'hold' ? 'Held for you. We\u2019ll tell you when the date is set.' : 'Taken back. Nothing else changes.'); }
+  }
+
+  // draw a message: once each new moon, and once after each gathering you come to
+  function draw(again) {
+    if (!drawsLeft && !again) return;
+    drawsLeft = 0;
+    var pool = DECK.filter(function (c) { return !drawn || c.k !== drawn.k; });
+    drawn = pool[Math.floor(Math.random() * pool.length)];
+    var reversed = Math.random() < .25, mirror = drawn.k === P.card;
+    var nm = nextNewMoon(TODAY), nmTxt = DAYS[nm.getDay()] + ' ' + nm.getDate() + ' ' + MON[nm.getMonth()];
+    $('drawn').innerHTML = '<div class="card draw" id="dcard"><div class="face front"><img src="' + IMG('back') + '" alt="The back of a card from the deck"></div><div class="face back" style="padding:0"><img src="' + IMG(drawn.k) + '" alt="' + esc(drawn.t) + '"></div></div>'
+      + '<div class="msg" aria-live="polite"><q>' + esc(reversed ? drawn.sq : drawn.q) + '</q>' + esc(reversed ? drawn.s : drawn.g) + '<span>' + esc(drawn.t) + (reversed ? ', its shadow side' : '') + (mirror ? ' · The mirror: you drew your own card' : '') + '</span></div>'
+      + '<div class="row" style="justify-content:center"><button type="button" class="btn small ghost" id="keepDrawn">Keep this</button></div>'
+      + '<p class="beadsay">The deck rests until the new moon on ' + nmTxt + '. Each gathering you come to opens another draw. <button type="button" class="link" id="drawAgain">Draw again (prototype only)</button></p>';
+    $('drawBtn').disabled = true; $('drawBtn').textContent = 'Drawn';
+    var c = $('dcard'); setTimeout(function () { c.classList.add('turned'); }, REDUCE ? 0 : 450);
+  }
 
   addEventListener('hashchange', function () { render(); scrollTo(0, 0); });
   render();
 })();
 </script>
-<style>.mini { width: 26px; height: 26px; border-radius: 50%; display: block; }</style>
 </body>
 </html>
