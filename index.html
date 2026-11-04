@@ -3,7 +3,7 @@
 (function () { var m = false; try { m = localStorage.getItem('mahala.edition') === 'members' && !!localStorage.getItem('mahala-auth'); } catch (e) { }
   window.__MV_MEMBERS = m; window.__V7_ONLY = m ? null : ['platform', 'world']; window.__MAHALA_PUBLIC = !m; })();</script>
 <script src="site.js?v=6"></script>
-<script src="assets/shim/claude-shim.js?v=1"></script>
+<script src="assets/shim/claude-shim.js?v=2"></script>
 <style id="publicEdition">
 /* the public edition (for AfrikaBurn's Art Committee): no sign-ups, payments, crew or shift sign-ups, testing buttons or claude.ai links */
 .testbtn, [data-act="join"], [data-act^="join:"], [data-act="givegate"], [data-act^="give:"], [data-act^="pledge:"], [data-act^="crewjoin:"],
@@ -285,6 +285,11 @@ a.act { color: inherit; text-decoration: none; }
 .first-acts { margin-top: 1.4em; }
 .first-acts .act { padding: 10px 16px 9px; font-size: 10.5px; letter-spacing: .16em; }
 .menu .menu-door[data-give] { border: 1px solid currentColor; border-radius: 999px; padding: 8px 12px; margin-left: 4px; }
+/* Sign in, or your name once signed in: top left beside the mark; on a phone, a small pill under the menu */
+.top-left { display: inline-flex; align-items: center; gap: 14px; pointer-events: auto; }
+.top .acct.mvm-chip { min-height: 30px; padding: 0 12px; font: 500 11px/1 var(--text); letter-spacing: .16em; text-transform: uppercase; color: inherit; border-color: currentColor; opacity: .92; }
+.top .acct.mvm-chip:hover { opacity: 1; }
+@media (max-width: 640px) { .top .acct.mvm-chip { position: absolute; right: max(10px, env(safe-area-inset-right, 0px)); top: calc(62px + env(safe-area-inset-top, 0px)); min-height: 26px; padding: 0 10px; font-size: 10px; letter-spacing: .12em; } }
 /* Join: the one filled button, top right, beside Donate (camp lead feedback, Nov 2026) */
 .menu .menu-door.menu-join { border: 1px solid var(--warm); background: var(--warm); color: var(--ink); text-shadow: none; border-radius: 999px; padding: 8px 14px; margin-left: 8px; opacity: 1; }
 .menu .menu-door.menu-join:hover { background: #fff; border-color: #fff; }
@@ -475,7 +480,8 @@ a.act { color: inherit; text-decoration: none; }
 }
 
 /* ---------------------------------------------------------------------------------- the review of October 2026 */
-/* the menu: The camp, The Seed, Mahalaverse, then Join and Donate as buttons. On a phone it takes the whole top line. */
+/* the menu: The tribe, The camp, The Seed, then Join and Donate as buttons (the Mahalaverse door is at the end of the journey). On a phone it takes the whole
+   top line; on the smallest phones (345 px and under) it drops "The" (Camp, Seed, Tribe) so all five fit. */
 @media (max-width: 640px) {
   .top .mark { display: none; }
   .top { justify-content: center; padding-left: 8px; padding-right: 8px; }
@@ -483,6 +489,9 @@ a.act { color: inherit; text-decoration: none; }
   .menu .menu-door { padding: 10px 7px; letter-spacing: .13em; font-size: 10.5px; }
   .menu .menu-door.menu-join, .menu .menu-door[data-give] { padding: 8px 10px; margin-left: 5px; }
 }
+@media (max-width: 480px) { .menu .menu-door { white-space: nowrap; padding: 10px 5px; letter-spacing: .1em; }
+  .menu .menu-door.menu-join, .menu .menu-door[data-give] { padding: 8px 9px; margin-left: 4px; } }
+@media (max-width: 345px) { .menu .menu-door .the { display: none; } .top .menu .menu-door { padding: 10px 3px; letter-spacing: .04em; font-size: 10px; } .top .menu .menu-door.menu-join, .top .menu .menu-door[data-give] { padding: 7px 7px; margin-left: 3px; } }
 @media (max-width: 360px) { .menu .menu-door { padding: 10px 5px; letter-spacing: .08em; } .menu .menu-door svg { display: none; } }
 /* the sound: its own button, bottom right */
 .snd { justify-self: end; pointer-events: auto; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: rgba(20, 14, 10, .26); color: var(--warm); display: grid; place-items: center; cursor: pointer; padding: 0;
@@ -1551,11 +1560,11 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
 <div id="grain" aria-hidden="true"></div>
 
 <header class="ui top">
-  <button class="mark" type="button" id="toTop" aria-label="Mahala, back to the start">MAHALA</button>
+  <span class="top-left"><button class="mark" type="button" id="toTop" aria-label="Mahala, back to the start">MAHALA</button><button type="button" class="acct" data-mahala-account data-count="Sign in" data-count-where="top bar" hidden></button></span>
   <nav class="menu" aria-label="Menu">
-    <a class="menu-door" href="camp.html" data-pane="camp" data-count="The camp" data-count-where="top bar">The camp</a>
-    <a class="menu-door" href="seed.html" data-pane="seed" data-count="The Seed" data-count-where="top bar">The Seed</a>
-    <a class="menu-door" id="toVerse" href="#mahalaverse" data-count="Mahalaverse" data-count-where="top bar">Mahalaverse<svg viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg></a>
+    <a class="menu-door" href="tribe.html" data-pane="tribe" data-count="The tribe" data-count-where="top bar"><span class="the">The </span>tribe</a>
+    <a class="menu-door" href="camp.html" data-pane="camp" data-count="The camp" data-count-where="top bar"><span class="the">The </span>camp</a>
+    <a class="menu-door" href="seed.html" data-pane="seed" data-count="The Seed" data-count-where="top bar"><span class="the">The </span>Seed</a>
     <a class="menu-door menu-join" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Join" data-count-where="top bar">Join</a>
     <a class="menu-door" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give data-count="Donate" data-count-where="top bar">Donate</a>
   </nav>
@@ -2971,7 +2980,7 @@ S.stepIn = stepIn;
 const MV_LINK = MV_ROOT && (/^#(mahalaverse|enter|play)$/i.test(location.hash) || /(^#|&)(door|gate|card|fire|book|story|tour|sel|place|path)=/.test(location.hash));
 if (MV_ROOT) {
   $('stepIn').addEventListener('click', (e) => { e.preventDefault(); stepIn(); });
-  $('toVerse').addEventListener('click', (e) => { e.preventDefault(); stepIn({ quick: true }); });
+  const toVerse = $('toVerse'); if (toVerse) toVerse.addEventListener('click', (e) => { e.preventDefault(); stepIn({ quick: true }); });
 }
 
 // ----------------------------------------------------------------------------------------------------------- the lantern
@@ -3925,6 +3934,6 @@ async function start3D() {
   frame();
 }
 </script>
-<script src="analytics.js?v=1"></script>
+<script src="analytics.js?v=2"></script>
 
 </body></html>

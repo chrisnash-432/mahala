@@ -21,6 +21,9 @@
   'use strict';
   var SITE = window.MAHALA_SITE || {};
   var CFG = SITE.members || {};
+  // Google sign-in is offered only once site.js says members: { google: true }, after the Google provider is set up in
+  // Supabase (platform/docs/SETUP.md). Until then the email link is the one way in.
+  var GOOGLE_ON = CFG.google === true;
   if (!CFG.url || !CFG.anonKey || window.claude) return;
 
   var RULES_VERSION = '746824445fc6';
@@ -585,14 +588,15 @@
         : gate ? 'The Mahalaverse is home to Mahala\'s online community of temple builders. Make your account, or sign in, to step onto the playa. Your path, your book and your card stay with you on every device.'
         : 'Make your account, or sign in. It takes a moment, and your path, your book and your card stay with you on every device.';
       var el = sheet('<h2>' + title + '</h2><p class="lead">' + lead + '</p>' +
-        '<button type="button" class="mvs-b" data-k="google">' + GOOGLE + 'Continue with Google</button>' +
-        '<div class="mvs-or">or</div>' +
+        (GOOGLE_ON ? '<button type="button" class="mvs-b" data-k="google">' + GOOGLE + 'Continue with Google</button>' +
+        '<div class="mvs-or">or</div>' : '') +
         '<form data-k="email"><label class="mvs-row"><span>Your email address</span><input type="email" name="email" autocomplete="email" required></label>' +
         '<button type="submit" class="mvs-b q">Email me a link to come in</button></form>' +
         '<div class="mvs-msg" role="status"></div>' +
-        '<p><small>New here? Either way makes your account. Google shares only your name, address and photo with Mahala, never your Gmail. <a href="#" data-k="notice">How Mahala looks after your thread</a>.</small></p>' +
+        '<p><small>' + (GOOGLE_ON ? 'New here? Either way makes your account. Google shares only your name, address and photo with Mahala, never your Gmail. ' : 'New here? The link makes your account. ') + '<a href="#" data-k="notice">How Mahala looks after your thread</a>.</small></p>' +
         (gate ? '<a class="mvs-b q" href="./" data-k="back">Back to The Seed</a>' : ''), gate ? 'Make your account' : 'Sign in', !gate);
-      el.querySelector('[data-k="google"]').addEventListener('click', function () {
+      var gBtn = el.querySelector('[data-k="google"]');
+      if (gBtn) gBtn.addEventListener('click', function () {
         msg(el, 'Opening Google...');
         clientP.then(function (c) { return c.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectTo(gate) } }); })
           .then(function (r) { if (r && r.error) msg(el, 'Google sign-in is not open yet. Try the email link.'); }, function () { msg(el, 'Signing in is not available right now.'); });
