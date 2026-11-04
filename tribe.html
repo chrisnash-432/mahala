@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Mahala · The tribe</title>
-<meta name="description" content="The Mahala tribe since 2013: what we bring, what we come for, what we love, where we live, and what The Seed still needs.">
+<meta name="description" content="The Mahala tribe since 2013: the season's gatherings, what we bring, what we come for, what we love, where we live, and what The Seed still needs.">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#F7F2EA">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -197,6 +197,57 @@ html.join-open, html.join-open body { overflow: hidden; }
 .j-done .next { margin: 0 0 8px; padding-left: 1.3em; display: grid; gap: 14px; font: 300 17px/1.5 var(--text); }
 .j-done .next b { font-weight: 500; }
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+/* gather with us: the season's events, one record shared with Basecamp (Mahala OS operations/2027/events.yaml) */
+#events { scroll-margin-top: 64px; }
+.next-up { margin: 16px 0 0; font: 400 14.5px/1.4 var(--text); color: var(--ink-2); }
+.next-up a { text-decoration: none; border-bottom: 1px solid var(--pine); padding-bottom: 1px; }
+.next-up a:hover { border-color: var(--ink); }
+.next-up b { font-weight: 500; }
+.season { position: relative; margin: 4px 0 22px; }
+.season svg { display: block; width: 100%; height: auto; overflow: visible; }
+.season .axis { stroke: var(--rule); stroke-width: 1; }
+.season .lit { stroke: url(#seasonPrism); stroke-width: 2; stroke-linecap: round; }
+.season .mon { font: 500 10.5px var(--text); letter-spacing: .14em; fill: var(--ink-3); text-transform: uppercase; }
+.season .tick { stroke: var(--rule); }
+.season .now { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 2 3; }
+.season .nowt { font: 500 10px var(--text); letter-spacing: .12em; fill: var(--ink); text-transform: uppercase; }
+.season .moon { fill: #FFFDF8; stroke: var(--brass); stroke-width: 1; }
+.ev-filter { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 6px; }
+.ev-filter button { min-height: 40px; padding: 0 14px; border: 1px solid #CFC3B2; border-radius: 999px; background: #FFFDF8; color: var(--ink); font: 400 14px/1 var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.ev-filter button:hover { border-color: var(--ink); }
+.ev-filter button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.ev-filter button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.ev-month { margin: 30px 0 4px; display: flex; align-items: center; gap: 14px; font: 400 13px/1 var(--name); letter-spacing: .3em; text-transform: uppercase; color: var(--ink-2); }
+.ev-month::after { content: ""; flex: 1; height: 1px; background: var(--prism); opacity: .55; }
+.evlist { margin: 0; padding: 0; list-style: none; }
+.ev { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 4px 22px; padding: 20px 0 22px; border-bottom: 1px solid var(--rule); }
+.ev:last-child { border-bottom: 0; }
+.ev .when { display: grid; align-content: start; justify-items: start; gap: 4px; }
+.ev .when .d { font: 400 40px/1 var(--name); font-variant-numeric: lining-nums; }
+.ev .when .d small { font-size: .45em; letter-spacing: .04em; color: var(--ink-2); margin: 0 .25em; }
+.ev .when .wd { font: 500 11px/1.2 var(--text); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.ev .kind { display: inline-flex; align-items: center; gap: 8px; font: 500 11.5px/1 var(--text); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); }
+.ev .kind i { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.ev h3 { margin: 8px 0 0; font: 400 clamp(21px, 2.4vw, 26px)/1.15 var(--name); letter-spacing: .04em; }
+.ev .meta { margin: 6px 0 0; font-size: 15px; color: var(--ink-2); }
+.ev .meta .sep { color: var(--pine); margin: 0 .45em; }
+.ev .blurb { margin: 8px 0 0; font-size: 16px; max-width: 40em; }
+.ev .q { margin: 8px 0 0; font: italic 400 19px/1.4 var(--verse); color: var(--wax); }
+.ev .state { display: inline-block; margin-left: 10px; padding: 3px 9px 2px; border-radius: 999px; font: 500 10.5px/1.3 var(--text); letter-spacing: .12em; text-transform: uppercase; vertical-align: 2px; }
+.ev .state.set { background: var(--ink); color: var(--paper); }
+.ev .state.pen { border: 1px dashed #b9ab97; color: var(--ink-3); }
+.ev .ev-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.ev .ev-acts .act { min-height: 42px; padding: 0 16px; font-size: 14px; }
+.ev.burn h3 { color: var(--wax); }
+.ev-empty { margin: 18px 0 0; color: var(--ink-3); }
+.ev-foot { margin: 26px 0 0; font: italic 400 clamp(18px, 2vw, 21px)/1.5 var(--verse); max-width: 38em; }
+@media (max-width: 560px) {
+  .ev { grid-template-columns: 64px minmax(0, 1fr); gap: 4px 14px; }
+  .ev .when .d { font-size: 30px; }
+  .ev .when .d small { display: block; font-size: .5em; margin: 4px 0 0; }
+  .ev .state { display: table; margin: 8px 0 0; }
+}
 </style>
 </head>
 <body>
@@ -215,6 +266,7 @@ html.join-open, html.join-open body { overflow: hidden; }
       <p class="lede" id="lede"></p>
       <div class="tally" id="tally"></div>
       <div class="acts top-acts"><button class="act solid" type="button" data-tribe-join>Join the tribe</button></div>
+      <p class="next-up" id="nextUp" hidden></p>
     </header>
 
     <figure class="reelwrap" style="margin-inline:auto">
@@ -225,6 +277,17 @@ html.join-open, html.join-open body { overflow: hidden; }
       <figcaption class="reel-cap"><span>We are Mahala</span><span>49 s</span></figcaption>
     </figure>
     <div class="foldall"><button type="button" id="foldAll">Close every section</button></div>
+
+    <section id="events" aria-labelledby="hEvents">
+      <div class="head"><h2 id="hEvents"><button class="fold" type="button" aria-expanded="true" aria-controls="bEvents">Gather with us<span class="chev" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M2.5 4.5l3.5 3.5 3.5-3.5"/></svg></span></button></h2><p class="sub">Sound journeys, talks and build days from now to the burn. Every one of them helps raise The Seed.</p></div>
+      <div class="body" id="bEvents">
+        <div class="season" id="season" aria-hidden="true"></div>
+        <div class="ev-filter" role="group" aria-label="Show"><button type="button" data-evf="all" aria-pressed="true">Everything</button><button type="button" data-evf="person" aria-pressed="false">In person</button><button type="button" data-evf="online" aria-pressed="false">Online talks</button><button type="button" data-evf="build" aria-pressed="false">Build days</button></div>
+        <div id="evlist"></div>
+        <p class="ev-foot">Tickets open here as each date is set. Join the tribe and you hear first.</p>
+        <div class="acts"><button class="act solid" type="button" data-tribe-join>Join the tribe</button><a class="act" href="seed.html" data-open="seed">About The Seed</a></div>
+      </div>
+    </section>
 
     <section aria-labelledby="hBring">
       <div class="head"><h2 id="hBring"><button class="fold" type="button" aria-expanded="true" aria-controls="bBring">What we bring<span class="chev" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M2.5 4.5l3.5 3.5 3.5-3.5"/></svg></span></button></h2><p class="sub">The crafts and gifts members name when they tell us about themselves.</p></div>
@@ -466,6 +529,125 @@ html.join-open, html.join-open body { overflow: hidden; }
   $('how').textContent = 'How this was counted: from what members wrote on their applications and forms since 2013, read on ' +
     new Date(D.asOf).toLocaleDateString('en-ZA', {day: 'numeric', month: 'long', year: 'numeric'}) + '. Only counts appear here: no names, no one\'s words, ' +
     'nothing finer than a city, and nothing shared by fewer than three people. Countries with fewer than three of us are counted together.';
+})();
+</script>
+<script id="events-data" type="application/json">/*EVENTS-DATA*/{"asOf":"2026-11-04","events":[{"id":"ev-mecca","title":"Road to Mecca, a Mahala fundraiser","kind":"gathering","date":"2026-11-13","where":"Hollow Tree","blurb":"Our first gathering of the season, and a fundraiser for The Seed. A few words at the end about what is coming.","set":true},{"id":"ev-talk-1","title":"Temple Builders, talk 1","kind":"talk","date":"2026-11-29","time":"19:00","where":"Online","blurb":"A monthly talk with people who raise sacred structures. A guest, an hour, and your questions at the end. Guest to be announced.","question":"What is this calling to build temples?","set":true},{"id":"ev-dec-dinner","title":"Dinner and a sound journey","kind":"gathering","date":"2026-12-05","where":"Cape Town, venue to be announced","blurb":"A long table and a sound journey under the Mahala tent as the sun goes down. The first full taste of what Mahala gathers for.","set":true},{"id":"ev-talk-2","title":"Temple Builders, talk 2","kind":"talk","date":"2026-12-13","time":"19:00","where":"Online","blurb":"A guest from the temple builders' world. From this talk on it may also run from a room in Muizenberg, with cushions and a small audience.","question":"What does it take to raise one with many hands?","set":false},{"id":"ev-talk-3","title":"Temple Builders, talk 3","kind":"talk","date":"2027-01-10","time":"19:00","where":"Online","blurb":"Living temples: places built to be lived in, not only visited.","question":"Can a temple be lived in, not only visited?","set":false},{"id":"ev-dunes-jan","title":"Sound Journey in the Dunes","kind":"gathering","date":"2027-01-22","end":"2027-01-24","where":"The dunes near Cape Town, shared with ticket holders","blurb":"Three full moon nights in the dunes. A slow meal, a sound journey lying down, then a second journey that rises into dance, with fire and poetry to close. Come for one night.","set":true},{"id":"ev-build-1","title":"Build day 1","kind":"build","date":"2027-01-30","time":"morning","where":"Cape Town, place to be announced","blurb":"A morning with your hands in it: a coffee rave to wake up, then crews for planting, digging, composting and work on The Seed, then a shared lunch.","set":false},{"id":"ev-build-2","title":"Build day 2","kind":"build","date":"2027-02-07","time":"morning","where":"Cape Town, place to be announced","blurb":"Another morning of building together, then the evening talk opens with footage from the day.","set":false},{"id":"ev-talk-4","title":"Temple Builders, talk 4","kind":"talk","date":"2027-02-07","time":"19:00","where":"Online","blurb":"Sacred geometry, and how form holds meaning.","question":"How does form hold meaning?","set":false},{"id":"ev-dunes-feb","title":"Sound Journey in the Dunes","kind":"gathering","date":"2027-02-19","end":"2027-02-21","where":"The dunes near Cape Town, shared with ticket holders","blurb":"The second full moon weekend in the dunes, with a new chef at the fire. Three nights; come for one.","set":false},{"id":"ev-build-3","title":"Build day 3","kind":"build","date":"2027-03-13","time":"morning","where":"Cape Town, place to be announced","blurb":"The last build morning before The Seed is packed for the desert.","set":false},{"id":"ev-talk-5","title":"Temple Builders, talk 5","kind":"talk","date":"2027-03-21","time":"19:00","where":"Online","blurb":"Temples, silence and ritual theatre, with temple builders from Cape Town.","question":"Why are temples so often silent, and can they hold ritual too?","set":false},{"id":"ev-buildweek","title":"Build week: The Seed rises","kind":"burn","date":"2027-04-19","end":"2027-04-25","where":"Tankwa Karoo","blurb":"The camp arrives and The Seed goes up in the desert.","set":true},{"id":"ev-burn","title":"AfrikaBurn 2027","kind":"burn","date":"2027-04-26","end":"2027-05-02","where":"Tankwa Karoo","blurb":"The Seed stands at Mahala, open day and night.","set":true}]}/*END*/</script>
+<script>
+// Gather with us: the public rows of Mahala OS operations/2027/events.yaml, written in above by export_events.py.
+// Past events drop off on their own; talk times also show in the visitor's own time zone.
+(function () {
+  var raw = document.getElementById('events-data').textContent.replace(/^\s*\/\*EVENTS-DATA\*\/|\/\*END\*\/\s*$/g, '');
+  var E = {}; try { E = JSON.parse(raw); } catch (e) { }
+  var all = E.events || [];
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+  var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+  var ymd = function (d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
+  var at = function (s) { var p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); };
+  var today = ymd(new Date());
+  var WD = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], MO = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var MONTH = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  var KIND = { gathering: ['In person', 'var(--magenta)'], talk: ['Online talk', 'var(--cyan)'], build: ['Build day', 'var(--yellow)'], burn: ['The burn', 'var(--wax)'] };
+  var GROUP = { person: ['gathering', 'burn'], online: ['talk'], build: ['build'] };
+  var upcoming = all.filter(function (e) { return (e.end || e.date) >= today; });
+  if (!$('evlist')) return;
+
+  // a talk at 19:00 in Cape Town (UTC+2 all year) as a moment, and in the visitor's own clock
+  var utcOf = function (e) { var p = e.date.split('-'), t = (e.time || '').split(':'); return Date.UTC(+p[0], +p[1] - 1, +p[2], +t[0] - 2, +t[1] || 0); };
+  var localNote = function (e) {
+    if (!/^\d\d:\d\d$/.test(e.time || '')) return '';
+    var u = new Date(utcOf(e)); if (u.getTimezoneOffset() === -120) return '';
+    var t = u.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    var sameDay = ymd(u) === e.date ? '' : ' ' + u.toLocaleDateString('en-GB', { weekday: 'short' });
+    return '<span class="sep">·</span>' + esc(t + sameDay) + ' your time';
+  };
+  var timeText = function (e) { return e.time === 'morning' ? 'Morning' : e.time ? e.time + ' Cape Town' : ''; };
+  var dateBlock = function (e) {
+    var a = at(e.date), b = e.end ? at(e.end) : null;
+    var d = b ? a.getDate() + '<small>to</small>' + b.getDate() : String(a.getDate());
+    var wd = !b ? WD[a.getDay()] + ' ' + MO[a.getMonth()] : a.getMonth() === b.getMonth() ? WD[a.getDay()] + ' to ' + WD[b.getDay()] + ' ' + MO[a.getMonth()] : MO[a.getMonth()] + ' to ' + MO[b.getMonth()];
+    return '<div class="when"><span class="d">' + d + '</span><span class="wd">' + wd + '</span></div>';
+  };
+  var row = function (e) {
+    var k = KIND[e.kind] || ['Gathering', 'var(--pine)'];
+    var meta = [e.where ? esc(e.where) : '', esc(timeText(e))].filter(Boolean).join('<span class="sep">·</span>') + localNote(e);
+    var acts = (e.tickets ? '<a class="act solid" href="' + esc(e.tickets) + '" target="_blank" rel="noopener" data-count="Tickets" data-count-where="' + esc(e.id) + '">' + (e.kind === 'talk' ? 'Save a seat' : 'Tickets') + '</a>'
+      : (e.kind === 'burn' ? '' : '<button class="act" type="button" data-ev-join>' + (e.set ? 'Hear when tickets open' : 'Hear when it is set') + '</button>')) +
+      '<button class="act quiet" type="button" data-ics="' + esc(e.id) + '">Add to calendar</button>';
+    return '<li class="ev ' + esc(e.kind) + '">' + dateBlock(e) + '<div><span class="kind"><i style="background:' + k[1] + '"></i>' + k[0] + '</span>' +
+      '<h3>' + esc(e.title) + '<span class="state ' + (e.set ? 'set' : 'pen') + '">' + (e.set ? 'Date set' : 'Pencilled in') + '</span></h3>' +
+      (meta ? '<p class="meta">' + meta + '</p>' : '') + (e.blurb ? '<p class="blurb">' + esc(e.blurb) + '</p>' : '') +
+      (e.question ? '<p class="q">' + esc(e.question) + '</p>' : '') + '<div class="ev-acts">' + acts + '</div></div></li>';
+  };
+  var filter = 'all';
+  var draw = function () {
+    var list = upcoming.filter(function (e) { return filter === 'all' || GROUP[filter].indexOf(e.kind) >= 0; });
+    if (!list.length) { $('evlist').innerHTML = '<p class="ev-empty">Nothing of this kind is on the calendar yet. Join the tribe and we will tell you when it is.</p>'; return; }
+    var h = '', month = '';
+    list.forEach(function (e) {
+      var m = e.date.slice(0, 7);
+      if (m !== month) { if (month) h += '</ul>'; month = m; h += '<h3 class="ev-month">' + MONTH[+m.slice(5) - 1] + ' ' + m.slice(0, 4) + '</h3><ul class="evlist">'; }
+      h += row(e);
+    });
+    $('evlist').innerHTML = h + '</ul>';
+  };
+  draw();
+  document.querySelectorAll('[data-evf]').forEach(function (b) { b.addEventListener('click', function () {
+    filter = b.dataset.evf; document.querySelectorAll('[data-evf]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); draw(); }); });
+
+  // the season at a glance: November to the burn, a dot for each event, a moon over the dune weekends
+  (function () {
+    if (!all.length) return;
+    var s = at(all[0].date); s = new Date(s.getFullYear(), s.getMonth(), 1);
+    var last = at(all[all.length - 1].end || all[all.length - 1].date), f = new Date(last.getFullYear(), last.getMonth() + 1, 1);
+    var W = 960, L = 8, R = 952, span = f - s, x = function (d) { return L + (R - L) * (d - s) / span; };
+    var g = '<svg viewBox="0 0 960 64" role="presentation"><defs><linearGradient id="seasonPrism" x1="0" x2="1"><stop offset="0" stop-color="#FFD81F"/><stop offset=".52" stop-color="#D8197F"/><stop offset="1" stop-color="#14A8E0"/></linearGradient></defs>';
+    g += '<line class="axis" x1="' + L + '" x2="' + R + '" y1="34" y2="34"/>';
+    for (var m = new Date(s); m < f; m = new Date(m.getFullYear(), m.getMonth() + 1, 1)) {
+      var mx = x(m); g += '<line class="tick" x1="' + mx + '" x2="' + mx + '" y1="28" y2="40"/><text class="mon" x="' + (mx + 6) + '" y="58">' + MO[m.getMonth()] + '</text>';
+    }
+    all.forEach(function (e) {
+      var a = x(at(e.date)), b = e.end ? x(new Date(at(e.end).getTime() + 864e5)) : a, c = (KIND[e.kind] || KIND.gathering)[1].replace(/var\(--(\w+)\)/, function (_, v) { return getComputedStyle(document.documentElement).getPropertyValue('--' + v).trim(); });
+      if (b - a > 6) g += '<line x1="' + a + '" x2="' + b + '" y1="34" y2="34" stroke="' + c + '" stroke-width="6" stroke-linecap="round"><title>' + esc(e.title) + '</title></line>';
+      else g += '<circle cx="' + a + '" cy="34" r="5" fill="' + c + '" stroke="#F7F2EA" stroke-width="1.5"><title>' + esc(e.title) + '</title></circle>';
+      if (/Dunes/.test(e.title)) g += '<circle class="moon" cx="' + ((a + b) / 2) + '" cy="14" r="6"><title>Full moon weekend</title></circle>';
+    });
+    var now = new Date(); if (now > s && now < f) { var nx = x(now); g += '<line class="now" x1="' + nx + '" x2="' + nx + '" y1="6" y2="44"/><text class="nowt" x="' + (nx + 5) + '" y="12">Now</text>'; }
+    $('season').innerHTML = g + '</svg>';
+  })();
+
+  // the next gathering, under the first Join button
+  var next = upcoming.filter(function (e) { return e.kind !== 'burn'; })[0];
+  if (next && $('nextUp')) { var a = at(next.date);
+    $('nextUp').innerHTML = 'Next: <a href="#events" data-ev-next><b>' + esc(next.title) + '</b>, ' + WD[a.getDay()] + ' ' + a.getDate() + ' ' + MO[a.getMonth()] + '</a>. <a href="#events" data-ev-next>The whole season</a>'; $('nextUp').hidden = false; }
+
+  // open the section when someone arrives for it (wearemahala.com/#events, a poster's QR code, the line above)
+  var openEvents = function (scroll) {
+    var b = document.querySelector('[aria-controls="bEvents"]');
+    if (b && b.getAttribute('aria-expanded') !== 'true') b.click();
+    if (scroll) $('events').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+  if (/^#events$/i.test(location.hash)) { openEvents(false); setTimeout(function () { $('events').scrollIntoView({ block: 'start' }); }, 60); }
+  document.addEventListener('click', function (ev) {
+    var t = ev.target;
+    if (t.closest('[data-ev-next]')) { ev.preventDefault(); openEvents(true); return; }
+    if (t.closest('[data-ev-join]')) { ev.preventDefault(); var j = document.querySelector('.top-acts [data-tribe-join]'); if (j) j.click(); return; }
+    var ic = t.closest('[data-ics]'); if (!ic) return;
+    var e = all.filter(function (x) { return x.id === ic.dataset.ics; })[0]; if (!e) return;
+    var z = function (ms) { return new Date(ms).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, ''); };
+    var dd = function (s, plus) { var d = at(s); d.setDate(d.getDate() + (plus || 0)); return ymd(d).replace(/-/g, ''); };
+    var when;
+    if (/^\d\d:\d\d$/.test(e.time || '')) when = ['DTSTART:' + z(utcOf(e)), 'DTEND:' + z(utcOf(e) + 75 * 6e4)];
+    else if (e.time === 'morning') { var m0 = utcOf({ date: e.date, time: '08:30' }); when = ['DTSTART:' + z(m0), 'DTEND:' + z(m0 + 270 * 6e4)]; }
+    else when = ['DTSTART;VALUE=DATE:' + dd(e.date), 'DTEND;VALUE=DATE:' + dd(e.end || e.date, 1)];
+    var txt = function (s) { return String(s || '').replace(/[\;,]/g, function (c) { return '\\' + c; }); };
+    var ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Mahala//Gather with us//EN', 'BEGIN:VEVENT', 'UID:' + e.id + '@wearemahala.com', 'DTSTAMP:' + z(Date.now())]
+      .concat(when, ['SUMMARY:' + txt('Mahala: ' + e.title + (e.set ? '' : ' (pencilled in)')), 'LOCATION:' + txt(e.where),
+        'DESCRIPTION:' + txt((e.blurb || '') + (e.set ? '' : ' The date is pencilled in; we will confirm it.') + ' https://wearemahala.com/#events'), 'END:VEVENT', 'END:VCALENDAR']).join('\r\n');
+    var url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' })), a = document.createElement('a');
+    a.href = url; a.download = 'mahala-' + e.id.replace(/^ev-/, '') + '.ics'; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+  });
 })();
 </script>
 <script src="site.js?v=7"></script>

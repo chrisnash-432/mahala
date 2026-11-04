@@ -2831,7 +2831,7 @@ function hidePane() {
   document.documentElement.style.overflow = '';
   scrollTo({ top: paneY, behavior: 'instant' }); readScroll();
   music.duck(false);
-  if (!panePushed && /^#(camp|seed|give|tribe|join)$/i.test(location.hash)) history.replaceState(null, '', location.pathname + location.search);
+  if (!panePushed && /^#(camp|seed|give|tribe|join|events)$/i.test(location.hash)) history.replaceState(null, '', location.pathname + location.search);
   panePushed = false;
   setTimeout(() => { if (!paneName) { pane.hidden = true; pane.textContent = ''; } }, 380);
   if (paneFrom && paneFrom.focus) paneFrom.focus({ preventScroll: true });
@@ -2842,8 +2842,8 @@ addEventListener('popstate', (e) => {
   else if (!paneName && e.state && e.state.pane && !S.gone) { openPane(e.state.pane, '', null, true); panePushed = true; }      // forward again
 });
 addEventListener('hashchange', () => {      // a #camp, #seed or #give typed or followed while on the page
-  const pl = /^#(camp|seed|give|tribe|join)$/i.exec(location.hash);
-  if (pl && !paneName && !S.gone && !(history.state && history.state.pane)) { const k = pl[1].toLowerCase(); openPane(k === 'give' ? 'seed' : k === 'join' ? 'tribe' : k, k === 'give' ? 'give' : k === 'join' ? 'join' : '', null, true); }
+  const pl = /^#(camp|seed|give|tribe|join|events)$/i.exec(location.hash);
+  if (pl && !paneName && !S.gone && !(history.state && history.state.pane)) { const k = pl[1].toLowerCase(); openPane(k === 'give' ? 'seed' : k === 'join' || k === 'events' ? 'tribe' : k, k === 'give' ? 'give' : k === 'join' || k === 'events' ? k : '', null, true); }
 });
 addEventListener('message', (e) => {
   if (e.origin !== location.origin || !e.data) return;
@@ -3015,7 +3015,7 @@ function hhmm(m) { m = Math.round(m); return `${String(Math.floor(m / 60)).padSt
 function clockText(m, el) { const e = Math.round(el); return e >= 0 ? `${hhmm(m)}, sun ${e}° up` : `${hhmm(m)}, sun ${-e}° down`; }
 
 let THREE = null;
-if (!MV_LINK) { const pl = /^#(camp|seed|give|tribe|join)$/i.exec(location.hash); if (pl) { const k = pl[1].toLowerCase(); openPane(k === 'give' ? 'seed' : k === 'join' ? 'tribe' : k, k === 'give' ? 'give' : k === 'join' ? 'join' : '', null, true); } }
+if (!MV_LINK) { const pl = /^#(camp|seed|give|tribe|join|events)$/i.exec(location.hash); if (pl) { const k = pl[1].toLowerCase(); openPane(k === 'give' ? 'seed' : k === 'join' || k === 'events' ? 'tribe' : k, k === 'give' ? 'give' : k === 'join' || k === 'events' ? k : '', null, true); } }
 if (MV_LINK) stepIn({ quick: true, now: true });           // a link straight into the Mahalaverse: The Seed stays out of the way
 else { try { THREE = await import('three'); } catch (e) { S.errors.push('three: ' + e.message); } }
 const canGL = (() => { try { return !!document.createElement('canvas').getContext('webgl2'); } catch (e) { return false; } })();
