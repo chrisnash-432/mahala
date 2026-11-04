@@ -682,6 +682,7 @@ html.join-open, html.join-open body { overflow: hidden; }
     <div class="page-acts">
       <button class="primary" type="button" data-join hidden>Accept your invitation</button>
       <a class="primary" href="tribe.html#join" data-open-tribe>Join the tribe</a>
+      <a class="secondary" href="./#mahalaverse" data-go-verse data-count="Mahalaverse" data-count-where="The camp page">Step into the Mahalaverse</a>
       <button class="secondary" type="button" data-page-close>Close</button>
     </div>
   </div>
@@ -709,6 +710,11 @@ html.join-open, html.join-open body { overflow: hidden; }
   }
   document.querySelectorAll('[data-page-close]').forEach(function (b) { b.addEventListener('click', closePage); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && EMBED) closePage(); });
+  // a door into the Mahalaverse: over the front page it asks the front page to open it; on its own it goes there
+  document.querySelectorAll('[data-go-verse]').forEach(function (a) { a.addEventListener('click', function (e) {
+    var embed = false; try { embed = window.parent !== window && window.parent.location.origin === location.origin; } catch (x) { }
+    if (embed) { e.preventDefault(); parent.postMessage({ mahala: 'go', hash: 'mahalaverse' }, location.origin); }
+  }); });
   if (EMBED) setTimeout(function () { var c = document.querySelector('.bar [data-page-close]'); if (c) c.focus({ preventScroll: true }); }, 80);
   if (EMBED) document.querySelectorAll('[data-open-tribe]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); parent.postMessage({ mahala: 'open', pane: 'tribe', hash: 'join' }, location.origin); }); });
   document.querySelectorAll('[data-fill="target"]').forEach(function (el) { if (SITE.money) el.textContent = SITE.money(SITE.target); });

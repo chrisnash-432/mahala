@@ -264,7 +264,7 @@ html.join-open, html.join-open body { overflow: hidden; }
       <div class="body" id="bNeed">
         <ul class="needs" id="needs"></ul>
         <p class="strong" id="strong"></p>
-        <div class="acts"><button class="act solid" type="button" data-tribe-join>Join the tribe</button><a class="act" href="seed.html" data-open="seed">About The Seed</a></div>
+        <div class="acts"><button class="act solid" type="button" data-tribe-join>Join the tribe</button><a class="act" href="seed.html" data-open="seed">About The Seed</a><a class="act" href="./#mahalaverse" data-go-verse data-count="Mahalaverse" data-count-where="The tribe page">Step into the Mahalaverse</a></div>
         <p class="door-note">Anyone can join the tribe. The camp at AfrikaBurn is by invitation: join, tell us you would love to come, and the camp leads read every introduction.</p>
       </div>
     </section>
@@ -293,6 +293,11 @@ html.join-open, html.join-open body { overflow: hidden; }
   document.querySelectorAll('[data-page-close]').forEach(function (b) { b.addEventListener('click', closePage); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && EMBED) closePage(); });
   // links to the camp and The Seed open in the same frame; on the front page they replace this pane
+  // a door into the Mahalaverse: over the front page it asks the front page to open it; on its own it goes there
+  document.querySelectorAll('[data-go-verse]').forEach(function (a) { a.addEventListener('click', function (e) {
+    var embed = false; try { embed = window.parent !== window && window.parent.location.origin === location.origin; } catch (x) { }
+    if (embed) { e.preventDefault(); parent.postMessage({ mahala: 'go', hash: 'mahalaverse' }, location.origin); }
+  }); });
   // over the front page, a link to another page asks the front page to open it there
   if (EMBED) document.querySelectorAll('[data-open]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); parent.postMessage({ mahala: 'open', pane: a.dataset.open }, location.origin); }); });
 
