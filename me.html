@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Your Mahala</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Jost:wght@300;400;500&family=Marcellus&display=swap">
+<style>
+/* Your Mahala: one page about you, the same on the site and in the Mahalaverse.
+   PROTOTYPE. The people on this page are made up, so the page can be tried before anything is built.
+   Nothing is read from or saved to the member database. Mahala OS: strategy/your-mahala-accounts-plan-2026-11-04.md */
+:root {
+  color-scheme: light;
+  --ink: #2A221C; --ink-2: #5B5047; --ink-3: #7A6D60;
+  --warm: #F4EFE6; --paper: #F7F2EA; --paper-2: #EFE7DA; --sheet: #FBF8F3; --rule: #DCD2C3;
+  --yellow: #FFD81F; --cyan: #14A8E0; --magenta: #D8197F; --ok: #2E6B4F; --wax: #8E1B45;
+  --yellow-ink: #7A5F00; --cyan-ink: #0B6E95; --magenta-ink: #A3105E;
+  --name: "Marcellus", "Cormorant Garamond", Georgia, serif;
+  --text: "Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --verse: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --ease: cubic-bezier(.2, .7, .1, 1);
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--warm); color: var(--ink); font: 400 16px/1.55 var(--text); -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--warm); }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+section, .panel { scroll-margin-top: 84px; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; border-radius: 6px; }
+.dots { display: inline-flex; gap: 4px; vertical-align: middle; }
+.dots i { width: 7px; height: 7px; border-radius: 50%; display: block; }
+
+/* the top bar, as on the rest of the site */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: color-mix(in srgb, var(--warm) 92%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--rule);
+  padding-block: 10px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.top-in { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.mark { font: 400 19px/1 var(--name); letter-spacing: .18em; text-decoration: none; }
+.top .where { color: var(--ink-3); font-size: 13px; letter-spacing: .04em; }
+.top .sp { flex: 1; }
+.chipname { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--rule); background: var(--sheet); border-radius: 999px; padding: 4px 12px 4px 4px; font-size: 14px; }
+.chipname svg { width: 26px; height: 26px; border-radius: 50%; display: block; }
+
+/* the prototype strip: who you are viewing as */
+.proto { background: var(--ink); color: var(--warm); padding-block: 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.proto-in { max-width: 1080px; margin: 0 auto; display: flex; gap: 10px 18px; align-items: center; flex-wrap: wrap; font-size: 14px; }
+.proto b { font-weight: 500; letter-spacing: .06em; text-transform: uppercase; font-size: 12px; color: var(--yellow); }
+.seg { display: inline-flex; border: 1px solid rgba(244, 239, 230, .35); border-radius: 999px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+.seg a { text-decoration: none; padding: 5px 12px; border-radius: 999px; font-size: 14px; color: rgba(244, 239, 230, .8); }
+.seg a[aria-current="page"] { background: var(--warm); color: var(--ink); }
+.proto small { color: rgba(244, 239, 230, .7); font-size: 13px; }
+
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 28px 120px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+/* 1. You */
+.you { display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 28px 40px; align-items: start; padding-bottom: 32px; border-bottom: 1px solid var(--rule); }
+.you-id { display: flex; gap: 20px; align-items: center; min-width: 0; }
+.sigil { width: 96px; height: 96px; flex: none; border-radius: 50%; display: block; box-shadow: 0 0 0 1px var(--rule), 0 10px 30px -18px rgba(42, 34, 28, .6); }
+.hello { font: italic 400 19px/1.2 var(--verse); color: var(--ink-2); margin: 0 0 2px; }
+h1 { font: 400 clamp(32px, 6vw, 48px)/1.05 var(--name); letter-spacing: .04em; margin: 0; text-wrap: balance; }
+.playa { margin: 6px 0 0; color: var(--ink-2); font-size: 15px; }
+.playa i { font-family: var(--verse); font-size: 18px; color: var(--ink); }
+.years { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.yr { font-size: 12.5px; letter-spacing: .03em; border: 1px solid var(--rule); border-radius: 999px; padding: 3px 10px; background: var(--sheet); color: var(--ink-2); }
+.yr.role { border-color: transparent; background: var(--ink); color: var(--warm); }
+.card { margin: 0; justify-self: end; width: 210px; }
+.card img { width: 100%; height: auto; display: block; border-radius: 12px; box-shadow: 0 18px 40px -22px rgba(42, 34, 28, .7); aspect-ratio: 5 / 8; object-fit: cover; background: var(--paper-2); }
+.card figcaption { font-size: 13px; color: var(--ink-3); margin-top: 8px; text-align: center; }
+
+/* where you stand: the one ladder */
+.stand { grid-column: 1 / -1; }
+.label { font: 500 11.5px/1.2 var(--text); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
+.ladder { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); position: relative; }
+.ladder::before { content: ""; position: absolute; left: 8%; right: 8%; top: 13px; height: 2px; background: linear-gradient(90deg, var(--yellow), var(--cyan), var(--magenta)); opacity: .35; }
+.ladder li { text-align: center; position: relative; font-size: 13px; color: var(--ink-3); padding: 0 2px; }
+.ladder .node { width: 28px; height: 28px; margin: 0 auto 8px; border-radius: 50%; background: var(--warm); border: 2px solid var(--rule); position: relative; display: grid; place-items: center; }
+.ladder li.done .node { border-color: var(--ink-2); background: var(--ink-2); }
+.ladder li.done .node::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--warm); }
+.ladder li.here { color: var(--ink); font-weight: 500; }
+.ladder li.here .node { border: 0; background: conic-gradient(var(--yellow), var(--cyan), var(--magenta), var(--yellow)); box-shadow: 0 0 0 5px color-mix(in srgb, var(--cyan) 18%, transparent); }
+.ladder li.here .node::after { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--warm); }
+.ladder small { display: block; font-weight: 400; color: var(--ink-3); font-size: 12px; margin-top: 2px; }
+.next { margin-top: 22px; display: flex; gap: 14px 18px; align-items: center; flex-wrap: wrap; background: var(--sheet); border: 1px solid var(--rule); border-radius: 16px; padding: 14px 16px 14px 20px; }
+.next p { margin: 0; flex: 1 1 260px; min-width: 0; }
+.next p span { display: block; font-size: 13px; color: var(--ink-3); }
+.btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 10px 18px; border: 1px solid var(--ink); background: var(--ink); color: var(--warm); text-decoration: none; cursor: pointer; font-size: 15px; }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--rule); }
+.btn[aria-pressed="true"] { background: var(--ok); border-color: var(--ok); color: #fff; }
+.btn.small { padding: 6px 14px; font-size: 14px; }
+
+/* the sections */
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 48px; }
+section.s { padding-block: 30px 6px; border-bottom: 1px solid var(--rule); min-width: 0; }
+.grid section.s:nth-last-child(-n+2) { border-bottom: 0; }
+section.s.wide { grid-column: 1 / -1; }
+.s h2 { font: 400 23px/1.15 var(--name); letter-spacing: .05em; margin: 0 0 4px; display: flex; align-items: baseline; gap: 12px; }
+.s h2 .n { font: 500 12px/1 var(--text); color: var(--ink-3); letter-spacing: .1em; }
+.s .lede { margin: 0 0 16px; color: var(--ink-2); font-size: 15px; max-width: 60ch; }
+.list { list-style: none; margin: 0 0 24px; padding: 0; }
+.list > li { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 4px 12px; align-items: start; padding: 11px 0; border-top: 1px solid color-mix(in srgb, var(--rule) 70%, transparent); }
+.list > li:first-child { border-top: 0; }
+.list .dot { width: 9px; height: 9px; border-radius: 50%; margin-top: 8px; background: var(--rule); }
+.list b { font-weight: 500; }
+.list .sub { display: block; font-size: 13.5px; color: var(--ink-3); }
+.tag { font-size: 12px; letter-spacing: .03em; border-radius: 999px; padding: 3px 10px; white-space: nowrap; border: 1px solid var(--rule); color: var(--ink-2); background: var(--sheet); align-self: center; }
+.tag.y { background: color-mix(in srgb, var(--yellow) 22%, var(--sheet)); border-color: transparent; color: var(--yellow-ink); }
+.tag.c { background: color-mix(in srgb, var(--cyan) 14%, var(--sheet)); border-color: transparent; color: var(--cyan-ink); }
+.tag.m { background: color-mix(in srgb, var(--magenta) 12%, var(--sheet)); border-color: transparent; color: var(--magenta-ink); }
+.tag.ok { background: color-mix(in srgb, var(--ok) 13%, var(--sheet)); border-color: transparent; color: var(--ok); }
+.empty { color: var(--ink-3); font-style: italic; font-family: var(--verse); font-size: 18px; margin: 0 0 24px; }
+
+/* quest */
+.quest { background: var(--sheet); border: 1px solid var(--rule); border-radius: 16px; padding: 16px 18px; margin-bottom: 24px; }
+.quest h3 { margin: 0; font: 500 17px/1.3 var(--text); }
+.quest .crew { font-size: 13px; color: var(--ink-3); }
+.steps { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 8px; }
+.steps li { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; }
+.steps button { flex: none; width: 22px; height: 22px; border-radius: 6px; border: 1.5px solid var(--ink-3); background: transparent; cursor: pointer; padding: 0; display: grid; place-items: center; }
+.steps button[data-s="mine"] { background: var(--cyan); border-color: var(--cyan); }
+.steps button[data-s="ok"] { background: var(--ok); border-color: var(--ok); cursor: default; }
+.steps button svg { width: 14px; height: 14px; stroke: #fff; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.steps small { display: block; font-size: 12.5px; color: var(--ink-3); }
+
+/* what you bring */
+.bring { display: grid; gap: 14px; margin-bottom: 24px; }
+.bring dt { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+.bring dd { margin: 2px 0 0; }
+.from { font-size: 13px; color: var(--ink-3); }
+.edit { font-size: 13px; color: var(--cyan-ink); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+
+/* your seed */
+.seed { margin-bottom: 24px; }
+.bar { height: 10px; border-radius: 999px; background: var(--paper-2); overflow: hidden; margin: 10px 0 8px; position: relative; }
+.bar i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, var(--yellow), var(--cyan), var(--magenta)); border-radius: inherit; }
+.bar b { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); }
+.seedrow { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; color: var(--ink-2); flex-wrap: wrap; }
+.mine { margin-top: 14px; font-size: 14.5px; padding: 12px 14px; border-radius: 12px; border: 1px dashed var(--rule); }
+.mine span { display: block; font-size: 12.5px; color: var(--ink-3); }
+
+/* thread */
+.thread { border-left: 2px solid var(--rule); margin: 0 0 18px 6px; padding: 0 0 0 18px; list-style: none; }
+.thread li { position: relative; padding: 0 0 16px; }
+.thread li::before { content: ""; position: absolute; left: -25px; top: 7px; width: 12px; height: 12px; border-radius: 50%; background: var(--warm); border: 2px solid var(--ink-3); }
+.thread b { font: 400 17px/1.3 var(--name); letter-spacing: .04em; font-weight: 400; }
+.thread span { display: block; font-size: 14px; color: var(--ink-2); }
+
+/* choices */
+.choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 48px; margin-bottom: 24px; }
+.field { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 0; border-top: 1px solid color-mix(in srgb, var(--rule) 70%, transparent); font-size: 15px; }
+.field small { display: block; color: var(--ink-3); font-size: 13px; }
+select { font: inherit; font-size: 14px; border: 1px solid var(--rule); border-radius: 999px; padding: 5px 10px; background: var(--sheet); color: var(--ink); }
+.sw { position: relative; width: 44px; height: 26px; flex: none; }
+.sw input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.sw span { position: absolute; inset: 0; border-radius: 999px; background: var(--rule); transition: background .2s; pointer-events: none; }
+.sw span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .2s var(--ease); box-shadow: 0 1px 3px rgba(0, 0, 0, .2); }
+.sw input:checked + span { background: var(--ok); }
+.sw input:checked + span::after { transform: translateX(18px); }
+.sw input:focus-visible + span { outline: 2px solid var(--cyan); outline-offset: 2px; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 6px 0 24px; }
+.said { font-size: 13.5px; color: var(--ok); min-height: 1.4em; margin: 0 0 18px; }
+
+/* role panels */
+.roles { margin-top: 34px; display: grid; gap: 22px; }
+.panel { border-radius: 20px; padding: 22px 22px 8px; background: var(--ink); color: var(--warm); position: relative; overflow: hidden; }
+.panel::after { content: ""; position: absolute; right: -60px; top: -60px; width: 200px; height: 200px; border-radius: 50%; background: conic-gradient(from 90deg, var(--yellow), var(--cyan), var(--magenta), var(--yellow)); opacity: .16; filter: blur(2px); pointer-events: none; }
+.panel h2 { font: 400 24px/1.15 var(--name); letter-spacing: .05em; margin: 0; }
+.panel .why { margin: 4px 0 16px; color: rgba(244, 239, 230, .75); font-size: 15px; max-width: 62ch; }
+.panel .list > li { border-top-color: rgba(244, 239, 230, .14); }
+.panel .list .sub { color: rgba(244, 239, 230, .62); }
+.panel .tag { background: rgba(244, 239, 230, .1); border-color: transparent; color: var(--warm); }
+.panel .tag.ok { background: color-mix(in srgb, #7FD3A8 25%, transparent); color: #CFF2DE; }
+.panel .tag.c { background: color-mix(in srgb, var(--cyan) 30%, transparent); color: #CDEFFC; }
+.panel .tag.y { background: color-mix(in srgb, var(--yellow) 26%, transparent); color: #FFF0A8; }
+.panel .btn { background: var(--warm); color: var(--ink); border-color: var(--warm); }
+.panel .btn.ghost { background: transparent; color: var(--warm); border-color: rgba(244, 239, 230, .35); }
+.panel .note { font-size: 13.5px; color: rgba(244, 239, 230, .7); margin: 0 0 16px; }
+.nums { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+.nums div { background: rgba(244, 239, 230, .07); border-radius: 12px; padding: 12px; }
+.nums b { display: block; font: 400 26px/1.1 var(--name); }
+.nums span { font-size: 12.5px; color: rgba(244, 239, 230, .7); }
+
+/* the Mahalaverse, and Tell us */
+.verse { margin-top: 34px; display: flex; gap: 16px 24px; align-items: center; flex-wrap: wrap; padding: 20px 22px; border-radius: 20px; border: 1px solid var(--rule); background:
+  radial-gradient(120% 140% at 100% 0%, color-mix(in srgb, var(--cyan) 12%, transparent), transparent 60%), var(--sheet); }
+.verse p { margin: 0; flex: 1 1 300px; min-width: 0; color: var(--ink-2); }
+.verse p b { display: block; color: var(--ink); font: 400 20px/1.2 var(--name); letter-spacing: .04em; font-weight: 400; margin-bottom: 2px; }
+.tell { position: fixed; z-index: 6; right: max(16px, calc(env(safe-area-inset-right, 0px) + 16px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); }
+.tell > button { border-radius: 999px; padding: 11px 18px; border: 0; background: var(--magenta); color: #fff; cursor: pointer; box-shadow: 0 10px 28px -12px rgba(216, 25, 127, .8); font-size: 15px; }
+.tellbox { position: fixed; z-index: 7; right: max(16px, calc(env(safe-area-inset-right, 0px) + 16px)); bottom: calc(env(safe-area-inset-bottom, 0px) + 70px); width: min(360px, calc(100vw - 32px)); background: var(--sheet); border: 1px solid var(--rule); border-radius: 18px; padding: 16px; box-shadow: 0 24px 60px -30px rgba(42, 34, 28, .7); }
+.tellbox h3 { margin: 0 0 2px; font: 400 19px/1.2 var(--name); letter-spacing: .04em; }
+.tellbox p { margin: 0 0 10px; font-size: 13.5px; color: var(--ink-3); }
+.tellbox label { font-size: 13px; color: var(--ink-2); display: block; margin: 8px 0 4px; }
+.tellbox select, .tellbox textarea { width: 100%; }
+.tellbox textarea { font: inherit; font-size: 15px; border: 1px solid var(--rule); border-radius: 12px; padding: 8px 10px; background: #fff; color: var(--ink); resize: vertical; }
+.tellbox .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px; }
+
+@media (max-width: 760px) {
+  .you { grid-template-columns: minmax(0, 1fr); }
+  .card { justify-self: start; width: 150px; display: flex; gap: 14px; align-items: end; width: auto; }
+  .card img { width: 84px; border-radius: 8px; }
+  .card figcaption { text-align: left; align-self: center; }
+  .grid, .choices { grid-template-columns: minmax(0, 1fr); }
+  .grid section.s:nth-last-child(-n+2) { border-bottom: 1px solid var(--rule); }
+  .grid section.s:last-child { border-bottom: 0; }
+  .nums { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .sigil { width: 72px; height: 72px; }
+  .ladder { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 14px; }
+  .ladder::before { display: none; }
+  .top .where { display: none; }
+  .tell > button { padding: 9px 15px; font-size: 14px; }
+  .you-id { align-items: flex-start; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="top"><div class="top-in">
+  <a class="mark" href="index.html">MAHALA</a><span class="where">Your Mahala</span><span class="sp"></span>
+  <span class="chipname" id="chip"></span>
+</div></header>
+
+<div class="proto" role="region" aria-label="About this prototype"><div class="proto-in">
+  <b>Prototype</b>
+  <span>View as</span>
+  <nav class="seg" id="people" aria-label="Sample person"></nav>
+  <small>Made-up people. Nothing here is saved.</small>
+</div></div>
+
+<main class="wrap" id="page"></main>
+
+<div class="tell"><button type="button" id="tellBtn" aria-expanded="false" aria-controls="tellBox">Tell us</button></div>
+<div class="tellbox" id="tellBox" hidden role="dialog" aria-labelledby="tellH">
+  <h3 id="tellH">Tell us</h3>
+  <p>Something unclear, missing or lovely? It goes to the stewards with the page and section filled in.</p>
+  <label for="tellWhere">Which part</label>
+  <select id="tellWhere"></select>
+  <label for="tellText">What you noticed</label>
+  <textarea id="tellText" rows="3"></textarea>
+  <div class="row"><button type="button" class="btn ghost small" id="tellCancel">Not now</button><button type="button" class="btn small" id="tellSend">Send</button></div>
+  <p class="said" id="tellSaid" aria-live="polite"></p>
+</div>
+
+<script>
+(function () {
+  // ------------------------------------------------------------------ the archetype cards (Mahala's own deck)
+  var CARD = { seeker: 'assets/deck/seeker.jpg', conductor: 'assets/deck/conductor.jpg', sage: 'assets/deck/sage.jpg' };
+
+  // ------------------------------------------------------------------ the public figures, as on The Seed page
+  var SEED = { raised: 70000, target: 718875, milestones: [['Frame', 293235], ['Shelter', 346913], ['Lantern', 497356], ['The full Seed', 581278], ['Copper and grid', 718875]] };
+
+  var LADDER = ['Visitor', 'Tribe member', 'Invited', 'Applicant', 'Camp member', 'Temple builder'];
+
+  // ------------------------------------------------------------------ three made-up people
+  var PEOPLE = {
+    newcomer: {
+      tab: 'Newcomer', hello: 'Welcome,', first: 'Naledi', playa: 'Dune Moth', hue: ['#FFD81F', '#14A8E0'], card: 'seeker', cardName: 'The Seeker',
+      stand: 1, years: [], roles: [],
+      next: { what: 'Come to the next build day', why: 'Your first step from the tribe towards the camp. No tools needed.', act: 'Yes, I’ll come', yes: true },
+      journey: [['Made your account', 'From the link in the community email', 'Today', 'ok'], ['Joined the tribe', 'Your answers are in What you bring', 'Today', 'ok']],
+      coming: [['Build day in Cape Town', 'Frame crew test-fits the crown timbers', 'Sat · date to set', false], ['Open circle call', 'Meet the camp, ask anything', 'Evening · date to set', false]],
+      quest: { name: 'Share the film', crew: 'Story crew', steps: [['Watch the film', 'mine'], ['Send it to three people who would love it', ''], ['Share it on Instagram or in a WhatsApp group', '']] },
+      bring: [['Where you are based', 'Cape Town', 'the tribe form'], ['Gifts and skills', 'Sewing, sound baths, making things from offcuts', 'the tribe form'], ['Crew that calls you', 'Petal crew', 'the Join the build door'], ['Tools', 'Some', 'the Join the build door'], ['Would love to learn', 'Using the CNC', 'the Join the build door']],
+      gave: null,
+      thread: [],
+      fields: { playa_name: 'members', about: 'me', gifts: 'members', offering: 'members', home_base: 'stewards', link: 'me' },
+      consent: { news: true, whatsapp: false, directory: false, photo: false, name: true },
+      panels: []
+    },
+    lead: {
+      tab: 'Camp lead', first: 'Tom', playa: 'Copper Owl', hue: ['#14A8E0', '#D8197F'], card: 'conductor', cardName: 'The Conductor',
+      stand: 4, years: ['Mahala 2025 · The Portal', 'Mahala 2026 · Through the Prism'], roles: ['Camp lead 2027', 'Frame crew'],
+      next: { what: 'Follow up three of your nominees', why: 'They have not opened their invitation yet. A personal message helps more than a reminder.', act: 'See your nominees', jump: 'panel-lead' },
+      journey: [['Camp place confirmed for 2027', 'Welcome back', '2 Nov', 'ok'], ['Camp fee paid', 'Thank you', '2 Nov', 'ok'], ['Camp application sent', 'Read by the stewards', '28 Oct', 'ok'], ['Nominated six people', 'Their invitations went out', '20 Oct', '']],
+      coming: [['Leads’ call', 'With the camp leads and the core team', 'Sun · date to set', true], ['Build day in Cape Town', 'Frame crew test-fits the crown timbers', 'Sat · date to set', true]],
+      quest: { name: 'Cut the crown star', crew: 'Frame crew', steps: [['Learn the cut list for the crown', 'ok'], ['Cut a test set on the CNC', 'mine'], ['Dry-fit one bay of the crown', '']] },
+      bring: [['Gifts and skills', 'Carpentry, logistics, a calm voice at 3am', 'your profile'], ['Crew that calls you', 'Frame crew', 'the Join the build door'], ['Tools', 'A lot', 'the Join the build door'], ['At camp you would offer', 'A sunrise breathwork session', 'the Come to camp door']],
+      gave: { when: 'October', towards: 'Frame' },
+      thread: [['2026', 'Through the Prism', 'Kitchen crew, two dawn shifts'], ['2025', 'The Portal', 'First year with Mahala; helped raise the shade']],
+      fields: { playa_name: 'members', about: 'members', gifts: 'members', offering: 'members', home_base: 'stewards', link: 'members' },
+      consent: { news: true, whatsapp: true, directory: true, photo: true, name: true },
+      panels: ['lead']
+    },
+    core: {
+      tab: 'Core team', first: 'Ama', playa: 'Saltlight', hue: ['#D8197F', '#FFD81F'], card: 'sage', cardName: 'The Sage',
+      stand: 5, depth: 'Contributor', years: ['Mahala 2025 · The Portal', 'Mahala 2026 · Through the Prism'], roles: ['Core team 2027'],
+      next: { what: 'Five decisions are due on 14 Nov', why: 'The stewards’ answers unlock the first build of this page.', act: 'Open the decisions', jump: 'panel-core' },
+      journey: [['Camp place confirmed for 2027', 'Core team', '1 Nov', 'ok'], ['Quest step confirmed', 'Cut the crown star: learn the cut list', '30 Oct', 'ok']],
+      coming: [['Decisions day', 'The five Your Mahala decisions, and the target', '14 Nov', true], ['Community email', 'Everyone finds their page', '14 Dec', false]],
+      quest: { name: 'Fund a ring of glass', crew: 'Glass crew', steps: [['Choose a gate that suits you', 'ok'], ['Share the film with three people', 'ok'], ['See your ring glow on the night', '']] },
+      bring: [['Gifts and skills', 'Facilitation, budgets, holding the circle', 'your profile'], ['How you would like to help', 'Time and skills', 'the Support the temple door']],
+      gave: { when: 'September', towards: 'Frame' },
+      thread: [['2026', 'Through the Prism', 'Core team; opened the closing ritual'], ['2025', 'The Portal', 'Core team'], ['Earlier', 'The camps before Mahala', 'Add the years you were there']],
+      fields: { playa_name: 'members', about: 'members', gifts: 'members', offering: 'members', home_base: 'me', link: 'members' },
+      consent: { news: true, whatsapp: true, directory: true, photo: false, name: true },
+      panels: ['core']
+    }
+  };
+
+  var FIELD_NAMES = { playa_name: ['Playa name', ''], about: ['About you', 'A line or two'], gifts: ['Gifts and skills', ''], offering: ['What you would offer', ''], home_base: ['Where you are based', ''], link: ['A link', 'Instagram, a website'] };
+  var SEE = [['me', 'Only me'], ['stewards', 'The stewards'], ['members', 'Members'], ['public', 'Anyone']];
+  var CONSENT = [['news', 'Mahala news by email', 'Now and then, never more than you want'], ['whatsapp', 'The camp WhatsApp group', 'Once you are a camp member'], ['directory', 'Appear in the members’ directory', 'So other members can find you'], ['photo', 'Show my picture', 'On your page and in the game'], ['name', 'Show my name to other members', 'Otherwise only your playa name']];
+
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function rand(n) { return 'R ' + n.toLocaleString('en-ZA').replace(/,/g, ' '); }
+  var TICK = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5"/></svg>';
+
+  // a sigil drawn from two colours: an original geometric mark, standing in for a picture until one is added
+  function sigil(p, size) {
+    var a = p.hue[0], b = p.hue[1], id = 'g' + p.first;
+    var petals = '';
+    for (var i = 0; i < 6; i++) petals += '<ellipse cx="50" cy="30" rx="9" ry="20" transform="rotate(' + (i * 60) + ' 50 50)" fill="none" stroke="#F7F2EA" stroke-width="1.6" opacity=".9"/>';
+    return '<svg class="' + (size || 'sigil') + '" viewBox="0 0 100 100" role="img" aria-label="' + esc(p.first) + '’s sign"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + a + '"/><stop offset="1" stop-color="' + b + '"/></linearGradient></defs>'
+      + '<rect width="100" height="100" fill="url(#' + id + ')"/>' + petals + '<circle cx="50" cy="50" r="7" fill="#2A221C"/><circle cx="50" cy="50" r="40" fill="none" stroke="#2A221C" stroke-opacity=".25"/></svg>';
+  }
+
+  var who = null, P = null, yes = {}, steps = {};
+
+  function render() {
+    var key = (location.hash || '').slice(1); if (!PEOPLE[key]) key = 'newcomer';
+    who = key; P = PEOPLE[key];
+    yes = {}; P.coming.forEach(function (c, i) { yes[i] = c[3]; });
+    steps = P.quest.steps.map(function (s) { return s[1]; });
+    $('people').innerHTML = Object.keys(PEOPLE).map(function (k) { return '<a href="#' + k + '"' + (k === key ? ' aria-current="page"' : '') + '>' + esc(PEOPLE[k].tab) + '</a>'; }).join('');
+    $('chip').innerHTML = sigil(P, 'mini') + '<span>' + esc(P.first) + '</span>';
+    var h = '';
+
+    // 1. You
+    h += '<section class="you" aria-labelledby="youH"><div class="you-id">' + sigil(P) + '<div><p class="hello">' + (P.hello || 'Welcome back,') + '</p><h1 id="youH">' + esc(P.first) + '</h1>'
+      + '<p class="playa">On the playa: <i>' + esc(P.playa) + '</i></p><div class="years">'
+      + P.roles.map(function (r) { return '<span class="yr role">' + esc(r) + '</span>'; }).join('')
+      + (P.years.length ? P.years.map(function (y) { return '<span class="yr">' + esc(y) + '</span>'; }).join('') : '<span class="yr">New to Mahala</span>')
+      + '</div></div></div>'
+      + '<figure class="card"><img src="' + CARD[P.card] + '" alt="' + esc(P.cardName) + ', from the Mahala Archetype Deck" loading="lazy"><figcaption>Your card: ' + esc(P.cardName) + '</figcaption></figure>'
+      + '<div class="stand"><p class="label"><span class="dots" aria-hidden="true"><i style="background:var(--yellow)"></i><i style="background:var(--cyan)"></i><i style="background:var(--magenta)"></i></span>Where you stand</p><ol class="ladder">'
+      + LADDER.map(function (l, i) { var c = i < P.stand ? 'done' : i === P.stand ? 'here' : ''; return '<li class="' + c + '"' + (i === P.stand ? ' aria-current="step"' : '') + '><span class="node" aria-hidden="true"></span>' + esc(l) + (i === P.stand && P.depth ? '<small>' + esc(P.depth) + '</small>' : '') + (i === P.stand ? '<small>You are here</small>' : '') + '</li>'; }).join('')
+      + '</ol><div class="next"><p><b>' + esc(P.next.what) + '</b><span>' + esc(P.next.why) + '</span></p>'
+      + (P.next.yes ? '<button type="button" class="btn" id="nextBtn" aria-pressed="false">' + esc(P.next.act) + '</button>' : '<a class="btn" href="#' + who + '" data-jump="' + P.next.jump + '">' + esc(P.next.act) + '</a>')
+      + '</div></div></section>';
+
+    h += '<div class="grid">';
+    // 2. Your journey
+    h += sec(2, 'journey', 'Your journey', 'Each door you have come through, and where it is. Newest first.',
+      '<ul class="list">' + P.journey.map(function (j) { return '<li><span class="dot" style="background:' + (j[3] === 'ok' ? 'var(--ok)' : 'var(--cyan)') + '"></span><span><b>' + esc(j[0]) + '</b><span class="sub">' + esc(j[1]) + '</span></span><span class="tag">' + esc(j[2]) + '</span></li>'; }).join('') + '</ul>');
+    // 3. Coming up
+    h += sec(3, 'coming', 'Coming up', 'Gatherings, calls and build days. Say yes and they show here, and in the Mahalaverse.',
+      '<ul class="list" id="comingList">' + P.coming.map(function (c, i) { return '<li><span class="dot" style="background:var(--yellow)"></span><span><b>' + esc(c[0]) + '</b><span class="sub">' + esc(c[1]) + ' · ' + esc(c[2]) + '</span></span><button type="button" class="btn small ghost" data-yes="' + i + '" aria-pressed="' + c[3] + '">' + (c[3] ? 'Going' : 'Yes') + '</button></li>'; }).join('') + '</ul>');
+    // 4. Quests and crew
+    h += sec(4, 'quests', 'Your quests and crew', 'Tick a step when you have done it. A steward confirms it, and it counts towards where you stand.',
+      '<div class="quest"><h3>' + esc(P.quest.name) + '</h3><span class="crew">' + esc(P.quest.crew) + '</span><ul class="steps" id="steps">' + stepsHtml() + '</ul></div>');
+    // 5. What you bring
+    h += sec(5, 'bring', 'What you bring', 'What you told us once, kept here so no door asks again.',
+      '<dl class="bring">' + P.bring.map(function (b) { return '<div><dt>' + esc(b[0]) + '</dt><dd>' + esc(b[1]) + ' <span class="from">· from ' + esc(b[2]) + '</span></dd></div>'; }).join('') + '</dl><p><button type="button" class="edit" data-jump="choices">Edit, or choose who sees each one</button></p>');
+    // 6. Your Seed
+    var next = SEED.milestones.filter(function (m) { return m[1] > SEED.raised; })[0];
+    h += sec(6, 'seed', 'Your Seed', 'Where The Seed has got to, and your part in it.',
+      '<div class="seed"><div class="seedrow"><span><b>' + rand(SEED.raised) + '</b> raised so far</span><span>of ' + rand(SEED.target) + '</span></div>'
+      + '<div class="bar" aria-hidden="true"><i style="width:' + (SEED.raised / SEED.target * 100).toFixed(1) + '%"></i><b style="left:' + (next[1] / SEED.target * 100).toFixed(1) + '%"></b></div>'
+      + '<div class="seedrow"><span>Next milestone: ' + esc(next[0]) + '</span><span>at ' + rand(next[1]) + '</span></div>'
+      + (P.gave ? '<p class="mine">You gave in ' + esc(P.gave.when) + ', towards the ' + esc(P.gave.towards) + '. Thank you.<span>Only you see this line.</span></p>' : '<p class="mine">When you give, it shows here, only to you.<span><a href="seed.html">The Seed and its milestones</a></span></p>')
+      + '</div>');
+
+    // 7. Your thread
+    h += sec(7, 'thread', 'Your thread', 'Mahala’s record of you over the years: camps, roles, moments.',
+      (P.thread.length ? '<ul class="thread">' + P.thread.map(function (t) { return '<li><b>' + esc(t[0]) + ' · ' + esc(t[1]) + '</b><span>' + esc(t[2]) + '</span></li>'; }).join('') + '</ul>' : '<p class="empty">Your thread starts with your first gathering.</p>')
+      + '<p><button type="button" class="edit" id="wrongBtn">Something wrong or missing? Tell the stewards</button></p>');
+    h += '</div>';
+
+    // 8. Your choices
+    h += '<section class="s wide" id="choices" aria-labelledby="h-choices"><h2 id="h-choices"><span class="n">8</span>Your choices</h2><p class="lede">Who sees each part of your page, and what Mahala may send you. You can change these at any time.</p><div class="choices"><div>'
+      + '<p class="label">Who sees what</p>'
+      + Object.keys(FIELD_NAMES).map(function (f) { return '<div class="field"><label for="f-' + f + '">' + FIELD_NAMES[f][0] + (FIELD_NAMES[f][1] ? '<small>' + FIELD_NAMES[f][1] + '</small>' : '') + '</label><select id="f-' + f + '" data-field="' + f + '">' + SEE.map(function (s) { return '<option value="' + s[0] + '"' + (P.fields[f] === s[0] ? ' selected' : '') + '>' + s[1] + '</option>'; }).join('') + '</select></div>'; }).join('')
+      + '</div><div><p class="label">What you say yes to</p>'
+      + CONSENT.map(function (c) { return '<div class="field"><label for="c-' + c[0] + '">' + c[1] + '<small>' + c[2] + '</small></label><span class="sw"><input type="checkbox" role="switch" id="c-' + c[0] + '" data-consent="' + c[0] + '"' + (P.consent[c[0]] ? ' checked' : '') + '><span></span></span></div>'; }).join('')
+      + '</div></div><p class="said" id="choiceSaid" aria-live="polite"></p><div class="actions"><button type="button" class="btn ghost small" data-proto="Download everything: a file with all Mahala holds about you.">Download everything</button><button type="button" class="btn ghost small" data-proto="Delete my account: asks twice, then removes your account and your page.">Delete my account</button></div></section>';
+
+    // role panels
+    if (P.panels.length) {
+      h += '<div class="roles">';
+      if (P.panels.indexOf('lead') >= 0) h += leadPanel();
+      if (P.panels.indexOf('core') >= 0) h += corePanel();
+      h += '</div>';
+    }
+
+    h += '<div class="verse"><p><b>The same you, in the Mahalaverse</b>Your name, card and quests are waiting inside the game. Tick a step there and it shows here.</p><a class="btn ghost" href="index.html#mahalaverse">Step into the Mahalaverse</a></div>';
+    $('page').innerHTML = h;
+    $('tellWhere').innerHTML = ['Where you stand', 'Your journey', 'Coming up', 'Your quests and crew', 'What you bring', 'Your Seed', 'Your thread', 'Your choices'].concat(P.panels.indexOf('lead') >= 0 ? ['Your nominees'] : []).concat(P.panels.indexOf('core') >= 0 ? ['Core team'] : []).concat(['Something else']).map(function (x) { return '<option>' + x + '</option>'; }).join('');
+    document.title = 'Your Mahala · ' + P.first + ' (sample)';
+  }
+
+  function sec(n, id, title, lede, body) { return '<section class="s" id="' + id + '" aria-labelledby="h-' + id + '"><h2 id="h-' + id + '"><span class="n">' + n + '</span>' + title + '</h2><p class="lede">' + lede + '</p>' + body + '</section>'; }
+
+  function stepsHtml() {
+    return P.quest.steps.map(function (s, i) {
+      var st = steps[i], note = st === 'ok' ? 'Confirmed by a steward' : st === 'mine' ? 'Marked by you · waiting for a steward' : '';
+      return '<li><button type="button" data-step="' + i + '" data-s="' + st + '" aria-label="' + esc(s[0]) + (st ? ': ' + note : ': not done yet') + '"' + (st === 'ok' ? ' aria-disabled="true"' : '') + '>' + (st ? TICK : '') + '</button><span>' + esc(s[0]) + (note ? '<small>' + note + '</small>' : '') + '</span></li>';
+    }).join('');
+  }
+
+  function leadPanel() {
+    var N = [['Sipho', 'Applied', 'c'], ['Grace', 'Read the invitation', 'y'], ['Ruan', 'Read the invitation', 'y'], ['Kea', 'Not opened yet', ''], ['Mo', 'Not opened yet', ''], ['Lerato', 'Not opened yet', '']];
+    return '<section class="panel" id="panel-lead" aria-labelledby="h-lead"><h2 id="h-lead">Your nominees</h2><p class="why">The six people you nominated, and where each is. You see the stage only, never what they wrote, and only for people who agreed to be followed up.</p>'
+      + '<ul class="list">' + N.map(function (n) { return '<li><span class="dot" style="background:' + (n[2] === 'c' ? 'var(--cyan)' : n[2] === 'y' ? 'var(--yellow)' : 'rgba(244,239,230,.3)') + '"></span><span><b>' + n[0] + '</b><span class="sub">Invited 20 Oct</span></span><span class="tag ' + n[2] + '">' + n[1] + '</span></li>'; }).join('') + '</ul>'
+      + '<p class="note">The second round of invitations goes out on 17 Nov, copying you in. A personal message from you before then helps most.</p>'
+      + '<div class="actions"><button type="button" class="btn small" data-proto="The leads’ call opens here.">Join the leads’ call</button><button type="button" class="btn ghost small" data-proto="The leads’ feedback form opens here.">Share an idea with the core team</button><button type="button" class="btn ghost small" data-proto="Basecamp opens in the camp lead view.">Basecamp, camp lead view</button></div>'
+      + '<p class="note" data-said></p></section>';
+  }
+
+  function corePanel() {
+    var D = ['The ladder’s names', 'The roles for 2027', 'What a camp lead sees about nominees', 'Who can see other members', 'Where Basecamp lives'];
+    return '<section class="panel" id="panel-core" aria-labelledby="h-core"><h2 id="h-core">Core team</h2><p class="why">What the whole of Mahala needs from the core team this week.</p>'
+      + '<p class="label" style="color:rgba(244,239,230,.6)">Decisions due on 14 Nov</p><ul class="list">' + D.map(function (d) { return '<li><span class="dot" style="background:var(--magenta)"></span><span><b>' + d + '</b><span class="sub">On the review page</span></span><span class="tag">Waiting</span></li>'; }).join('') + '</ul>'
+      + '<p class="label" style="color:rgba(244,239,230,.6)">The site this week (sample numbers)</p><div class="nums"><div><b>412</b><span>visits</span></div><div><b>38</b><span>Join clicks</span></div><div><b>17</b><span>Donate clicks</span></div><div><b>9</b><span>new tribe members</span></div></div>'
+      + '<p class="note">Real numbers appear once the site’s counter is switched on.</p>'
+      + '<div class="actions"><button type="button" class="btn small" data-proto="Basecamp opens in the core view, without asking who you are.">Open Basecamp</button><button type="button" class="btn ghost small" data-proto="The five decisions open on the review page.">The five decisions</button></div><p class="note" data-said></p></section>';
+  }
+
+  // ------------------------------------------------------------------ what you can try
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('button, a'); if (!t) return;
+    if (t.id === 'nextBtn') { var on = t.getAttribute('aria-pressed') !== 'true'; t.setAttribute('aria-pressed', String(on)); t.textContent = on ? 'See you there' : P.next.act; var b = document.querySelector('[data-yes="0"]'); if (b) { yes[0] = on; b.setAttribute('aria-pressed', String(on)); b.textContent = on ? 'Going' : 'Yes'; } return; }
+    if (t.dataset.yes != null) { var i = +t.dataset.yes; yes[i] = !yes[i]; t.setAttribute('aria-pressed', String(yes[i])); t.textContent = yes[i] ? 'Going' : 'Yes'; if (i === 0 && $('nextBtn')) { $('nextBtn').setAttribute('aria-pressed', String(yes[0])); $('nextBtn').textContent = yes[0] ? 'See you there' : P.next.act; } return; }
+    if (t.dataset.step != null) { var k = +t.dataset.step; if (steps[k] === 'ok') return; steps[k] = steps[k] === 'mine' ? '' : 'mine'; $('steps').innerHTML = stepsHtml(); var nb = document.querySelector('[data-step="' + k + '"]'); if (nb) nb.focus(); return; }
+    if (t.dataset.jump) { e.preventDefault(); var el = $(t.dataset.jump); if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.setAttribute('tabindex', '-1'); el.focus({ preventScroll: true }); } return; }
+    if (t.dataset.proto) { var said = t.closest('section').querySelector('[data-said], .said'); if (said) said.textContent = 'In the prototype: ' + t.dataset.proto; return; }
+    if (t.id === 'wrongBtn') { openTell('Your thread'); return; }
+  });
+  document.addEventListener('change', function (e) {
+    var t = e.target, s = $('choiceSaid'); if (!s) return;
+    if (t.dataset.field) s.textContent = FIELD_NAMES[t.dataset.field][0] + ': now seen by ' + t.options[t.selectedIndex].text.toLowerCase() + '. (Not saved in the prototype.)';
+    if (t.dataset.consent) s.textContent = CONSENT.filter(function (c) { return c[0] === t.dataset.consent; })[0][1] + ': ' + (t.checked ? 'yes' : 'no') + '. (Not saved in the prototype.)';
+  });
+
+  // Tell us: in the beta this goes to the structured feedback log, one entry each, answered there
+  function openTell(where) { $('tellBox').hidden = false; $('tellBtn').setAttribute('aria-expanded', 'true'); if (where) $('tellWhere').value = where; $('tellSaid').textContent = ''; $('tellText').focus(); }
+  function closeTell() { $('tellBox').hidden = true; $('tellBtn').setAttribute('aria-expanded', 'false'); $('tellBtn').focus(); }
+  $('tellBtn').addEventListener('click', function () { if ($('tellBox').hidden) openTell(); else closeTell(); });
+  $('tellCancel').addEventListener('click', closeTell);
+  $('tellSend').addEventListener('click', function () {
+    if (!$('tellText').value.trim()) { $('tellSaid').textContent = 'Write a line first, then send.'; return; }
+    $('tellSaid').textContent = 'Thank you. In the beta this goes to the stewards’ feedback log with the part you chose, and you will see the answer on your page.'; $('tellText').value = '';
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('tellBox').hidden) closeTell(); });
+
+  addEventListener('hashchange', function () { render(); scrollTo(0, 0); });
+  render();
+})();
+</script>
+<style>.mini { width: 26px; height: 26px; border-radius: 50%; display: block; }</style>
+</body>
+</html>
