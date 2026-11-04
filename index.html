@@ -3,7 +3,7 @@
 (function () { var m = false; try { m = localStorage.getItem('mahala.edition') === 'members' && !!localStorage.getItem('mahala-auth'); } catch (e) { }
   window.__MV_MEMBERS = m; window.__V7_ONLY = m ? null : ['platform', 'world']; window.__MAHALA_PUBLIC = !m; })();</script>
 <script src="site.js?v=6"></script>
-<script src="assets/shim/claude-shim.js?v=1"></script>
+<script src="assets/shim/claude-shim.js?v=2"></script>
 <style id="publicEdition">
 /* the public edition (for AfrikaBurn's Art Committee): no sign-ups, payments, crew or shift sign-ups, testing buttons or claude.ai links */
 .testbtn, [data-act="join"], [data-act^="join:"], [data-act="givegate"], [data-act^="give:"], [data-act^="pledge:"], [data-act^="crewjoin:"],
@@ -475,7 +475,8 @@ a.act { color: inherit; text-decoration: none; }
 }
 
 /* ---------------------------------------------------------------------------------- the review of October 2026 */
-/* the menu: The camp, The Seed, Mahalaverse, then Join and Donate as buttons. On a phone it takes the whole top line. */
+/* the menu: The camp, The Seed, The tribe, Mahalaverse, then Join and Donate as buttons. On a phone it takes the whole
+   top line, and below 480 px the menu drops "The" (Camp, Seed, Tribe) so all six fit on one line. */
 @media (max-width: 640px) {
   .top .mark { display: none; }
   .top { justify-content: center; padding-left: 8px; padding-right: 8px; }
@@ -483,6 +484,9 @@ a.act { color: inherit; text-decoration: none; }
   .menu .menu-door { padding: 10px 7px; letter-spacing: .13em; font-size: 10.5px; }
   .menu .menu-door.menu-join, .menu .menu-door[data-give] { padding: 8px 10px; margin-left: 5px; }
 }
+@media (max-width: 480px) { .menu .menu-door .the { display: none; } .menu .menu-door { white-space: nowrap; padding: 10px 5px; letter-spacing: .1em; }
+  .menu .menu-door.menu-join, .menu .menu-door[data-give] { padding: 8px 9px; margin-left: 4px; } }
+@media (max-width: 345px) { .top .menu .menu-door { padding: 10px 3px; letter-spacing: .04em; font-size: 10px; } .top .menu .menu-door.menu-join, .top .menu .menu-door[data-give] { padding: 7px 7px; margin-left: 3px; } }
 @media (max-width: 360px) { .menu .menu-door { padding: 10px 5px; letter-spacing: .08em; } .menu .menu-door svg { display: none; } }
 /* the sound: its own button, bottom right */
 .snd { justify-self: end; pointer-events: auto; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: rgba(20, 14, 10, .26); color: var(--warm); display: grid; place-items: center; cursor: pointer; padding: 0;
@@ -1553,8 +1557,9 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
 <header class="ui top">
   <button class="mark" type="button" id="toTop" aria-label="Mahala, back to the start">MAHALA</button>
   <nav class="menu" aria-label="Menu">
-    <a class="menu-door" href="camp.html" data-pane="camp" data-count="The camp" data-count-where="top bar">The camp</a>
-    <a class="menu-door" href="seed.html" data-pane="seed" data-count="The Seed" data-count-where="top bar">The Seed</a>
+    <a class="menu-door" href="camp.html" data-pane="camp" data-count="The camp" data-count-where="top bar"><span class="the">The </span>camp</a>
+    <a class="menu-door" href="seed.html" data-pane="seed" data-count="The Seed" data-count-where="top bar"><span class="the">The </span>Seed</a>
+    <a class="menu-door" href="tribe.html" data-pane="tribe" data-count="The tribe" data-count-where="top bar"><span class="the">The </span>tribe</a>
     <a class="menu-door" id="toVerse" href="#mahalaverse" data-count="Mahalaverse" data-count-where="top bar">Mahalaverse<svg viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg></a>
     <a class="menu-door menu-join" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Join" data-count-where="top bar">Join</a>
     <a class="menu-door" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give data-count="Donate" data-count-where="top bar">Donate</a>
