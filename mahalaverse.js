@@ -3069,7 +3069,7 @@ function v4CardIn(it, h) {
       </div>`; }
   if (k === 'temple') return injectTop(h, `<div class="livebar"><div class="lab"><span>${LIT.mode.value ? 'Panels lit by builders' : 'Showing the full design'}</span><span class="mono">${Math.min(PANELS_N, litNow())} / ${PANELS_N}</span></div><div class="bar"><span style="width:${(Math.min(PANELS_N, litNow()) / PANELS_N * 100).toFixed(1)}%"></span></div></div>${budgetBar(true)}
     <div class="actions"><button class="btn" data-act="litmode">${icon('eye')}${LIT.mode.value ? 'See the full design' : 'See it as lit by builders'}</button><button class="btn" data-act="beyond:6">${icon(canEnter('beyond') ? 'star' : 'lock')}Beyond the zome</button><button class="btn" data-act="beyond:7">${icon(canEnter('lighthouse') ? 'light' : 'lock')}The lighthouses</button></div>`);
-  if (k === 'camp') return injectTop(h, canEnter('camp') ? `<div class="sect"><h4>Your place in the camp</h4>${kv([['Camp access', 'Open for you (what it covers is still being set by the camp)'], ['Your days', esc((ME.week || []).join(', ') || 'Not chosen yet')], ...(LIVE.on ? [['Camp mates', String(LIVE.builders.filter(b => b.door).length)]] : [])])}</div>` : lockRow(3, 'Your place in the camp'));
+  if (k === 'camp') return injectTop(h, (canEnter('camp') ? `<div class="sect"><h4>Your place in the camp</h4>${kv([['Camp access', 'Open for you (what it covers is still being set by the camp)'], ['Your days', esc((ME.week || []).join(', ') || 'Not chosen yet')], ...(LIVE.on ? [['Camp mates', String(LIVE.builders.filter(b => b.door).length)]] : [])])}</div>` : lockRow(3, 'Your place in the camp')) + campDoors());
   if (k === 'kitchen') return injectTop(h, canEnter('kitchen') ? chip('Open for you', 'done') : lockRow(4, 'The kitchen'));
   if (k === 'lotus') return injectTop(h, canEnter('mahal') ? `<p class="note strong">Sound journeys and a live online workshop gather here. Dates and the guest are announced once confirmed.</p>` : lockRow(2, 'The Lotus Mahal'));
   if (k === 'drift' || k === 'fire') return injectTop(h, canEnter('fire') ? '' : lockRow(1, 'The fire'));
@@ -4364,6 +4364,28 @@ INTRO.addEventListener('click', e => { if (!e.target.closest('[data-intro="go"]'
   if (!M || WORLD.entered) { _ewGate(arrival); return; }
   M.info().then(i => { if (i && i.signedIn) _ewGate(arrival); else M.gate(); }, () => _ewGate(arrival));
 }; }
+
+/* Your Mahala and Basecamp, at the theme camp (4 Nov 2026). With accounts on, every member finds a door to their own
+   page here; the core team, camp leads and stewards also find Basecamp, where the build is planned. Basecamp is a
+   private page that opens only for the people it has been shared with. Roles come from the member database. */
+const BASECAMP_URL = 'https://claude.ai/artifact/R68XWMEyfHdgFRoywapxSR';
+const ROLE = { known: false, core: false, lead: false, steward: false };
+if (window.MahalaMembers) window.MahalaMembers.ready.then(i => {
+  if (!i || !i.signedIn) return;
+  ROLE.signedIn = true;
+  return window.MahalaMembers.rpc('my_thread').then(t => {
+    const r = (t.roles || []).join(' ').toLowerCase();
+    ROLE.core = /core/.test(r); ROLE.lead = /lead/.test(r); ROLE.steward = /steward/.test(r); ROLE.known = true;
+  });
+}).catch(() => { });
+function campDoors() {
+  if (!window.MahalaMembers || !ROLE.signedIn) return '';
+  const mine = `<div class="sect"><h4>Your Mahala</h4><p class="note">Your own page: where you are on the Golden Seed of Life, the gatherings ahead, your card and your thread.</p><div class="actions"><a class="btn" href="me.html">${icon('star')}Open Your Mahala</a></div></div>`;
+  const plans = ROLE.core || ROLE.lead || ROLE.steward
+    ? `<div class="sect"><h4>Basecamp</h4><p class="note">Where the core team and camp leads plan The Seed: the tasks, the timeline, the events, the decisions and the money. It opens for the people it has been shared with.</p><div class="actions"><a class="btn primary" href="${BASECAMP_URL}" target="_blank" rel="noopener">${icon('tools')}Open Basecamp</a></div></div>`
+    : `<p class="note">The core team and camp leads plan the build at Basecamp. Want to be part of it? Join a crew.</p>`;
+  return mine + plans;
+}
 
 /* the lists: hidden on the first walk; afterwards a single Explore button, and an open list with its X at the top right */
 { const L = $('.lists'); if (L) {

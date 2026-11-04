@@ -18,8 +18,9 @@ window.MAHALA_SITE = {
   // Accounts ("claim your thread"): the member database's address and its public anon key, from the Supabase project's
   // API settings (Mahala OS platform/docs/SETUP.md). Both are public by design: the database's own rules decide what
   // anyone may read or write. Left empty, there are no accounts and the site runs exactly as before.
-  // mahala-members, Frankfurt, owned by the camp's Supabase organisation (turned on 4 Nov 2026)
-  members: { url: 'https://jjoixjepznulbvbidclh.supabase.co', anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqb2l4amVwem51bGJ2YmlkY2xoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM3ODEzNzgsImV4cCI6MjEwOTM1NzM3OH0.wBGoM7o6dhphxdGoJBuPUA_Hqv3_3fSGeGYWCqPWZSU' },
+  // mahala-members, Frankfurt, owned by the camp's Supabase organisation (turned on 4 Nov 2026). mePage: where the
+  // Sign in button takes someone who is signed in, their own page (Your Mahala).
+  members: { url: 'https://jjoixjepznulbvbidclh.supabase.co', anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqb2l4amVwem51bGJ2YmlkY2xoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM3ODEzNzgsImV4cCI6MjEwOTM1NzM3OH0.wBGoM7o6dhphxdGoJBuPUA_Hqv3_3fSGeGYWCqPWZSU', mePage: 'me.html' },
 };
 
 (function (S) {

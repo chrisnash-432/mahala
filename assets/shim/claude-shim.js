@@ -659,6 +659,7 @@
         el.innerHTML = '<button type="button" class="mvs-x" data-k="close" aria-label="Close">&times;</button>' +
           '<h2>' + esc(t.goesBy || t.name || 'Your thread') + '</h2>' +
           '<p><small>Signed in as ' + esc(info.email || '') + (t.signIns > 1 ? ' (one of ' + t.signIns + ' sign-ins)' : '') + '</small></p>' +
+          (CFG.mePage ? '<p><a class="mvs-b" href="' + esc(CFG.mePage) + '" style="display:block;text-align:center;text-decoration:none">Open Your Mahala, your own page</a></p>' : '') +
           (t.isNew ? '<p class="lead">You are part of Mahala\'s online community. Camped with Mahala before, under another address? Tell the stewards at wearemahala@gmail.com and they will join your thread.</p>' : '') +
           (t.rung ? '<h3>Where you stand</h3><div class="mvs-rung"><b>' + esc(t.rung.name) + '</b><span>' + esc(t.rung.next) + '</span></div>' : '') +
           (lines ? '<h3>Your thread</h3><ul class="mvs-th">' + lines + '</ul><p><small>From Mahala\'s record. Something missing or wrong? Tell the stewards at wearemahala@gmail.com.</small></p>' : '') +
@@ -774,7 +775,11 @@
       b.dataset.mvOn = '1';
       b.classList.add('mvm-chip'); b.hidden = false;
       b.textContent = info && info.signedIn ? (info.name || 'Your account') : 'Sign in';
-      b.addEventListener('click', function () { UI.open(info && info.signedIn ? 'account' : 'signin'); });
+      // signed in, the chip opens the member's own page (site.js members.mePage), else the account box
+      b.addEventListener('click', function () {
+        if (info && info.signedIn && CFG.mePage && !new RegExp(CFG.mePage.replace('.', '\\.') + '$').test(location.pathname)) { location.href = CFG.mePage; return; }
+        UI.open(info && info.signedIn ? 'account' : 'signin');
+      });
     });
     if (document.querySelector('[data-mahala-account]') && !document.getElementById('mvs-css')) { var s = document.createElement('style'); s.id = 'mvs-css'; s.textContent = CSS; document.head.appendChild(s); }
   }
