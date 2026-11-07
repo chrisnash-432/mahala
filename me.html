@@ -29,7 +29,7 @@
   --ease: cubic-bezier(.2, .7, .1, 1);
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--warm); color: var(--ink); font: 400 16px/1.55 var(--text); -webkit-font-smoothing: antialiased; }
+body { margin: 0; overflow-x: clip; background: var(--warm); color: var(--ink); font: 400 16px/1.55 var(--text); -webkit-font-smoothing: antialiased; }
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--warm); }
 a { color: inherit; }
 button { font: inherit; color: inherit; }
@@ -225,8 +225,9 @@ h3 { font: 400 19px/1.2 var(--name); letter-spacing: .05em; margin: 0 0 4px; }
 .quest { margin-top: 8px; background: var(--sheet); border: 1px solid var(--rule); border-radius: 14px; padding: 12px 14px; }
 .quest .crew { font-size: 13px; color: var(--ink-3); }
 .steps { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 4px; }
-.steps button { width: 100%; display: flex; gap: 10px; align-items: flex-start; text-align: left; background: none; border: 0; padding: 6px 4px; border-radius: 8px; cursor: pointer; min-height: 44px; }
+.steps button, .steps .step { width: 100%; display: flex; gap: 10px; align-items: flex-start; text-align: left; background: none; border: 0; padding: 6px 4px; border-radius: 8px; cursor: pointer; min-height: 44px; }
 .steps button:hover { background: var(--paper); }
+.steps .step { cursor: default; }
 .steps .box { flex: none; width: 24px; height: 24px; border-radius: 7px; border: 1.5px solid var(--ink-2); display: grid; place-items: center; font-size: 12px; margin-top: 1px; }
 .steps [data-s="mine"] .box { background: var(--cyan-ink); border-color: var(--cyan-ink); color: #fff; }
 .steps [data-s="ok"] .box { background: var(--ok); border-color: var(--ok); color: #fff; }
@@ -339,7 +340,8 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   var ARTIFACT = false;      // true only in the review copy, which has no accounts
   var BASECAMP = 'https://claude.ai/artifact/R68XWMEyfHdgFRoywapxSR', REVIEW = 'https://claude.ai/artifact/LWUKvvyjUZePV57zjn25tk#your-mahala-decisions';
   var IMG = function (k) { return 'assets/deck/' + k + '.jpg'; };   // loaded only when a card is shown or drawn
-  var SEED = { raised: 70000, target: 718875, milestones: [['Frame', 293235], ['Shelter', 346913], ['Lantern', 497356], ['The full Seed', 581278], ['Copper and grid', 718875]] };
+  var SITE = window.MAHALA_SITE || {};
+  var SEED = { raised: SITE.raisedTotal ? SITE.raisedTotal() : 70000, target: SITE.target || 718875, milestones: [['Frame', 293235], ['Shelter', 346913], ['Lantern', 497356], ['The full Seed', 581278], ['Copper and grid', 718875]] };
   // build week, when The Seed rises: the first 'burn' row of the events record
   var RISES = (function () { var b = EVENTS.events.filter(function (e) { return e.kind === 'burn'; })[0]; return new Date((b ? b.date : '2027-04-19') + 'T00:00:00+02:00'); })();
 
@@ -422,6 +424,8 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   function d(iso) { var p = iso.split('-'); return new Date(Date.UTC(+p[0], +p[1] - 1, +p[2], 10)); }
   function fmt(iso) { var x = d(iso); return DAYS[x.getUTCDay()] + ' ' + x.getUTCDate() + ' ' + MON[x.getUTCMonth()]; }
   function when(e) { return fmt(e.date) + (e.end ? ' to ' + fmt(e.end) : ''); }
+  function andList(a) { return a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; }
+  function cap(t) { t = String(t || ''); return t.charAt(0).toUpperCase() + t.slice(1); }
   function scrollTo2(el) { if (el) el.scrollIntoView({ behavior: REDUCE ? 'auto' : 'smooth', block: 'start' }); }
 
   // the next new moon after now (mean synodic month from a known new moon; good to within a day)
@@ -463,7 +467,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     var t = e.time + ' in Cape Town', tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     if (tz && tz !== 'Africa/Johannesburg') {
       var at = new Date(e.date + 'T' + e.time + ':00+02:00');
-      try { t += ' · ' + at.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', timeZone: tz }) + ' where you are'; } catch (x) { /* one clock is enough */ }
+      try { t += ' · ' + at.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: tz }) + ' where you are'; } catch (x) { /* one clock is enough */ }
     }
     return t;
   }
@@ -492,7 +496,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + '<dl><dt>When</dt><dd>' + when(e) + (clocks(e) ? '<small>' + clocks(e) + '</small>' : '') + '</dd>'
       + '<dt>Where</dt><dd>' + esc(e.where) + placeNote + '</dd>'
       + '<dt>What happens</dt><dd>' + esc(e.blurb || '') + '</dd>'
-      + (burn ? '' : '<dt>Bring</dt><dd><small>The hosts will add a line here.</small></dd>') + '</dl>'
+      + (e.bring ? '<dt>Bring</dt><dd>' + esc(e.bring) + '</dd>' : '') + '</dl>'
       + '<div class="row">' + yesBtn + cal + '</div>'
       + (st ? '<div class="ask">' + askFor(e) + '</div>' : '')
       + (burn ? '' : '<p class="only">Only the hosts see how many are coming, never your name.</p>')
@@ -580,7 +584,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     var jr = ((J && J.roles) || []).map(function (r) { return r.role; });
     var role = roles.join(' ').toLowerCase(), core = jr.some(function (r) { return /core|steward|owner/.test(r); }) || !!(LIVE.info && LIVE.info.isSteward), lead = jr.indexOf('camp_lead') >= 0 || (!J && /lead/.test(role));
     // the thread: the record's lines, by year, newest first
-    var by = {}; (t.thread || []).forEach(function (l) { var y = l.year || 'Other'; (by[y] = by[y] || []).push(l.text); });
+    var by = {}; (t.thread || []).forEach(function (l) { var y = l.year || 'Other'; (by[y] = by[y] || []).push(cap(l.text)); });
     var chapters = [['2027 · The Seed', 'Still being written.', [], (t.isNew && !years.length) ? 'waiting' : '']];
     if (t.isNew) chapters[0][2].push(['You found your way in', 'Welcome to the community.']);
     apps.slice().reverse().forEach(function (a) { chapters[0][2].push(['Your camp application', ({ received: 'Sent', reviewing: 'Read by the stewards', waitlist: 'On the waitlist', accepted: 'Confirmed. Welcome to camp.', declined: 'Not this year', withdrawn: 'Withdrawn' })[a.stage] || ('Where it is: ' + a.stage)]); });
@@ -651,12 +655,12 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + '<div class="drawn" id="drawn"></div></div>'
 
       + '<div class="whohead"><p class="hello">' + esc(P.hello) + '</p><h1 id="youH">' + esc(P.first) + '</h1>'
-      + (P.playa ? '<p class="playa">On the playa: <i>' + esc(P.playa) + '</i></p>' : '<p class="playa"><button type="button" class="link" data-choices>Choose your playa name</button></p>')
+      + (P.playa ? (P.playa === P.first ? '' : '<p class="playa">On the playa: <i>' + esc(P.playa) + '</i></p>') : '<p class="playa"><button type="button" class="link" data-choices>Choose your playa name</button></p>')
       + '<p class="sleeps">' + sleeps + ' sleeps until The Seed rises</p>'
       + (P.hats.length ? '<div class="hats">' + P.hats.map(function (x) { return '<span class="hat">' + HAT + esc(x) + '</span>'; }).join('') + '</div>' : '')
       + '</div><div class="whorest"><div class="seedlife">' + seedOfLife(P) + '<div><p class="season"><b>Where you are now</b>' + esc(P.season) + '</p>'
       + '<p class="petalsay" id="petalsay" aria-live="polite">Tap a circle. Each is a way of belonging, filled in any order. At the centre, where The Seed sits, everyone is a temple builder.</p>'
-      + (P.rings.length ? '<p class="rings">The rings around it are your years: ' + P.rings.join(' and ') + '.</p>' : '') + '</div></div>'
+      + (P.rings.length ? '<p class="rings">The rings around it are your years: ' + andList(P.rings) + '.</p>' : '') + '</div></div>'
       + nextStep() + letter() + roleDoor() + '</div></section>';
 
     // now
@@ -697,7 +701,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     $('yours').innerHTML = P.live ? (LIVE.tell.length ? LIVE.tell.slice().sort(function (a, b) { return (b.at || 0) - (a.at || 0); }).map(function (x) { return '<li>' + esc(x.text || '') + '<small>' + esc(x.reply || 'Heard. The stewards answer within a week.') + '</small></li>'; }).join('') : '<li>Nothing yet.<small>What you send shows here, with what happened to it.</small></li>')
       : '<li>The ladder felt like a ranking<small>Changed, 4 Nov: it became the Golden Seed of Life. Thank you.</small></li>';
     if (P.live && LIVE.store.last && nextNewMoon(new Date(LIVE.store.last.at)) > TODAY) draw(false, LIVE.store.last);
-    document.title = 'Your Mahala · ' + P.first + ' (sample)';
+    document.title = 'Your Mahala · ' + P.first + (DEMO ? ' (an example)' : '');
   }
 
   function deck(k) { return DECK.filter(function (c) { return c.k === k; })[0]; }
@@ -707,7 +711,8 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   function nextStep() {
     var W = P.journey; if (!P.live || !W) return '';
     var n = W.next, path = P.tier && P.tier !== 'tribe';
-    return '<div class="letter nextstep" id="nextstep"><span class="from">' + esc(W.tierName) + (W.roles.length ? ' \u00b7 ' + W.roles.map(function (r) { return esc(r.label); }).join(', ') : '') + '</span>'
+    var hats = W.roles.map(function (r) { return esc(r.label); }).join(', ');
+    return '<div class="letter nextstep" id="nextstep"><span class="from">' + (P.tier === 'tribe' && hats ? hats : esc(W.tierName) + (hats ? ' \u00b7 ' + hats : '')) + '</span>'
       + '<p><b>' + esc(n.title) + '.</b> ' + esc(n.text) + '</p>'
       + (path ? '<ol class="pathsteps">' + W.steps.map(function (x) { return '<li class="' + esc(x.state) + '">' + esc(x.label) + (x.state === 'now' ? ' <small>Next</small>' : '') + '</li>'; }).join('') + '</ol>' : '')
       + '<div class="row">' + (n.href ? '<a class="btn" href="' + esc(n.href) + '">' + esc(n.cta) + '</a>' : '')
@@ -748,6 +753,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   function stepsHtml() {
     return P.quest.steps.map(function (s, i) {
       var st = steps[i], note = st === 'ok' ? 'Witnessed by a steward' : st === 'mine' ? 'You did it · a steward will witness it' : P.live ? 'Not yet' : 'Tap when it is done';
+      if (P.live) return '<li><div class="step" data-s="' + st + '"><span class="box">' + (st ? TICK : '') + '</span><span>' + esc(s[0]) + '<small>' + note + '</small></span></div></li>';
       return '<li><button type="button" data-step="' + i + '" data-s="' + st + '" aria-pressed="' + (st ? 'true' : 'false') + '"' + (st === 'ok' ? ' aria-disabled="true"' : '') + '><span class="box">' + (st ? TICK : '') + '</span><span>' + esc(s[0]) + '<small>' + note + '</small></span></button></li>';
     }).join('');
   }
