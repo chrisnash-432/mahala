@@ -75,7 +75,10 @@ const DATA = {
     { n: 6, id: 'GATE_6', name: 'Cosmic architect', amount: '$50,000', space: 'beyond', col: 'magenta', gift: 'Everything below, and a gift of thanks', extra: 'A view beyond the zome, to the bigger vision: the temple of 2030', builds: 'The camp and The Seed: a first step towards the temple of 2030, a vision' },
     { n: 7, id: 'GATE_7', name: 'The lighthouses', amount: '$100,000 to $10,000,000', space: 'lighthouse', col: 'yellow', gift: 'Everything below, and a gift of thanks', extra: 'The much bigger picture, a vision: a permanent temple in Cape Town, and lighthouse temples seeded around the world', builds: 'The camp and The Seed, and the vision of temples to come' },
   ],
-  events: [   // Nov 2026: the camp's next gatherings. Dates are set by the stewards; nothing here is dated until they are.
+  events: [   // Nov 2026: the camp's next gatherings. Dates are set by the stewards; nothing here is dated until they are. An event with a url has tickets on sale.
+    { id: 'E-00', name: 'Road to Mecca, a Mahala fundraiser', format: 'A guitar sound journey by the fire, Hollow Tree, Hout Bay', ticket: 'From R200, on Quicket', date: 'Fri 13 Nov 2026, 19:00', where: 'CAMP_LOTUS', set: true,
+      url: 'https://www.quicket.co.za/events/404952-road-to-mecca-guitar-sound-journey/',
+      text: 'Our first gathering of the season, and a fundraiser for The Seed: a guitar sound journey by the fire, with cacao. Doors open at 18:30; bring your own mug. A few words at the end about what is coming.' },
     { id: 'E-01', name: 'New moon online call', format: 'Online, free, for the wider community', ticket: 'Free', date: 'To be announced', where: 'CAMP_LOTUS',
       text: 'A free call on the new moon for everyone who feels the pull of the temple: the wider community of temple builders, wherever you are. The sign-up link is shared here once it is set.' },
     { id: 'E-02', name: 'Fundraising sound journeys', format: 'Three evenings in Cape Town', ticket: 'To be set', date: 'To be announced', where: 'CAMP_LOTUS',
@@ -381,7 +384,7 @@ function renderTabs() {
   const r = (id, lead, title, sub, right) => `<button class="row" data-sel="${id}">${lead}<span><b>${esc(title)}</b><small>${sub}</small></span>${right}${icon('right')}</button>`;
   if (tab === 'quests') { P.innerHTML = DATA.quests.map(q => r(q.id, `<span class="lead ${q.tone}">${q.id.slice(2)}</span>`, q.name, `${q.crew} · ${q.stage}`, ME.quests[q.id] ? `<span class="chip done">Yours</span>` : q.open ? `<span class="chip open">Open to all</span>` : `<span class="chip wait">Crew</span>`)).join(''); N.textContent = 'Two quests are open to everyone. The rest belong to a crew: join one from the camp.'; }
   if (tab === 'gates') { P.innerHTML = DATA.gates.map(g => r(g.id, `<span class="lead ${'ycm'[(g.n - 1) % 3]}">${g.n}</span>`, g.name, esc(g.gift), `<span class="amt">${esc(g.amount.replace(' to ', ' to\u00a0'))}</span>`)).join(''); N.textContent = 'Each gate is a way to give, with its own gift. Working amounts, not final. No payment is taken here yet.'; }
-  if (tab === 'events') { P.innerHTML = DATA.events.map(e => r(e.id, `<span class="lead g">${icon('cal')}</span>`, e.name, esc(e.format), (LIVE.leads.events || {})[e.id] ? `<span class="chip done">${esc(LIVE.leads.events[e.id])}</span>` : `<span class="chip wait">${e.date === 'Site being chosen' ? 'Planning' : 'To be set'}</span>`)).join(''); N.textContent = 'Dates and guests are announced once they are confirmed.'; }
+  if (tab === 'events') { P.innerHTML = DATA.events.map(e => r(e.id, `<span class="lead g">${icon('cal')}</span>`, e.name, esc(e.format), e.url ? `<span class="chip open">Tickets</span>` : (LIVE.leads.events || {})[e.id] ? `<span class="chip done">${esc(LIVE.leads.events[e.id])}</span>` : `<span class="chip wait">${e.date === 'Site being chosen' ? 'Planning' : 'To be set'}</span>`)).join(''); N.textContent = 'Dates and guests are announced once they are confirmed.'; }
   if (tab === 'crews') { P.innerHTML = DATA.crews.map(c => r(c.id, `<span class="lead g">${icon('users')}</span>`, c.name, esc(c.what), ME.crew === c.id ? `<span class="chip done">${ME.crewOk ? 'Yours' : 'Asked'}</span>` : c.build ? `<span class="chip c-cyan">Build crew</span>` : `<span class="chip now">Forming</span>`)).join(''); N.textContent = 'Choose a crew and join it from its card.'; }
   if (tab === 'roles') { P.innerHTML = DATA.roles.map(x => r(x.id, `<span class="lead g">${icon('star')}</span>`, x.name, esc(x.crew), `<span class="chip open">Open</span>`)).join(''); N.textContent = 'Roles are open to anyone with the skills and the time.'; }
   if (tab === 'story') { P.innerHTML = STORY.map((c, i) => `<button class="row" data-story="${i}"><span class="lead ${'ycm'[i % 3]}">${i + 1}</span><span><b>${esc(c.title)}</b><small>${esc(c.lines[0])}</small></span><span></span>${icon('play')}</button>`).join('')
@@ -1577,9 +1580,9 @@ function renderInspector(it) {
       ${kv([['Crew', esc(q.crew)], ['Skills', esc(q.skills)], ['Where', esc(REG[q.where].title)]])}
       <div class="actions"><button class="btn primary" data-act="take:${q.id}">${icon('check')}Take this quest</button><button class="btn" data-sel="${q.where}">Go to ${esc(REG[q.where].title.replace(/^The /, 'the '))}</button></div></div>`; }
   if (k === 'event') { const e = it.e;
-    h = head(k, 'Event · fundraising', e.name, esc(e.format)) + `<div class="insp-body"><div class="chips">${chip(e.date, 'wait')}</div><p>${esc(e.text)}</p>
+    h = head(k, 'Event · fundraising', e.name, esc(e.format)) + `<div class="insp-body"><div class="chips">${chip(e.date, e.set ? 'open' : 'wait')}</div><p>${esc(e.text)}</p>
       ${kv([['Format', esc(e.format)], ['Tickets', esc(e.ticket)], ['Date', esc(e.date)], ...(e.speaker ? [['Speaker', esc(e.speaker)]] : [])])}
-      <div class="actions"><button class="btn" data-act="notify:${e.id}">${icon('bell')}Tell me when it is set</button><button class="btn" data-sel="${e.where}">Go there</button></div></div>`; }
+      <div class="actions">${e.url ? `<a class="btn primary" href="${esc(e.url)}" target="_blank" rel="noopener noreferrer">${icon('cal')}Get tickets</a>` : `<button class="btn" data-act="notify:${e.id}">${icon('bell')}Tell me when it is set</button>`}<button class="btn" data-sel="${e.where}">Go there</button></div></div>`; }
   if (k === 'crew') { const c = it.c;
     h = head(k, 'Crew', c.name, esc(c.what)) + `<div class="insp-body"><div class="chips">${chip('Forming', 'now')}</div><p>Crews form around one part of the temple. Ask through Join the build and choose what you can bring.</p>
       ${links(DATA.quests.filter(q => q.crew === c.name).map(q => [q.id, q.id, q.name]).concat(DATA.roles.filter(r => r.crew.includes(c.name.split(' ')[0])).map(r => [r.id, 'Role', r.name])))}
@@ -4400,7 +4403,7 @@ function campDoors() {
     P.innerHTML = DATA.gates.map(g => `<button class="row" data-sel="${g.id}"><span class="lead ${'ycm'[(g.n - 1) % 3]}">${g.n}</span><span><b>${esc(g.name)}</b><small>${esc(g.gift)}</small></span><span class="amt">${esc(gateAmt(g))}</span>${icon('right')}</button>`).join('');
     N.textContent = 'Each gate opens a space online and a gift of thanks, never a privilege on the playa. Working amounts, not final. No payment is taken here yet.';
   }
-  if (tab === 'events') N.textContent = 'Dates are announced once the stewards set them.';
+  if (tab === 'events') N.textContent = 'Tickets for Road to Mecca are open. More dates are announced once the stewards set them.';
   if (tab === 'quests') N.textContent = 'Share the film first: it is the easiest way to help. Crew quests open when the crews form.';
   if (tab === 'tech') N.textContent = 'Temple Tech, an art and research practice, works with light, coils and sacred geometry, in copper, wood and craft.';
   $$('.row', P).forEach(b => b.classList.toggle('sel', b.dataset.sel === current));
