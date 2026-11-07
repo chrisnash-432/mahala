@@ -194,9 +194,23 @@
     }).catch(function () { /* the sheet has it; the record can catch up */ });
   }
 
-  var opener = null;
+  var opener = null, accountAsked = false;
+  // Invited and not signed in: the account comes first, so the application joins your thread and Your Mahala can
+  // guide you on from it (Mahala OS strategy/your-mahala-accounts-plan-2026-11-04.md). "Apply without an account"
+  // stays possible: the sheet still has the application.
   function openJoin(from) {
-    opener = from || document.activeElement;
+    var M = window.MahalaMembers;
+    if (M && !accountAsked && from !== 'after-sign-in') {
+      accountAsked = true;
+      M.info().then(function (i) {
+        if (i && i.signedIn) return openJoin('after-sign-in');
+        try { sessionStorage.setItem('mahala.openJoin', '1'); } catch (e) { /* storage blocked */ }
+        M.signIn('Your invitation is waiting. Make your account first (it takes a moment), and your application opens right after.');
+        setTimeout(addSkip, 60);
+      }, function () { openJoin('after-sign-in'); });
+      return;
+    }
+    opener = (from && from.nodeType ? from : null) || document.activeElement;
     if (step === 5) { step = 1; }
     box.hidden = false; document.documentElement.classList.add('join-open');
     requestAnimationFrame(function () { box.classList.add('open'); });
@@ -221,5 +235,38 @@
     var bi = $('byInvite'); if (bi) bi.hidden = true;
     if (/^#(join|apply)$/i.test(location.hash)) openJoin();
   }
-  window.__join = { open: openJoin, state: function () { return { step: step, A: A }; } };
+  // "Apply without an account", under the sign-in sheet the application opened
+  function addSkip() {
+    var sh = document.querySelector('.mvs'); if (!sh || sh.querySelector('[data-skip]')) return;
+    var a = document.createElement('p'); a.innerHTML = '<small><a href="#" data-skip>Apply without an account</a></small>';
+    sh.appendChild(a);
+    a.querySelector('a').addEventListener('click', function (e) {
+      e.preventDefault(); try { sessionStorage.removeItem('mahala.openJoin'); } catch (er) { /* storage blocked */ }
+      var x = sh.querySelector('.mvs-x'); if (x) x.click();
+      openJoin('after-sign-in');
+    });
+  }
+  // the invitation also counts when this device kept it from the letter's link (the sign-in round trip drops it
+  // from the address), or when the account holds one (Mahala OS knows the invitation, or the letter was noted)
+  function showInvited() {
+    document.querySelectorAll('[data-join]').forEach(function (b) { b.hidden = false; });
+    document.querySelectorAll('[data-open-tribe]').forEach(function (a) { a.hidden = true; });
+    var bi = $('byInvite'); if (bi) bi.hidden = true;
+  }
+  if (!INVITED) {
+    var kept = null; try { kept = JSON.parse(localStorage.getItem('mahala.invite') || 'null'); } catch (e) { /* storage blocked */ }
+    if (kept && Date.now() - kept.at < 60 * 864e5) { INVITED = true; showInvited(); if (!A.nominatedBy && kept.by) A.nominatedBy = kept.by; }
+    var M0 = window.MahalaMembers;
+    if (M0 && M0.ready) M0.ready.then(function (i) {
+      var t = i && i.journey && i.journey.tier;
+      if (t === 'invited' || t === 'applicant' || t === 'camp') { INVITED = true; showInvited(); if (/^#(join|apply)$/i.test(location.hash) && box.hidden) openJoin('after-sign-in'); }
+    });
+  }
+  // back from the sign-in the application asked for: open it now
+  try {
+    if (sessionStorage.getItem('mahala.openJoin') === '1' && window.MahalaMembers) window.MahalaMembers.ready.then(function (i) {
+      if (i && i.signedIn && i.noticeSeen !== false) { sessionStorage.removeItem('mahala.openJoin'); openJoin('after-sign-in'); }
+    });
+  } catch (e) { /* storage blocked */ }
+  window.__join = { open: function () { openJoin('after-sign-in'); }, state: function () { return { step: step, A: A }; } };
 })();

@@ -30,7 +30,8 @@
   var SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
   var SUPABASE_SRI = 'sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o';   // that exact file, so a changed copy never runs
   var STORE_KEY = 'mahala-auth', EDITION = 'mahala.edition', THREAD = 'mahala.thread', AFTER = 'mahala.after';
-  var KEEP = 'mahala.keep', RECOVERY = 'mahala.recovery';
+  var KEEP = 'mahala.keep', RECOVERY = 'mahala.recovery', INVITE = 'mahala.invite', NOTED = 'mahala.inviteNoted';
+  var BASECAMP = 'https://claude.ai/artifact/R68XWMEyfHdgFRoywapxSR';
   var URL_AUTH = null;                // what the email link or Google brought back in the address, read once
   // Google's own button (one tap, and it names wearemahala.com, not the database's address) when site.js gives the
   // web client ID; otherwise "Continue with Google" goes through Supabase's redirect.
@@ -67,6 +68,17 @@
       }
     } catch (e) { }
   })();
+
+  // The invitation letter's link (camp.html?ref=<token>&by=<nominator>, or ?inv=): kept on this device for 60 days,
+  // so the camp application still opens after the sign-in round trip (the email link and Google come back without
+  // it), and the account learns it came by a letter (note_letter).
+  (function keepInvite() {
+    try {
+      var u = new URL(location.href), r = u.searchParams.get('ref') || u.searchParams.get('inv') || '', by = u.searchParams.get('by') || '';
+      if (/^[A-Za-z0-9_.~-]{8,200}$/.test(r) || by) ls.set(INVITE, JSON.stringify({ ref: /^[A-Za-z0-9_.~-]{8,200}$/.test(r) ? r : '', by: by.slice(0, 120), at: Date.now() }));
+    } catch (e) { }
+  })();
+  function invite() { try { var o = JSON.parse(ls.get(INVITE) || 'null'); if (o && Date.now() - o.at < 60 * 864e5) return o; } catch (e) { } return null; }
 
   // Keep me signed in: on (the default), the sign-in stays on this device; off, it ends when the browser closes.
   function keepOn() { return ls.get(KEEP) !== '0'; }
@@ -140,6 +152,12 @@
         return rpc('claim_thread', { p_token: tok });
       });
     });
+  }).then(function (w) {
+    var inv = invite();
+    if (!w.claimed || !inv || !inv.ref || ls.get(NOTED) === inv.ref || (w.journey && w.journey.tier !== 'tribe')) return w;
+    return rpc('note_letter', { p_ref: inv.ref, p_by: inv.by || null }).then(function (r) {
+      ls.set(NOTED, inv.ref); if (r && r.journey) w.journey = r.journey; return w;
+    }, function () { return w; });
   }).then(function (w) {
     info = w;
     var want = w.level >= 2 ? 'members' : null;
@@ -505,7 +523,7 @@
       });
     },
     onChange: function (fn) { if (typeof fn === 'function') authFns.push(fn); return function () { authFns = authFns.filter(function (f) { return f !== fn; }); }; },
-    open: function (mode) { return infoP.then(function () { UI.open(mode); }); },
+    open: function (mode, note) { return infoP.then(function () { UI.open(mode, note); }); },
     signOut: function () { return clientP.then(function (c) { ls.set(EDITION, null); ls.set(THREAD, null); return c.auth.signOut(); }).then(function () { }); },
     invoke: function (name, body) {
       return clientP.then(function (c) { return c.functions.invoke(name, { body: body || {} }); }).then(function (r) {
@@ -520,11 +538,36 @@
   window.claude = Object.freeze({ use: use, __standalone: true, __auth: Object.freeze(AUTH) });
   window.MahalaMembers = Object.freeze({
     ready: infoP.then(function () { return AUTH.info(); }),
-    info: AUTH.info, onChange: AUTH.onChange, signIn: function () { return AUTH.open('signin'); }, account: function () { return AUTH.open('account'); },
+    info: AUTH.info, onChange: AUTH.onChange, signIn: function (note) { return AUTH.open('signin', note); }, account: function () { return AUTH.open('account'); },
+    words: function (j) { return words(j); }, invite: function () { return invite(); },
     signOut: AUTH.signOut, rpc: rpc,
     // the Mahalaverse asks for an account before anyone steps onto the playa
     gate: function () { return AUTH.open('gate'); },
   });
+
+  /* ------------------------------------------------------------------ the journey's words */
+  // The database says where someone stands and which step is next (journey_of, keys only); the words live here,
+  // and Your Mahala reads them through MahalaMembers.words(journey). No figures: the fee is set by the stewards.
+  var TIERS = { tribe: 'Tribe member', invited: 'Invited to camp 2027', applicant: 'Your application is in', camp: 'Camp member 2027' };
+  var STEP_NAMES = { account: 'Your account', gathering: 'A gathering', quest: 'A quest', crew: 'A crew', apply: 'Your camp application',
+                     call: 'A call with a camp lead', contribution: 'Your camp fee', camp_life: 'Camp life' };
+  function words(j) {
+    if (!j) return null;
+    var by = j.nominatedBy ? ', called in by ' + j.nominatedBy : '';
+    var nexts = {
+      gathering: { title: 'Come to a gathering', text: 'Meet the tribe at one of the season\'s gatherings, and your thread ties its next knot.', href: 'tribe.html#events', cta: 'See the gatherings' },
+      apply: { title: 'Accept your invitation', text: 'You are invited to camp with Mahala at AfrikaBurn 2027' + by + '. Send your camp application to claim your place: places are limited to 50.', href: 'camp.html?inv=account#join', cta: 'Open my application' },
+      call: { title: 'Your application is in', text: 'The stewards are reading it, and a camp lead will be in touch for a short call. Nothing to do until then.' },
+      waitlist: { title: 'You are on the waitlist', text: 'Places are limited to 50. We will tell you as soon as one opens.' },
+      contribution: { title: 'Your place is confirmed', text: 'Welcome to camp! Look out for your secure payment link by email, for the plan you chose in your application (one, two or four instalments), with a receipt for each payment. Nothing is paid on the site.', href: 'camp.html', cta: 'About the camp' },
+    };
+    return {
+      tier: j.tier, tierName: TIERS[j.tier] || TIERS.tribe, next: nexts[j.next] || nexts.gathering,
+      steps: (j.steps || []).map(function (s) { return { key: s.key, label: STEP_NAMES[s.key] || s.key, state: s.state }; }),
+      roles: (j.roles || []).map(function (r) { return { role: r.role, label: { core: 'Core team', camp_lead: 'Camp lead', crew_lead: 'Crew lead' + (r.crew ? ', ' + r.crew : ''), treasurer: 'Treasurer', steward: 'Steward', owner: 'Camp account' }[r.role] || r.role }; }),
+      basecamp: j.basecamp ? BASECAMP : null,
+    };
+  }
 
   /* ------------------------------------------------------------------ the sheets */
   var NOTICE_VERSION = '2026-11-draft';
@@ -568,6 +611,12 @@
     '.mvs-g{width:18px;height:18px;flex:none}' +
     '.mvs-foot{position:sticky;bottom:-22px;margin:16px -24px -22px;padding:12px 24px 18px;background:linear-gradient(rgba(247,242,234,0),var(--g) 30%)} .mvs-foot .mvs-msg{margin-top:6px}' +
     '.mvs label.mvs-keep{border-top:0;padding:2px 0 6px} .mvs-row small{margin-top:-2px}' +
+    '.mvs-hold{border:1px solid var(--l);border-radius:16px;padding:12px 14px;margin:0 0 12px;background:#fffdf9} .mvs-hold p{margin:0 0 6px;color:var(--i)} .mvs-inv{font-style:italic}' +
+    '.mvs-b.q.on{border-color:var(--i);box-shadow:inset 0 0 0 1px var(--i)} .mvs-ask{border:1px solid var(--a);border-radius:16px;padding:12px 14px;margin:0 0 12px} .mvs-ask p{color:var(--i)}' +
+    '.mvs-rung span{display:block;color:var(--i2);margin:4px 0 2px} .mvs-fix{margin-top:8px} .mvs-fix textarea{margin-top:8px}' +
+    '.mvs-steps{list-style:none;margin:14px 0 8px;padding:0;counter-reset:s} .mvs-steps li{display:flex;justify-content:space-between;gap:10px;padding:8px 0 8px 30px;border-top:1px solid var(--l);position:relative;counter-increment:s;color:var(--i2)}' +
+    '.mvs-steps li:before{content:counter(s);position:absolute;left:0;top:7px;width:20px;height:20px;border-radius:50%;border:1px solid var(--l);font-size:12px;display:grid;place-items:center}' +
+    '.mvs-steps li.done{color:var(--i)} .mvs-steps li.done:before{content:"\\2713";background:var(--i);color:var(--g);border-color:var(--i)} .mvs-steps li.now{color:var(--i);font-weight:500} .mvs-steps li.now:before{border-color:var(--a);color:var(--a)}' +
     '.mvs-links{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;margin:12px 0 4px;font-size:14px} .mvs-alt{margin:10px 0 6px;font-size:14px;text-align:center}' +
     '.mvs-gw{min-height:46px;margin:8px 0 0;display:flex;justify-content:center} .mvs-gw .mvs-b{margin:0} .mvs-gbtn{display:flex;justify-content:center;width:100%}' +
     '.mvs-toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2147483001;background:#2A221C;color:#F7F2EA;padding:10px 18px;border-radius:999px;font:500 14px Jost,system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.3);max-width:calc(100vw - 32px)}' +
@@ -780,34 +829,115 @@
         '<button type="button" class="mvs-b q" data-k="close">Close</button>', 'Privacy notice');
     }
 
-    // The first time someone signs in. Someone new makes their account here (the name they go by, and their
-    // choices); someone Mahala knows is welcomed back. Either way: the notice, and every choice unticked.
+    // The first time someone signs in. Someone Mahala knows (their verified address matched) is welcomed back and
+    // shown what Mahala holds, to confirm or correct, not to fill in again. Someone new gives the name they go by;
+    // if it is the full name of exactly one person Mahala knows, they are asked "Is that you?", and a yes goes to the
+    // stewards to confirm (nothing is joined on a name alone). Either way: the notice, and every choice unticked.
     function welcome(w) {
-      var fresh = !!w.isNew;
+      if (w.isNew) return drawWelcome(w, null);
+      rpc('my_thread').then(function (t) { drawWelcome(w, t); }, function () { drawWelcome(w, null); });
+    }
+    function holds(t) {
+      var years = (t.years || []).filter(function (y) { return y < 2027; }), lines = (t.thread || []).slice(-5).reverse();
+      return '<h3>What Mahala holds of you</h3><div class="mvs-hold">' +
+        '<p><b>' + esc(t.name || t.goesBy || '') + '</b>' + (years.length ? '<br><small>With Mahala in ' + esc(years.join(', ')) + '</small>' : '') + '</p>' +
+        (t.invited ? '<p class="mvs-inv">Invited to camp with Mahala in 2027' + (t.nominatedBy ? ', called in by ' + esc(t.nominatedBy) : '') + '.</p>' : '') +
+        (lines.length ? '<ul class="mvs-th">' + lines.map(function (l) { return '<li>' + (l.year ? '<b>' + esc(l.year) + '</b>: ' : '') + esc(l.text) + '</li>'; }).join('') + '</ul>' : '') +
+        '</div>' +
+        '<label class="mvs-row"><span>Your playa name</span><input type="text" name="playa" maxlength="60" autocomplete="off" value="' + esc(t.playaName || '') + '" placeholder="The name you go by at the burn"></label>' +
+        '<div class="mvs-two"><button type="button" class="mvs-b q on" data-k="right" style="margin:0">Yes, that is me</button><button type="button" class="mvs-b q" data-k="wrong" style="margin:0">Something is not right</button></div>' +
+        '<label class="mvs-row" data-k="fixbox" hidden style="margin-top:10px"><span>What should we change or add?</span><textarea name="fix" maxlength="1000" placeholder="A year you camped, a role, a name, anything"></textarea></label>';
+    }
+    function drawWelcome(w, t) {
+      var fresh = !!w.isNew, asked = !!w.asked, checkedName = '', pending = null, shown = false, answered = false;
       var el = sheet('<h2>' + (fresh ? 'Welcome to Mahala' : 'Welcome back, ' + esc(w.name || 'temple builder')) + '</h2>' +
         '<p class="lead">' + (fresh ? 'You are part of Mahala\'s online community now. Tell us what to call you, choose how we stay in touch, and step onto the playa.'
-          : 'Your thread is here. Before you go on, here is how Mahala looks after it, and the choices that are yours.') + '</p>' +
-        (fresh ? '<label class="mvs-row"><span>What should we call you?</span><input type="text" name="nm" maxlength="80" autocomplete="name" required value="' + esc(w.name || '') + '"></label>' +
-                 '<label class="mvs-row"><span>Your playa name, if you have one</span><input type="text" name="playa" maxlength="60" autocomplete="off"></label>' : '') +
+          : 'It is good to see you again. Here is what Mahala holds of your journey with us: have a look, and tell us if anything is missing or wrong.') + '</p>' +
+        (fresh ? '<label class="mvs-row"><span>What should we call you? Your first and last name helps us find your thread.</span><input type="text" name="nm" maxlength="80" autocomplete="name" required value="' + esc(w.name || '') + '"></label>' +
+                 '<div class="mvs-ask" data-k="ask" hidden></div>' +
+                 '<label class="mvs-row"><span>Your playa name, if you have one</span><input type="text" name="playa" maxlength="60" autocomplete="off"></label>'
+               : (t ? holds(t) : '')) +
         '<h3>Stay in touch</h3>' + SCOPES.map(function (s) { return '<label class="mvs-ck"><input type="checkbox" name="' + s[0] + '"><span>' + esc(s[1]) + '</span></label>'; }).join('') +
         '<p><small>Nothing is ticked for you, and you can change any of it later in Account and privacy.</small></p>' +
         '<h3>How Mahala looks after your thread</h3>' + noticeHtml() +
         '<div class="mvs-foot"><button type="button" class="mvs-b" data-k="save">' + (fresh ? 'Make my account' : 'I have read this. Continue') + '</button><div class="mvs-msg" role="status"></div></div>', 'Welcome', false);
+      var nm = el.querySelector('[name="nm"]'), playa = el.querySelector('[name="playa"]'), ask = el.querySelector('[data-k="ask"]'), fixbox = el.querySelector('[data-k="fixbox"]');
+      // "Is that you?": only a full name, only once per name, only for someone new who has not asked already
+      function lookUp() {
+        var v = nm ? nm.value.trim().replace(/\s+/g, ' ') : '';
+        if (!fresh || asked || !ask || !/^\S{2,} .*\S{2,}$/.test(v)) return Promise.resolve(false);
+        if (v === checkedName) return pending || Promise.resolve(shown);
+        checkedName = v; shown = false; answered = false;
+        return (pending = rpc('find_my_thread', { p_name: v }).then(function (r) {
+          if (!r || !r.match) { ask.hidden = true; return false; }
+          shown = true;
+          ask.innerHTML = '<p>Mahala knows someone called <b>' + esc(v) + '</b>. Is that you?</p>' +
+            '<div class="mvs-two"><button type="button" class="mvs-b q" data-k="yes" style="margin:0">Yes, that is me</button><button type="button" class="mvs-b q" data-k="no" style="margin:0">No, not me</button></div>';
+          ask.hidden = false;
+          return true;
+        }, function () { return false; }));
+      }
+      if (nm) { nm.addEventListener('change', lookUp); nm.addEventListener('blur', lookUp); }
+      el.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-k]'); if (!b) return;
+        var k = b.getAttribute('data-k');
+        if (k === 'yes') {
+          b.disabled = true; answered = true;
+          rpc('ask_for_my_thread', { p_name: checkedName }).then(function (r) {
+            asked = !!(r && r.asked); info.asked = asked;
+            ask.innerHTML = '<p>' + (asked ? 'Thank you. A steward will join your thread to this account, usually within a day: your years and camps will then appear on Your Mahala.'
+              : 'We could not ask just now. Tell the stewards at wearemahala@gmail.com and they will join your thread.') + '</p>';
+          }, function () { b.disabled = false; });
+        }
+        if (k === 'no') { ask.hidden = true; answered = true; }
+        if (k === 'right') { b.classList.add('on'); var wr = el.querySelector('[data-k="wrong"]'); if (wr) wr.classList.remove('on'); if (fixbox) fixbox.hidden = true; }
+        if (k === 'wrong') { b.classList.add('on'); var ri = el.querySelector('[data-k="right"]'); if (ri) ri.classList.remove('on'); if (fixbox) { fixbox.hidden = false; fixbox.querySelector('textarea').focus(); } }
+      });
       el.querySelector('[data-k="save"]').addEventListener('click', function (e) {
-        var b = e.currentTarget, nm = el.querySelector('[name="nm"]'), playa = el.querySelector('[name="playa"]');
+        var b = e.currentTarget, fix = el.querySelector('[name="fix"]');
         if (nm && !nm.value.trim()) { msg(el, 'Tell us what to call you.'); nm.focus(); return; }
         b.disabled = true; msg(el, 'Saving...');
-        var steps = (nm ? rpc('set_my_name', { p_name: nm.value.trim() }) : Promise.resolve())
-          .then(function () { return playa && playa.value.trim() ? rpc('set_profile', { p_field: 'playa_name', p_text: playa.value.trim(), p_visibility: 'members' }) : null; })
-          .then(function () { return rpc('accept_notice', { p_version: w.noticeVersion }); })
-          .then(function () {
-            return SCOPES.reduce(function (p, s) {
-              return p.then(function () { return rpc('set_consent', { p_scope: s[0], p_granted: !!el.querySelector('[name="' + s[0] + '"]').checked, p_source: 'first-sign-in' }); });
-            }, Promise.resolve());
-          });
-        steps.then(function () { close(); toast(fresh ? 'Welcome to the Mahalaverse.' : 'Your thread is yours. Welcome back.'); if (fresh && nm) { info.name = nm.value.trim().split(/\s+/)[0]; mountChips(true); var c = document.querySelector('#v7-platform-chip .v7-platform-nm'); if (c) c.textContent = info.name; } },
-          function (er) { b.disabled = false; msg(el, (er && er.message) || 'That did not save. Try again.'); });
+        // a full name not looked up yet: ask first, and let them answer before the account is made
+        lookUp().then(function (isShown) {
+          if (isShown && !answered && !asked) { b.disabled = false; msg(el, 'One question first, just above.'); ask.scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+          var steps = (nm ? rpc('set_my_name', { p_name: nm.value.trim() }) : Promise.resolve())
+            .then(function () { return playa && playa.value.trim() && playa.value.trim() !== ((t && t.playaName) || '') ? rpc('set_profile', { p_field: 'playa_name', p_text: playa.value.trim(), p_visibility: 'members' }) : null; })
+            .then(function () { return fix && fix.value.trim() && fixbox && !fixbox.hidden ? rpc('report_correction', { p_text: fix.value.trim() }) : null; })
+            .then(function () { return rpc('accept_notice', { p_version: w.noticeVersion }); })
+            .then(function () {
+              return SCOPES.reduce(function (p, s) {
+                return p.then(function () { return rpc('set_consent', { p_scope: s[0], p_granted: !!el.querySelector('[name="' + s[0] + '"]').checked, p_source: 'first-sign-in' }); });
+              }, Promise.resolve());
+            });
+          steps.then(function () {
+            close();
+            toast(fresh ? 'Welcome to the Mahalaverse.' : (fix && fix.value.trim() && fixbox && !fixbox.hidden ? 'Thank you. The stewards will look at what you sent.' : 'Your thread is yours. Welcome back.'));
+            if (fresh && nm) { info.name = nm.value.trim().split(/\s+/)[0]; mountChips(true); var c = document.querySelector('#v7-platform-chip .v7-platform-nm'); if (c) c.textContent = info.name; }
+            setTimeout(function () { guide(w.journey); }, 600);
+          }, function (er) { b.disabled = false; msg(el, (er && er.message) || 'That did not save. Try again.'); });
+        });
       });
+    }
+
+    // After the welcome, or on any page later: someone invited is shown the way to their camp application. On the
+    // camp page the application itself opens; elsewhere a short sheet offers it, once per visit.
+    var guided = false;
+    function guide(j) {
+      if (guided || !j || j.tier !== 'invited') return;
+      guided = true;
+      if (/camp\.html$/.test(location.pathname) && window.__join && window.__join.open) {
+        if (ss.get('mahala.openJoin') === '1' || /^#(join|apply)$/i.test(location.hash) || ss.get('mahala.guided') !== '1') { ss.set('mahala.openJoin', null); ss.set('mahala.guided', '1'); toast('Your invitation is open.'); window.__join.open(); }
+        return;
+      }
+      if (ss.get('mahala.guided') === '1') return;
+      ss.set('mahala.guided', '1');
+      var x = words(j);
+      sheet('<h2>Your invitation is waiting</h2><p class="lead">' + esc(x.next.text) + '</p>' + stepsHtml(x) +
+        '<a class="mvs-b" href="' + esc(x.next.href) + '" style="text-decoration:none">' + esc(x.next.cta) + '</a>' +
+        '<button type="button" class="mvs-b q" data-k="close">Later</button>', 'Your invitation', true);
+    }
+    function stepsHtml(x) {
+      return '<ol class="mvs-steps">' + x.steps.map(function (s) { return '<li class="' + esc(s.state) + '"><span>' + esc(s.label) + '</span><small>' + (s.state === 'done' ? 'Done' : s.state === 'now' ? 'Next' : '') + '</small></li>'; }).join('') + '</ol>';
     }
 
     function account() {
@@ -820,9 +950,16 @@
           '<h2>' + esc(t.goesBy || t.name || 'Your thread') + '</h2>' +
           '<p><small>Signed in as ' + esc(info.email || '') + (t.signIns > 1 ? ' (one of ' + t.signIns + ' sign-ins)' : '') + '</small></p>' +
           (CFG.mePage ? '<p><a class="mvs-b" href="' + esc(CFG.mePage) + '" style="display:block;text-align:center;text-decoration:none">Open Your Mahala, your own page</a></p>' : '') +
-          (t.isNew ? '<p class="lead">You are part of Mahala\'s online community. Camped with Mahala before, under another address? Tell the stewards at wearemahala@gmail.com and they will join your thread.</p>' : '') +
-          (t.rung ? '<h3>Where you stand</h3><div class="mvs-rung"><b>' + esc(t.rung.name) + '</b><span>' + esc(t.rung.next) + '</span></div>' : '') +
-          (lines ? '<h3>Your thread</h3><ul class="mvs-th">' + lines + '</ul><p><small>From Mahala\'s record. Something missing or wrong? Tell the stewards at wearemahala@gmail.com.</small></p>' : '') +
+          (t.isNew ? '<p class="lead">You are part of Mahala\'s online community. Camped with Mahala before, under another address? ' + (info.asked ? 'A steward will join your thread soon.' : 'Tell the stewards at wearemahala@gmail.com and they will join your thread.') + '</p>' : '') +
+          (function () {
+            var x = words(t.journey); if (!x) return '';
+            return '<h3>Where you stand</h3><div class="mvs-rung"><b>' + esc(x.tierName) + '</b><span>' + esc(x.next.title) + '. ' + esc(x.next.text) + '</span>' +
+              (x.next.href ? '<a class="mvs-b q" href="' + esc(x.next.href) + '" style="text-decoration:none">' + esc(x.next.cta) + '</a>' : '') + '</div>' +
+              (x.roles.length ? '<p><small>Your roles for 2027: ' + x.roles.map(function (r) { return esc(r.label); }).join(', ') + '</small></p>' : '') +
+              (x.basecamp ? '<a class="mvs-b q" href="' + esc(x.basecamp) + '" target="_blank" rel="noopener" style="text-decoration:none">Open Basecamp</a>' : '');
+          })() +
+          (lines ? '<h3>Your thread</h3><ul class="mvs-th">' + lines + '</ul>' : '') +
+          '<details class="mvs-fix"><summary>Something missing or wrong in what Mahala holds?</summary><textarea name="fix" maxlength="1000" placeholder="A year you camped, a role, a name, anything"></textarea><button type="button" class="mvs-b q" data-k="fix">Send to the stewards</button></details>' +
           '<h3>Your playa name</h3><div class="mvs-row"><div class="mvs-two"><input type="text" name="playa" maxlength="60" value="' + esc((p.playa_name && p.playa_name.text) || t.playaName || '') + '" placeholder="The name you go by at the burn"><button type="button" class="mvs-b q" data-k="playa" style="margin:0;width:auto">Save</button></div></div>' +
           '<h3>Your choices</h3>' + SCOPES.map(function (s) { return '<label class="mvs-ck"><input type="checkbox" data-scope="' + s[0] + '"' + (t.consent && t.consent[s[0]] ? ' checked' : '') + '><span>' + esc(s[1]) + '</span></label>'; }).join('') +
           '<h3>What you share</h3>' + FIELDS.map(function (f) {
@@ -836,7 +973,7 @@
           '<button type="button" class="mvs-b q" data-k="export">Download my data</button>' +
           '<button type="button" class="mvs-b q" data-k="signout">Sign out</button>' +
           '<button type="button" class="mvs-b q" data-k="delete">Delete my account</button>' +
-          (info.isSteward ? '<h3>For stewards: new members</h3><p data-k="pending">Checking...</p>' : '') +
+          (info.isSteward ? '<h3>For stewards: new members</h3><p data-k="pending">Checking...</p><h3>For stewards: notes about the record</h3><p data-k="fixes">Checking...</p>' : '') +
           '<div class="mvs-msg" role="status"></div>' +
           '<p><small><a href="#" data-k="notice">How Mahala looks after your thread</a></small></p>';
         el.addEventListener('change', function (e) {
@@ -850,11 +987,12 @@
           if (f) rpc('set_profile', { p_field: f, p_text: el.querySelector('[data-field="' + f + '"]').value, p_visibility: el.querySelector('[data-vis="' + f + '"]').value }).then(function () { msg(el, 'Saved.'); }, function () { msg(el, 'That did not save.'); });
           if (k === 'export') rpc('export_my_data').then(function (d) { return DOWNLOADS.save({ filename: 'my-mahala-thread.json', data: d, type: 'application/json' }); }).then(function () { msg(el, 'Your data is downloading.'); }, function () { msg(el, 'That did not work. Try again.'); });
           if (k === 'signout') { msg(el, 'Signing out...'); AUTH.signOut(); }
+          if (k === 'fix') { var fx = el.querySelector('[name="fix"]'); if (!fx.value.trim()) { msg(el, 'Tell us what is not right.'); return; } rpc('report_correction', { p_text: fx.value.trim() }).then(function () { fx.value = ''; msg(el, 'Thank you. The stewards will look at it.'); }, function () { msg(el, 'That did not send. Try again.'); }); }
           if (k === 'password') newPassword(true);
           if (k === 'delete') del();
           if (k === 'notice') { e.preventDefault(); showNotice(); }
         });
-        if (info.isSteward) stewardList(el);
+        if (info.isSteward) { stewardList(el); stewardFixes(el); }
       }, function () { el.innerHTML = '<button type="button" class="mvs-x" data-k="close" aria-label="Close">&times;</button><h2>Account and privacy</h2><p>Your thread could not be loaded. Try again in a little while.</p>'; });
     }
 
@@ -869,8 +1007,9 @@
         box.innerHTML = '<p>' + list.length + (list.length === 1 ? ' new member' : ' new members') + ' since the last sync. The next sync takes them into Mahala OS. Join someone to a person Mahala already knows only when the address shows it is them.</p>' + list.map(function (x, i) {
           var addrs = (x.signIns || []).map(function (s) { return esc(s.address) + ' (' + esc(s.method) + ')'; }).join(', ');
           return '<div class="mvs-row" data-i="' + i + '" style="border-top:1px solid var(--l);padding-top:10px">' +
-            '<b>' + esc(x.name || 'No name yet') + '</b><small>' + (addrs || 'No address') + ', joined ' + esc(String(x.since || '').slice(0, 10)) + (x.access && x.access !== 'auto' ? ', ' + esc(x.access) : '') + '</small>' +
-            '<div class="mvs-two"><input type="text" data-pid placeholder="Same person as: p-firstname-surname" aria-label="Mahala OS id this member already has">' +
+            '<b>' + esc(x.name || 'No name yet') + '</b><small>' + (addrs || 'No address') + ', joined ' + esc(String(x.since || '').slice(0, 10)) + (x.access && x.access !== 'auto' ? ', ' + esc(x.access) : '') + (x.letter ? ', came by a letter' : '') + '</small>' +
+            (x.asksToBe ? '<small>Says they are <b>' + esc(x.asksToBe.name) + '</b>' + (x.asksToBe.years && x.asksToBe.years.length ? ' (' + esc(x.asksToBe.years.join(', ')) + ')' : '') + ': join them if the address fits.</small>' : '') +
+            '<div class="mvs-two"><input type="text" data-pid placeholder="Same person as: p-firstname-surname" aria-label="Mahala OS id this member already has" value="' + esc(x.asksToBe ? x.asksToBe.personId : '') + '">' +
             '<button type="button" class="mvs-b q" data-s="merge" style="margin:0;width:auto">Join them</button></div>' +
             '<div class="mvs-two"><button type="button" class="mvs-b q" data-s="guest" style="margin:0">Guest only</button><button type="button" class="mvs-b q" data-s="blocked" style="margin:0;width:auto">Block</button></div></div>';
         }).join('');
@@ -888,6 +1027,14 @@
             function (er) { b.disabled = false; msg(el, (er && er.message) || 'That did not work.'); });
         });
       }, function () { pe.textContent = 'The list of new members could not be loaded.'; });
+    }
+
+    function stewardFixes(el) {
+      var fe = el.querySelector('[data-k="fixes"]'); if (!fe) return;
+      rpc('steward_corrections').then(function (list) {
+        fe.outerHTML = list.length ? '<ul class="mvs-th">' + list.slice(0, 20).map(function (c) { return '<li><b>' + esc(c.name || c.personId) + '</b> (' + esc(c.personId) + ', ' + esc(String(c.at).slice(0, 10)) + '): ' + esc(c.text) + '</li>'; }).join('') + '</ul><p><small>The next pull carries these into Mahala OS too.</small></p>'
+          : '<p>No notes yet.</p>';
+      }, function () { fe.textContent = 'The notes could not be loaded.'; });
     }
 
     function del() {
@@ -915,8 +1062,8 @@
 
     return {
       toast: toast,
-      open: function (mode, note) { if (mode === 'gate') signIn(true); else if (mode === 'newpass') newPassword(false); else if (mode === 'password') newPassword(true); else if (mode === 'link') signIn(false, 'link', note); else if (mode === 'account') account(); else if (mode === 'delete') del(); else if (mode === 'notice') showNotice(); else if (info && info.signedIn) account(); else signIn(); },
-      welcome: welcome, newPassword: newPassword,
+      open: function (mode, note) { if (mode === 'gate') signIn(true); else if (mode === 'newpass') newPassword(false); else if (mode === 'password') newPassword(true); else if (mode === 'link') signIn(false, 'link', note); else if (mode === 'account') account(); else if (mode === 'delete') del(); else if (mode === 'notice') showNotice(); else if (info && info.signedIn) account(); else signIn(false, 'in', note); },
+      welcome: welcome, newPassword: newPassword, guide: guide,
     };
   })();
 
@@ -928,6 +1075,7 @@
       var needsWelcome = w.signedIn && w.claimed && !w.noticeSeen;
       if (w.signedIn && ss.get(RECOVERY) === '1') UI.newPassword(false, needsWelcome ? function () { UI.welcome(w); } : null);   // a reset link: the new password first
       else if (needsWelcome) UI.welcome(w);
+      else if (w.signedIn && w.claimed) setTimeout(function () { UI.guide(w.journey); }, 800);
       else if (!w.signedIn && URL_AUTH && URL_AUTH.error) UI.open('link', 'That link has expired or has already been used. Ask for a new one here.');
       else if (!w.signedIn && ss.get('mahala.fromLetter') === '1' && !ss.get('mahala.letterShown')) { ss.set('mahala.letterShown', '1'); UI.open('signin'); }
     });

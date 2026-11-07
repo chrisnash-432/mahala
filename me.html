@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400&family=Jost:wght@300;400;500&family=Marcellus&display=swap">
 <script src="site.js?v=8"></script>
-<script src="assets/shim/claude-shim.js?v=5"></script>
+<script src="assets/shim/claude-shim.js?v=6"></script>
 <style>
 /* Your Mahala, prototype 2 (4 Nov 2026). One page about you, the same on the site and in the Mahalaverse.
    The people here are made up; nothing is read from or saved to the member database.
@@ -138,6 +138,15 @@ h1 { font: 400 clamp(38px, 7vw, 56px)/1.02 var(--name); letter-spacing: .04em; m
 .link { background: none; border: 0; padding: 4px 0; color: var(--cyan-ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font-size: 14.5px; min-height: 32px; }
 .said { font-size: 14px; color: var(--ok); min-height: 1.4em; margin: 8px 0 0; }
 
+/* your next step on the 2027 path */
+.nextstep { margin-bottom: 14px; }
+.pathsteps { list-style: none; margin: 10px 0 6px; padding: 0; counter-reset: ps; }
+.pathsteps li { counter-increment: ps; position: relative; padding: 6px 0 6px 30px; opacity: .65; }
+.pathsteps li::before { content: counter(ps); position: absolute; left: 0; top: 6px; width: 20px; height: 20px; border-radius: 50%; border: 1px solid currentColor; font-size: 12px; display: grid; place-items: center; }
+.pathsteps li.done, .pathsteps li.now { opacity: 1; }
+.pathsteps li.done::before { content: "\2713"; background: var(--ink); border-color: var(--ink); color: var(--warm); }
+.pathsteps li.now { font-weight: 500; }
+.pathsteps small { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; margin-left: 6px; }
 /* role doors */
 details.door { margin-top: 14px; border-radius: 18px; background: var(--ink); color: var(--warm); overflow: hidden; }
 details.door summary { list-style: none; cursor: pointer; padding: 16px 20px; display: flex; align-items: center; gap: 12px; min-height: 56px; }
@@ -556,7 +565,10 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     var witnessed = Object.keys(cf).some(function (k) { return /^Q-/.test(k) && Array.isArray(cf[k]) && cf[k].some(Boolean); });
     var crewOk = !!(cf.crew && cf.crew === (b.crew || me.crew));
     var apps = t.applications || [], stage = apps.length ? apps[apps.length - 1].stage : null;
-    var inCamp = /confirm|welcom|accept/i.test(stage || '') || years.indexOf(2027) >= 0;
+    // where you stand on the 2027 path and your next step, from the member record (journey_of), in the shim's words
+    var J = (LIVE.info && LIVE.info.journey) || t.journey || null, W = J && window.MahalaMembers && window.MahalaMembers.words ? window.MahalaMembers.words(J) : null;
+    var inCamp = J ? J.tier === 'camp' : /confirm|welcom|accept/i.test(stage || '');
+    if (!inCamp) years = years.filter(function (y) { return y < 2027; });   // a nomination for 2027 is not a year at camp
     var past = Object.keys(st.yes || {}).some(function (id) { var e = EVENTS.events.filter(function (x) { return x.id === id; })[0]; return e && st.yes[id] === 'yes' && d(e.end || e.date) < TODAY; });
     var open = ['fire'];
     if (years.length || past) open.push('gathered');
@@ -565,12 +577,14 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     if (inCamp) open.push('camp');
     if (prof.offering && prof.offering.text) open.push('gift');
     var phrase = inCamp ? 'in the camp' : crewOk ? 'in a crew' : open.indexOf('hands') >= 0 ? 'hands on' : open.indexOf('gathered') >= 0 ? 'one of the people who gather' : 'round the fire';
-    var role = roles.join(' ').toLowerCase(), core = /core|steward/.test(role) || !!(LIVE.info && LIVE.info.isSteward), lead = /lead/.test(role);
+    var jr = ((J && J.roles) || []).map(function (r) { return r.role; });
+    var role = roles.join(' ').toLowerCase(), core = jr.some(function (r) { return /core|steward|owner/.test(r); }) || !!(LIVE.info && LIVE.info.isSteward), lead = jr.indexOf('camp_lead') >= 0 || (!J && /lead/.test(role));
     // the thread: the record's lines, by year, newest first
     var by = {}; (t.thread || []).forEach(function (l) { var y = l.year || 'Other'; (by[y] = by[y] || []).push(l.text); });
     var chapters = [['2027 · The Seed', 'Still being written.', [], (t.isNew && !years.length) ? 'waiting' : '']];
     if (t.isNew) chapters[0][2].push(['You found your way in', 'Welcome to the community.']);
-    apps.slice().reverse().forEach(function (a) { chapters[0][2].push(['Your camp application', ({ sent: 'Sent', read: 'Read by the stewards', call: 'A call with a camp lead', confirmed: 'Confirmed. Welcome.' })[a.stage] || ('Where it is: ' + a.stage)]); });
+    apps.slice().reverse().forEach(function (a) { chapters[0][2].push(['Your camp application', ({ received: 'Sent', reviewing: 'Read by the stewards', waitlist: 'On the waitlist', accepted: 'Confirmed. Welcome to camp.', declined: 'Not this year', withdrawn: 'Withdrawn' })[a.stage] || ('Where it is: ' + a.stage)]); });
+    if (J && J.invited && !apps.length) chapters[0][2].push(['You are invited to camp', J.nominatedBy ? 'Called in by ' + J.nominatedBy + '.' : 'Your place is waiting.']);
     Object.keys(by).filter(function (y) { return String(y) !== '2027'; }).sort().reverse().forEach(function (y) { chapters.push([y + (CAMPS[y] ? ' · ' + CAMPS[y] : ''), by[y].join(' ')]); });
     (by[2027] || []).forEach(function (x) { chapters[0][2].push([x, '']); });
     var beads = years.map(function (y) { return ['there', y + (CAMPS[y] ? ': ' + CAMPS[y] + '.' : '.'), 1]; });
@@ -590,7 +604,8 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       hello: t.isNew && !years.length ? 'Hello, ' + first + '. You found your way in.' : 'Welcome back, ' + first + '.',
       open: open, newest: open[open.length - 1], rings: years.map(String), hats: roles.map(function (r) { return r; }),
       season: 'This season you are ' + phrase + '. Every circle fills in its own season.',
-      beads: beads, yes: st.yes || {}, next: core && preDecisions ? 'core' : 'event', chapters: chapters, before: years.length > 0,
+      beads: beads, yes: st.yes || {}, next: core && preDecisions ? 'core' : (J && J.tier !== 'tribe') ? 'journey' : 'event', chapters: chapters, before: years.length > 0,
+      journey: W, tier: J ? J.tier : null,
       quest: { id: q.id, name: q.name, crew: q.crew, steps: q.steps.map(function (x, i) { return [x, seen[i] ? 'ok' : mine[i] ? 'mine' : '']; }) },
       gifts: gifts, gave: null, fields: fields, texts: texts, consent: consent, door: core ? 'core' : lead ? 'lead' : null
     };
@@ -642,7 +657,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + '</div><div class="whorest"><div class="seedlife">' + seedOfLife(P) + '<div><p class="season"><b>Where you are now</b>' + esc(P.season) + '</p>'
       + '<p class="petalsay" id="petalsay" aria-live="polite">Tap a circle. Each is a way of belonging, filled in any order. At the centre, where The Seed sits, everyone is a temple builder.</p>'
       + (P.rings.length ? '<p class="rings">The rings around it are your years: ' + P.rings.join(' and ') + '.</p>' : '') + '</div></div>'
-      + letter() + roleDoor() + '</div></section>';
+      + nextStep() + letter() + roleDoor() + '</div></section>';
 
     // now
     var up = upcoming(), soon = up.filter(function (e) { return e.kind !== 'burn'; }).slice(0, 3);
@@ -687,6 +702,17 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
 
   function deck(k) { return DECK.filter(function (c) { return c.k === k; })[0]; }
   function curve(flip) { return '<svg class="curve" viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true"><path d="' + (flip ? 'M0 30 C 300 0, 700 40, 1000 8' : 'M0 8 C 300 40, 700 0, 1000 30') + '"/></svg>'; }
+
+  // Your next step on the 2027 path: where you stand, the one thing to do now, and the steps of your path
+  function nextStep() {
+    var W = P.journey; if (!P.live || !W) return '';
+    var n = W.next, path = P.tier && P.tier !== 'tribe';
+    return '<div class="letter nextstep" id="nextstep"><span class="from">' + esc(W.tierName) + (W.roles.length ? ' \u00b7 ' + W.roles.map(function (r) { return esc(r.label); }).join(', ') : '') + '</span>'
+      + '<p><b>' + esc(n.title) + '.</b> ' + esc(n.text) + '</p>'
+      + (path ? '<ol class="pathsteps">' + W.steps.map(function (x) { return '<li class="' + esc(x.state) + '">' + esc(x.label) + (x.state === 'now' ? ' <small>Next</small>' : '') + '</li>'; }).join('') + '</ol>' : '')
+      + '<div class="row">' + (n.href ? '<a class="btn" href="' + esc(n.href) + '">' + esc(n.cta) + '</a>' : '')
+      + (W.basecamp ? '<a class="btn ghost" href="' + esc(W.basecamp) + '" target="_blank" rel="noopener">Open Basecamp</a>' : '') + '</div></div>';
+  }
 
   function letter() {
     if (P.next === 'event') {
