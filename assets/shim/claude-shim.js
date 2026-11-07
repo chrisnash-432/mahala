@@ -154,9 +154,12 @@
     });
   }).then(function (w) {
     var inv = invite();
-    if (!w.claimed || !inv || !inv.ref || ls.get(NOTED) === inv.ref || (w.journey && w.journey.tier !== 'tribe')) return w;
+    // noted once per account, not per device: someone who deletes their account and comes back, or a second
+    // person on the same device, still has their letter noted
+    var noted = inv && inv.ref + '|' + w.personId;
+    if (!w.claimed || !inv || !inv.ref || ls.get(NOTED) === noted || (w.journey && w.journey.tier !== 'tribe')) return w;
     return rpc('note_letter', { p_ref: inv.ref, p_by: inv.by || null }).then(function (r) {
-      ls.set(NOTED, inv.ref); if (r && r.journey) w.journey = r.journey; return w;
+      ls.set(NOTED, noted); if (r && r.journey) w.journey = r.journey; return w;
     }, function () { return w; });
   }).then(function (w) {
     info = w;
@@ -953,7 +956,12 @@
           '<h2>' + esc(t.goesBy || t.name || 'Your thread') + '</h2>' +
           '<p><small>Signed in as ' + esc(info.email || '') + (t.signIns > 1 ? ' (one of ' + t.signIns + ' sign-ins)' : '') + '</small></p>' +
           (CFG.mePage ? '<p><a class="mvs-b" href="' + esc(CFG.mePage) + '" style="display:block;text-align:center;text-decoration:none">Open Your Mahala, your own page</a></p>' : '') +
-          (t.isNew ? '<p class="lead">You are part of Mahala\'s online community. Camped with Mahala before, under another address? ' + (info.asked ? 'A steward will join your thread soon.' : 'Tell the stewards at wearemahala@gmail.com and they will join your thread.') + '</p>' : '') +
+          (t.isNew ? '<p class="lead">You are part of Mahala\'s online community.' + (info.asked ? ' A steward will join your thread to this account soon.' : '') + '</p>' +
+            // "I am already in the community under another address": the address is checked, never kept (ask_to_be_joined)
+            (info.asked ? '' : '<details class="mvs-fix" data-k="joinbox"><summary>Already part of Mahala under another email address?</summary>' +
+              '<p>Give the address Mahala knows you by, or tell us how we know you. A steward checks and joins your thread to this account, and your years and camps then show here.</p>' +
+              '<input type="email" name="other" autocomplete="off" placeholder="The other address"><textarea name="how" maxlength="300" placeholder="Anything that helps: a camp year, the name you went by"></textarea>' +
+              '<button type="button" class="mvs-b q" data-k="joinask">Ask the stewards</button></details>') : '') +
           (function () {
             var x = words(t.journey); if (!x) return '';
             return '<h3>Where you stand</h3><div class="mvs-rung"><b>' + esc(x.tierName) + '</b><span>' + esc(x.next.title) + '. ' + esc(x.next.text) + '</span>' +
@@ -991,6 +999,15 @@
           if (k === 'export') rpc('export_my_data').then(function (d) { return DOWNLOADS.save({ filename: 'my-mahala-thread.json', data: d, type: 'application/json' }); }).then(function () { msg(el, 'Your data is downloading.'); }, function () { msg(el, 'That did not work. Try again.'); });
           if (k === 'signout') { msg(el, 'Signing out...'); AUTH.signOut(); }
           if (k === 'fix') { var fx = el.querySelector('[name="fix"]'); if (!fx.value.trim()) { msg(el, 'Tell us what is not right.'); return; } rpc('report_correction', { p_text: fx.value.trim() }).then(function () { fx.value = ''; msg(el, 'Thank you. The stewards will look at it.'); }, function () { msg(el, 'That did not send. Try again.'); }); }
+          if (k === 'joinask') {
+            var jb = el.querySelector('[data-k="joinbox"]'), oa = jb.querySelector('[name="other"]').value.trim(), hw = jb.querySelector('[name="how"]').value.trim();
+            if (!oa && !hw) { msg(el, 'Give the other address, or tell us how Mahala knows you.'); return; }
+            if (oa && !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(oa)) { msg(el, 'That address does not look right.'); return; }
+            b.disabled = true;
+            rpc('ask_to_be_joined', { p_address: oa || null, p_note: hw || null }).then(function () {
+              info.asked = true; jb.outerHTML = '<p class="lead">Thank you. A steward will check and join your thread to this account, usually within a day.</p>'; msg(el, '');
+            }, function (er) { b.disabled = false; msg(el, (er && er.code !== 'unavailable' && er.message) || 'That did not send. Try again, or write to wearemahala@gmail.com.'); });
+          }
           if (k === 'password') newPassword(true);
           if (k === 'delete') del();
           if (k === 'notice') { e.preventDefault(); showNotice(); }
@@ -1011,7 +1028,11 @@
           var addrs = (x.signIns || []).map(function (s) { return esc(s.address) + ' (' + esc(s.method) + ')'; }).join(', ');
           return '<div class="mvs-row" data-i="' + i + '" style="border-top:1px solid var(--l);padding-top:10px">' +
             '<b>' + esc(x.name || 'No name yet') + '</b><small>' + (addrs || 'No address') + ', joined ' + esc(String(x.since || '').slice(0, 10)) + (x.access && x.access !== 'auto' ? ', ' + esc(x.access) : '') + (x.letter ? ', came by a letter' : '') + '</small>' +
-            (x.asksToBe ? '<small>Says they are <b>' + esc(x.asksToBe.name) + '</b>' + (x.asksToBe.years && x.asksToBe.years.length ? ' (' + esc(x.asksToBe.years.join(', ')) + ')' : '') + ': join them if the address fits.</small>' : '') +
+            (x.asksToBe ? '<small>Says they are <b>' + esc(x.asksToBe.name) + '</b>' + (x.asksToBe.years && x.asksToBe.years.length ? ' (' + esc(x.asksToBe.years.join(', ')) + ')' : '') +
+              (x.asksToBe.via === 'address' ? ': the other address they gave is on that record (they have not signed in with it), so check with them before joining.' : ': join them if the address fits.') + '</small>' : '') +
+            (x.asks || []).filter(function (a) { return a.note; }).slice(0, 2).map(function (a) { return '<small>Their note: ' + esc(a.note) + '</small>'; }).join('') +
+            (x.asks && x.asks.length && !x.asksToBe ? '<small>Says they are already in the community; nobody matched what they gave.</small>' : '') +
+            (x.addressOnSeveral ? '<small>Their address is on more than one record, so it matched nobody.</small>' : '') +
             '<div class="mvs-two"><input type="text" data-pid placeholder="Same person as: p-firstname-surname" aria-label="Mahala OS id this member already has" value="' + esc(x.asksToBe ? x.asksToBe.personId : '') + '">' +
             '<button type="button" class="mvs-b q" data-s="merge" style="margin:0;width:auto">Join them</button></div>' +
             '<div class="mvs-two"><button type="button" class="mvs-b q" data-s="guest" style="margin:0">Guest only</button><button type="button" class="mvs-b q" data-s="blocked" style="margin:0;width:auto">Block</button></div></div>';
