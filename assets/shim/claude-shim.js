@@ -519,7 +519,10 @@
     info: function () {
       return infoP.then(function (w) {
         return { signedIn: !!(w.signedIn && w.claimed), uid: w.uid || null, name: w.name || '', email: w.email || '',
-                 isNew: !!w.isNew, rulesDiffer: !!(w.rulesVersion && w.rulesVersion !== RULES_VERSION) };
+                 isNew: !!w.isNew, rulesDiffer: !!(w.rulesVersion && w.rulesVersion !== RULES_VERSION),
+                 // the 2027 journey (tier, next step, roles) and whether the first-sign-in welcome is done, for the
+                 // camp page and Your Mahala
+                 journey: w.journey || null, noticeSeen: w.claimed ? !!w.noticeSeen : null, isSteward: !!w.isSteward };
       });
     },
     onChange: function (fn) { if (typeof fn === 'function') authFns.push(fn); return function () { authFns = authFns.filter(function (f) { return f !== fn; }); }; },
