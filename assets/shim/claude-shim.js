@@ -31,7 +31,7 @@
   var SUPABASE_SRI = 'sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o';   // that exact file, so a changed copy never runs
   var STORE_KEY = 'mahala-auth', EDITION = 'mahala.edition', THREAD = 'mahala.thread', AFTER = 'mahala.after';
   var KEEP = 'mahala.keep', RECOVERY = 'mahala.recovery', INVITE = 'mahala.invite', NOTED = 'mahala.inviteNoted';
-  var BASECAMP = 'https://claude.ai/artifact/R68XWMEyfHdgFRoywapxSR';
+  var BASECAMP = 'basecamp.html';   // wearemahala.com's Basecamp, behind sign-in (T-216)
   var URL_AUTH = null;                // what the email link or Google brought back in the address, read once
   // Google's own button (one tap, and it names wearemahala.com, not the database's address) when site.js gives the
   // web client ID; otherwise "Continue with Google" goes through Supabase's redirect.
@@ -154,9 +154,12 @@
     });
   }).then(function (w) {
     var inv = invite();
-    if (!w.claimed || !inv || !inv.ref || ls.get(NOTED) === inv.ref || (w.journey && w.journey.tier !== 'tribe')) return w;
+    // noted once per account, not per device: someone who deletes their account and comes back, or a second
+    // person on the same device, still has their letter noted
+    var noted = inv && inv.ref + '|' + w.personId;
+    if (!w.claimed || !inv || !inv.ref || ls.get(NOTED) === noted || (w.journey && w.journey.tier !== 'tribe')) return w;
     return rpc('note_letter', { p_ref: inv.ref, p_by: inv.by || null }).then(function (r) {
-      ls.set(NOTED, inv.ref); if (r && r.journey) w.journey = r.journey; return w;
+      ls.set(NOTED, noted); if (r && r.journey) w.journey = r.journey; return w;
     }, function () { return w; });
   }).then(function (w) {
     info = w;
@@ -551,7 +554,7 @@
   /* ------------------------------------------------------------------ the journey's words */
   // The database says where someone stands and which step is next (journey_of, keys only); the words live here,
   // and Your Mahala reads them through MahalaMembers.words(journey). No figures: the fee is set by the stewards.
-  var TIERS = { tribe: 'Tribe member', invited: 'Invited to camp 2027', applicant: 'Your application is in', camp: 'Camp member 2027' };
+  var TIERS = { tribe: 'Tribe member', invited: 'Invited to camp 2027', applicant: 'Applied for camp 2027', camp: 'Camp member 2027' };
   var STEP_NAMES = { account: 'Your account', gathering: 'A gathering', quest: 'A quest', crew: 'A crew', apply: 'Your camp application',
                      call: 'A call with a camp lead', contribution: 'Your camp fee', camp_life: 'Camp life' };
   function words(j) {
@@ -610,7 +613,7 @@
     '.mvs-rung{border:1px solid var(--l);border-radius:16px;padding:12px 14px;margin:6px 0 4px} .mvs-rung b{font:400 19px Marcellus,Georgia,serif;display:block}' +
     '.mvs ul.mvs-th{margin:0;padding:0 0 0 18px;color:var(--i2)} .mvs ul.mvs-th li{margin:3px 0}' +
     '.mvs details{border-top:1px solid var(--l);padding:8px 0} .mvs summary{cursor:pointer;color:var(--i)}' +
-    '.mvs-msg{min-height:1.4em;color:var(--a);font-size:14px;margin-top:8px} .mvs a{color:var(--a)} .mvs a.mvs-b{color:var(--i);text-decoration:none}' +
+    '.mvs-msg{min-height:1.4em;color:var(--a);font-size:14px;margin-top:8px} .mvs a{color:var(--a)} .mvs a.mvs-b{color:var(--g);text-decoration:none} .mvs a.mvs-b.q{color:var(--i)}' +
     '.mvs-g{width:18px;height:18px;flex:none}' +
     '.mvs-foot{position:sticky;bottom:-22px;margin:16px -24px -22px;padding:12px 24px 18px;background:linear-gradient(rgba(247,242,234,0),var(--g) 30%)} .mvs-foot .mvs-msg{margin-top:6px}' +
     '.mvs label.mvs-keep{border-top:0;padding:2px 0 6px} .mvs-row small{margin-top:-2px}' +
@@ -656,7 +659,7 @@
       var first = veil.querySelector('input,button:not(.mvs-x)'); if (first) setTimeout(function () { first.focus(); }, 30);
       return veil.querySelector('.mvs');
     }
-    function toast(t) { css(); var d = document.createElement('div'); d.className = 'mvs-toast'; d.setAttribute('role', 'status'); d.textContent = t; document.body.appendChild(d); setTimeout(function () { d.remove(); }, 4200); }
+    function toast(t) { css(); [].forEach.call(document.querySelectorAll('.mvs-toast'), function (o) { o.remove(); }); var d = document.createElement('div'); d.className = 'mvs-toast'; d.setAttribute('role', 'status'); d.textContent = t; document.body.appendChild(d); setTimeout(function () { d.remove(); }, 4200); }
     function msg(el, t) { var m = el.querySelector('.mvs-msg'); if (m) m.textContent = t || ''; }
     function noticeHtml() { return NOTICE.map(function (n) { return '<details><summary>' + esc(n[0]) + '</summary><p>' + esc(n[1]) + '</p></details>'; }).join(''); }
     var GOOGLE = '<svg class="mvs-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.6 13.3l7.9 6.1C12.4 13.7 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.6c0-1.6-.1-3.1-.4-4.6H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17z"/><path fill="#FBBC05" d="M10.5 28.6c-.5-1.4-.8-2.9-.8-4.6s.3-3.2.8-4.6l-7.9-6.1C1 16.6 0 20.2 0 24s1 7.4 2.6 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.2-13.5-10l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/></svg>';
@@ -952,8 +955,13 @@
         el.innerHTML = '<button type="button" class="mvs-x" data-k="close" aria-label="Close">&times;</button>' +
           '<h2>' + esc(t.goesBy || t.name || 'Your thread') + '</h2>' +
           '<p><small>Signed in as ' + esc(info.email || '') + (t.signIns > 1 ? ' (one of ' + t.signIns + ' sign-ins)' : '') + '</small></p>' +
-          (CFG.mePage ? '<p><a class="mvs-b" href="' + esc(CFG.mePage) + '" style="display:block;text-align:center;text-decoration:none">Open Your Mahala, your own page</a></p>' : '') +
-          (t.isNew ? '<p class="lead">You are part of Mahala\'s online community. Camped with Mahala before, under another address? ' + (info.asked ? 'A steward will join your thread soon.' : 'Tell the stewards at wearemahala@gmail.com and they will join your thread.') + '</p>' : '') +
+          (CFG.mePage ? '<p><a class="mvs-b" href="' + esc(CFG.mePage) + '" style="text-decoration:none">Open Your Mahala, your own page</a></p>' : '') +
+          (t.isNew ? '<p class="lead">You are part of Mahala\'s online community.' + (info.asked ? ' A steward will join your thread to this account soon.' : '') + '</p>' +
+            // "I am already in the community under another address": the address is checked, never kept (ask_to_be_joined)
+            (info.asked ? '' : '<details class="mvs-fix" data-k="joinbox"><summary>Already part of Mahala under another email address?</summary>' +
+              '<p>Give the address Mahala knows you by, or tell us how we know you. A steward checks and joins your thread to this account, and your years and camps then show here.</p>' +
+              '<input type="email" name="other" autocomplete="off" placeholder="The other address"><textarea name="how" maxlength="300" placeholder="Anything that helps: a camp year, the name you went by"></textarea>' +
+              '<button type="button" class="mvs-b q" data-k="joinask">Ask the stewards</button></details>') : '') +
           (function () {
             var x = words(t.journey); if (!x) return '';
             return '<h3>Where you stand</h3><div class="mvs-rung"><b>' + esc(x.tierName) + '</b><span>' + esc(x.next.title) + '. ' + esc(x.next.text) + '</span>' +
@@ -991,6 +999,15 @@
           if (k === 'export') rpc('export_my_data').then(function (d) { return DOWNLOADS.save({ filename: 'my-mahala-thread.json', data: d, type: 'application/json' }); }).then(function () { msg(el, 'Your data is downloading.'); }, function () { msg(el, 'That did not work. Try again.'); });
           if (k === 'signout') { msg(el, 'Signing out...'); AUTH.signOut(); }
           if (k === 'fix') { var fx = el.querySelector('[name="fix"]'); if (!fx.value.trim()) { msg(el, 'Tell us what is not right.'); return; } rpc('report_correction', { p_text: fx.value.trim() }).then(function () { fx.value = ''; msg(el, 'Thank you. The stewards will look at it.'); }, function () { msg(el, 'That did not send. Try again.'); }); }
+          if (k === 'joinask') {
+            var jb = el.querySelector('[data-k="joinbox"]'), oa = jb.querySelector('[name="other"]').value.trim(), hw = jb.querySelector('[name="how"]').value.trim();
+            if (!oa && !hw) { msg(el, 'Give the other address, or tell us how Mahala knows you.'); return; }
+            if (oa && !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(oa)) { msg(el, 'That address does not look right.'); return; }
+            b.disabled = true;
+            rpc('ask_to_be_joined', { p_address: oa || null, p_note: hw || null }).then(function () {
+              info.asked = true; jb.outerHTML = '<p class="lead">Thank you. A steward will check and join your thread to this account, usually within a day.</p>'; msg(el, '');
+            }, function (er) { b.disabled = false; msg(el, (er && er.code !== 'unavailable' && er.message) || 'That did not send. Try again, or write to wearemahala@gmail.com.'); });
+          }
           if (k === 'password') newPassword(true);
           if (k === 'delete') del();
           if (k === 'notice') { e.preventDefault(); showNotice(); }
@@ -1011,7 +1028,11 @@
           var addrs = (x.signIns || []).map(function (s) { return esc(s.address) + ' (' + esc(s.method) + ')'; }).join(', ');
           return '<div class="mvs-row" data-i="' + i + '" style="border-top:1px solid var(--l);padding-top:10px">' +
             '<b>' + esc(x.name || 'No name yet') + '</b><small>' + (addrs || 'No address') + ', joined ' + esc(String(x.since || '').slice(0, 10)) + (x.access && x.access !== 'auto' ? ', ' + esc(x.access) : '') + (x.letter ? ', came by a letter' : '') + '</small>' +
-            (x.asksToBe ? '<small>Says they are <b>' + esc(x.asksToBe.name) + '</b>' + (x.asksToBe.years && x.asksToBe.years.length ? ' (' + esc(x.asksToBe.years.join(', ')) + ')' : '') + ': join them if the address fits.</small>' : '') +
+            (x.asksToBe ? '<small>Says they are <b>' + esc(x.asksToBe.name) + '</b>' + (x.asksToBe.years && x.asksToBe.years.length ? ' (' + esc(x.asksToBe.years.join(', ')) + ')' : '') +
+              (x.asksToBe.via === 'address' ? ': the other address they gave is on that record (they have not signed in with it), so check with them before joining.' : ': join them if the address fits.') + '</small>' : '') +
+            (x.asks || []).filter(function (a) { return a.note; }).slice(0, 2).map(function (a) { return '<small>Their note: ' + esc(a.note) + '</small>'; }).join('') +
+            (x.asks && x.asks.length && !x.asksToBe ? '<small>Says they are already in the community; nobody matched what they gave.</small>' : '') +
+            (x.addressOnSeveral ? '<small>Their address is on more than one record, so it matched nobody.</small>' : '') +
             '<div class="mvs-two"><input type="text" data-pid placeholder="Same person as: p-firstname-surname" aria-label="Mahala OS id this member already has" value="' + esc(x.asksToBe ? x.asksToBe.personId : '') + '">' +
             '<button type="button" class="mvs-b q" data-s="merge" style="margin:0;width:auto">Join them</button></div>' +
             '<div class="mvs-two"><button type="button" class="mvs-b q" data-s="guest" style="margin:0">Guest only</button><button type="button" class="mvs-b q" data-s="blocked" style="margin:0;width:auto">Block</button></div></div>';
