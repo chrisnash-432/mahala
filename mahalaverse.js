@@ -4371,7 +4371,7 @@ INTRO.addEventListener('click', e => { if (!e.target.closest('[data-intro="go"]'
 /* Your Mahala and Basecamp, at the theme camp (4 Nov 2026). With accounts on, every member finds a door to their own
    page here; the core team, camp leads and stewards also find Basecamp, where the build is planned. Basecamp is a
    private page that opens only for the people it has been shared with. Roles come from the member database. */
-const BASECAMP_URL = 'https://claude.ai/artifact/R68XWMEyfHdgFRoywapxSR';
+const BASECAMP_URL = 'basecamp.html';
 const ROLE = { known: false, core: false, lead: false, steward: false };
 if (window.MahalaMembers) window.MahalaMembers.ready.then(i => {
   if (!i || !i.signedIn) return;
@@ -4385,8 +4385,8 @@ function campDoors() {
   if (!window.MahalaMembers || !ROLE.signedIn) return '';
   const mine = `<div class="sect"><h4>Your Mahala</h4><p class="note">Your own page: where you are on the Golden Seed of Life, the gatherings ahead, your card and your thread.</p><div class="actions"><a class="btn" href="me.html">${icon('star')}Open Your Mahala</a></div></div>`;
   const plans = ROLE.core || ROLE.lead || ROLE.steward
-    ? `<div class="sect"><h4>Basecamp</h4><p class="note">Where the core team and camp leads plan The Seed: the tasks, the timeline, the events, the decisions and the money. It opens for the people it has been shared with.</p><div class="actions"><a class="btn primary" href="${BASECAMP_URL}" target="_blank" rel="noopener">${icon('tools')}Open Basecamp</a></div></div>`
-    : `<p class="note">The core team and camp leads plan the build at Basecamp. Want to be part of it? Join a crew.</p>`;
+    ? `<div class="sect"><h4>Basecamp</h4><p class="note">Where the core team, camp leads and crews plan The Seed: the tasks, the timeline, the events, the decisions and the money. Mark your tasks done and talk them through there.</p><div class="actions"><a class="btn primary" href="${BASECAMP_URL}">${icon('tools')}Open Basecamp</a></div></div>`
+    : `<p class="note">The core team, camp leads and crews plan the build at Basecamp. Want to be part of it? Join a crew.</p>`;
   return mine + plans;
 }
 
