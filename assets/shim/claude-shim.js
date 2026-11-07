@@ -551,7 +551,7 @@
   /* ------------------------------------------------------------------ the journey's words */
   // The database says where someone stands and which step is next (journey_of, keys only); the words live here,
   // and Your Mahala reads them through MahalaMembers.words(journey). No figures: the fee is set by the stewards.
-  var TIERS = { tribe: 'Tribe member', invited: 'Invited to camp 2027', applicant: 'Your application is in', camp: 'Camp member 2027' };
+  var TIERS = { tribe: 'Tribe member', invited: 'Invited to camp 2027', applicant: 'Applied for camp 2027', camp: 'Camp member 2027' };
   var STEP_NAMES = { account: 'Your account', gathering: 'A gathering', quest: 'A quest', crew: 'A crew', apply: 'Your camp application',
                      call: 'A call with a camp lead', contribution: 'Your camp fee', camp_life: 'Camp life' };
   function words(j) {
@@ -610,7 +610,7 @@
     '.mvs-rung{border:1px solid var(--l);border-radius:16px;padding:12px 14px;margin:6px 0 4px} .mvs-rung b{font:400 19px Marcellus,Georgia,serif;display:block}' +
     '.mvs ul.mvs-th{margin:0;padding:0 0 0 18px;color:var(--i2)} .mvs ul.mvs-th li{margin:3px 0}' +
     '.mvs details{border-top:1px solid var(--l);padding:8px 0} .mvs summary{cursor:pointer;color:var(--i)}' +
-    '.mvs-msg{min-height:1.4em;color:var(--a);font-size:14px;margin-top:8px} .mvs a{color:var(--a)} .mvs a.mvs-b{color:var(--i);text-decoration:none}' +
+    '.mvs-msg{min-height:1.4em;color:var(--a);font-size:14px;margin-top:8px} .mvs a{color:var(--a)} .mvs a.mvs-b{color:var(--g);text-decoration:none} .mvs a.mvs-b.q{color:var(--i)}' +
     '.mvs-g{width:18px;height:18px;flex:none}' +
     '.mvs-foot{position:sticky;bottom:-22px;margin:16px -24px -22px;padding:12px 24px 18px;background:linear-gradient(rgba(247,242,234,0),var(--g) 30%)} .mvs-foot .mvs-msg{margin-top:6px}' +
     '.mvs label.mvs-keep{border-top:0;padding:2px 0 6px} .mvs-row small{margin-top:-2px}' +
@@ -656,7 +656,7 @@
       var first = veil.querySelector('input,button:not(.mvs-x)'); if (first) setTimeout(function () { first.focus(); }, 30);
       return veil.querySelector('.mvs');
     }
-    function toast(t) { css(); var d = document.createElement('div'); d.className = 'mvs-toast'; d.setAttribute('role', 'status'); d.textContent = t; document.body.appendChild(d); setTimeout(function () { d.remove(); }, 4200); }
+    function toast(t) { css(); [].forEach.call(document.querySelectorAll('.mvs-toast'), function (o) { o.remove(); }); var d = document.createElement('div'); d.className = 'mvs-toast'; d.setAttribute('role', 'status'); d.textContent = t; document.body.appendChild(d); setTimeout(function () { d.remove(); }, 4200); }
     function msg(el, t) { var m = el.querySelector('.mvs-msg'); if (m) m.textContent = t || ''; }
     function noticeHtml() { return NOTICE.map(function (n) { return '<details><summary>' + esc(n[0]) + '</summary><p>' + esc(n[1]) + '</p></details>'; }).join(''); }
     var GOOGLE = '<svg class="mvs-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.6 13.3l7.9 6.1C12.4 13.7 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.6c0-1.6-.1-3.1-.4-4.6H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17z"/><path fill="#FBBC05" d="M10.5 28.6c-.5-1.4-.8-2.9-.8-4.6s.3-3.2.8-4.6l-7.9-6.1C1 16.6 0 20.2 0 24s1 7.4 2.6 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.2-13.5-10l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/></svg>';
@@ -952,7 +952,7 @@
         el.innerHTML = '<button type="button" class="mvs-x" data-k="close" aria-label="Close">&times;</button>' +
           '<h2>' + esc(t.goesBy || t.name || 'Your thread') + '</h2>' +
           '<p><small>Signed in as ' + esc(info.email || '') + (t.signIns > 1 ? ' (one of ' + t.signIns + ' sign-ins)' : '') + '</small></p>' +
-          (CFG.mePage ? '<p><a class="mvs-b" href="' + esc(CFG.mePage) + '" style="display:block;text-align:center;text-decoration:none">Open Your Mahala, your own page</a></p>' : '') +
+          (CFG.mePage ? '<p><a class="mvs-b" href="' + esc(CFG.mePage) + '" style="text-decoration:none">Open Your Mahala, your own page</a></p>' : '') +
           (t.isNew ? '<p class="lead">You are part of Mahala\'s online community. Camped with Mahala before, under another address? ' + (info.asked ? 'A steward will join your thread soon.' : 'Tell the stewards at wearemahala@gmail.com and they will join your thread.') + '</p>' : '') +
           (function () {
             var x = words(t.journey); if (!x) return '';

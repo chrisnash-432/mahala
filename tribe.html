@@ -371,7 +371,9 @@ html.join-open, html.join-open body { overflow: hidden; }
     if (!v) return;
     v.poster = v.dataset.poster;
     var load = function () { if (!v.getAttribute('src')) v.src = v.dataset.src; };
-    if ('IntersectionObserver' in window) new IntersectionObserver(function (es) {
+    // Data Saver or reduced motion: the poster stays until the sound button is tapped
+    var quiet = (navigator.connection && navigator.connection.saveData) || matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (quiet) { /* nothing plays by itself */ } else if ('IntersectionObserver' in window) new IntersectionObserver(function (es) {
       es.forEach(function (e) { if (e.isIntersecting) { load(); v.play().catch(function () {}); } else v.pause(); }); }, { threshold: 0.35 }).observe(v);
     else load();
     var sound = function (on) { v.muted = !on; sb.setAttribute('aria-pressed', String(on)); sb.querySelector('span').textContent = on ? 'Sound on' : 'Tap for sound';
