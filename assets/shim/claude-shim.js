@@ -646,7 +646,7 @@
         '<p class="mvs-links"><a href="#" data-m="forgot">Forgot your password?</a><a href="#" data-m="link">Email me a link instead</a></p>' +
         '<p class="mvs-alt">New here? <a href="#" data-m="up">Make your account</a></p>';
       else if (mode === 'up') body = '<form data-k="form">' + email +
-        '<label class="mvs-row"><span>Choose a password</span><input type="password" name="password" autocomplete="new-password" minlength="' + PW_MIN + '" required><small>At least ' + PW_MIN + ' characters.</small></label>' +
+        '<label class="mvs-row"><span>Choose a password</span><input type="password" name="password" autocomplete="new-password" required><small>At least ' + PW_MIN + ' characters.</small></label>' +
         keepBox() + '<button type="submit" class="mvs-b">Make my account</button></form>' +
         '<p class="mvs-links"><a href="#" data-m="link">Rather have no password? Email me a link</a></p>' +
         '<p class="mvs-alt">Already have an account? <a href="#" data-m="in">Sign in</a></p>';
@@ -746,10 +746,10 @@
     }
 
     // After a reset link: choose the new password (the link has already signed this browser in).
-    function newPassword(fromAccount) {
+    function newPassword(fromAccount, then) {
       var el = sheet('<h2>' + (fromAccount ? 'Your password' : 'Choose a new password') + '</h2>' +
         '<p class="lead">' + (fromAccount ? 'Set a password to sign in with your email and password, on any device. The email link and Google keep working too.' : 'You are signed in. Choose the password you will use from now on.') + '</p>' +
-        '<form data-k="form"><label class="mvs-row"><span>New password</span><input type="password" name="password" autocomplete="new-password" minlength="' + PW_MIN + '" required><small>At least ' + PW_MIN + ' characters.</small></label>' +
+        '<form data-k="form"><label class="mvs-row"><span>New password</span><input type="password" name="password" autocomplete="new-password" required><small>At least ' + PW_MIN + ' characters.</small></label>' +
         '<label class="mvs-row"><span>The same again</span><input type="password" name="again" autocomplete="new-password" required></label>' +
         '<button type="submit" class="mvs-b">Save my password</button></form><div class="mvs-msg" role="status"></div>', 'Choose a password', true);
       var form = el.querySelector('form');
@@ -762,7 +762,7 @@
         clientP.then(function (c) { return c.auth.updateUser({ password: pw }); }).then(function (r) {
           b.disabled = false;
           if (r && r.error) { var t = authMsg(r.error); msg(el, t === 'confirm' ? 'That did not save. Try again.' : t); return; }
-          ss.set(RECOVERY, null); close(); toast('Your password is saved.');
+          ss.set(RECOVERY, null); close(); toast('Your password is saved.'); if (typeof then === 'function') setTimeout(then, 400);
         }, function () { b.disabled = false; msg(el, 'That did not save. Try again in a little while.'); });
       });
     }
@@ -908,7 +908,7 @@
     return {
       toast: toast,
       open: function (mode, note) { if (mode === 'gate') signIn(true); else if (mode === 'newpass') newPassword(false); else if (mode === 'password') newPassword(true); else if (mode === 'link') signIn(false, 'link', note); else if (mode === 'account') account(); else if (mode === 'delete') del(); else if (mode === 'notice') showNotice(); else if (info && info.signedIn) account(); else signIn(); },
-      welcome: welcome,
+      welcome: welcome, newPassword: newPassword,
     };
   })();
 
@@ -917,8 +917,9 @@
     ready(function () {
       watchBlobs();
       mountChips();
-      if (w.signedIn && w.claimed && !w.noticeSeen) UI.welcome(w);
-      else if (w.signedIn && ss.get(RECOVERY) === '1') UI.open('newpass');
+      var needsWelcome = w.signedIn && w.claimed && !w.noticeSeen;
+      if (w.signedIn && ss.get(RECOVERY) === '1') UI.newPassword(false, needsWelcome ? function () { UI.welcome(w); } : null);   // a reset link: the new password first
+      else if (needsWelcome) UI.welcome(w);
       else if (!w.signedIn && URL_AUTH && URL_AUTH.error) UI.open('link', 'That link has expired or has already been used. Ask for a new one here.');
       else if (!w.signedIn && ss.get('mahala.fromLetter') === '1' && !ss.get('mahala.letterShown')) { ss.set('mahala.letterShown', '1'); UI.open('signin'); }
     });
