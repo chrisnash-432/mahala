@@ -30,6 +30,11 @@
   var SUPABASE_JS = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js';
   var SUPABASE_SRI = 'sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o';   // that exact file, so a changed copy never runs
   var STORE_KEY = 'mahala-auth', EDITION = 'mahala.edition', THREAD = 'mahala.thread', AFTER = 'mahala.after';
+  var KEEP = 'mahala.keep', RECOVERY = 'mahala.recovery';
+  var URL_AUTH = null;                // what the email link or Google brought back in the address, read once
+  // Google's own button (one tap, and it names wearemahala.com, not the database's address) when site.js gives the
+  // web client ID; otherwise "Continue with Google" goes through Supabase's redirect.
+  var GOOGLE_CLIENT = typeof CFG.googleClientId === 'string' && /\.apps\.googleusercontent\.com$/.test(CFG.googleClientId) ? CFG.googleClientId : null;
   var POLL_MS = Number(window.__MV_POLL_MS) > 0 ? Number(window.__MV_POLL_MS) : 30000;
   var MAX_SUBS = 64;
 
@@ -47,12 +52,29 @@
     try {
       var u = new URL(location.href), t = u.searchParams.get('thread');
       if (t && /^[A-Za-z0-9_-]{20,200}$/.test(t)) { ls.set(THREAD, JSON.stringify({ t: t, at: Date.now() })); ss.set('mahala.fromLetter', '1'); }
-      if (t !== null || u.searchParams.has('signin')) {
+      // The email link, a password reset or Google comes back with the sign-in in the address (#access_token=...).
+      // Keep it here for the client, then take it out of the address at once, so it is never bookmarked or shared.
+      // (Before 7 Nov 2026 the address was cleaned before the client had read it, so links landed signed out.)
+      var authInUrl = /access_token|error_description/.test(u.hash);
+      if (authInUrl) {
+        var h = new URLSearchParams(u.hash.slice(1));
+        URL_AUTH = { access: h.get('access_token'), refresh: h.get('refresh_token'), type: h.get('type'), error: h.get('error_description') || h.get('error') };
+        if (URL_AUTH.type === 'recovery' && URL_AUTH.access) ss.set(RECOVERY, '1');
+      }
+      if (t !== null || u.searchParams.has('signin') || authInUrl) {
         u.searchParams.delete('thread'); u.searchParams.delete('signin');
-        history.replaceState(null, '', u.pathname + (u.search || '') + (/access_token|error_description/.test(u.hash) ? '' : u.hash));
+        history.replaceState(null, '', u.pathname + (u.search || '') + (authInUrl ? '' : u.hash));
       }
     } catch (e) { }
   })();
+
+  // Keep me signed in: on (the default), the sign-in stays on this device; off, it ends when the browser closes.
+  function keepOn() { return ls.get(KEEP) !== '0'; }
+  var authStore = {
+    getItem: function (k) { return ss.get(k) || ls.get(k); },
+    setItem: function (k, v) { if (keepOn()) { ls.set(k, v); ss.set(k, null); } else { ss.set(k, v); ls.set(k, null); } },
+    removeItem: function (k) { ls.set(k, null); ss.set(k, null); },
+  };
 
   /* ------------------------------------------------------------------ the client */
   function loadScript(src) {
@@ -66,7 +88,7 @@
   var clientP = (window.__MV_SUPABASE ? Promise.resolve() : loadScript(SUPABASE_JS)).then(function () {
     var lib = window.__MV_SUPABASE || window.supabase;
     return lib.createClient(CFG.url, CFG.anonKey, {
-      auth: { storageKey: STORE_KEY, persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'implicit' },
+      auth: { storageKey: STORE_KEY, storage: authStore, persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, flowType: 'implicit' },
       realtime: { params: { eventsPerSecond: 5 } },
     });
   });
@@ -96,7 +118,10 @@
 
   // Who is here: sign-in, then claim (the letter's token, else the verified address), then whoami.
   var infoP = clientP.then(function (c) {
-    return c.auth.getSession().then(function (r) {
+    var fromLink = URL_AUTH && URL_AUTH.access && URL_AUTH.refresh
+      ? c.auth.setSession({ access_token: URL_AUTH.access, refresh_token: URL_AUTH.refresh }).then(function (r) { if (r && r.error) URL_AUTH.error = r.error.message; }, function () { URL_AUTH.error = 'expired'; })
+      : Promise.resolve();
+    return fromLink.then(function () { return c.auth.getSession(); }).then(function (r) {
       var s = r && r.data && r.data.session;
       startUser = s ? s.user.id : null;
       c.auth.onAuthStateChange(function (ev, sess) {
@@ -531,7 +556,7 @@
     '.mvs-b{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:46px;margin:8px 0 0;padding:0 18px;border-radius:999px;border:1px solid var(--i);background:var(--i);color:var(--g);font:500 15px Jost,system-ui,sans-serif;cursor:pointer}' +
     '.mvs-b.q{background:none;color:var(--i);border-color:var(--l)} .mvs-b.warn{background:#7A2E22;border-color:#7A2E22} .mvs-b[disabled]{opacity:.55;cursor:default}' +
     '.mvs-or{display:flex;align-items:center;gap:12px;margin:14px 0 6px;color:var(--i2);font-size:13px}.mvs-or:before,.mvs-or:after{content:"";flex:1;height:1px;background:var(--l)}' +
-    '.mvs input[type=email],.mvs input[type=text],.mvs textarea,.mvs select{width:100%;box-sizing:border-box;min-height:44px;padding:10px 14px;border-radius:14px;border:1px solid var(--l);background:#fff;color:var(--i);font:inherit}' +
+    '.mvs input[type=email],.mvs input[type=password],.mvs input[type=text],.mvs textarea,.mvs select{width:100%;box-sizing:border-box;min-height:44px;padding:10px 14px;border-radius:14px;border:1px solid var(--l);background:#fff;color:var(--i);font:inherit}' +
     '.mvs textarea{min-height:80px;resize:vertical} .mvs label{display:block}' +
     '.mvs label.mvs-ck{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--l);cursor:pointer} .mvs-ck input{-webkit-appearance:none;appearance:none;width:20px;height:20px;margin:2px 0 0;flex:none;border:1.5px solid var(--i);border-radius:5px;background:#fff;display:grid;place-items:center;cursor:pointer}' +
     '.mvs-ck input:checked{background:var(--i)} .mvs-ck input:checked::after{content:"";width:5px;height:10px;border:solid var(--g);border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg)} .mvs-ck input:focus-visible{outline:2px solid var(--a);outline-offset:2px}' +
@@ -541,6 +566,9 @@
     '.mvs details{border-top:1px solid var(--l);padding:8px 0} .mvs summary{cursor:pointer;color:var(--i)}' +
     '.mvs-msg{min-height:1.4em;color:var(--a);font-size:14px;margin-top:8px} .mvs a{color:var(--a)} .mvs a.mvs-b{color:var(--i);text-decoration:none}' +
     '.mvs-g{width:18px;height:18px;flex:none}' +
+    '.mvs label.mvs-keep{border-top:0;padding:2px 0 6px} .mvs-row small{margin-top:-2px}' +
+    '.mvs-links{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;margin:12px 0 4px;font-size:14px} .mvs-alt{margin:10px 0 6px;font-size:14px;text-align:center}' +
+    '.mvs-gw{min-height:46px;margin:8px 0 0;display:flex;justify-content:center} .mvs-gw .mvs-b{margin:0} .mvs-gbtn{display:flex;justify-content:center;width:100%}' +
     '.mvs-toast{position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2147483001;background:#2A221C;color:#F7F2EA;padding:10px 18px;border-radius:999px;font:500 14px Jost,system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.3);max-width:calc(100vw - 32px)}' +
     '.mvm-chip{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:0 14px;border-radius:999px;border:1px solid currentColor;background:none;color:inherit;font:500 14px Jost,system-ui,sans-serif;cursor:pointer}' +
     '@media (prefers-reduced-motion:no-preference){.mvs{animation:mvsIn .25s ease}}@keyframes mvsIn{from{opacity:0;transform:translateY(8px)}}';
@@ -579,40 +607,164 @@
       return location.origin + location.pathname + '?signin=1';
     }
 
-    // Sign in, or make an account: the same two buttons, since a first sign-in makes the account. As the gate to
-    // the Mahalaverse (gate: true) it cannot be closed, only left for the front page.
-    function signIn(gate) {
+    // What went wrong, in the camp's words. Supabase's own message decides; the address is never confirmed or denied.
+    function authMsg(e, what) {
+      var m = String((e && e.message) || ''), code = String((e && e.code) || ''), wait = m.match(/after (\d+) seconds?/i);
+      if (wait) return 'We sent you a link ' + (what === 'reset' ? 'to reset your password ' : '') + 'a moment ago. Look in your inbox (and Promotions or Spam). You can ask for another in ' + wait[1] + ' seconds.';
+      if (/rate limit|too many/i.test(m) || /rate_limit/.test(code)) return 'Lots of people are signing in just now. Try again in a few minutes.';
+      if (/invalid login credentials/i.test(m) || code === 'invalid_credentials') return 'That email and password do not match. Try again, or use Forgot your password.';
+      if (/email not confirmed/i.test(m) || code === 'email_not_confirmed') return 'confirm';
+      if (/password should be|weak_password|at least/i.test(m) || code === 'weak_password') return 'Choose a password of at least 8 characters.';
+      if (/same password|same_password/i.test(m)) return 'That is your current password. Choose a new one.';
+      if (/signups not allowed|signup_disabled/i.test(m)) return 'New accounts are closed just now. Write to wearemahala@gmail.com.';
+      return 'That did not work. Try again in a little while.';
+    }
+    var PW_MIN = 8;
+    function keepBox() { return '<label class="mvs-ck mvs-keep"><input type="checkbox" name="keep"' + (keepOn() ? ' checked' : '') + '><span>Keep me signed in on this device</span></label>'; }
+    function setKeep(el) { var k = el.querySelector('[name="keep"]'); if (k) ls.set(KEEP, k.checked ? '1' : '0'); }
+
+    // Sign in, or make an account. A password, an email link, or Google; a first sign-in by link or Google makes the
+    // account too. As the gate to the Mahalaverse (gate: true) it cannot be closed, only left for the front page.
+    function signIn(gate, mode, note) {
+      mode = mode || 'in';
       var letter = ss.get('mahala.fromLetter') === '1';
-      var title = letter ? 'Your thread is waiting' : gate ? 'Step into the Mahalaverse' : 'Your Mahala account';
-      var lead = letter ? 'You came by your letter. Sign in, and the thread Mahala holds for you is yours: the years, the people, the choices you make.'
-        : gate ? 'The Mahalaverse is home to Mahala\'s online community of temple builders. Make your account, or sign in, to step onto the playa. Your path, your book and your card stay with you on every device.'
-        : 'Make your account, or sign in. It takes a moment, and your path, your book and your card stay with you on every device.';
-      var el = sheet('<h2>' + title + '</h2><p class="lead">' + lead + '</p>' +
-        (GOOGLE_ON ? '<button type="button" class="mvs-b" data-k="google">' + GOOGLE + 'Continue with Google</button>' +
-        '<div class="mvs-or">or</div>' : '') +
-        '<form data-k="email"><label class="mvs-row"><span>Your email address</span><input type="email" name="email" autocomplete="email" required></label>' +
-        '<button type="submit" class="mvs-b q">Email me a link to come in</button></form>' +
-        '<div class="mvs-msg" role="status"></div>' +
-        '<p><small>' + (GOOGLE_ON ? 'New here? Either way makes your account. Google shares only your name, address and photo with Mahala, never your Gmail. ' : 'New here? The link makes your account. ') + '<a href="#" data-k="notice">How Mahala looks after your thread</a>.</small></p>' +
-        (gate ? '<a class="mvs-b q" href="./" data-k="back">Back to The Seed</a>' : ''), gate ? 'Make your account' : 'Sign in', !gate);
-      var gBtn = el.querySelector('[data-k="google"]');
-      if (gBtn) gBtn.addEventListener('click', function () {
-        msg(el, 'Opening Google...');
-        clientP.then(function (c) { return c.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectTo(gate) } }); })
-          .then(function (r) { if (r && r.error) msg(el, 'Google sign-in is not open yet. Try the email link.'); }, function () { msg(el, 'Signing in is not available right now.'); });
-      });
-      el.querySelector('form').addEventListener('submit', function (e) {
-        e.preventDefault();
-        var addr = String(e.target.email.value || '').trim(), b = e.target.querySelector('button');
-        if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(addr)) { msg(el, 'That address does not look right.'); return; }
-        b.disabled = true; msg(el, 'Sending...');
-        clientP.then(function (c) { return c.auth.signInWithOtp({ email: addr, options: { emailRedirectTo: redirectTo(gate), shouldCreateUser: true } }); }).then(function (r) {
-          b.disabled = false;
-          if (r && r.error) { msg(el, /rate|seconds/i.test(r.error.message) ? 'A link was sent a moment ago. Give it a minute, then try again.' : 'The link could not be sent. Try again in a little while.'); return; }
-          msg(el, ''); el.querySelector('form').outerHTML = '<p class="lead">A link is on its way to <b>' + esc(addr) + '</b>. Open it on this device, and you arrive in the Mahalaverse signed in.</p>';
-        }, function () { b.disabled = false; msg(el, 'Signing in is not available right now.'); });
+      var title = mode === 'up' ? 'Make your account' : mode === 'forgot' ? 'Forgot your password?' : mode === 'link' ? 'Come in by email'
+        : letter ? 'Your thread is waiting' : gate ? 'Step into the Mahalaverse' : 'Your Mahala account';
+      var lead = mode === 'up' ? 'Your path, your book and your card stay with you on every device.'
+        : mode === 'forgot' ? 'Give us your address and we will send you a link to choose a new password.'
+        : mode === 'link' ? 'No password needed: we send you a link, and opening it signs you in. It makes your account if you are new.'
+        : letter ? 'You came by your letter. Sign in, and the thread Mahala holds for you is yours: the years, the people, the choices you make.'
+        : gate ? 'The Mahalaverse is home to Mahala\'s online community of temple builders. Sign in, or make your account, to step onto the playa.'
+        : 'Sign in, or make your account. Your path, your book and your card stay with you on every device.';
+      var email = '<label class="mvs-row"><span>Your email address</span><input type="email" name="email" autocomplete="' + (mode === 'up' ? 'email' : 'username') + '" required></label>';
+      var google = GOOGLE_ON && (mode === 'in' || mode === 'up')
+        ? '<div class="mvs-gw" data-k="gwrap"><button type="button" class="mvs-b q" data-k="google">' + GOOGLE + 'Continue with Google</button></div><div class="mvs-or">or with your email</div>' : '';
+      var body;
+      if (mode === 'in') body = '<form data-k="form">' + email +
+        '<label class="mvs-row"><span>Password</span><input type="password" name="password" autocomplete="current-password" required></label>' +
+        keepBox() + '<button type="submit" class="mvs-b">Sign in</button></form>' +
+        '<p class="mvs-links"><a href="#" data-m="forgot">Forgot your password?</a><a href="#" data-m="link">Email me a link instead</a></p>' +
+        '<p class="mvs-alt">New here? <a href="#" data-m="up">Make your account</a></p>';
+      else if (mode === 'up') body = '<form data-k="form">' + email +
+        '<label class="mvs-row"><span>Choose a password</span><input type="password" name="password" autocomplete="new-password" minlength="' + PW_MIN + '" required><small>At least ' + PW_MIN + ' characters.</small></label>' +
+        keepBox() + '<button type="submit" class="mvs-b">Make my account</button></form>' +
+        '<p class="mvs-links"><a href="#" data-m="link">Rather have no password? Email me a link</a></p>' +
+        '<p class="mvs-alt">Already have an account? <a href="#" data-m="in">Sign in</a></p>';
+      else if (mode === 'forgot') body = '<form data-k="form">' + email +
+        '<button type="submit" class="mvs-b">Email me a reset link</button></form>' +
+        '<p class="mvs-alt"><a href="#" data-m="in">Back to sign in</a></p>';
+      else body = '<form data-k="form">' + email + keepBox() +
+        '<button type="submit" class="mvs-b">Email me a link to come in</button></form>' +
+        '<p class="mvs-alt"><a href="#" data-m="in">Sign in with a password instead</a></p>';
+      var el = sheet('<h2>' + title + '</h2><p class="lead">' + lead + '</p>' + google + body +
+        '<div class="mvs-msg" role="status">' + esc(note || '') + '</div>' +
+        '<p><small>' + (GOOGLE_ON && (mode === 'in' || mode === 'up') ? 'Google shares only your name, address and photo with Mahala, never your Gmail. ' : '') + '<a href="#" data-k="notice">How Mahala looks after your thread</a>.</small></p>' +
+        (gate ? '<a class="mvs-b q" href="./" data-k="back">Back to The Seed</a>' : ''), mode === 'up' ? 'Make your account' : 'Sign in', !gate);
+      var form = el.querySelector('form'), addrIn = el.querySelector('[name="email"]');
+      var last = ss.get('mahala.lastEmail'); if (last && addrIn) addrIn.value = last;
+      Array.prototype.forEach.call(el.querySelectorAll('[data-m]'), function (a) {
+        a.addEventListener('click', function (e) { e.preventDefault(); if (addrIn && addrIn.value) ss.set('mahala.lastEmail', addrIn.value.trim()); signIn(gate, a.getAttribute('data-m')); });
       });
       el.querySelector('[data-k="notice"]').addEventListener('click', function (e) { e.preventDefault(); showNotice(); });
+      if (google) mountGoogle(el, gate);
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var addr = String(addrIn.value || '').trim(), pw = form.password ? form.password.value : '', b = form.querySelector('button[type="submit"]');
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(addr)) { msg(el, 'That address does not look right.'); addrIn.focus(); return; }
+        if (mode === 'up' && pw.length < PW_MIN) { msg(el, 'Choose a password of at least ' + PW_MIN + ' characters.'); form.password.focus(); return; }
+        ss.set('mahala.lastEmail', addr); setKeep(el);
+        b.disabled = true; msg(el, mode === 'in' ? 'Signing in...' : 'Sending...');
+        var done = function (html) { msg(el, ''); form.outerHTML = '<p class="lead mvs-sent">' + html + '</p>'; };
+        clientP.then(function (c) {
+          if (mode === 'in') return c.auth.signInWithPassword({ email: addr, password: pw });
+          if (mode === 'up') return c.auth.signUp({ email: addr, password: pw, options: { emailRedirectTo: redirectTo(gate) } });
+          if (mode === 'forgot') return c.auth.resetPasswordForEmail(addr, { redirectTo: redirectTo(gate) });
+          return c.auth.signInWithOtp({ email: addr, options: { emailRedirectTo: redirectTo(gate), shouldCreateUser: true } });
+        }).then(function (r) {
+          b.disabled = false;
+          if (r && r.error) {
+            var t = authMsg(r.error, mode === 'forgot' ? 'reset' : 'link');
+            if (t === 'confirm') {     // made with a password but not confirmed yet: send the confirmation again
+              clientP.then(function (c) { return c.auth.resend({ type: 'signup', email: addr, options: { emailRedirectTo: redirectTo(gate) } }); });
+              t = 'Confirm your address first. We have sent the confirmation link to ' + addr + ' again.';
+            }
+            msg(el, t); return;
+          }
+          if (mode === 'in') { msg(el, 'Welcome back. One moment...'); return; }     // the page starts again, signed in
+          if (mode === 'up') {
+            var d = r && r.data;
+            if (d && d.session) { msg(el, 'Your account is made. One moment...'); return; }
+            if (d && d.user && Array.isArray(d.user.identities) && !d.user.identities.length) { signIn(gate, 'in', 'You already have an account with ' + addr + '. Sign in, or use Forgot your password to set one.'); return; }
+            done('One last step: we have sent a link to <b>' + esc(addr) + '</b>. Open it to confirm your address, and you arrive signed in.');
+            return;
+          }
+          if (mode === 'forgot') { done('If ' + esc(addr) + ' has a Mahala account, a link to choose a new password is on its way. Open it on this device.'); return; }
+          done('A link is on its way to <b>' + esc(addr) + '</b>. Open it on this device, and you arrive signed in. It can take a minute; look in Promotions or Spam too.');
+        }, function () { b.disabled = false; msg(el, 'Signing in is not available right now. Try again in a little while.'); });
+      });
+    }
+
+    // Continue with Google. With the web client ID in site.js: Google's own button (one tap, signed in on this page).
+    // Without it, or if Google's script does not load: Supabase's redirect to Google and back.
+    function mountGoogle(el, gate) {
+      var wrap = el.querySelector('[data-k="gwrap"]'), btn = el.querySelector('[data-k="google"]');
+      var redirect = function () {
+        msg(el, 'Opening Google...'); setKeep(el);
+        clientP.then(function (c) { return c.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: redirectTo(gate) } }); })
+          .then(function (r) { if (r && r.error) msg(el, 'Google sign-in is not open yet. Use your email for now.'); }, function () { msg(el, 'Signing in is not available right now.'); });
+      };
+      btn.addEventListener('click', redirect);
+      if (!GOOGLE_CLIENT || !window.crypto || !crypto.subtle) return;
+      var raw = Array.prototype.map.call(crypto.getRandomValues(new Uint8Array(24)), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+      Promise.all([loadGsi(), crypto.subtle.digest('SHA-256', new TextEncoder().encode(raw))]).then(function (v) {
+        var hashed = Array.prototype.map.call(new Uint8Array(v[1]), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+        if (!document.body.contains(wrap)) return;
+        window.google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT, nonce: hashed, ux_mode: 'popup', use_fedcm_for_prompt: true,
+          callback: function (resp) {
+            setKeep(el); msg(el, 'Signing in with Google...');
+            clientP.then(function (c) { return c.auth.signInWithIdToken({ provider: 'google', token: resp.credential, nonce: raw }); })
+              .then(function (r) { if (r && r.error) msg(el, 'Google sign-in did not work. Try again, or use your email.'); else msg(el, 'Welcome. One moment...'); },
+                function () { msg(el, 'Signing in is not available right now.'); });
+          },
+        });
+        var slot = document.createElement('div'); slot.className = 'mvs-gbtn';
+        wrap.replaceChildren(slot);
+        window.google.accounts.id.renderButton(slot, { type: 'standard', theme: 'outline', size: 'large', shape: 'pill', text: 'continue_with', logo_alignment: 'center', width: Math.min(400, Math.max(240, wrap.clientWidth || 320)) });
+      }).catch(function () { /* keep the redirect button */ });
+    }
+    var gsiP = null;
+    function loadGsi() {
+      if (window.google && window.google.accounts && window.google.accounts.id) return Promise.resolve();
+      return gsiP || (gsiP = new Promise(function (ok, fail) {
+        var s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.async = true;
+        s.onload = function () { ok(); }; s.onerror = function () { gsiP = null; fail(new Error('gsi')); };
+        setTimeout(function () { fail(new Error('gsi timeout')); }, 6000);
+        document.head.appendChild(s);
+      }));
+    }
+
+    // After a reset link: choose the new password (the link has already signed this browser in).
+    function newPassword(fromAccount) {
+      var el = sheet('<h2>' + (fromAccount ? 'Your password' : 'Choose a new password') + '</h2>' +
+        '<p class="lead">' + (fromAccount ? 'Set a password to sign in with your email and password, on any device. The email link and Google keep working too.' : 'You are signed in. Choose the password you will use from now on.') + '</p>' +
+        '<form data-k="form"><label class="mvs-row"><span>New password</span><input type="password" name="password" autocomplete="new-password" minlength="' + PW_MIN + '" required><small>At least ' + PW_MIN + ' characters.</small></label>' +
+        '<label class="mvs-row"><span>The same again</span><input type="password" name="again" autocomplete="new-password" required></label>' +
+        '<button type="submit" class="mvs-b">Save my password</button></form><div class="mvs-msg" role="status"></div>', 'Choose a password', true);
+      var form = el.querySelector('form');
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var pw = form.password.value, b = form.querySelector('button');
+        if (pw.length < PW_MIN) { msg(el, 'Choose a password of at least ' + PW_MIN + ' characters.'); return; }
+        if (pw !== form.again.value) { msg(el, 'The two passwords are not the same.'); return; }
+        b.disabled = true; msg(el, 'Saving...');
+        clientP.then(function (c) { return c.auth.updateUser({ password: pw }); }).then(function (r) {
+          b.disabled = false;
+          if (r && r.error) { var t = authMsg(r.error); msg(el, t === 'confirm' ? 'That did not save. Try again.' : t); return; }
+          ss.set(RECOVERY, null); close(); toast('Your password is saved.');
+        }, function () { b.disabled = false; msg(el, 'That did not save. Try again in a little while.'); });
+      });
     }
 
     function showNotice() {
@@ -672,6 +824,7 @@
               '<button type="button" class="mvs-b q" data-save="' + f[0] + '" style="margin:0;width:auto">Save</button></div></div>';
           }).join('') +
           '<h3>Your data</h3><p>Everything this site holds about you is yours to see, take and remove.</p>' +
+          '<button type="button" class="mvs-b q" data-k="password">Set or change your password</button>' +
           '<button type="button" class="mvs-b q" data-k="export">Download my data</button>' +
           '<button type="button" class="mvs-b q" data-k="signout">Sign out</button>' +
           '<button type="button" class="mvs-b q" data-k="delete">Delete my account</button>' +
@@ -689,6 +842,7 @@
           if (f) rpc('set_profile', { p_field: f, p_text: el.querySelector('[data-field="' + f + '"]').value, p_visibility: el.querySelector('[data-vis="' + f + '"]').value }).then(function () { msg(el, 'Saved.'); }, function () { msg(el, 'That did not save.'); });
           if (k === 'export') rpc('export_my_data').then(function (d) { return DOWNLOADS.save({ filename: 'my-mahala-thread.json', data: d, type: 'application/json' }); }).then(function () { msg(el, 'Your data is downloading.'); }, function () { msg(el, 'That did not work. Try again.'); });
           if (k === 'signout') { msg(el, 'Signing out...'); AUTH.signOut(); }
+          if (k === 'password') newPassword(true);
           if (k === 'delete') del();
           if (k === 'notice') { e.preventDefault(); showNotice(); }
         });
@@ -753,7 +907,7 @@
 
     return {
       toast: toast,
-      open: function (mode) { if (mode === 'gate') signIn(true); else if (mode === 'account') account(); else if (mode === 'delete') del(); else if (mode === 'notice') showNotice(); else if (info && info.signedIn) account(); else signIn(); },
+      open: function (mode, note) { if (mode === 'gate') signIn(true); else if (mode === 'newpass') newPassword(false); else if (mode === 'password') newPassword(true); else if (mode === 'link') signIn(false, 'link', note); else if (mode === 'account') account(); else if (mode === 'delete') del(); else if (mode === 'notice') showNotice(); else if (info && info.signedIn) account(); else signIn(); },
       welcome: welcome,
     };
   })();
@@ -764,6 +918,8 @@
       watchBlobs();
       mountChips();
       if (w.signedIn && w.claimed && !w.noticeSeen) UI.welcome(w);
+      else if (w.signedIn && ss.get(RECOVERY) === '1') UI.open('newpass');
+      else if (!w.signedIn && URL_AUTH && URL_AUTH.error) UI.open('link', 'That link has expired or has already been used. Ask for a new one here.');
       else if (!w.signedIn && ss.get('mahala.fromLetter') === '1' && !ss.get('mahala.letterShown')) { ss.set('mahala.letterShown', '1'); UI.open('signin'); }
     });
   }
