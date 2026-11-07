@@ -20,7 +20,10 @@ window.MAHALA_SITE = {
   // anyone may read or write. Left empty, there are no accounts and the site runs exactly as before.
   // mahala-members, Frankfurt, owned by the camp's Supabase organisation (turned on 4 Nov 2026). mePage: where the
   // Sign in button takes someone who is signed in, their own page (Your Mahala).
-  members: { url: 'https://jjoixjepznulbvbidclh.supabase.co', anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqb2l4amVwem51bGJ2YmlkY2xoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM3ODEzNzgsImV4cCI6MjEwOTM1NzM3OH0.wBGoM7o6dhphxdGoJBuPUA_Hqv3_3fSGeGYWCqPWZSU', mePage: 'me.html' },
+  // google / googleClientId: "Continue with Google", with Google's own button. The client is the web client of the
+  // "Mahala sign-in" Google Cloud project owned by love@wearemahala.com (7 Nov 2026); the ID is public by design.
+  members: { url: 'https://jjoixjepznulbvbidclh.supabase.co', anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Impqb2l4amVwem51bGJ2YmlkY2xoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM3ODEzNzgsImV4cCI6MjEwOTM1NzM3OH0.wBGoM7o6dhphxdGoJBuPUA_Hqv3_3fSGeGYWCqPWZSU', mePage: 'me.html',
+    google: true, googleClientId: '1089812817269-716e2p4gl5d28j0sf36pvd8dhsterr4n.apps.googleusercontent.com' },
 };
 
 (function (S) {
