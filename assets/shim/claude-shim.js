@@ -952,7 +952,7 @@
         el.innerHTML = '<button type="button" class="mvs-x" data-k="close" aria-label="Close">&times;</button>' +
           '<h2>' + esc(t.goesBy || t.name || 'Your thread') + '</h2>' +
           '<p><small>Signed in as ' + esc(info.email || '') + (t.signIns > 1 ? ' (one of ' + t.signIns + ' sign-ins)' : '') + '</small></p>' +
-          (CFG.mePage ? '<p><a class="mvs-b" href="' + esc(CFG.mePage) + '" style="display:block;text-align:center;text-decoration:none">Open Your Mahala, your own page</a></p>' : '') +
+          (CFG.mePage ? '<p><a class="mvs-b" href="' + esc(CFG.mePage) + '" style="text-decoration:none">Open Your Mahala, your own page</a></p>' : '') +
           (t.isNew ? '<p class="lead">You are part of Mahala\'s online community. Camped with Mahala before, under another address? ' + (info.asked ? 'A steward will join your thread soon.' : 'Tell the stewards at wearemahala@gmail.com and they will join your thread.') + '</p>' : '') +
           (function () {
             var x = words(t.journey); if (!x) return '';
