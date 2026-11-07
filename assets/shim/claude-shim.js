@@ -547,8 +547,8 @@
   var VIS = [['me', 'Only me'], ['stewards', 'The stewards'], ['members', 'Members'], ['public', 'Everyone']];
 
   var CSS = '' +
-    '.mvs-veil{position:fixed;inset:0;z-index:2147483000;background:rgba(14,12,20,.55);display:grid;place-items:center;padding:16px;padding-top:max(16px,env(safe-area-inset-top));padding-bottom:max(16px,env(safe-area-inset-bottom));overflow:auto}' +
-    '.mvs{--i:#2A221C;--i2:#5B5047;--g:#F7F2EA;--l:#DCD2C3;--a:#8A5A2B;width:min(520px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--g);color:var(--i);border-radius:22px;padding:26px 24px 22px;box-shadow:0 24px 70px rgba(0,0,0,.35);font:400 15.5px/1.55 Jost,"Avenir Next","Segoe UI",system-ui,sans-serif;position:relative;text-align:left}' +
+    '.mvs-veil{position:fixed;inset:0;z-index:2147483000;overscroll-behavior:contain;background:rgba(14,12,20,.55);display:grid;place-items:center;padding:16px;padding-top:max(16px,env(safe-area-inset-top));padding-bottom:max(16px,env(safe-area-inset-bottom));overflow:auto}' +
+    '.mvs-veil,.mvs,.mvs *{box-sizing:border-box} .mvs{--i:#2A221C;--i2:#5B5047;--g:#F7F2EA;--l:#DCD2C3;--a:#8A5A2B;width:min(520px,100%);max-height:calc(var(--mvs-vh,100vh) - 32px);overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;background:var(--g);color:var(--i);border-radius:22px;padding:26px 24px 22px;box-shadow:0 24px 70px rgba(0,0,0,.35);font:400 15.5px/1.55 Jost,"Avenir Next","Segoe UI",system-ui,sans-serif;position:relative;text-align:left}' +
     '.mvs h2{font:400 26px/1.15 Marcellus,"Cormorant Garamond",Georgia,serif;letter-spacing:.02em;margin:0 36px 8px 0}' +
     '.mvs h3{font:500 12px/1.4 Jost,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--i2);margin:20px 0 8px}' +
     '.mvs p{margin:0 0 10px;color:var(--i2)} .mvs p.lead{color:var(--i)} .mvs small{color:var(--i2);font-size:13px}' +
@@ -566,6 +566,7 @@
     '.mvs details{border-top:1px solid var(--l);padding:8px 0} .mvs summary{cursor:pointer;color:var(--i)}' +
     '.mvs-msg{min-height:1.4em;color:var(--a);font-size:14px;margin-top:8px} .mvs a{color:var(--a)} .mvs a.mvs-b{color:var(--i);text-decoration:none}' +
     '.mvs-g{width:18px;height:18px;flex:none}' +
+    '.mvs-foot{position:sticky;bottom:-22px;margin:16px -24px -22px;padding:12px 24px 18px;background:linear-gradient(rgba(247,242,234,0),var(--g) 30%)} .mvs-foot .mvs-msg{margin-top:6px}' +
     '.mvs label.mvs-keep{border-top:0;padding:2px 0 6px} .mvs-row small{margin-top:-2px}' +
     '.mvs-links{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;margin:12px 0 4px;font-size:14px} .mvs-alt{margin:10px 0 6px;font-size:14px;text-align:center}' +
     '.mvs-gw{min-height:46px;margin:8px 0 0;display:flex;justify-content:center} .mvs-gw .mvs-b{margin:0} .mvs-gbtn{display:flex;justify-content:center;width:100%}' +
@@ -584,7 +585,14 @@
       veil = document.createElement('div'); veil.className = 'mvs-veil';
       veil.innerHTML = '<div class="mvs" role="dialog" aria-modal="true" aria-label="' + esc(label) + '">' + (closable === false ? '' : '<button type="button" class="mvs-x" data-k="close" aria-label="Close">&times;</button>') + html + '</div>';
       document.body.appendChild(veil);
+      // the sheet's height follows what the phone actually shows (toolbars and the keyboard come and go)
+      var v = veil, vv = window.visualViewport, fit = function () { if (v.isConnected) v.style.setProperty('--mvs-vh', Math.round(Math.min(vv ? vv.height : Infinity, innerHeight)) + 'px'); };
+      fit(); (vv || window).addEventListener('resize', fit);
       veil.addEventListener('click', function (e) { if (e.target === veil && closable !== false) close(); var b = e.target.closest('[data-k="close"]'); if (b) close(); });
+      // The front page drives its own scroll from window listeners (touch, wheel, keys). Inside a sheet those must
+      // not reach it, or a long sheet cannot be scrolled on a phone (7 Nov 2026: the welcome's button out of reach).
+      ['touchstart', 'touchmove', 'touchend', 'wheel'].forEach(function (t) { veil.addEventListener(t, function (e) { e.stopPropagation(); }, { passive: true }); });
+      veil.addEventListener('keydown', function (e) { e.stopPropagation(); });
       veil.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && closable !== false) { e.stopPropagation(); close(); }
         if (e.key === 'Tab') {
@@ -784,7 +792,7 @@
         '<h3>Stay in touch</h3>' + SCOPES.map(function (s) { return '<label class="mvs-ck"><input type="checkbox" name="' + s[0] + '"><span>' + esc(s[1]) + '</span></label>'; }).join('') +
         '<p><small>Nothing is ticked for you, and you can change any of it later in Account and privacy.</small></p>' +
         '<h3>How Mahala looks after your thread</h3>' + noticeHtml() +
-        '<button type="button" class="mvs-b" data-k="save">' + (fresh ? 'Make my account' : 'I have read this. Continue') + '</button><div class="mvs-msg" role="status"></div>', 'Welcome', false);
+        '<div class="mvs-foot"><button type="button" class="mvs-b" data-k="save">' + (fresh ? 'Make my account' : 'I have read this. Continue') + '</button><div class="mvs-msg" role="status"></div></div>', 'Welcome', false);
       el.querySelector('[data-k="save"]').addEventListener('click', function (e) {
         var b = e.currentTarget, nm = el.querySelector('[name="nm"]'), playa = el.querySelector('[name="playa"]');
         if (nm && !nm.value.trim()) { msg(el, 'Tell us what to call you.'); nm.focus(); return; }
