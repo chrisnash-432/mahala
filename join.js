@@ -102,6 +102,15 @@
     if (step === 3) return 'Tick all five to continue.';
     return '';
   }
+  // the message sits by the buttons; the thing still missing may be a screen above it, so take the person there
+  function missing() {
+    var el = null;
+    if (step === 1) el = !A.lives ? body.querySelector('[data-pick="lives"]') : $('jEmail');
+    if (step === 3) el = body.querySelector('[data-agree]:not(:checked)');
+    if (!el) return;
+    el.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    el.focus({ preventScroll: true });
+  }
   function read() {
     var v = function (id) { var e = $(id); return e ? e.value : null; };
     if (step === 1) { A.name = (v('jName') || '').trim(); A.email = (v('jEmail') || '').trim(); A.whatsapp = (v('jWa') || '').trim(); A.from = (v('jFrom') || '').trim(); }
@@ -147,7 +156,7 @@
     if (e.target.closest('#jBack')) { read(); if (step === 1) closeJoin(); else { step--; draw(true); } return; }
     if (e.target.closest('#jGo')) {
       read();
-      if (!canGo()) { $('jErr').textContent = why(); return; }
+      if (!canGo()) { $('jErr').textContent = why(); missing(); return; }
       if (step < 4) { step++; draw(true); return; }
       send();
     }
@@ -215,6 +224,20 @@
     box.hidden = false; document.documentElement.classList.add('join-open');
     requestAnimationFrame(function () { box.classList.add('open'); });
     draw(true);
+    prefill();
+  }
+  // Signed in: the name and address the account already holds fill the first step, so nobody types them twice.
+  // Only empty boxes are filled, and anything typed wins.
+  function prefill() {
+    var M = window.MahalaMembers; if (!M || !M.info) return;
+    M.info().then(function (i) {
+      if (!i || !i.signedIn) return;
+      [['name', 'jName', i.name], ['email', 'jEmail', i.email]].forEach(function (f) {
+        if (!f[2] || A[f[0]]) return;
+        A[f[0]] = String(f[2]);
+        var el = $(f[1]); if (el && !el.value) el.value = A[f[0]];
+      });
+    }).catch(function () { /* the boxes stay empty */ });
   }
   // opened straight onto the application from inside the Mahalaverse: closing it hands you back to the world
   var direct = /^#(join|apply)$/i.test(location.hash);
