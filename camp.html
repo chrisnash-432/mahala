@@ -754,7 +754,9 @@ html.join-open, html.join-open body { overflow: hidden; }
   var camp = document.querySelector('#campReel video');
   if (camp.dataset.poster) camp.poster = camp.dataset.poster;
   var load = function (v) { if (v.dataset.src && !v.getAttribute('src')) v.src = v.dataset.src; };
-  if ('IntersectionObserver' in window) {
+  // Data Saver or reduced motion: the poster stays until Watch with sound is tapped
+  var quiet = (navigator.connection && navigator.connection.saveData) || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (quiet) { /* nothing plays by itself */ } else if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (ents) {
       ents.forEach(function (e) { var v = e.target; if (e.isIntersecting) { load(v); v.play().catch(function () {}); } else v.pause(); });
     }, { threshold: 0.35 }).observe(camp);

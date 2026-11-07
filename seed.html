@@ -844,10 +844,12 @@ html.join-open, html.join-open body { overflow: hidden; }
     if (was) film.play().catch(function () {});
   }
   var heard = false; film.addEventListener('volumechange', function () { if (!film.muted && !heard && window.mahalaCount) { heard = true; window.mahalaCount('Seed film with sound'); } });
-  film.muted = true; film.loop = true; film.setAttribute('playsinline', ''); film.preload = 'auto';
+  // Data Saver or reduced motion: the poster waits for a tap on play, and nothing downloads before it
+  var quiet = (navigator.connection && navigator.connection.saveData) || matchMedia('(prefers-reduced-motion: reduce)').matches;
+  film.muted = true; film.loop = true; film.setAttribute('playsinline', ''); film.preload = quiet ? 'none' : 'auto';
   shape(); (phone.addEventListener ? phone.addEventListener('change', shape) : phone.addListener(shape));
   // it plays, without sound, while it is on screen; the controls give the sound
-  if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { if (es[0].isIntersecting) film.play().catch(function () {}); else if (film.muted) film.pause(); }, { threshold: 0.4 }).observe(film);
+  if (quiet) { /* the controls start it */ } else if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { if (es[0].isIntersecting) film.play().catch(function () {}); else if (film.muted) film.pause(); }, { threshold: 0.4 }).observe(film);
   else film.play().catch(function () {});
   // Donate: straight to the crowdfunding page on BackaBuddy (site.js can point it elsewhere)
   if (SITE.donateUrl) document.querySelectorAll('[data-donate]').forEach(function (d) { d.href = SITE.donateUrl; });
