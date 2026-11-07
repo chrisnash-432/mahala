@@ -1,0 +1,132 @@
+/* Mahala invitation: one letter, sealed with wine-red wax. Envelope, seal and opening adapted from Chris's Seed invitation. */
+:root {
+  color-scheme: dark;
+  --ink: #2A221C; --ink-2: #5B5047; --warm: #F4EFE6; --paper: #F7F2EA; --rule: #DCD2C3;
+  --veil: rgba(16, 11, 8, .5);
+  --name: "Marcellus", "Cormorant Garamond", Georgia, serif;
+  --text: "Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --verse: "Cormorant Garamond", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --script: "Pinyon Script", "Snell Roundhand", "Apple Chancery", cursive;
+  --wax: #8E1B45; --brass: #B8914A;
+  --grain: url(grain.png);
+  --ease: cubic-bezier(.2, .7, .1, 1);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #15110e; overscroll-behavior: none; }
+body { color: var(--warm); font: 300 15px/1.55 var(--text); -webkit-font-smoothing: antialiased; overflow: hidden; }
+button, a { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--warm); outline-offset: 3px; border-radius: 4px; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* the scene: The Seed at first light, behind a soft veil */
+.scene { position: fixed; inset: 0; z-index: 0; background: #15110e; }
+.scene picture, .scene img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.scene img { opacity: 0; transform: scale(1.04); transition: opacity 1.8s ease, transform 8s var(--ease); }
+.scene.in img { opacity: 1; transform: none; }
+.scene::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(16, 11, 8, .18), rgba(16, 11, 8, .42)); transition: background 1s ease; }
+body.reading .scene::after { background: rgba(16, 11, 8, .55); }
+.grain { position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .09; mix-blend-mode: overlay; background: var(--grain) repeat; background-size: 160px; }
+
+/* the line above the envelope */
+.intro { position: fixed; left: 0; right: 0; top: max(9svh, 44px); z-index: 3; text-align: center; padding: 0 22px; pointer-events: none; opacity: 0; transform: translateY(10px); transition: opacity 1.2s ease .6s, transform 1.2s var(--ease) .6s; text-shadow: 0 0 18px rgba(18, 12, 8, .7); }
+.intro.on { opacity: 1; transform: none; }
+.intro .mark { font: 400 13px/1 var(--name); letter-spacing: .4em; padding-left: .4em; margin: 0 0 14px; }
+.intro .for { font: italic 400 clamp(19px, 2.4vw, 25px)/1.35 var(--verse); margin: 0; }
+body.reading .intro { opacity: 0; transition-delay: 0s; }
+
+/* the envelope: warm cream paper, a pointed flap, Mahala's wine-red wax with the temple pressed into it, their name in a hand */
+.env { --w: 210px; position: relative; display: block; width: var(--w); height: calc(var(--w) * 2 / 3); }
+.env > span { position: absolute; inset: 0; display: block; }
+.env svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.env-in { border-radius: 3px; background: linear-gradient(#d5c09c, #c9b28b); box-shadow: inset 0 0 calc(var(--w) * .08) rgba(80, 50, 20, .38); }
+.env-card { inset: 5% 6% 7% !important; border-radius: 2px; background: #f6efe1; box-shadow: 0 1px 3px rgba(70, 45, 20, .3); overflow: hidden; }
+.env-card::before { content: ""; position: absolute; inset: 0; background: var(--grain); background-size: 160px; opacity: .1; mix-blend-mode: multiply; }
+.env-card i { position: absolute; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, rgba(120, 90, 60, 0), rgba(120, 90, 60, .22) 20%, rgba(120, 90, 60, .22) 80%, rgba(120, 90, 60, 0)); }
+.env-card i:nth-of-type(1) { top: 33.3%; } .env-card i:nth-of-type(2) { top: 66.6%; }
+.env-card b { position: absolute; left: 50%; top: 9%; width: 13%; transform: translateX(-50%); display: block; }
+.env-card b svg path { fill: var(--wax); opacity: .85; }
+.env-pocket { z-index: 2; }
+.env-pocket::after, .flap-out::after { content: ""; position: absolute; inset: 0; background: var(--grain); background-size: 160px; opacity: .12; mix-blend-mode: multiply; pointer-events: none; }
+.env-pocket::after { clip-path: inset(0 round 3px); }
+.flap-out::after { clip-path: polygon(0 0, 100% 0, 53.3% 55%, 50% 59%, 46.7% 55%); }
+.env-to { position: absolute; left: 0; right: 0; top: 66%; text-align: center; font: 400 calc(var(--w) * .135)/1 var(--script); color: #3a281c; letter-spacing: 0; white-space: nowrap; }
+.env-flap { z-index: 4; transform-origin: 50% 0; transform: perspective(calc(var(--w) * 3.4)) rotateX(var(--flap, 0deg)); transform-style: preserve-3d; }
+.env-flap > span { position: absolute; inset: 0; display: block; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.flap-in { transform: rotateX(180deg); }
+.seal-half { position: absolute; display: block; left: 38.6% !important; top: 40% !important; width: 22.8% !important; height: 34.2% !important; }
+.env-flap .seal-half { transform: translateZ(.5px); }
+.seal-half svg { filter: drop-shadow(0 calc(var(--w) * .006) calc(var(--w) * .01) rgba(40, 8, 20, .45)); }
+
+.env-stage { position: fixed; inset: 0; z-index: 4; }
+.env-stage[hidden] { display: none; }
+.env-stage .env { cursor: pointer; position: absolute; left: 0; top: 0; --w: min(84vw, 520px, 110svh); transform-origin: 0 0; will-change: transform; opacity: 0;
+  filter: drop-shadow(0 30px 40px rgba(10, 6, 3, .45)) drop-shadow(0 3px 6px rgba(10, 6, 3, .3)); }
+.seal-btn { position: absolute; left: 50%; bottom: max(9svh, 40px); transform: translateX(-50%); background: rgba(247, 242, 234, .1); border: 1px solid rgba(244, 239, 230, .55); border-radius: 999px; color: var(--warm);
+  font: 400 12px/1 var(--text); letter-spacing: .24em; text-transform: uppercase; padding: 14px 24px 13px; cursor: pointer; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  opacity: 0; pointer-events: none; transition: opacity .6s ease, background .3s, color .3s; text-shadow: 0 0 12px rgba(18, 12, 8, .6); white-space: nowrap; }
+.seal-btn.on { opacity: 1; pointer-events: auto; }
+.seal-btn:hover { background: var(--warm); color: var(--ink); text-shadow: none; }
+.env.ready .seal-half svg { animation: sealglow 2.6s ease-in-out infinite; }
+@keyframes sealglow { 0%, 100% { filter: drop-shadow(0 3px 5px rgba(40, 8, 20, .45)); } 50% { filter: drop-shadow(0 3px 5px rgba(40, 8, 20, .45)) drop-shadow(0 0 10px rgba(255, 190, 140, .55)); } }
+@media (prefers-reduced-motion: no-preference) { .env.ready { animation: bob 6s ease-in-out infinite 1.5s; } }
+@keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -4px; } }
+
+/* the letter: warm laid paper, a hand for the greeting and the name */
+.sheet { position: fixed; inset: 0; z-index: 3; display: grid; grid-template-columns: minmax(0, 1fr); justify-items: center; align-items: start; padding: 24px 16px calc(24px + env(safe-area-inset-bottom, 0px));
+  overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; visibility: hidden; }
+body.reading .sheet { visibility: visible; }
+.paper { position: relative; min-width: 0; margin-block: auto; width: min(100%, 620px); color: var(--ink); border-radius: 4px; padding: clamp(32px, 7vw, 64px) clamp(24px, 7vw, 68px) clamp(30px, 6vw, 54px);
+  box-shadow: 0 30px 80px rgba(10, 6, 3, .45); text-shadow: none; }
+.letter-paper { background: #f7f0e3; background-image: radial-gradient(120% 90% at 50% 0%, rgba(255, 250, 240, .7), rgba(255, 250, 240, 0) 60%), linear-gradient(#f8f2e6, #f2e8d6); visibility: hidden; }
+body.reading .letter-paper { visibility: visible; }
+.letter-paper::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--grain); background-size: 160px; opacity: .11; mix-blend-mode: multiply; pointer-events: none; }
+.letter-paper::after { content: ""; position: absolute; left: 0; right: 0; top: 33%; height: 34%; border-top: 1px solid rgba(140, 105, 70, .1); border-bottom: 1px solid rgba(140, 105, 70, .1); pointer-events: none;
+  background: linear-gradient(rgba(120, 90, 60, .045), rgba(120, 90, 60, 0) 6%, rgba(120, 90, 60, 0) 94%, rgba(120, 90, 60, .045)); }
+.letter-paper > * { position: relative; z-index: 1; }
+.crest { display: block; width: 46px; margin: 0 auto 26px; }
+.crest path { fill: var(--wax); opacity: .82; }
+.letter-paper p { margin: 0 0 1em; font: 400 clamp(17px, 2.1vw, 18.5px)/1.64 var(--verse); color: #2c221a; max-width: 34em; }
+.letter-paper .dear { font: 400 clamp(32px, 5vw, 38px)/1.2 var(--script); letter-spacing: 0; margin: 0 0 .7em; }
+.letter-paper blockquote { margin: 0 0 1em; }
+.letter-paper .label { font: 500 10.5px/1.2 var(--text); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); margin: 2em 0 .8em; }
+.signs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 1.2em; padding: 0; list-style: none; }
+.signs li { font: italic 400 15px/1 var(--verse); border: 1px solid rgba(140, 105, 70, .3); border-radius: 999px; padding: 9px 13px 8px; color: #2c221a; }
+.arch-in { display: grid; grid-template-columns: 56px 1fr; gap: 18px; align-items: start; margin: 4px 0 1.4em; }
+.arch-in > div { min-width: 0; }
+.element { width: 56px; height: 56px; display: block; margin-top: 4px; }
+.element circle { fill: none; stroke: rgba(140, 105, 70, .35); stroke-width: 1; }
+.element path { fill: none; stroke: var(--wax); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+.letter-paper .arch-type { font: italic 500 22px/1.25 var(--verse); letter-spacing: .01em; margin: 0 0 .35em; }
+.letter-paper .seed { margin-top: 1.4em; }
+.letter-paper .sign-off { font: italic 400 19px/1.4 var(--verse); margin: 1.6em 0 0; }
+.letter-paper .signature { font: 400 46px/1 var(--script); margin: .1em 0 0; color: #3a1d24; }
+.letter-foot { display: grid; justify-items: center; gap: 14px; margin-top: 2.4em; padding-top: 2em; border-top: 1px solid rgba(140, 105, 70, .22); text-align: center; }
+.letter-foot p { font: italic 400 17px/1.5 var(--verse); margin: 0 auto; color: #3a2a1e; }
+.primary { display: inline-flex; align-items: center; justify-content: center; gap: 12px; background: var(--ink); color: var(--warm); border: 0; border-radius: 999px; padding: 16px 28px 15px; font: 400 12px/1 var(--text); letter-spacing: .22em; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: background .25s; }
+.primary:hover { background: #3a2f27; }
+.primary svg { width: 16px; height: 10px; } .primary svg path { fill: none; stroke: currentColor; stroke-width: 1.2; }
+@media (max-width: 420px) { .arch-in { grid-template-columns: 44px 1fr; gap: 14px; } .element { width: 44px; height: 44px; } }
+noscript p { position: fixed; inset: auto 0 20px; text-align: center; z-index: 9; }
+.letter-paper:focus, .letter-paper:focus-visible { outline: none; }
+.seal-btn:focus-visible { outline: none; box-shadow: 0 0 0 4px rgba(244, 239, 230, .18); }
+/* the card: Chris's archetype deck, tilted as if just drawn */
+.arch-in { grid-template-columns: minmax(92px, 132px) 1fr; gap: 22px; }
+.arch-card { width: 100%; height: auto; display: block; border-radius: 5px; transform: rotate(-2.5deg); margin-top: 4px;
+  box-shadow: 0 8px 18px rgba(60, 35, 15, .32), 0 0 0 1px rgba(120, 85, 50, .22); }
+@media (max-width: 420px) { .arch-in { grid-template-columns: 92px 1fr; gap: 16px; } }
+@media (max-width: 520px) {
+  .arch-in { grid-template-columns: 1fr; gap: 18px; }
+  .arch-card { width: min(170px, 52vw); margin: 6px auto 4px; }
+}
+/* former camp members: every card at once, fanned like a hand just dealt */
+.letter-paper p.lead { font: italic 400 clamp(20px, 2.6vw, 23px)/1.45 var(--verse); }
+.fan { --cw: clamp(84px, 16vw, 124px); position: relative; height: calc(var(--cw) * 1.62); margin: 14px 0 34px; }
+.fan img { position: absolute; left: 50%; bottom: 0; width: var(--cw); height: auto; border-radius: 5px; transform-origin: 50% 100%;
+  box-shadow: 0 8px 18px rgba(60, 35, 15, .3), 0 0 0 1px rgba(120, 85, 50, .22); }
+.fan img:nth-child(1) { transform: translateX(calc(-50% - var(--cw) * 1.2)) translateY(8%) rotate(-14deg); }
+.fan img:nth-child(2) { transform: translateX(calc(-50% - var(--cw) * .4)) translateY(1%) rotate(-4.5deg); }
+.fan img:nth-child(3) { transform: translateX(calc(-50% + var(--cw) * .4)) translateY(1%) rotate(4.5deg); }
+.fan img:nth-child(4) { transform: translateX(calc(-50% + var(--cw) * 1.2)) translateY(8%) rotate(14deg); }
+@media (max-width: 420px) { .fan { --cw: 76px; } }
+.letter-paper .arch-type.all { text-align: center; margin-top: .2em; }
+.letter-paper p.ps { font: italic 400 15.5px/1.55 var(--verse); color: #4a3b30; margin-top: 2em; padding-top: 1.2em; border-top: 1px solid rgba(140, 105, 70, .18); }
