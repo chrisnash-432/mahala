@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400&family=Jost:wght@300;400;500&family=Marcellus&display=swap">
 <script src="site.js?v=8"></script>
-<script src="assets/shim/claude-shim.js?v=12"></script>
+<script src="assets/shim/claude-shim.js?v=13"></script>
 <style>
 /* Your Mahala, prototype 2 (4 Nov 2026). One page about you, the same on the site and in the Mahalaverse.
    The people here are made up; nothing is read from or saved to the member database.
@@ -321,13 +321,28 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
 .invite .fine { font-size: 13.5px; color: rgba(244, 239, 230, .7); margin: 14px 0 0; max-width: 60ch; }
 .invite.quiet h2 { font-size: clamp(28px, 4.6vw, 42px); }
 
-/* your story with Mahala, in the voice of the letters */
-.story { margin: 18px 0 0; padding: 16px 18px 14px; border-radius: 18px; background: var(--sheet); border: 1px solid var(--rule); position: relative; }
-.story::before { content: ""; position: absolute; left: 20px; top: -6px; width: 34px; height: 12px; border-radius: 6px; background: linear-gradient(90deg, var(--yellow), var(--cyan), var(--magenta)); }
-.story p { margin: 0 0 8px; font: italic 400 19px/1.42 var(--verse); color: var(--ink); max-width: 56ch; }
-.story .sig { font: 400 14px/1 var(--name); letter-spacing: .18em; color: var(--ink-2); margin: 6px 0 4px; font-style: normal; }
-.story .fixit { font-size: 13.5px; color: var(--ink-3); }
-.story textarea { width: 100%; font: inherit; font-size: 15px; border: 1px solid var(--rule-2); border-radius: 12px; padding: 8px 10px; background: #fff; color: var(--ink); margin-top: 8px; }
+/* the soul portrait: who you are to this community, right up front (Chris, 8 Nov 2026) */
+.soul { margin: 20px 0 0; padding: 22px 22px 16px; border-radius: 22px; position: relative; text-align: left;
+  background: radial-gradient(130% 90% at 100% 0%, color-mix(in srgb, var(--yellow) 10%, transparent), transparent 60%),
+              radial-gradient(120% 100% at 0% 100%, color-mix(in srgb, var(--cyan) 8%, transparent), transparent 60%), var(--sheet);
+  border: 1px solid var(--rule); box-shadow: 0 18px 40px -32px rgba(42, 34, 28, .55); }
+.soul::before { content: ""; position: absolute; left: 22px; top: -6px; width: 42px; height: 12px; border-radius: 6px; background: linear-gradient(90deg, var(--yellow), var(--cyan), var(--magenta)); }
+.soulkick { margin: 0 0 10px; font: 400 13px/1.3 var(--name); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); }
+.soulsay { margin: 0 0 14px; font: italic 400 clamp(20px, 2.3vw, 23px)/1.42 var(--verse); color: var(--ink); max-width: 54ch; text-wrap: pretty; }
+.soulq { margin: 0 0 14px; padding: 2px 0 2px 16px; position: relative; }
+.soulq::before { content: ""; position: absolute; left: 0; top: 4px; bottom: 4px; width: 2px; border-radius: 2px; background: linear-gradient(var(--yellow), var(--magenta)); }
+.soulq figcaption { font-size: 12.5px; letter-spacing: .06em; color: var(--ink-3); margin-bottom: 3px; }
+.soulq blockquote { margin: 0; font: 400 clamp(19px, 2.1vw, 21px)/1.42 var(--verse); color: var(--ink); max-width: 54ch; text-wrap: pretty; }
+.soulclose { margin: 4px 0 6px; font: italic 400 18px/1.4 var(--verse); color: var(--ink-2); max-width: 54ch; }
+.soul .sig { font: 400 14px/1 var(--name); letter-spacing: .18em; color: var(--ink-2); margin: 8px 0 14px; }
+.soulyears { margin: 0 0 8px; padding-top: 12px; border-top: 1px dashed var(--rule-2); font-size: 13.5px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; }
+.soulyears b { font-weight: 500; color: var(--ink-2); flex-basis: 100%; letter-spacing: .02em; margin-bottom: 2px; }
+.soulyears i { font-family: var(--verse); font-size: 15.5px; color: var(--ink-2); }
+.soulyears .dot { color: var(--rule-2); }
+.soulask textarea, .soul textarea { width: 100%; font: inherit; font-size: 15px; border: 1px solid var(--rule-2); border-radius: 12px; padding: 8px 10px; background: #fff; color: var(--ink); margin-top: 4px; }
+.soulask .row { margin-top: 8px; align-items: center; gap: 10px; }
+.soulask .sub { margin: 0; font-size: 13px; }
+.soul .fixit { font-size: 13.5px; color: var(--ink-3); }
 
 /* signed out: an invitation, never an example (F-032) */
 .door-out { text-align: center; max-width: 640px; margin: 0 auto; }
@@ -654,7 +669,8 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     if (t.isNew) chapters[0][2].push(['You found your way in', 'Welcome to the community.']);
     apps.slice().reverse().forEach(function (a) { chapters[0][2].push(['Your camp application', ({ received: 'Sent', reviewing: 'Read by the stewards', waitlist: 'On the waitlist', accepted: 'Confirmed. Welcome to camp.', declined: 'Not this year', withdrawn: 'Withdrawn' })[a.stage] || ('Where it is: ' + a.stage)]); });
     if (J && J.invited && !apps.length) chapters[0][2].push(['You are invited to camp', J.nominatedBy ? 'Called in by ' + J.nominatedBy + '.' : 'Your place is waiting.']);
-    Object.keys(by).filter(function (y) { return String(y) !== '2027'; }).sort().reverse().forEach(function (y) { chapters.push([y + (CAMPS[y] ? ' · ' + CAMPS[y] : ''), by[y].join(' ')]); });
+    // the years before 2027 are not listed shift by shift here any more: the soul portrait carries one quiet line of
+    // years and camps instead (Chris, 8 Nov 2026: "that long list ... is not really adding value")
     (by[2027] || []).forEach(function (x) { chapters[0][2].push([x, '']); });
     var beads = years.map(function (y) { return ['there', y + (CAMPS[y] ? ': ' + CAMPS[y] + '.' : '.'), 1]; });
     if (apps.length) beads.push(['given', 'You sent your camp application.']);
@@ -675,6 +691,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       season: 'This season you are ' + phrase + '. Every circle fills in its own season.',
       beads: beads, yes: st.yes || {}, next: core && preDecisions ? 'core' : (J && J.tier !== 'tribe') ? 'journey' : 'event', chapters: chapters, before: years.length > 0 && !years.some(function (y) { return y < 2025; }),
       journey: W, tier: J ? J.tier : null, J: J, rec: { name: t.name || '', years: years.slice(), roles: roles.slice(), thread: t.thread || [], nominatedBy: (J && J.nominatedBy) || t.nominatedBy || '', isNew: !!t.isNew, apps: apps },
+      soul: t.soul && Array.isArray(t.soul.lines) ? t.soul : null, mapPhoto: !!t.mapPhoto,
       quest: { id: q.id, name: q.name, crew: q.crew, steps: q.steps.map(function (x, i) { return [x, seen[i] ? 'ok' : mine[i] ? 'mine' : '']; }) },
       gifts: gifts, gave: null, fields: fields, texts: texts, consent: consent, door: core ? 'core' : lead ? 'lead' : null
     };
@@ -724,11 +741,11 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + '<div class="whohead">' + (P.live ? portrait() : '') + '<p class="hello">' + esc(P.hello) + '</p><h1 id="youH">' + esc(P.first) + '</h1>'
       + (P.playa ? (P.playa === P.first ? '' : '<p class="playa">On the playa: <i>' + esc(P.playa) + '</i></p>') : '<p class="playa"><button type="button" class="link" data-choices>Choose your playa name</button></p>')
       + '<p class="sleeps">' + sleeps + ' sleeps until The Seed rises</p>'
-      + (P.hats.length ? '<div class="hats">' + P.hats.map(function (x) { return '<span class="hat">' + HAT + esc(x) + '</span>'; }).join('') + '</div>' : '')
+      + (P.live ? soul() : (P.hats.length ? '<div class="hats">' + P.hats.map(function (x) { return '<span class="hat">' + HAT + esc(x) + '</span>'; }).join('') + '</div>' : ''))
       + '</div><div class="whorest"><div class="seedlife">' + seedOfLife(P) + '<div><p class="season"><b>Where you are now</b>' + esc(P.season) + '</p>'
       + '<p class="petalsay" id="petalsay" aria-live="polite">Tap a circle. Each is a way of belonging, filled in any order. At the centre, where The Seed sits, everyone is a temple builder.</p>'
       + (P.rings.length ? '<p class="rings">The rings around it are your years: ' + andList(P.rings) + '.</p>' : '') + '</div></div>'
-      + story() + (P.live && P.tier && P.tier !== 'tribe' ? '' : nextStep()) + letter() + roleDoor() + '</div></section>';
+      + (P.live && P.tier && P.tier !== 'tribe' ? '' : nextStep()) + letter() + roleDoor() + '</div></section>';
 
     // now
     var up = upcoming(), soon = up.filter(function (e) { return e.kind !== 'burn'; }).slice(0, 3);
@@ -737,7 +754,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + '<p class="season-link"><a class="link" href="tribe.html#events">The whole season, to the burn</a></p></section>';
 
     // your path
-    h += curve(true) + '<section class="movement" id="path" aria-labelledby="pathH"><h2 id="pathH">Your thread</h2><p class="lede">Mahala\u2019s story of you, newest first. Something missing? <button type="button" class="link" data-tell="Your thread">Tell the stewards</button>.</p><ol class="thread">';
+    h += curve(true) + '<section class="movement" id="path" aria-labelledby="pathH"><h2 id="pathH">Your thread</h2><p class="lede">Where your thread runs this season, newest first. Something missing? <button type="button" class="link" data-tell="Your thread">Tell the stewards</button>.</p><ol class="thread">';
     P.chapters.forEach(function (c, i) {
       h += '<li class="knot chapter"><b>' + esc(c[0]) + '</b><span>' + esc(c[1]) + '</span></li>';
       if (i === 0) {
@@ -807,43 +824,65 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   }
   function picture() {
     var mm = M(); if (!mm || !mm.picture || !$('pic')) return;
-    mm.picture().then(function (u) { if (u && $('pic')) $('pic').src = u; if (u && $('chipPic')) $('chipPic').src = u; }, function () { });
-    mm.info().then(function (i) {
+    var pick = '<label class="link" for="picIn" style="cursor:pointer">', emb = LIVE.store.pic === 'emblem';
+    var show = function (x) {
+      if (!x) return;
+      if (emb && x.from !== 'own') x = { src: mm.emblem(LIVE.uid), from: 'chosen-emblem' };
+      if ($('pic')) $('pic').src = x.src; if ($('chipPic')) $('chipPic').src = x.src;
       var say = $('picsay'); if (!say) return;
-      say.innerHTML = i.hasPhoto ? '<button type="button" class="link" id="picDel">Use my emblem instead</button>'
-        : i.picture ? 'Your picture from Google. <label class="link" for="picIn" style="cursor:pointer">Choose another</label>'
-        : 'Your emblem, drawn from your thread. <label class="link" for="picIn" style="cursor:pointer">Add a picture</label>';
-    });
+      say.innerHTML = x.from === 'own' ? 'Your picture. Only you see it here. <button type="button" class="link" id="picDel">Remove it</button>'
+        : x.from === 'map' ? 'Your picture from the community map. ' + pick + 'Choose another</label> or <button type="button" class="link" id="picEmblem">use my emblem</button>'
+        : x.from === 'google' ? 'Your picture from Google. ' + pick + 'Choose another</label>'
+        : x.from === 'chosen-emblem' ? 'Your emblem, as you chose. ' + pick + 'Add a picture</label> or <button type="button" class="link" id="picBack">show my picture again</button>'
+        : 'Your emblem, drawn from your thread. ' + pick + 'Add a picture</label>';
+    };
+    (mm.pictureInfo ? mm.pictureInfo() : mm.picture().then(function (u) { return u && { src: u, from: 'google' }; })).then(show, function () { });
   }
   document.addEventListener('change', function (ev) {
     if (ev.target.id !== 'picIn' || !ev.target.files || !ev.target.files[0]) return;
     var say = $('picsay'); say.textContent = 'Making it small and keeping it safe\u2026';
-    M().setPicture(ev.target.files[0]).then(function (u) { $('pic').src = u; say.textContent = 'Your picture is saved. Only you see it here.'; setTimeout(picture, 2500); }, function (e) { say.textContent = (e && e.message) || 'That picture did not save. Try another.'; });
+    M().setPicture(ev.target.files[0]).then(function (u) { $('pic').src = u; if ($('chipPic')) $('chipPic').src = u; say.textContent = 'Your picture is saved. Only you see it here.'; setTimeout(picture, 2500); }, function (e) { say.textContent = (e && e.message) || 'That picture did not save. Try another.'; });
     ev.target.value = '';
   });
 
-  // ------------------------------------------------------------------ your story with Mahala
-  // Like the letters: what the community map holds of you, said back warmly. Only what the record states (years, camps,
-  // hats, who called you in, your thread); never an invented memory. Where it is thin, it says so and asks.
-  var CAMPNAME = function (y) { y = +y; return y === 2027 ? 'The Seed' : y === 2026 ? 'Through the Prism' : y === 2025 ? 'The Portal' : y === 2024 ? 'Nowhere\u2019s End' : y >= 2016 && y <= 2023 ? 'The State of Bliss' : ''; };
-  function story() {
+  // ------------------------------------------------------------------ the soul portrait (Chris, 8 Nov 2026)
+  // Right up front, one short passage of who you are to this community, in Mahala's voice. Mahala OS writes it at the
+  // push (community/pipelines/soul.py) from what it already holds and nothing else: the stewards' checked reading of
+  // you, what you wrote about yourself in your applications and directory slide, and, once your letter went, what the
+  // one who called you in asked us to tell you. It comes only to you (my_thread). Where Mahala holds nothing, it asks.
+  // Under it, one quiet line of your years and camps instead of a list of every shift.
+  var CAMPNAME = function (y) { y = +y; return y === 2027 ? 'The Seed' : y === 2026 ? 'Through the Prism' : y === 2025 ? 'The Portal' : y === 2024 ? 'Nowhere’s End' : y >= 2016 && y <= 2023 ? 'The State of Bliss' : ''; };
+  function soulYears() {
+    var yrs = P.rec.years.filter(function (y) { return y < 2027; });
+    if (!yrs.length) return '';
+    return '<p class="soulyears"><b>Your years with Mahala</b>' + yrs.map(function (y) { var n = CAMPNAME(y); return '<span>' + esc(y) + (n ? ' <i>' + esc(n) + '</i>' : '') + '</span>'; }).join('<span class="dot" aria-hidden="true">·</span>') + '</p>';
+  }
+  function soul() {
     if (!P.live) return '';
-    var r = P.rec, yrs = r.years.filter(function (y) { return y < 2027; }), lines = [], who = esc(P.playa && P.playa !== P.first ? P.playa : P.first);
-    var named = function (y) { var n = CAMPNAME(y); return y + (n ? ' (' + n + ')' : ''); };
-    if (yrs.length) {
-      lines.push(who + ', Mahala remembers you. You first camped with us in ' + esc(named(yrs[0])) + (yrs.length > 1 ? ', and walked with us again in ' + esc(andList(yrs.slice(1).map(named))) : '') + '.');
-      var th = (r.thread || []).filter(function (l) { return l && l.text && String(l.year) !== '2027'; });
-      if (th.length) { var last = th[th.length - 1]; lines.push((last.year ? 'In ' + esc(last.year) + ' you ' : 'You ') + esc(String(last.text).replace(/^(you|i)\s+/i, '')) + (/[.!?]$/.test(last.text) ? '' : '.')); }
-    } else if (r.isNew) {
-      lines.push('Every thread with Mahala starts somewhere, ' + who + ', and yours starts here, in the season The Seed takes shape.');
+    var r = P.rec, who = esc(P.playa && P.playa !== P.first ? P.playa : P.first), S = P.soul, own = (P.texts.about || '').trim();
+    var path = P.tier === 'invited' || P.tier === 'applicant' || P.tier === 'camp', h = '';
+    var line = function (x) {
+      if (!x || !x.say) return '';
+      return x.q ? '<figure class="soulq"><figcaption>' + esc(x.say) + '</figcaption><blockquote>“' + esc(x.q) + '”</blockquote></figure>' : '<p class="soulsay">' + esc(x.say) + '</p>';
+    };
+    if (S) {
+      h += '<p class="soulkick">What we see in you, ' + who + '</p>' + S.lines.map(line).join('');
+      if (own && !S.lines.some(function (x) { return x.q === own; })) h += line({ say: 'And what you told us here', q: own });
+      h += '<p class="soulclose">' + (path ? 'And now, The Seed. We are so glad you are walking this part of the journey with us.' : r.years.length ? 'Thank you for being part of the journey. It carries on, all the way to The Seed.' : 'We are so glad you are part of the journey.') + '</p>';
+    } else if (own) {
+      h += '<p class="soulkick">In your own words, ' + who + '</p>'
+        + (r.isNew && !r.years.length ? '<p class="soulsay">Every thread with Mahala starts somewhere, and yours starts here, in the season The Seed takes shape.</p>' : '')
+        + line({ say: 'What you told us', q: own })
+        + '<p class="soulclose">' + (r.isNew && !r.years.length ? 'Thank you for finding your way in.' : 'Thank you for being part of the journey.') + '</p>';
     } else {
-      lines.push(who + ', you are part of Mahala\u2019s story. We do not yet hold the years you were with us: tell us, and they join your thread.');
+      h += '<p class="soulkick">Your story, ' + who + '</p>'
+        + '<p class="soulsay">' + (r.years.length ? 'Mahala remembers you, and we would love to know you better. ' : r.isNew ? 'Every thread with Mahala starts somewhere, and yours starts here, in the season The Seed takes shape. ' : 'You are part of Mahala’s story, and we would love to know you. ')
+        + 'What lights you up, what your hands love to make, the meal you would cook for the whole camp?</p>'
+        + '<div class="soulask"><textarea id="soulText" rows="3" maxlength="600" aria-label="Your story, in a few lines" placeholder="A few lines, in your own words"></textarea>'
+        + '<div class="row"><button type="button" class="btn small" id="soulSave">Tell us</button><span class="sub">Only you and the stewards see it.</span></div><p class="said" id="soulSaid" aria-live="polite"></p></div>';
     }
-    if (r.roles.length) lines.push('The hats you have worn with us: ' + esc(andList(r.roles.slice(0, 4))) + '.');
-    if (P.tier === 'invited' || P.tier === 'applicant' || P.tier === 'camp') lines.push((r.nominatedBy ? esc(r.nominatedBy) + ' called you in for 2027, the year The Seed rises.' : 'For 2027, the year The Seed rises, there is a place for you at camp.'));
-    else lines.push('The gatherings below are where the tribe meets before The Seed rises. We would love to see you at one.');
-    return '<div class="story" id="story">' + lines.map(function (l) { return '<p>' + l + '</p>'; }).join('') + '<p class="sig">MAHALA</p>'
-      + '<details class="fixit"><summary>Something missing or not quite right?</summary><textarea id="fixText" rows="2" maxlength="1000" placeholder="A year you camped, a hat you wore, a name"></textarea><div class="row" style="margin-top:6px"><button type="button" class="btn small ghost" id="fixSend">Send to the stewards</button></div><p class="said" id="fixSaid" aria-live="polite"></p></details></div>';
+    return '<div class="soul" id="soul">' + h + '<p class="sig">MAHALA</p>' + soulYears()
+      + '<details class="fixit"><summary>Something missing or not quite right?</summary><textarea id="fixText" rows="2" maxlength="1000" placeholder="A year you camped, a hat you wore, a name, a word that is not yours"></textarea><div class="row" style="margin-top:6px"><button type="button" class="btn small ghost" id="fixSend">Send to the stewards</button></div><p class="said" id="fixSaid" aria-live="polite"></p></details></div>';
   }
 
   function deck(k) { return DECK.filter(function (c) { return c.k === k; })[0]; }
@@ -953,7 +992,17 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     var t = ev.target.closest('button, a, .way'); if (!t) return;
     if (t.matches('[data-close]')) { t.closest('dialog').close(); return; }
     if (t.id === 'signInBtn') { if (M()) M().signIn(); return; }
-    if (t.id === 'picDel') { $('picsay').textContent = 'Back to your emblem\u2026'; M().clearPicture().then(function (u) { if (u) $('pic').src = u; picture(); }, function () { $('picsay').textContent = 'That did not work. Try again.'; }); return; }
+    if (t.id === 'picDel') { $('picsay').textContent = 'Taking it away\u2026'; M().clearPicture().then(function () { picture(); }, function () { $('picsay').textContent = 'That did not work. Try again.'; }); return; }
+    if (t.id === 'picEmblem' || t.id === 'picBack') { save({ pic: t.id === 'picEmblem' ? 'emblem' : null }).then(picture); return; }
+    if (t.id === 'soulSave') {
+      var st2 = $('soulText').value.trim(); if (!st2) { $('soulSaid').textContent = 'A few words is plenty.'; return; }
+      $('soulSaid').textContent = 'Keeping it safe\u2026';
+      M().rpc('set_profile', { p_field: 'about', p_text: st2, p_visibility: 'stewards' }).then(function () {
+        P.texts.about = LIVE.P.texts.about = st2; P.fields.about = LIVE.P.fields.about = 'stewards';
+        var el = $('soul'), tmp = document.createElement('div'); tmp.innerHTML = soul(); el.replaceWith(tmp.firstChild);
+      }, function () { $('soulSaid').textContent = 'That did not save. Try again in a little while.'; });
+      return;
+    }
     if (t.id === 'fixSend') { var fx = $('fixText').value.trim(); if (!fx) { $('fixSaid').textContent = 'Tell us what to change or add.'; return; } $('fixSaid').textContent = 'Sending\u2026'; M().correct(fx).then(function () { $('fixText').value = ''; $('fixSaid').textContent = 'Thank you. The stewards will look at it and your thread will follow.'; }, function () { $('fixSaid').textContent = 'That did not send. Try again in a little while.'; }); return; }
     if (t.id === 'chip' && !P) { if (M()) M().signIn(); return; }
     if (t.dataset.live === 'export') { say(t, 'Gathering everything\u2026'); M().rpc('export_my_data').then(function (x) { say(t, download('my-mahala.json', JSON.stringify(x, null, 1), 'application/json') ? 'Your file is downloading.' : 'Your browser did not allow the download.'); }, function () { say(t, 'That did not work. Try again in a little while.'); }); return; }
