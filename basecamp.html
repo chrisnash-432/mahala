@@ -790,7 +790,7 @@ function startHere() {
   if (c.audiences.length) acts.push(`<button class="btn" type="button" data-gen>Generate an update</button>`);
   const line = c.me === 'crew' ? `Your crew has ${plural(open.length, 'open task')}${wk ? `, ${wk} due this week` : ''}.`
     : c.me === 'money' ? `${plural(open.length, 'task')} touch the money. Budget lines and partners are under Money.`
-    : `${esc(me)}, you have ${plural(open.length, 'open task')}${wk ? `, ${wk} due this week` : ''}. Send an update from any task; ${SITE ? 'it goes into the task list within the hour' : 'the stewards write it into the record'}.`;
+    : `${me ? esc(me) + ', you' : 'You'} have ${plural(open.length, 'open task')}${wk ? `, ${wk} due this week` : ''}. Send an update from any task; ${SITE ? 'it goes into the task list within the hour' : 'the stewards write it into the record'}.`;
   return `<section class="start"><h2>Start here</h2><p>${line}</p><div class="acts">${acts.join('')}</div></section>`;
 }
 function nextDays(scopeFn, pub) {
