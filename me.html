@@ -308,7 +308,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
 </head>
 <body>
 <header class="top"><div class="top-in">
-  <a class="mark" href="index.html">MAHALA</a><span class="sp"></span>
+  <a class="mark" href="./">MAHALA</a><span class="sp"></span>
   <button type="button" class="tellbtn" id="tellBtn" aria-haspopup="dialog">Tell us</button>
   <button type="button" class="chipname" id="chip" aria-haspopup="dialog"></button>
 </div></header>
@@ -651,7 +651,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + '<div class="beads" role="group" aria-label="Your beads, only you see them">' + P.beads.map(function (b, i) { return '<button type="button" class="bead' + (b[2] ? ' big' : '') + '" style="background:' + BEADKIND[b[0]][0] + '" data-bead="' + i + '" aria-expanded="false" aria-label="A bead for ' + BEADKIND[b[0]][1] + '"></button>'; }).join('') + '</div></div>'
       + '<p class="beadsay" id="beadsay" aria-live="polite">' + (P.beads.length === 1 ? 'Your first bead. Tap it.' : 'Your beads: tap one for its moment. Only you see them.') + '</p>'
       + (P.card ? '<p class="cardname"><b>' + esc(deck(P.card).t) + '</b>' + esc(deck(P.card).cap) + '</p>' : '<p class="cardname"><b>Your card waits</b>Draw it in the Mahalaverse, beside the Book of Mahala, and it lives here too.</p>')
-      + '<div class="cardbtns">' + (P.card ? '<button type="button" class="btn small ghost" id="turnOwn" aria-pressed="false">Hear your card</button>' : '<a class="btn small ghost" href="index.html#mahalaverse">Draw your card</a>') + '<button type="button" class="btn small" id="drawBtn">Draw a message</button></div>'
+      + '<div class="cardbtns">' + (P.card ? '<button type="button" class="btn small ghost" id="turnOwn" aria-pressed="false">Hear your card</button>' : '<a class="btn small ghost" href="./#mahalaverse">Draw your card</a>') + '<button type="button" class="btn small" id="drawBtn">Draw a message</button></div>'
       + '<div class="drawn" id="drawn"></div></div>'
 
       + '<div class="whohead"><p class="hello">' + esc(P.hello) + '</p><h1 id="youH">' + esc(P.first) + '</h1>'
@@ -678,7 +678,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
         var g = Object.keys(P.yes).filter(function (k) { return P.yes[k] === 'yes'; }).map(function (k) { return EVENTS.events.filter(function (e) { return e.id === k; })[0]; }).filter(Boolean);
         g.forEach(function (e) { h += '<li class="knot glow"><b>' + esc(e.title) + '</b><span>' + fmt(e.date) + '. You said yes; after the day it is tied in here.</span></li>'; });
         if (c[3] === 'waiting' && !g.length) h += '<li class="knot waiting"><b>Your first gathering ties the next knot</b><span>We\u2019ll tie it together.</span></li>';
-        h += '<li class="knot glow" id="questKnot"><b>Your quest: ' + esc(P.quest.name) + '</b><div class="quest"><span class="crew">' + esc(P.quest.crew) + ' · ' + (P.live ? 'tick steps in the Mahalaverse; a steward witnesses them' : 'tick a step when it is done; a steward witnesses it') + '</span><ul class="steps" id="steps">' + stepsHtml() + '</ul>' + (P.live ? '<p style="margin:8px 0 0"><a class="link" href="index.html#mahalaverse">Tick a step in the Mahalaverse</a></p>' : '') + '</div></li>';
+        h += '<li class="knot glow" id="questKnot"><b>Your quest: ' + esc(P.quest.name) + '</b><div class="quest"><span class="crew">' + esc(P.quest.crew) + ' · ' + (P.live ? 'tick steps in the Mahalaverse; a steward witnesses them' : 'tick a step when it is done; a steward witnesses it') + '</span><ul class="steps" id="steps">' + stepsHtml() + '</ul>' + (P.live ? '<p style="margin:8px 0 0"><a class="link" href="./#mahalaverse">Tick a step in the Mahalaverse</a></p>' : '') + '</div></li>';
       }
     });
     if (P.before) h += '<li class="knot"><b>Before Mahala</b><span>The Grateful Heart, The State of Bliss, Nowhere\u2019s End. Were you there? <button type="button" class="link" data-tell="Your thread">Add your years</button></span></li>';
@@ -692,7 +692,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + (P.gave ? '<p class="mine">You gave in ' + esc(P.gave.when) + ', towards the ' + esc(P.gave.towards) + '. Thank you.<small>Only you see this line, and never an amount.</small></p>' : '<p class="mine">When you give, a line appears here that only you can see.<small><a href="seed.html">The Seed and its milestones</a></small></p>')
       + '</div></div></section>';
 
-    h += '<div class="portal"><p><b>Step through the portal</b>The same you waits in the Mahalaverse: your card, your beads, your quest. Tick a step there and it shows here.</p><a class="btn ghost" href="index.html#mahalaverse">Into the Mahalaverse</a></div>';
+    h += '<div class="portal"><p><b>Step through the portal</b>The same you waits in the Mahalaverse: your card, your beads, your quest. Tick a step there and it shows here.</p><a class="btn ghost" href="./#mahalaverse">Into the Mahalaverse</a></div>';
     h += '<p style="margin-top:28px"><button type="button" class="link" data-choices>Your choices: who sees what, what we keep, and leaving</button></p>';
 
     $('page').innerHTML = h;
@@ -813,7 +813,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     if (t.id === 'signInBtn') { if (M()) M().signIn(); return; }
     if (t.id === 'chip' && !P) { if (M()) M().signIn(); return; }
     if (t.dataset.live === 'export') { say(t, 'Gathering everything\u2026'); M().rpc('export_my_data').then(function (x) { say(t, download('my-mahala.json', JSON.stringify(x, null, 1), 'application/json') ? 'Your file is downloading.' : 'Your browser did not allow the download.'); }, function () { say(t, 'That did not work. Try again in a little while.'); }); return; }
-    if (t.dataset.live === 'signout') { M().signOut().then(function () { location.href = 'index.html'; }); return; }
+    if (t.dataset.live === 'signout') { M().signOut().then(function () { location.href = './'; }); return; }
     if (t.dataset.live === 'delete') { $('choices').close(); window.claude.__auth.open('delete'); return; }
     if (t.dataset.savefield) { var f = t.dataset.savefield, tx2 = $('ft-' + f).value.trim(), vis = $('f-' + f).value; say(t, 'Saving\u2026'); M().rpc('set_profile', { p_field: f, p_text: tx2, p_visibility: vis }).then(function () { P.texts[f] = tx2; P.fields[f] = vis; LIVE.P.texts[f] = tx2; LIVE.P.fields[f] = vis; $('choiceSaid').textContent = FIELD_NAMES[f][0] + ': saved.'; }, function () { $('choiceSaid').textContent = 'That did not save. Try again.'; }); return; }
     if (t.id === 'chip' || t.matches('[data-choices]')) { open($('choices')); return; }

@@ -1536,7 +1536,7 @@ async function siteFeed() {
 }
 function gate(kind, detail) {
   $('#tabs').innerHTML = ''; $('#roleline').hidden = true; $('#gen').hidden = true; $('.vas').hidden = true;
-  const back = '<a class="btn" href="index.html">Back to wearemahala.com</a>';
+  const back = '<a class="btn" href="./">Back to wearemahala.com</a>';
   const body = {
     signin: `<h2>Basecamp</h2><p>The camp's plan for 2027: every node, task and date on the way to The Seed, with updates from the people doing them. It is for the core team, camp leads and crews.</p><button class="btn primary" type="button" data-signin>Sign in</button>${back}`,
     none: `<h2>Basecamp</h2><p>Basecamp opens for the core team, camp leads and crews. When you join a crew it opens here, and your tasks show on Your Mahala.</p><a class="btn primary" href="me.html">Your Mahala</a>${back}`,
