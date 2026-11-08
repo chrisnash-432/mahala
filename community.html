@@ -159,6 +159,92 @@ button.stat { cursor: pointer; } button.stat:hover, button.stat[aria-pressed="tr
 @keyframes breathe { 50% { transform: scale(.9); opacity: .6; } }
 @media (prefers-reduced-motion: reduce) { .breathe { animation: none; } #drawer, #scrim { transition: none; } }
 
+/* filter chips: what is chosen, and a few gentle suggestions */
+.chips { display: flex; gap: 6px 8px; flex-wrap: wrap; align-items: center; min-height: 0; }
+.chips .lbl { font-size: .78rem; color: var(--muted); margin-right: 2px; }
+.pill { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--rule2); background: var(--sheet); border-radius: 999px; padding: 5px 12px 4px; min-height: 34px; cursor: pointer; font-size: .82rem; color: var(--ink); max-width: 100%; }
+.pill:hover { border-color: var(--ink); }
+.pill[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--warm); }
+.pill.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.pill.on::after { content: "×"; font-size: 1rem; line-height: 1; margin-left: 2px; }
+
+/* what we bring */
+.findings { position: relative; overflow: hidden; display: grid; gap: 12px; padding: 20px 22px 18px; border-radius: 22px 22px 22px 4px; background: var(--sheet); border: 1px solid var(--line); }
+.findings::before { content: ""; position: absolute; left: -60px; top: -60px; width: 180px; height: 180px; border-radius: 50%; background: conic-gradient(from 30deg, var(--yellow), var(--magenta), var(--sky), var(--yellow)); opacity: .12; filter: blur(18px); pointer-events: none; }
+.findings .lede { position: relative; }
+.finds { margin: 0; padding-left: 1.5em; display: grid; gap: 9px; max-width: 78ch; position: relative; }
+.finds li { line-height: 1.55; }
+.finds li::marker { font-family: var(--display); color: var(--accent); }
+.finds b { font-weight: 500; color: var(--accent); }
+.caveat { color: var(--muted); font-size: .82rem; max-width: 78ch; position: relative; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.bringgrid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.gifts { display: grid; gap: 2px; padding: 14px 14px 12px; background: var(--sheet); border: 1px solid var(--line); border-radius: 4px 22px 22px 22px; min-width: 0; }
+.gifts .note { background: none; padding: 0 4px 8px; }
+.gbar { display: grid; grid-template-columns: minmax(96px, 21ch) minmax(0, 1fr) 4ch; gap: 10px; align-items: center; width: 100%; border: 0; background: none; padding: 6px 6px; border-radius: 10px; text-align: left; font-size: .86rem; color: var(--ink); min-width: 0; }
+button.gbar { cursor: pointer; }
+button.gbar:hover, .gbar[aria-pressed="true"] { background: color-mix(in srgb, var(--accent-soft) 70%, transparent); }
+.gbar > span:first-child { overflow-wrap: anywhere; }
+.gbar .track { height: 9px; border-radius: 999px; background: var(--idle-soft); overflow: hidden; }
+.gbar .track span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--brass), var(--accent)); }
+.gbar.thin .track span { background: var(--magenta); }
+.gbar .n { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.gbar small { display: block; font-size: .72rem; color: var(--magenta-ink); }
+.whobox { display: grid; gap: 10px; align-content: start; padding: 16px 18px; border-radius: 22px; background: var(--paper-2); min-width: 0; }
+.whobox h3 { font-size: 1.3rem; }
+.folk { display: flex; flex-wrap: wrap; gap: 6px; }
+.folk button { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); background: var(--sheet); color: var(--ink); border-radius: 999px; padding: 5px 11px 4px; font-size: .84rem; cursor: pointer; max-width: 100%; text-align: left; }
+.folk button:hover { border-color: var(--accent); }
+.folk button small { color: var(--muted); font-size: .72rem; }
+
+/* where we live: a warm heat on the night */
+.worldgrid { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.worldbox { position: relative; background: var(--night); border-radius: 22px 22px 4px 22px; overflow: hidden; min-width: 0; }
+.worldbox::after { content: ""; position: absolute; right: -50px; top: -50px; width: 170px; height: 170px; border-radius: 50%; background: conic-gradient(from 200deg, var(--yellow), var(--magenta), var(--sky), var(--yellow)); opacity: .16; filter: blur(24px); pointer-events: none; }
+.worldbox svg { display: block; width: 100%; height: auto; touch-action: none; cursor: grab; }
+.worldbox .zoombar { position: absolute; left: 10px; top: 10px; display: flex; flex-wrap: wrap; gap: 6px; max-width: calc(100% - 20px); z-index: 1; }
+.zoombar .pill { background: rgba(21, 17, 14, .7); color: var(--warm); border-color: rgba(244, 239, 230, .3); min-height: 30px; font-size: .76rem; }
+.zoombar .pill[aria-pressed="true"] { background: var(--warm); color: var(--ink); }
+.worldbox .nomap { color: rgba(244, 239, 230, .8); padding: 40px 20px; font: italic 400 1.1rem/1.4 var(--verse); text-align: center; }
+.land { fill: #2a231d; stroke: rgba(244, 239, 230, .14); stroke-width: .5; vector-effect: non-scaling-stroke; cursor: pointer; }
+.land.lit { stroke: rgba(246, 230, 198, .4); }
+.land.on { stroke: #FFE9A8; stroke-width: 1.4; }
+.glow { pointer-events: none; mix-blend-mode: screen; }
+.spot { fill: #F6D27A; stroke: var(--night); stroke-width: 1; vector-effect: non-scaling-stroke; cursor: pointer; }
+.spot.on { fill: var(--yellow); stroke: var(--warm); stroke-width: 2; }
+.spot:focus, #worldmap:focus, .land:focus { outline: none; }
+.spot:focus-visible { outline: none; stroke: var(--sky); stroke-width: 3; }
+.placesbox { display: grid; gap: 10px; align-content: start; padding: 16px 18px; border-radius: 22px; background: var(--sheet); border: 1px solid var(--line); min-width: 0; }
+@media (min-width: 901px) { .placesbox { max-height: 560px; overflow-y: auto; } }
+.placelist { list-style: none; margin: 0; padding: 0; display: grid; }
+.placelist button { width: 100%; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; align-items: center; border: 0; border-bottom: 1px solid var(--line2); background: none; padding: 8px 2px; cursor: pointer; text-align: left; font-size: .9rem; color: var(--ink); }
+.placelist button:hover { color: var(--accent); }
+.placelist .n { color: var(--muted); font-variant-numeric: tabular-nums; font-size: .82rem; }
+.placelist .bar { grid-column: 1 / -1; height: 2px; border-radius: 2px; background: linear-gradient(90deg, var(--brass), var(--yellow)); opacity: .7; }
+.crumb { border: 0; background: none; color: var(--accent); cursor: pointer; padding: 0; text-decoration: underline; text-underline-offset: 3px; font-size: .84rem; justify-self: start; }
+
+/* how the threads run */
+.weave { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
+.strand { position: relative; display: grid; gap: 10px; align-content: start; padding: 18px 20px; background: var(--sheet); border: 1px solid var(--line); min-width: 0; }
+.strand:nth-child(1) { grid-column: span 7; border-radius: 26px 26px 26px 6px; }
+.strand:nth-child(2) { grid-column: span 5; border-radius: 26px 26px 6px 26px; }
+.strand:nth-child(3) { grid-column: span 5; border-radius: 26px 6px 26px 26px; }
+.strand:nth-child(4) { grid-column: span 7; border-radius: 6px 26px 26px 26px; background: var(--paper-2); }
+.strand .motif { width: 44px; height: 44px; }
+.strand .hd { display: flex; gap: 12px; align-items: center; }
+.strand p { color: var(--muted); font-size: .92rem; max-width: 52ch; }
+.strand .act { justify-self: start; }
+.rings { display: flex; flex-wrap: wrap; gap: 8px; }
+.ringbtn { display: inline-flex; align-items: center; gap: 9px; border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 4px 13px 4px 5px; cursor: pointer; font-size: .82rem; color: var(--ink); text-align: left; }
+.ringbtn:hover, .ringbtn[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.ringbtn svg { flex: none; }
+
+@media (max-width: 900px) {
+  .bringgrid, .worldgrid { grid-template-columns: 1fr; }
+  .strand:nth-child(n) { grid-column: 1 / -1; }
+}
+@media (max-width: 600px) { .worldbox .zoombar { position: static; padding: 10px 10px 0; } }
+
 @media (max-width: 720px) {
   .hero { grid-template-columns: 1fr; }
   .night { min-height: 0; }
@@ -208,6 +294,29 @@ const CONSENT = { customer: ['Camped with us', 'May receive Mahala news, with an
 const LINK = { nominated_by: ['Nominated by', 'Nominated'], invited_by: ['Invited by', 'Invited'], guided_by: ['Guided by', 'Guided'],
   interviewed_by: ['Interviewed by', 'Interviewed'], connected_to: ['Connected to', 'Connected to'], added_to_group_by: ['Added to a group by', 'Added to a group'],
   shared_tent_with: ['Shared a tent with', 'Shared a tent with'] };
+// What people bring, in the words the camp's gifts reading uses (the old map's vocabulary). SYN adds search words.
+const GIFT = {
+  s: { build: 'Building and carpentry', metal: 'Metal and welding', electrical: 'Electrical and power', lighting: 'Lighting', glass: 'Glass and acrylic',
+    engineering: 'Engineering', design: 'Design and architecture', 'visual-art': 'Visual art', textiles: 'Textiles and decor', 'sound-tech': 'Sound tech',
+    music: 'Music', dance: 'Dance and movement', performance: 'Performance', kitchen: 'Kitchen and food', logistics: 'Logistics', finance: 'Finance and admin',
+    leadership: 'Leading teams', facilitation: 'Facilitation and teaching', ritual: 'Ritual and ceremony', healing: 'Healing and bodywork',
+    wellness: 'Yoga and meditation', coaching: 'Coaching and mentoring', tech: 'Tech and software', media: 'Photo, video and film', writing: 'Writing and story',
+    marketing: 'Marketing and fundraising', ecology: 'Ecology and growing', hosting: 'Hosting and welcoming', care: 'Care and safety', business: 'Business and partnerships' },
+  o: { workshop: 'Workshops', ritual: 'Rituals', 'sound-journey': 'Sound journeys', 'music-set': 'Live music', 'dj-set': 'DJ sets', performance: 'Performances',
+    'art-piece': 'Art pieces', 'build-help': 'Build help', food: 'Food', 'bar-tea': 'Bar and tea', 'wellness-session': 'Wellness sessions', talk: 'Talks',
+    care: 'Care', decor: 'Decor', 'tech-help': 'Tech help' },
+  v: { connection: 'Connection', play: 'Play', spirit: 'Spirit', healing: 'Healing and growth', creativity: 'Creativity', nature: 'Nature', service: 'Service',
+    freedom: 'Freedom', presence: 'Presence', learning: 'Learning', beauty: 'Beauty', inclusion: 'Inclusion', legacy: 'Legacy' },
+  sd: { structure: 'Timber structure', 'glass-light': 'Glass and light', power: 'Power', 'art-direction': 'Art direction', 'ritual-programme': 'Rituals of the temple',
+    sound: 'Sound in the temple', fundraising: 'Fundraising', story: 'Its story', logistics: 'Logistics and build week', care: 'Care for the builders' },
+};
+const SYN = { healing: 'breathwork bodywork massage reiki', wellness: 'yoga meditation mindfulness breathwork', music: 'musician guitar piano singing voice',
+  'sound-tech': 'dj sound engineer', ritual: 'ceremony', facilitation: 'workshops teaching space holding', 'sound-journey': 'sound bath', kitchen: 'cooking chef food',
+  build: 'carpentry woodwork construction', 'visual-art': 'painting art', media: 'photography video film', dance: 'movement', 'dj-set': 'dj music', 'music-set': 'music' };
+const BRING_TABS = [['s', 'Skills'], ['o', 'Offerings'], ['v', 'Values'], ['i', 'Interests'], ['sd', 'The Seed']];
+const BRING_NOTE = { s: 'Crafts and skills people name, or have shown in a role.', o: 'What people have offered, or want to offer, at camp.',
+  v: 'What people say matters to them.', i: 'Interests two or more people share.', sd: 'Who could bring what The Seed needs. The thinner rows, in magenta, are the gaps to fill.' };
+const tagLabel = (f, c) => (GIFT[f] && GIFT[f][c]) || (f === 'i' ? c.charAt(0).toUpperCase() + c.slice(1) : c);
 const MAHALA_ERA = 2025;          // the camp has been Mahala since 2025
 const PAGE = 120;
 
@@ -220,7 +329,9 @@ const andList = a => a.length <= 1 ? (a[0] || '') : a.slice(0, -1).join(', ') + 
 const roleLabel = r => { const [k, crew] = String(r).split(':'); return (ROLE[k] || k) + (crew ? ' · ' + crew : ''); };
 
 let WHO = null, DATA = null, M = { nodes: [], byKey: {}, rings: [], edges: [], years: [], camps: [] };
-const S = { q: '', year: '', camp: '', ring: '', role: '', consent: '', view: 'sky', shown: PAGE, sel: null, hover: null };
+const S = { q: '', year: '', camp: '', ring: '', role: '', consent: '', view: 'sky', shown: PAGE, sel: null, hover: null,
+  tag: null, set: null, bring: 's', place: null };
+let INS = null;   // the weave: weavers, bridges, circles and loose threads, by key
 try { const v = localStorage.getItem('community.view'); if (v === 'list' || v === 'sky') S.view = v; } catch (e) {}
 
 // ------------------------------------------------------------------ the model, per tier
@@ -229,7 +340,8 @@ function model(who, d) {
   const add = (n) => { if (!M.byKey[n.key]) { M.byKey[n.key] = n; nodes.push(n); } return M.byKey[n.key]; };
   M = { nodes, byKey: {}, rings: [], edges, years: [], camps: d.camps || [] };
   if (who.view === 'core') {
-    d.people.forEach(p => add({ key: p.id, name: p.n, first: p.c, playa: p.p, ring: p.r, years: p.y || [], camps: p.k || p.y || [], roles: p.o || [], consent: p.s, home: p.h }));
+    d.people.forEach(p => add({ key: p.id, name: p.n, first: p.c, playa: p.p, ring: p.r, years: p.y || [], camps: p.k || p.y || [], roles: p.o || [], consent: p.s, home: p.h,
+      tags: p.t && typeof p.t === 'object' ? p.t : null, place: Array.isArray(p.g) && p.g.length === 5 ? p.g : null, weave: p.w && typeof p.w === 'object' ? p.w : null }));
     (d.links || []).forEach(([a, b, type, year]) => { if (M.byKey[a] && M.byKey[b]) edges.push({ a, b, type, year }); });
     M.rings = ['lead', 'builder', 'applicant', 'supporter', 'orbit'].filter(r => nodes.some(n => n.ring === r));
   } else {
@@ -246,8 +358,36 @@ function model(who, d) {
     M.rings = ['you', who.view === 'lead' ? 'called' : 'crew', 'circle', 'camp'].filter(r => nodes.some(n => n.ring === r));
   }
   M.years = [...new Set(nodes.flatMap(n => n.years))].sort();
-  nodes.forEach(n => { n.hay = [n.name, n.first, n.playa, ...(n.roles || []).map(roleLabel)].join(' ').toLowerCase(); n.first0 = n.years[0] || 9999; });
+  nodes.forEach(n => {
+    const tagWords = n.tags ? Object.entries(n.tags).flatMap(([f, cs]) => (cs || []).flatMap(c => [c, tagLabel(f, c), SYN[c] || ''])) : [];
+    n.hay = [n.name, n.first, n.playa, ...(n.roles || []).map(roleLabel), ...tagWords].join(' ').toLowerCase(); n.first0 = n.years[0] || 9999;
+  });
+  INS = who.view === 'core' ? weave(d.insights, nodes) : null;
 }
+
+// The weave, from what build_map.py computes from the links and sets on each person (w): who holds many threads, who links
+// eras, which circle they are in, who has no thread yet. Circles say what they mostly are (insights.circles).
+function weave(ins, nodes) {
+  if (!ins && !nodes.some(n => n.weave)) return null;
+  const meta = (ins && ins.circles) || [], groups = {};
+  const w = { weavers: [], bridges: [], circles: [], loose: [], of: {} };
+  nodes.forEach(n => {
+    const x = n.weave; if (!x) return;
+    if (x.th) w.weavers.push({ key: n.key, threads: x.th });
+    if (x.br) w.bridges.push({ key: n.key, eras: x.br });
+    if (Number.isInteger(x.ci)) (groups[x.ci] = groups[x.ci] || []).push(n.key);
+    if (x.lo) w.loose.push(n.key);
+  });
+  w.circles = Object.keys(groups).sort((a, b) => a - b).map(i => ({ keys: groups[i], year: (meta[i] || {}).y, camp: (meta[i] || {}).camp || '' })).filter(c => c.keys.length >= 3);
+  const note = (k, s) => (w.of[k] = w.of[k] || []).push(s);
+  w.weavers.forEach(x => note(x.key, `Holds ${plural(x.threads, 'thread')} with people on the map.`));
+  w.bridges.forEach(x => note(x.key, x.eras.length > 1 ? `A bridge between ${andList(x.eras)}.` : 'A bridge between circles that would otherwise not meet.'));
+  w.circles.forEach((c, i) => c.keys.forEach(k => note(k, `In ${circleName(c)}.`)));
+  w.loose.forEach(k => note(k, 'No thread to anyone on the map yet: a hello from someone they know ties them in.'));
+  return w;
+}
+const circleName = c => `a circle of ${c.keys.length}` + (c.camp || c.year ? `, mostly ${[c.camp, c.year].filter(Boolean).join(' ')}` : '');
+const placeName = g => g[3] === 'country' ? `Somewhere in ${g[2]}` : g[2];
 
 function matches(n) {
   if (S.q && !n.hay.includes(S.q)) return false;
@@ -256,10 +396,13 @@ function matches(n) {
   if (S.ring && n.ring !== S.ring) return false;
   if (S.role && !(S.role === 'any' ? n.roles.length : n.roles.some(r => r.split(':')[0] === S.role))) return false;
   if (S.consent && n.consent !== S.consent) return false;
+  if (S.tag && !(n.tags && (n.tags[S.tag.f] || []).includes(S.tag.c))) return false;
+  if (S.set && !S.set.keys.has(n.key)) return false;
   return true;
 }
 const filtered = () => M.nodes.filter(matches);
-const anyFilter = () => !!(S.q || S.year || S.camp || S.ring || S.role || S.consent);
+const anyFilter = () => !!(S.q || S.year || S.camp || S.ring || S.role || S.consent || S.tag || S.set);
+const withoutTag = fn => { const t = S.tag; S.tag = null; try { return fn(); } finally { S.tag = t; } };
 
 // ------------------------------------------------------------------ drawing the page
 function render() {
@@ -272,12 +415,16 @@ function render() {
   h += `<section class="block" aria-labelledby="mapH"><div class="head"><h2 id="mapH">${core ? 'Everyone Mahala knows' : WHO.view === 'lead' ? 'Your corner of the map' : 'Your crew on the map'}</h2>
     <div class="seg" role="group" aria-label="How to show the map"><button type="button" data-view="sky" aria-pressed="${S.view === 'sky'}">Constellation</button><button type="button" data-view="list" aria-pressed="${S.view === 'list'}">List</button></div></div>
     ${filtersHtml()}
+    ${core ? `<div class="chips" id="chips">${chipsHtml()}</div>` : ''}
     <div class="showing" id="showing" aria-live="polite">${showing(f)}</div>
     <div id="mapbody">${S.view === 'sky' ? skyHtml() : listHtml(f)}</div></section>`;
   if (WHO.view === 'lead') h += leadSections(d);
+  if (core) h += bringHtml(d) + worldHtml() + threadsHtml();
+  if (WHO.view === 'lead' && d.bring) h += circleBringHtml(d.bring);
   if (d.counts && d.counts.people) h += countsHtml(d.counts);
   $('#view').innerHTML = h;
   if (S.view === 'sky') sky.mount();
+  if (core) { renderBring(); world.mount(); }
 }
 
 function showing(f) {
@@ -314,7 +461,7 @@ function filtersHtml() {
   const campNames = [...new Set(M.camps.map(c => c.name))];
   const roles = [...new Set(M.nodes.flatMap(n => n.roles.map(r => r.split(':')[0])))].filter(r => ROLE[r]);
   return `<div class="filters" role="search">
-    <input id="search" type="search" placeholder="${core ? 'Search a name or playa name' : 'Search a first name'}" value="${esc(S.q)}" aria-label="Search the map" autocomplete="off">
+    <input id="search" type="search" placeholder="${core ? 'Search a name, a playa name or what they bring' : 'Search a first name'}" value="${esc(S.q)}" aria-label="Search the map" autocomplete="off">
     ${M.years.length > 1 ? `<select id="f-year" aria-label="Year">${opt('', 'Every year', S.year)}${M.years.map(y => opt(y, y + (M.camps.find(c => c.year === y) ? ' · ' + M.camps.find(c => c.year === y).name : ''), S.year)).join('')}</select>` : ''}
     ${core && campNames.length > 1 ? `<select id="f-camp" aria-label="Camp">${opt('', 'Every camp', S.camp)}${campNames.map(c => opt(c, c, S.camp)).join('')}</select>` : ''}
     ${M.rings.length > 1 ? `<select id="f-ring" aria-label="${core ? 'Ring' : 'Group'}">${opt('', core ? 'Every ring' : 'Everyone here', S.ring)}${M.rings.map(r => opt(r, RINGS[r], S.ring)).join('')}</select>` : ''}
@@ -377,6 +524,271 @@ function countsHtml(c) {
     <div class="bars" aria-label="People by camp and ring">${camps.map(([k, n]) => bar(k, n, maxC, k === 'Mahala')).join('')}${Object.entries(c.rings || {}).map(([k, n]) => bar(RINGS[k] || k, n, c.people, false)).join('')}</div></div></section>`;
 }
 
+// ------------------------------------------------------------------ filter chips (core)
+function tagCounts(list, f) {
+  const c = {};
+  list.forEach(n => ((n.tags && n.tags[f]) || []).forEach(x => (c[x] = c[x] || []).push(n)));
+  return c;
+}
+function chipsHtml() {
+  const on = [];
+  if (S.tag) on.push(`<button type="button" class="pill on" data-untag aria-label="Stop filtering by ${esc(tagLabel(S.tag.f, S.tag.c))}">${esc(tagLabel(S.tag.f, S.tag.c))}</button>`);
+  if (S.set) on.push(`<button type="button" class="pill on" data-unset aria-label="Stop showing ${esc(S.set.label)}">${esc(S.set.label)}</button>`);
+  if (on.length) return '<span class="lbl">Showing</span>' + on.join('');
+  const top = Object.entries(tagCounts(M.nodes, 's')).sort((a, b) => b[1].length - a[1].length).slice(0, 6);
+  return top.length ? '<span class="lbl">Try</span>' + top.map(([c]) => `<button type="button" class="pill" data-tag="s:${esc(c)}">${esc(tagLabel('s', c))}</button>`).join('') : '';
+}
+
+// ------------------------------------------------------------------ what we bring (core: tap a bar to filter; leads: counts only)
+function bringHtml(d) {
+  const meta = d.meta || {}, fi = meta.findings, read = M.nodes.filter(n => n.tags).length;
+  const finds = fi && (fi.lede || (fi.items || []).length) ? `<div class="findings">${fi.lede ? `<p class="lede">${esc(fi.lede)}</p>` : ''}
+    <ol class="finds">${(fi.items || []).map(([b, rest]) => `<li>${b ? `<b>${esc(b)}</b> ` : ''}${esc(rest)}</li>`).join('')}</ol>${fi.caveat ? `<p class="caveat">${esc(fi.caveat)}</p>` : ''}</div>` : '';
+  const from = meta.tags_from === 'own_pick' ? ' This time from people’s own picks only; the fuller reading arrives with the next push from the camp’s records.' : '';
+  return `<section class="block" id="bring" aria-labelledby="bringH"><div class="head"><h2 id="bringH">What we bring</h2><span class="small muted">${plural(read, 'person', 'people')} read</span></div>
+    ${finds}
+    ${read ? `<div class="tabs" role="group" aria-label="What to count">${BRING_TABS.map(([k, l]) => `<button type="button" class="pill" data-bring="${k}" aria-pressed="${S.bring === k}">${l}</button>`).join('')}</div>
+    <div class="bringgrid"><div class="gifts" id="gifts"></div><aside class="whobox" id="whobox" aria-live="polite"></aside></div>`
+      : `<p class="note">Nobody’s gifts have been read into this map yet.${from}</p>`}
+    ${read && from ? `<p class="small muted">${from.trim()}</p>` : ''}</section>`;
+}
+function bringRows(counts, f, max) {
+  let rows = Object.entries(counts).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  if (f === 'i') rows = rows.filter(r => r[1] > 1).slice(0, 30);
+  if (f === 'sd') Object.keys(GIFT.sd).forEach(c => { if (!(c in counts)) rows.push([c, 0]); });
+  const top = Math.max(1, max || 0, ...rows.map(r => r[1]));
+  return { rows, top };
+}
+function renderBring() {
+  const box = $('#gifts'); if (!box) return;
+  const list = withoutTag(filtered), f = S.bring, by = tagCounts(list, f);
+  const { rows, top } = bringRows(Object.fromEntries(Object.entries(by).map(([c, ps]) => [c, ps.length])), f);
+  box.innerHTML = `<p class="note">${BRING_NOTE[f]} ${plural(list.filter(n => n.tags).length, 'person', 'people')} in view.</p>` + (rows.length ? rows.map(([c, n]) => {
+    const thin = f === 'sd' && n < top * 0.25, chosen = S.tag && S.tag.f === f && S.tag.c === c;
+    return `<button type="button" class="gbar${thin ? ' thin' : ''}" data-tag="${f}:${esc(c)}" aria-pressed="${!!chosen}"><span>${esc(tagLabel(f, c))}${thin ? '<small>a gap to fill</small>' : ''}</span>
+      <span class="track"><span style="width:${Math.max(n ? 3 : 0, Math.round(100 * n / top))}%"></span></span><span class="n">${n}</span></button>`; }).join('')
+    : '<p class="empty">Nothing here with these filters.</p>');
+  const who = $('#whobox');
+  if (S.tag) {
+    const ps = filtered().sort((a, b) => a.name.localeCompare(b.name)), cap = 60;
+    who.innerHTML = `<div class="eyebrow">${plural(ps.length, 'person', 'people')}</div><h3>${esc(tagLabel(S.tag.f, S.tag.c))}</h3>
+      ${ps.length ? `<div class="folk">${ps.slice(0, cap).map(folkBtn).join('')}</div>${ps.length > cap ? `<p class="small muted">And ${ps.length - cap} more on the map above.</p>` : ''}` : '<p class="empty">Nobody yet. A gap to fill.</p>'}
+      <p class="small muted">The constellation and the list above show them too.</p>`;
+  } else {
+    who.innerHTML = `<div class="eyebrow">Who</div><p class="lede">Choose a bar to see who brings it. The constellation and the list follow.</p>`;
+  }
+}
+const folkBtn = n => `<button type="button" data-key="${esc(n.key)}"><i class="dot" style="background:${RING_COLOR[n.ring] || '#2A221C'}"></i>${esc(n.name)}</button>`;
+function circleBringHtml(b) {
+  const any = BRING_TABS.some(([f]) => (b[f] || []).length);
+  if (!any) return '';
+  const f = BRING_TABS.find(([k]) => k === S.bring && (b[k] || []).length) ? S.bring : BRING_TABS.find(([k]) => (b[k] || []).length)[0];
+  const counts = Object.fromEntries((b[f] || []).map(([c, n]) => [c, n]));
+  const { rows, top } = bringRows(counts, f === 'sd' ? 'sd-lead' : f);
+  return `<section class="block" id="circleBring" aria-labelledby="cbH"><div class="head"><h2 id="cbH">What the circle brings</h2><span class="small muted">counts for the circle as a whole · no names</span></div>
+    <div class="tabs" role="group" aria-label="What to count">${BRING_TABS.filter(([k]) => (b[k] || []).length).map(([k, l]) => `<button type="button" class="pill" data-bring="${k}" aria-pressed="${f === k}">${l}</button>`).join('')}</div>
+    <div class="gifts"><p class="note">${BRING_NOTE[f]} Across the core team and camp leads; a count shows only when at least ${b.min || 2} people share it, so nobody is singled out.</p>
+    ${rows.map(([c, n]) => `<div class="gbar"><span>${esc(tagLabel(f, c))}</span><span class="track"><span style="width:${Math.round(100 * n / top)}%"></span></span><span class="n">${n}</span></div>`).join('')}</div></section>`;
+}
+
+// ------------------------------------------------------------------ where we live (core): a warm heat on the night
+function worldHtml() {
+  return `<section class="block" id="world" aria-labelledby="worldH"><div class="head"><h2 id="worldH">Where we live</h2><span class="small muted" id="placesCount"></span></div>
+    <p class="lede">Find the people near you, or near where you are going. Tap a glow or a country to see who lives there; the filters above shape this map too.</p>
+    <div class="worldgrid"><div class="worldbox"><div class="zoombar" id="zoombar" role="group" aria-label="Zoom to a region"></div>
+      <svg id="worldmap" viewBox="0 0 960 500" role="img" aria-label="World map of where people in the community live"></svg></div>
+      <aside class="placesbox" id="places" aria-live="polite"></aside></div>
+    <p class="small muted" id="worldfoot"></p></section>`;
+}
+// The world's shapes come from the site (assets/world-110m.json, public geography) and d3 from cdnjs, loaded only here.
+const geo = {
+  p: null,
+  load() {
+    if (this.p) return this.p;
+    const d3p = window.d3 ? Promise.resolve(window.d3) : new Promise(res => {
+      const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js'; s.async = true;
+      s.onload = () => res(window.d3 || null); s.onerror = () => res(null); document.head.appendChild(s); });
+    const wp = fetch('assets/world-110m.json').then(r => r.ok ? r.json() : null).catch(() => null);
+    this.p = Promise.all([d3p, wp]).then(([d3, topo]) => ({ d3, countries: topo ? topoFeatures(topo, 'countries') : [] }));
+    return this.p;
+  },
+};
+// A small reader for the TopoJSON file, so the page needs no second library.
+function topoFeatures(topo, name) {
+  const tf = topo.transform, obj = topo.objects && topo.objects[name]; if (!obj) return [];
+  const arcs = topo.arcs.map(a => { let x = 0, y = 0; return a.map(p => tf ? (x += p[0], y += p[1], [x * tf.scale[0] + tf.translate[0], y * tf.scale[1] + tf.translate[1]]) : [p[0], p[1]]); });
+  const arc = i => i < 0 ? arcs[~i].slice().reverse() : arcs[i];
+  const ring = ids => { const out = []; ids.forEach((i, j) => { const a = arc(i); out.push(...(j ? a.slice(1) : a)); }); return out; };
+  return obj.geometries.map(g => ({ type: 'Feature', id: g.id, properties: g.properties || {},
+    geometry: g.type === 'Polygon' ? { type: 'Polygon', coordinates: g.arcs.map(ring) } : g.type === 'MultiPolygon' ? { type: 'MultiPolygon', coordinates: g.arcs.map(p => p.map(ring)) } : null }))
+    .filter(f => f.geometry);
+}
+const world = {
+  W: 960, H: 500, k: 1, ready: null,
+  mount() {
+    const svg = $('#worldmap'); if (!svg) return;
+    this.ready = null; this.list();
+    geo.load().then(g => {
+      if ($('#worldmap') !== svg) return;
+      if (!g.d3 || !g.countries.length) { svg.parentElement.innerHTML = '<p class="nomap">The world map could not load its drawing here. The list of places still works.</p>'; return; }
+      this.draw(g, svg);
+    });
+  },
+  groups(list) {
+    const nums = (DATA.meta && DATA.meta.nums) || {}, places = {}, nations = {};
+    list.forEach(n => {
+      const g = n.place, key = g[2], cc = g[4];
+      (places[key] = places[key] || { key, label: g[2], level: g[3], cc, lat: g[0], lon: g[1], people: [] }).people.push(n);
+      (nations[cc] = nations[cc] || { key: cc, num: nums[cc] != null ? String(+nums[cc]) : null, label: g[3] === 'country' ? g[2] : g[2].split(', ').slice(-1)[0], people: [], places: new Set() }).people.push(n);
+      nations[cc].places.add(key);
+    });
+    const sorted = Object.values(places).sort((a, b) => b.people.length - a.people.length);
+    Object.values(nations).forEach(n => { n.places = sorted.filter(p => n.places.has(p.key)).sort((a, b) => (a.level === 'country') - (b.level === 'country') || b.people.length - a.people.length); });
+    return { places: sorted, nations };
+  },
+  draw(g, el) {
+    const d3 = g.d3, W = this.W, H = this.H;
+    const byNum = Object.fromEntries(g.countries.map(f => [String(+f.id), f]));
+    const proj = d3.geoEqualEarth().fitExtent([[8, 8], [W - 8, H - 8]], { type: 'Sphere' }), path = d3.geoPath(proj);
+    const svg = d3.select(el); svg.selectAll('*').remove(); this.k = 1;
+    const rg = svg.append('defs').append('radialGradient').attr('id', 'heat');
+    rg.append('stop').attr('offset', '0%').attr('stop-color', '#FFD81F').attr('stop-opacity', .85);
+    rg.append('stop').attr('offset', '35%').attr('stop-color', '#F6E6C6').attr('stop-opacity', .45);
+    rg.append('stop').attr('offset', '100%').attr('stop-color', '#B8914A').attr('stop-opacity', 0);
+    svg.append('path').datum({ type: 'Sphere' }).attr('d', path).attr('fill', 'rgba(244,239,230,.02)').attr('stroke', 'rgba(244,239,230,.12)');
+    const zg = svg.append('g');
+    zg.append('path').datum(d3.geoGraticule10()).attr('d', path).attr('fill', 'none').attr('stroke', 'rgba(244,239,230,.05)').attr('vector-effect', 'non-scaling-stroke');
+    const land = zg.append('g').selectAll('path').data(g.countries).join('path').attr('class', 'land').attr('d', path)
+      .on('click', (e, f) => { const n = Object.entries((DATA.meta && DATA.meta.nums) || {}).find(([, v]) => String(+v) === String(+f.id)); this.choose('country', n ? n[0] : 'n' + (+f.id), String(+f.id)); });
+    land.append('title').text(f => f.properties.name || '');
+    const glow = zg.append('g').attr('class', 'glow'), spots = zg.append('g');
+    const zoomer = d3.zoom().scaleExtent([1, 24]).translateExtent([[0, 0], [W, H]]).on('zoom', e => {
+      this.k = e.transform.k; zg.attr('transform', e.transform);
+      spots.selectAll('circle').attr('r', d => d.r / this.k); glow.selectAll('circle').attr('r', d => d.gr / this.k);
+    });
+    svg.call(zoomer);
+    const goTo = (name, b) => {
+      [...$('#zoombar').children].forEach(c => c.setAttribute('aria-pressed', String(c.textContent === name)));
+      if (!b) return svg.transition().duration(700).call(zoomer.transform, d3.zoomIdentity);
+      const [[x0, y0], [x1, y1]] = [proj(b[0]), proj(b[1])];
+      const s = Math.min(24, 0.9 / Math.max(Math.abs(x1 - x0) / W, Math.abs(y1 - y0) / H));
+      svg.transition().duration(800).call(zoomer.transform, d3.zoomIdentity.translate(W / 2 - s * (x0 + x1) / 2, H / 2 - s * (y0 + y1) / 2).scale(s));
+    };
+    const regions = [['World', null], ['Southern Africa', [[10, -36], [42, -15]]], ['Cape Town', [[17.6, -34.6], [19.6, -33.4]]], ['Europe', [[-12, 35], [32, 61]]], ['Americas', [[-130, -40], [-60, 55]]]];
+    $('#zoombar').innerHTML = regions.map(([n]) => `<button type="button" class="pill" aria-pressed="${n === 'World'}">${n}</button>`).join('');
+    [...$('#zoombar').children].forEach((b, i) => b.onclick = () => goTo(regions[i][0], regions[i][1]));
+    this.zoomTo = num => {
+      const f = byNum[num]; if (!f) return;
+      [...$('#zoombar').children].forEach(c => c.setAttribute('aria-pressed', 'false'));
+      const [[x0, y0], [x1, y1]] = path.bounds(f), s = Math.max(1, Math.min(14, 0.8 / Math.max((x1 - x0) / W, (y1 - y0) / H)));
+      svg.transition().duration(800).call(zoomer.transform, d3.zoomIdentity.translate(W / 2 - s * (x0 + x1) / 2, H / 2 - s * (y0 + y1) / 2).scale(s));
+    };
+    this.ready = { d3, proj, byNum, land, glow, spots };
+    this.paint();
+  },
+  paint() {
+    const r = this.ready; if (!r || !$('#worldmap')) return;
+    const { places, nations } = this.groups(filtered().filter(n => n.place)), d3 = r.d3, sel = S.place;
+    const byNum = {}; Object.values(nations).forEach(n => { if (n.num) byNum[n.num] = n; });
+    const max = Math.max(2, ...Object.values(nations).map(n => n.people.length));
+    const heat = d3.scaleSequentialLog([1, max], t => d3.interpolateRgb('#3a2f25', '#9a7435')(t));
+    r.land.style('fill', f => byNum[String(+f.id)] ? heat(byNum[String(+f.id)].people.length) : null)
+      .classed('lit', f => !!byNum[String(+f.id)])
+      .classed('on', f => !!(sel && sel.kind === 'country' && byNum[String(+f.id)] && byNum[String(+f.id)].key === sel.key));
+    const pts = places.map(p => {
+      let ll = [p.lon, p.lat];
+      const nat = nations[p.cc];
+      if (p.level === 'country' && nat && nat.num && r.byNum[nat.num]) ll = d3.geoCentroid(r.byNum[nat.num]);
+      const xy = r.proj(ll); return xy ? Object.assign(p, { x: xy[0], y: xy[1], r: 2.6 + Math.sqrt(p.people.length) * 1.7, gr: 9 + Math.sqrt(p.people.length) * 7 }) : null;
+    }).filter(Boolean);
+    r.glow.selectAll('circle').data(pts, d => d.key).join('circle').attr('cx', d => d.x).attr('cy', d => d.y).attr('r', d => d.gr / this.k).attr('fill', 'url(#heat)');
+    r.spots.selectAll('circle').data(pts, d => d.key).join(en => en.append('circle').attr('tabindex', 0).attr('role', 'button')
+        .on('click', (e, d) => this.choose('place', d.key))
+        .on('keydown', (e, d) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.choose('place', d.key); } })
+        .call(c => c.append('title')))
+      .attr('class', d => 'spot' + (sel && sel.kind === 'place' && sel.key === d.key ? ' on' : ''))
+      .attr('cx', d => d.x).attr('cy', d => d.y).attr('r', d => d.r / this.k)
+      .attr('aria-label', d => `${d.label}: ${plural(d.people.length, 'person', 'people')}`)
+      .each(function (d) { this.firstChild && (this.firstChild.textContent = `${d.label} · ${d.people.length}`); })
+      .sort((a, b) => b.people.length - a.people.length);
+  },
+  choose(kind, key, num) {
+    S.place = S.place && S.place.kind === kind && S.place.key === key ? null : { kind, key };
+    if (S.place && kind === 'country' && this.zoomTo) this.zoomTo(num || ((DATA.meta && DATA.meta.nums) || {})[key]);
+    this.list(); this.paint();
+  },
+  list() {
+    const box = $('#places'); if (!box) return;
+    const all = filtered(), placed = all.filter(n => n.place), { places, nations } = this.groups(placed), sel = S.place;
+    const nat = Object.values(nations).sort((a, b) => b.people.length - a.people.length);
+    const byName = (a, b) => a.name.localeCompare(b.name);
+    const back = '<button type="button" class="crumb" data-place-back>All countries</button>';
+    if (sel && sel.kind === 'place') {
+      const p = places.find(x => x.key === sel.key), ps = p ? p.people.slice().sort(byName) : [];
+      box.innerHTML = `${back}<div class="eyebrow">${plural(ps.length, 'person', 'people')}</div><h3>${esc(p ? placeName([0, 0, p.label, p.level]) : 'This place')}</h3>
+        ${ps.length ? `<div class="folk">${ps.map(folkBtn).join('')}</div>` : '<p class="empty">Nobody placed here with these filters.</p>'}`;
+    } else if (sel && sel.kind === 'country') {
+      const n = nations[sel.key];
+      box.innerHTML = `${back}<div class="eyebrow">${plural(n ? n.people.length : 0, 'person', 'people')}</div><h3>${esc(n ? n.label : 'This country')}</h3>
+        ${n ? n.places.map(p => `<div class="eyebrow" style="margin-top:6px">${esc(p.level === 'country' ? 'Somewhere in ' + p.label : p.label.split(', ').slice(0, -1).join(', '))} · ${p.people.length}</div>
+          <div class="folk">${p.people.slice().sort(byName).map(folkBtn).join('')}</div>`).join('') : '<p class="empty">Nobody placed here with these filters.</p>'}`;
+    } else {
+      const top = nat.slice(0, 14), maxn = nat.length ? nat[0].people.length : 1;
+      box.innerHTML = `<div class="eyebrow">Countries</div>${nat.length ? `<ul class="placelist">${top.map(n => `<li><button type="button" data-country="${esc(n.key)}"><span>${esc(n.label)}</span><span class="n">${n.people.length}</span><span class="bar" style="width:${Math.max(4, n.people.length / maxn * 100)}%"></span></button></li>`).join('')}</ul>
+        ${nat.length > 14 ? `<p class="small muted">And ${plural(nat.length - 14, 'more country', 'more countries')}, each on the map.</p>` : ''}` : '<p class="empty">Nobody placed with these filters.</p>'}`;
+    }
+    const pc = $('#placesCount'); if (pc) pc.textContent = `${plural(nat.length, 'country', 'countries')} · ${plural(places.length, 'place')}`;
+    const foot = $('#worldfoot');
+    if (foot) foot.textContent = `${placed.length} of ${plural(all.length, 'person', 'people')} placed, ${placed.filter(n => n.place[3] === 'city').length} to a city and the rest to a country. ` +
+      'Places come from what people wrote on their forms, at city or country level only, never an address. Scroll or pinch to zoom; drag to move.';
+  },
+};
+
+// ------------------------------------------------------------------ how the threads run (core): gentle prompts, never a ranking
+const MOTIF = {
+  weavers: '<svg class="motif" viewBox="0 0 44 44" aria-hidden="true"><circle cx="16" cy="18" r="10" fill="none" stroke="#8E1B45" stroke-width="1.3"/><circle cx="28" cy="18" r="10" fill="none" stroke="#0B6E95" stroke-width="1.3"/><circle cx="22" cy="28" r="10" fill="none" stroke="#D8197F" stroke-width="1.3"/></svg>',
+  bridges: '<svg class="motif" viewBox="0 0 44 44" aria-hidden="true"><path d="M6 32 Q22 4 38 32" fill="none" stroke="#8A6A2E" stroke-width="1.4"/><circle cx="6" cy="32" r="4" fill="#0B6E95"/><circle cx="38" cy="32" r="4" fill="#8E1B45"/><circle cx="22" cy="18" r="3" fill="#FFD81F"/></svg>',
+  circles: '<svg class="motif" viewBox="0 0 44 44" aria-hidden="true">' + Array.from({ length: 8 }, (_, i) => `<circle cx="${22 + 14 * Math.cos(i * Math.PI / 4)}" cy="${22 + 14 * Math.sin(i * Math.PI / 4)}" r="3" fill="${['#8E1B45', '#0B6E95', '#D8197F', '#8A6A2E'][i % 4]}"/>`).join('') + '<circle cx="22" cy="22" r="14" fill="none" stroke="#C9BCA9" stroke-dasharray="2 3"/></svg>',
+  loose: '<svg class="motif" viewBox="0 0 44 44" aria-hidden="true"><path d="M6 30 C14 10, 22 34, 30 16" fill="none" stroke="#5B5047" stroke-width="1.3" stroke-dasharray="3 3"/><circle cx="36" cy="12" r="4" fill="none" stroke="#8E1B45" stroke-width="1.4"/></svg>',
+};
+function ringGlyph(n) {
+  const k = Math.min(n, 14), dots = Array.from({ length: k }, (_, i) => { const a = i * 2 * Math.PI / k - Math.PI / 2; return `<circle cx="${(15 + 10 * Math.cos(a)).toFixed(1)}" cy="${(15 + 10 * Math.sin(a)).toFixed(1)}" r="2.2" fill="#8E1B45"/>`; }).join('');
+  return `<svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="10" fill="none" stroke="#C9BCA9" stroke-width=".8"/>${dots}</svg>`;
+}
+function threadsHtml() {
+  const w = INS; if (!w) return '';
+  const byName = keys => keys.map(k => M.byKey[k]).filter(Boolean).sort((a, b) => a.name.localeCompare(b.name));
+  const showBtn = (kind, label) => `<button type="button" class="btn act" data-set="${kind}" aria-pressed="${!!(S.set && S.set.kind === kind)}">${label}</button>`;
+  const near = w.loose.map(k => M.byKey[k]).filter(n => n.ring === 'lead' || n.ring === 'builder').sort((a, b) => a.name.localeCompare(b.name));
+  const strands = [];
+  strands.push(`<article class="strand"><div class="hd">${MOTIF.weavers}<h3>The weavers</h3></div>
+    <p>People who hold many threads with others on the map. When you want to reach a corner of the community, they are a warm place to start.</p>
+    ${w.weavers.length ? `<div class="folk">${byName(w.weavers.map(x => x.key)).map(folkBtn).join('')}</div>${showBtn('weavers', 'Show them on the map')}` : '<p class="empty">The threads are still few; the weavers appear as they grow.</p>'}</article>`);
+  strands.push(`<article class="strand"><div class="hd">${MOTIF.bridges}<h3>Bridges between eras</h3></div>
+    <p>They link people who might otherwise never meet: State of Bliss to Mahala, one camp to the next.</p>
+    ${w.bridges.length ? `<div class="folk">${w.bridges.map(x => ({ n: M.byKey[x.key], eras: x.eras })).sort((a, b) => a.n.name.localeCompare(b.n.name)).map(x => `<button type="button" data-key="${esc(x.n.key)}"><i class="dot" style="background:${RING_COLOR[x.n.ring]}"></i>${esc(x.n.name)}${x.eras.length > 1 ? ` <small>${esc(x.eras.join(' · '))}</small>` : ''}</button>`).join('')}</div>${showBtn('bridges', 'Show them on the map')}` : '<p class="empty">No bridges yet.</p>'}</article>`);
+  strands.push(`<article class="strand"><div class="hd">${MOTIF.circles}<h3>Circles</h3></div>
+    <p>Groups woven closely together, found from the threads alone. Tap one to see it on the map.</p>
+    ${w.circles.length ? `<div class="rings">${w.circles.map((c, i) => `<button type="button" class="ringbtn" data-circle="${i}" aria-pressed="${!!(S.set && S.set.kind === 'circle' && S.set.i === i)}">${ringGlyph(c.keys.length)}<span>${esc(circleName(c).replace(/^a/, 'A'))}</span></button>`).join('')}</div>` : '<p class="empty">No circles yet.</p>'}</article>`);
+  strands.push(`<article class="strand"><div class="hd">${MOTIF.loose}<h3>Threads still to tie</h3></div>
+    <p>${plural(w.loose.length, 'person', 'people')} on the map ${w.loose.length === 1 ? 'has' : 'have'} no thread to anyone yet. ${near.length ? 'Here are the camp leads and builders among them: a hello from someone they know ties them in.' : 'A hello from someone they know ties them in.'}</p>
+    ${near.length ? `<div class="folk">${near.slice(0, 18).map(folkBtn).join('')}</div>${near.length > 18 ? `<p class="small muted">And ${near.length - 18} more camp leads and builders.</p>` : ''}` : ''}
+    ${w.loose.length ? showBtn('loose', `Show all ${w.loose.length} on the map`) : ''}</article>`);
+  return `<section class="block" id="threads" aria-labelledby="thrH"><div class="head"><h2 id="thrH">How the threads run</h2><span class="small muted">from the links between people</span></div>
+    <p class="lede">Not a ranking: a few gentle prompts for who to call, who to introduce, and who is still waiting for a thread.</p>
+    <div class="weave">${strands.join('')}</div></section>`;
+}
+function chooseSet(kind, i) {
+  const w = INS; if (!w) return;
+  if (S.set && S.set.kind === kind && (kind !== 'circle' || S.set.i === i)) S.set = null;
+  else if (kind === 'circle') S.set = { kind, i, label: circleName(w.circles[i]).replace(/^a/, 'A'), keys: new Set(w.circles[i].keys) };
+  else S.set = { kind, label: { weavers: 'The weavers', bridges: 'Bridges between eras', loose: 'Threads still to tie' }[kind],
+    keys: new Set(kind === 'weavers' ? w.weavers.map(x => x.key) : kind === 'bridges' ? w.bridges.map(x => x.key) : w.loose) };
+  S.shown = PAGE;
+  refresh();
+  const t = $('#mapH'); if (t && S.set) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 // ------------------------------------------------------------------ the person drawer
 function openPerson(key) {
   const n = M.byKey[key]; if (!n) return;
@@ -396,6 +808,12 @@ function openPerson(key) {
   if (n.crew) dl.push(['Crew', esc(n.crew)]);
   if (core && n.consent) dl.push(['Consent', `<span class="chip c-${esc(n.consent)}">${esc(CONSENT[n.consent][0])}</span> <span class="small muted">${esc(CONSENT[n.consent][1])}</span>`]);
   if (core && n.home) dl.push(['Based in', esc(n.home)]);
+  if (core && n.place) dl.push(['Lives in', esc(placeName(n.place))]);
+  if (core && n.tags) {
+    const pills = BRING_TABS.flatMap(([f]) => (n.tags[f] || []).map(c => `<button type="button" class="pill" data-tag="${f}:${esc(c)}" data-closefirst title="Show everyone who brings this">${esc(tagLabel(f, c))}</button>`));
+    if (pills.length) dl.push(['What they bring', `<div class="folk">${pills.join('')}</div>`]);
+  }
+  if (core && INS && INS.of[key]) dl.push(['In the weave', INS.of[key].map(esc).join('<br>')]);
   if (core) {
     const groups = {};
     M.edges.forEach(e => {
@@ -549,6 +967,10 @@ function refresh() {
   if (S.view === 'list') { const mb = $('#mapbody'); if (mb) mb.innerHTML = listHtml(f); }
   else sky.draw();
   document.querySelectorAll('button.stat[data-ring]').forEach(b => b.setAttribute('aria-pressed', String(S.ring === b.dataset.ring)));
+  const ch = $('#chips'); if (ch) ch.innerHTML = chipsHtml();
+  renderBring(); world.list(); world.paint();
+  document.querySelectorAll('[data-set]').forEach(b => b.setAttribute('aria-pressed', String(!!(S.set && S.set.kind === b.dataset.set))));
+  document.querySelectorAll('[data-circle]').forEach(b => b.setAttribute('aria-pressed', String(!!(S.set && S.set.kind === 'circle' && S.set.i === +b.dataset.circle))));
 }
 document.addEventListener('input', e => {
   if (e.target.id === 'search') { S.q = e.target.value.trim().toLowerCase(); S.shown = PAGE; refresh(); }
@@ -562,7 +984,28 @@ document.addEventListener('click', e => {
   if (t.closest('#acct') || t.closest('[data-signin]')) { e.preventDefault(); const MM = window.MahalaMembers; if (MM) Promise.resolve(MM.info()).then(i => (i && i.signedIn ? MM.account() : MM.signIn('Sign in to open the community map'))); return; }
   const v = t.closest('[data-view]'); if (v) { S.view = v.dataset.view; try { localStorage.setItem('community.view', S.view); } catch (x) {} render(); return; }
   const st = t.closest('button.stat[data-ring]'); if (st) { S.ring = S.ring === st.dataset.ring ? '' : st.dataset.ring; const sel = $('#f-ring'); if (sel) sel.value = S.ring; refresh(); return; }
-  if (t.closest('[data-clear]')) { Object.assign(S, { q: '', year: '', camp: '', ring: '', role: '', consent: '', shown: PAGE }); render(); return; }
+  if (t.closest('[data-clear]')) { Object.assign(S, { q: '', year: '', camp: '', ring: '', role: '', consent: '', tag: null, set: null, place: null, shown: PAGE }); render(); return; }
+  const tg = t.closest('[data-tag]');
+  if (tg) {
+    const [f, ...rest] = tg.dataset.tag.split(':'), c = rest.join(':');
+    if (tg.hasAttribute('data-closefirst')) { closePerson(); S.tag = { f, c }; S.bring = f; render(); const m = $('#mapH'); if (m) m.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+    S.tag = S.tag && S.tag.f === f && S.tag.c === c ? null : { f, c }; S.shown = PAGE;
+    if (S.tag && WHO.view === 'core' && f !== S.bring && BRING_TABS.some(([k]) => k === f)) { S.bring = f; document.querySelectorAll('[data-bring]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.bring === f))); }
+    refresh(); return;
+  }
+  if (t.closest('[data-untag]')) { S.tag = null; refresh(); return; }
+  if (t.closest('[data-unset]')) { S.set = null; refresh(); return; }
+  const br = t.closest('[data-bring]');
+  if (br) {
+    S.bring = br.dataset.bring;
+    if (WHO.view === 'core') { document.querySelectorAll('[data-bring]').forEach(b => b.setAttribute('aria-pressed', String(b === br))); renderBring(); }
+    else { const old = $('#circleBring'); if (old) old.outerHTML = circleBringHtml(DATA.bring); }
+    return;
+  }
+  const ss = t.closest('[data-set]'); if (ss) { chooseSet(ss.dataset.set); return; }
+  const cc = t.closest('[data-circle]'); if (cc) { chooseSet('circle', +cc.dataset.circle); return; }
+  const co = t.closest('[data-country]'); if (co) { world.choose('country', co.dataset.country); return; }
+  if (t.closest('[data-place-back]')) { S.place = null; world.list(); world.paint(); return; }
   if (t.closest('[data-more]')) { S.shown += PAGE; refresh(); return; }
   if (t.closest('[data-close]') || t.id === 'scrim') { closePerson(); return; }
   const p = t.closest('[data-key]'); if (p) { openPerson(p.dataset.key); return; }
