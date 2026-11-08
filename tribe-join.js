@@ -2,6 +2,10 @@
 // them, then how we stay in touch. The answers go to the camp's Google Sheet (its Tribe tab) through site.js, until
 // member accounts open; then each row becomes an invitation to claim that account. The camp itself is by invitation:
 // here a person can only say they would love to come.
+// With accounts on (8 Nov 2026, F-025): the end of the form makes the account in one tap with the address just given
+// (Google, or a link to that address) and lands on Your Mahala. A copy of the answers waits on this device for a day,
+// so the first sign-in asks none of them again. Signed in already, Join the tribe goes straight to Your Mahala (the
+// shim does that, before this form opens).
 (function () {
   var SITE = window.MAHALA_SITE || {};
   var $ = function (id) { return document.getElementById(id); };
@@ -178,15 +182,29 @@
     };
     (SITE.post ? SITE.post(row) : Promise.reject(new Error('no sheet'))).then(function () {
       step = STEPS + 1; stepEl.textContent = '';
+      var MM = window.MahalaMembers, accounts = !!(MM && MM.join);
+      if (accounts) {
+        // never the WhatsApp number or the private answer ("more"): those stay with the camp's sheet
+        try { localStorage.setItem('mahala.tribe', JSON.stringify({ name: A.name, town: A.town, country: A.country, skills: A.skills, other: A.other, passions: A.passions,
+          creating: A.creating.trim(), news: A.news, wa: A.whatsappCommunity, share: A.share, love: A.loveToCome, at: Date.now() })); } catch (e) { /* storage blocked */ }
+      }
       var who = (A.name || '').split(/\s+/)[0];
       body.innerHTML = '<div class="j-done" tabindex="-1"><p class="eyebrow">Welcome</p><h2 class="h-sub">Welcome to the tribe' + (who ? ', ' + esc(who) : '') + '.</h2>' +
         '<ol class="next">' +
         '<li><span><b>We read every introduction.</b> Someone from Mahala will say hello by email.</span></li>' +
         (A.loveToCome ? '<li><span><b>You are on the camp leads\' list.</b> Invitations go out in waves; if yours comes, it comes with a letter.</span></li>' : '') +
-        '<li><span><b>Your own page is coming.</b> When members\' pages open, you sign in with this email and your answers are waiting.</span></li></ol>' +
-        '<div class="j-acts"><a class="act solid" href="./#mahalaverse" id="tMv">Step into the Mahalaverse</a><button class="act" type="button" id="tDone">Back to the tribe</button></div></div>';
+        (accounts ? '<li><span><b>Your own page is ready.</b> One tap opens Your Mahala, with your answers already in it.</span></li></ol>' +
+          '<div class="j-acts"><button class="act solid" type="button" id="tPage">Open my page</button><button class="act" type="button" id="tDone">Back to the tribe</button></div></div>'
+          : '<li><span><b>Your own page is coming.</b> When members\' pages open, you sign in with this email and your answers are waiting.</span></li></ol>' +
+          '<div class="j-acts"><a class="act solid" href="./#mahalaverse" id="tMv">Step into the Mahalaverse</a><button class="act" type="button" id="tDone">Back to the tribe</button></div></div>');
       body.querySelector('.j-done').focus({ preventScroll: true });
       $('tDone').addEventListener('click', closeJoin);
+      if (accounts) {
+        var openPage = function () { MM.join({ email: A.email, name: A.name }); };
+        $('tPage').addEventListener('click', openPage);
+        setTimeout(openPage, 700);
+        return;
+      }
       $('tMv').addEventListener('click', function (e) {        // over the front page: close this pane and step in there
         if (window.parent === window) return;
         try { if (window.parent.location.origin !== location.origin) return; } catch (err) { return; }

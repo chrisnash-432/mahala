@@ -20,6 +20,7 @@ EMAIL = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")
 PHONE = re.compile(r"(?<![\w/#=.\-])(?:\+27|\+\d{2,3}|0)[ \-]?\d{2}[ \-]?\d{3}[ \-]?\d{4}(?![\w/])")
 ALLOW_EMAIL = {
     "wearemahala@gmail.com",                 # the camp inbox, public
+    "love@wearemahala.com",                  # the camp address from Nov 2026 (F-031)
     "noreply@anthropic.com",                 # commit trailers
     # Temporary: the applications backend's notification list. Task T-027 moves these
     # into Apps Script properties; remove them from this list when it is done.
