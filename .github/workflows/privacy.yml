@@ -1,5 +1,6 @@
 name: privacy
 on: [push, pull_request]
+permissions: { contents: read }
 jobs:
   privacy:
     runs-on: ubuntu-latest

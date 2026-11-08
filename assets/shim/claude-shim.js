@@ -31,6 +31,7 @@
   var SUPABASE_SRI = 'sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o';   // that exact file, so a changed copy never runs
   var STORE_KEY = 'mahala-auth', EDITION = 'mahala.edition', THREAD = 'mahala.thread', AFTER = 'mahala.after';
   var KEEP = 'mahala.keep', RECOVERY = 'mahala.recovery', INVITE = 'mahala.invite', NOTED = 'mahala.inviteNoted';
+  var ASKED = 'mahala.asked';        // when this browser last asked for a sign-in link or Google (security review, 8 Nov 2026)
   var BASECAMP = 'basecamp.html';   // wearemahala.com's Basecamp, behind sign-in (T-216)
   var URL_AUTH = null;                // what the email link or Google brought back in the address, read once
   // Google's own button (one tap, and it names wearemahala.com, not the database's address) when site.js gives the
@@ -60,6 +61,9 @@
       if (authInUrl) {
         var h = new URLSearchParams(u.hash.slice(1));
         URL_AUTH = { access: h.get('access_token'), refresh: h.get('refresh_token'), type: h.get('type'), error: h.get('error_description') || h.get('error') };
+        // A sign-in this browser did not ask for may be someone else's account, sent to plant it here (login fixation):
+        // it is taken only after the visitor confirms the address it signs them in as. The note is used once.
+        URL_AUTH.asked = Date.now() - Number(ls.get(ASKED) || 0) < 864e5; ls.set(ASKED, null);
         if (URL_AUTH.type === 'recovery' && URL_AUTH.access) ss.set(RECOVERY, '1');
       }
       if (t !== null || u.searchParams.has('signin') || authInUrl) {
@@ -130,6 +134,11 @@
 
   // Who is here: sign-in, then claim (the letter's token, else the verified address), then whoami.
   var infoP = clientP.then(function (c) {
+    if (URL_AUTH && URL_AUTH.access && !URL_AUTH.asked) {
+      var em = '';
+      try { em = JSON.parse(atob(URL_AUTH.access.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).email || ''; } catch (e) { }
+      if (!window.confirm('Sign in to Mahala as ' + (em || 'this account') + '?\n\nContinue only if you asked for this link yourself.')) { URL_AUTH.access = null; ss.set(RECOVERY, null); }
+    }
     var fromLink = URL_AUTH && URL_AUTH.access && URL_AUTH.refresh
       ? c.auth.setSession({ access_token: URL_AUTH.access, refresh_token: URL_AUTH.refresh }).then(function (r) { if (r && r.error) URL_AUTH.error = r.error.message; }, function () { URL_AUTH.error = 'expired'; })
       : Promise.resolve();
@@ -665,6 +674,7 @@
     var GOOGLE = '<svg class="mvs-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.6 13.3l7.9 6.1C12.4 13.7 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.6c0-1.6-.1-3.1-.4-4.6H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17z"/><path fill="#FBBC05" d="M10.5 28.6c-.5-1.4-.8-2.9-.8-4.6s.3-3.2.8-4.6l-7.9-6.1C1 16.6 0 20.2 0 24s1 7.4 2.6 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.2-13.5-10l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/></svg>';
 
     function redirectTo(gate) {
+      ls.set(ASKED, String(Date.now()));
       if (gate || /^#(mahalaverse|enter|play)/i.test(location.hash) || document.documentElement.classList.contains('to-mv') || document.body.classList.contains('from-seed')) ss.set(AFTER, '#mahalaverse');
       else if (location.hash && location.hash.length < 40) ss.set(AFTER, location.hash);
       return location.origin + location.pathname + '?signin=1';
