@@ -1,7 +1,9 @@
 <!doctype html><html lang="en-ZA"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><meta name="robots" content="noindex,nofollow"><meta name="description" content="Mahala at AfrikaBurn 2027: The Seed, a temple of light and glass, and the Mahalaverse. Concept visualisations."></head><body>
 <script>/* the edition follows the account: members (signed in and known to Mahala) get every plugin; everyone else the public edition. The shim corrects this hint after it asks the database, and starts the page again if it was wrong. */
 (function () { var m = false; try { m = localStorage.getItem('mahala.edition') === 'members' && !!localStorage.getItem('mahala-auth'); } catch (e) { }
-  window.__MV_MEMBERS = m; window.__V7_ONLY = m ? null : ['platform', 'world']; window.__MAHALA_PUBLIC = !m; })();</script>
+  window.__MV_MEMBERS = m; window.__V7_ONLY = m ? null : ['platform', 'world']; window.__MAHALA_PUBLIC = !m; })();
+/* the front page is wearemahala.com itself: an old link to /index.html shows as the plain address (F-033) */
+try { if (/\/index\.html$/.test(location.pathname)) history.replaceState(history.state, '', location.pathname.replace(/index\.html$/, '') + location.search + location.hash); } catch (e) { }</script>
 <script src="site.js?v=8"></script>
 <script src="assets/shim/claude-shim.js?v=10"></script>
 <style>
@@ -3941,6 +3943,7 @@ async function start3D() {
   frame();
 }
 </script>
+<script src="yourevents.js?v=1" defer></script>
 <script src="analytics.js?v=2"></script>
 
 </body></html>

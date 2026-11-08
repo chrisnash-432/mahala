@@ -1,7 +1,7 @@
 """Block commits that put people data or contact details into this public repo.
 
 Everything in this repo is served on wearemahala.com, so the check is strict:
-- no email address except the camp inbox (and the two below, until task T-027 moves them out)
+- no email address except the camp inbox, love@wearemahala.com (and the two below, until task T-027 moves them out)
 - no phone numbers
 - no data exports (spreadsheets, contact cards, raw JSON lines)
 Vendor code (seed/model/) is skipped: minified numbers look like phone numbers.
@@ -19,8 +19,8 @@ BLOCKED_TYPES = {".csv", ".xlsx", ".xls", ".vcf", ".jsonl", ".zip", ".enc"}
 EMAIL = re.compile(r"[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}")
 PHONE = re.compile(r"(?<![\w/#=.\-])(?:\+27|\+\d{2,3}|0)[ \-]?\d{2}[ \-]?\d{3}[ \-]?\d{4}(?![\w/])")
 ALLOW_EMAIL = {
-    "wearemahala@gmail.com",                 # the camp inbox, public
-    "love@wearemahala.com",                  # the camp address from Nov 2026 (F-031)
+    "love@wearemahala.com",                  # the camp inbox, public (Chris's decision, 8 Nov 2026, F-031)
+    "wearemahala@gmail.com",                 # the old camp inbox: still allowed for any historical mention
     "noreply@anthropic.com",                 # commit trailers
     # Temporary: the applications backend's notification list. Task T-027 moves these
     # into Apps Script properties; remove them from this list when it is done.

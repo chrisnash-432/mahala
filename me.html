@@ -554,7 +554,6 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + '<dt>What happens</dt><dd>' + esc(e.blurb || '') + '</dd>'
       + (e.bring ? '<dt>Bring</dt><dd>' + esc(e.bring) + '</dd>' : '') + '</dl>'
       + '<div class="row">' + yesBtn + cal + '</div>'
-      + (st ? '<div class="ask">' + askFor(e) + '</div>' : '')
       + (burn ? '' : '<p class="only">Only the hosts see how many are coming, never your name.</p>')
       + '<p class="said" data-said></p></div></div></div></div>';
   }
@@ -1035,6 +1034,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
 })();
 </script>
 <script src="yourtasks.js?v=1" defer></script>
+<script src="yourevents.js?v=1" defer></script>
 <script src="analytics.js?v=2" defer></script>
 </body>
 </html>

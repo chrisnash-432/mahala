@@ -118,8 +118,8 @@ async function together(M, room, db, user) {
   }
   function writeFailed(e) {
     const c = e && e.code;
-    if (c === 'invalid_argument' || c === 'not_granted' || c === 'revoked') { if (!readOnly) { readOnly = true; schedule('all'); } M.toast('Posting is not open to you yet. To take part, write to the camp at wearemahala@gmail.com.'); }
-    else if (c === 'quota_exceeded') M.toast('There is no room for more posts just now. Write to the stewards at wearemahala@gmail.com.');
+    if (c === 'invalid_argument' || c === 'not_granted' || c === 'revoked') { if (!readOnly) { readOnly = true; schedule('all'); } M.toast('Posting is not open to you yet. To take part, write to the camp at love@wearemahala.com.'); }
+    else if (c === 'quota_exceeded') M.toast('There is no room for more posts just now. Write to the stewards at love@wearemahala.com.');
     else if (c === 'resource_exhausted') M.toast('That was a lot at once. Wait a moment and try again.');
     else M.toast('That did not save. Try again in a moment.');
   }
@@ -149,7 +149,7 @@ async function together(M, room, db, user) {
           <div class="tg-crow"><button type="button" class="btn" id="tgPin">${icon('pin')}Leave as a note here</button><button type="submit" class="btn primary" id="tgSend">Send</button></div>
           <p class="tg-who">Everyone signed in to the Mahalaverse reads this, with your name only if you show it.</p>
         </form>
-        <p class="note tg-ro" id="tgRoTalk" hidden>Talk is for the builders taking part. To take part, write to the camp at wearemahala@gmail.com.</p>
+        <p class="note tg-ro" id="tgRoTalk" hidden>Talk is for the builders taking part. To take part, write to the camp at love@wearemahala.com.</p>
       </div>
       <div class="tg-pane" id="tgPeople" role="tabpanel" aria-labelledby="tgTab-people" hidden>
         <div id="tgPeopleList"></div>
@@ -172,7 +172,7 @@ async function together(M, room, db, user) {
           <div class="tg-crow"><button type="button" class="btn" id="tgPostCancel">Cancel</button><button type="submit" class="btn primary">Post</button></div>
           <p class="tg-who">Everyone signed in to the Mahalaverse reads this, with your name only if you show it. Leave out phone numbers and home addresses.</p>
         </form>
-        <p class="note tg-ro" id="tgRoBoard" hidden>The camp board is for the builders taking part. To take part, write to the camp at wearemahala@gmail.com.</p>
+        <p class="note tg-ro" id="tgRoBoard" hidden>The camp board is for the builders taking part. To take part, write to the camp at love@wearemahala.com.</p>
         <div class="tg-chips" id="tgFilter" role="group" aria-label="Show">${[['all', 'All']].concat(CATS).map(([k, n]) => `<button type="button" data-f="${k}" aria-pressed="${k === 'all'}">${n}</button>`).join('')}</div>
         <div class="tg-posts" id="tgPosts"></div>
       </div>
@@ -463,7 +463,7 @@ async function together(M, room, db, user) {
   } catch (e) { }
   function wave(label) {
     const p = peerByLabel(label); if (!p) return;
-    room.emit('wave', { to: label }).then(() => M.toast(`You waved to ${firstName(idOf(p))}.`), e => M.toast(e && e.code === 'not_permitted' ? 'Waving is not open to you yet. To take part, write to the camp at wearemahala@gmail.com.' : 'The wave did not get through. Try again.'));
+    room.emit('wave', { to: label }).then(() => M.toast(`You waved to ${firstName(idOf(p))}.`), e => M.toast(e && e.code === 'not_permitted' ? 'Waving is not open to you yet. To take part, write to the camp at love@wearemahala.com.' : 'The wave did not get through. Try again.'));
   }
   function showNotice(id, label) {
     const p = peerByLabel(label), where = p && p.presence ? WHERE[p.presence.pl] || '' : '';
