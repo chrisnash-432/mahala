@@ -530,6 +530,7 @@ footer:empty { display: none; }
     </a>
     <div class="tools">
       <div class="vas"><label for="role">Viewing as</label><select id="role"></select></div>
+      <a class="btn" id="toCommunity" href="community.html" hidden>Community</a>
       <button class="btn" id="acct" type="button" hidden>Sign in</button>
       <button class="btn primary icon" id="gen" type="button" hidden aria-label="Generate an update"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12v8H6l-4 3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="lbl">Update</span></button>
     </div>
@@ -546,7 +547,7 @@ footer:empty { display: none; }
 <meta name="robots" content="noindex">
 <script>window.BASECAMP_SITE = true;</script>
 <script src="site.js?v=8"></script>
-<script src="assets/shim/claude-shim.js?v=12"></script>
+<script src="assets/shim/claude-shim.js?v=13"></script>
 <script>
 const ROLES = {
   core:      { label: 'Core team', me: '', who: 'the core team', sees: 'everything: every hub, node, task, budget line and partner, and anyone’s list. Can update any task.', projects: 'all', tasks: 'all', edit: 'all', budget: 'lines', partners: 'full', team: true, pick: true, audiences: ['core', 'leads', 'members'] },
@@ -1601,6 +1602,7 @@ async function siteLoad() {
   role = WHO.role;
   await init(r.data);
   $('.vas').hidden = WHO.view !== 'core';                 // only the core team previews other roles
+  $('#toCommunity').hidden = !(WHO.view === 'core' || ['camplead', 'crewlead'].includes(WHO.role));   // the community map opens for them too
   store.dbState = 'waiting';
   await siteFeed();
   if (!store.polling) {

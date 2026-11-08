@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Community · Mahala</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&family=Marcellus&display=swap">
+<style>
+/* The community map wears Basecamp's clothes: warm paper, deep ink, the wine-red wax for what matters and the prism's
+   yellow, magenta and cyan for the signs that move. Marcellus for names, Jost for working text, Cormorant italic for
+   the voice. The page holds no data: the viewer's slice comes from the member database, cut by their role. */
+:root {
+  color-scheme: light;
+  --paper: #F4EFE6; --paper-2: #EFE7DA; --sheet: #FBF8F3; --ink: #2A221C; --muted: #5B5047; --faint: #6F6357;
+  --line: #DCD2C3; --line2: #E8E0D3; --rule2: #C9BCA9;
+  --accent: #8E1B45; --accent-soft: #F4E4E9;
+  --cyan: #0B6E95; --cyan-soft: #DDEFF7;
+  --good: #2E6B4F; --good-soft: #E1EDE5;
+  --warn: #6E5600; --warn-soft: #FBEEB6;
+  --bad: #A62B22; --bad-soft: #F6E0DC;
+  --idle: #6F6357; --idle-soft: #EAE3D8;
+  --yellow: #FFD81F; --magenta: #D8197F; --sky: #14A8E0; --magenta-ink: #A3105E; --brass: #8A6A2E;
+  --prism: linear-gradient(90deg, var(--yellow), var(--magenta) 52%, var(--sky));
+  --night: #15110E; --warm: #F4EFE6;
+  --display: "Marcellus", "Cormorant Garamond", Georgia, serif;
+  --body: "Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --verse: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --ease: cubic-bezier(.2, .7, .1, 1);
+  --r: 14px; --r-s: 10px;
+}
+* { box-sizing: border-box; }
+html { background: var(--paper); -webkit-text-size-adjust: 100%; }
+body { margin: 0; overflow-x: clip; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 15.5px; line-height: 1.55; -webkit-font-smoothing: antialiased;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 30; opacity: .07; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .22 0 0 0 0 .15 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); background-size: 160px; }
+.wrap { max-width: 1120px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; text-wrap: balance; margin: 0; letter-spacing: .05em; line-height: 1.15; }
+h2 { font-size: clamp(1.4rem, 1.1rem + 1vw, 1.75rem); } h3 { font-size: 1.15rem; }
+p { margin: 0; }
+.eyebrow { text-transform: uppercase; letter-spacing: .2em; font-size: .7rem; color: var(--muted); font-weight: 500; }
+.muted { color: var(--muted); } .small { font-size: .85rem; } .num { font-variant-numeric: tabular-nums; }
+a { color: var(--accent); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+button, select, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+[hidden] { display: none !important; }
+
+header.top { position: sticky; top: 0; z-index: 6; background: color-mix(in srgb, var(--paper) 92%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line); margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 12px max(16px, env(safe-area-inset-left, 0px)); }
+.toprow { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; max-width: 1120px; margin: 0 auto; }
+.brand { flex: 1 1 240px; min-width: 0; color: inherit; text-decoration: none; }
+.brand h1 { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; line-height: 1.1; }
+.brand .wm { font: 400 18px/1 var(--display); letter-spacing: .18em; text-transform: uppercase; }
+.brand .bc { font: italic 400 1.4rem/1 var(--verse); color: var(--accent); }
+.brand .sub { font-size: .78rem; color: var(--muted); margin-top: 4px; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.btn { border: 1px solid var(--rule2); background: transparent; border-radius: 999px; padding: 8px 17px 7px; min-height: 40px; cursor: pointer; font-size: .9rem; white-space: nowrap; color: var(--ink); text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 7px; transition: border-color .2s, background .2s; }
+.btn:hover { border-color: var(--ink); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: var(--warm); }
+#acct { max-width: 16ch; overflow: hidden; text-overflow: ellipsis; }
+
+.roleline { margin: 14px auto 0; padding: 9px 14px; border-radius: var(--r); background: var(--accent-soft); font-size: .86rem; }
+main { padding-block: 20px 48px; display: grid; gap: 28px; min-width: 0; }
+section.block { display: grid; gap: 14px; min-width: 0; }
+.head { display: flex; align-items: baseline; justify-content: space-between; gap: 6px 12px; flex-wrap: wrap; }
+.lede { max-width: 62ch; color: var(--muted); font: italic 400 1.2rem/1.4 var(--verse); }
+
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.2fr); gap: 16px; }
+.night { position: relative; overflow: hidden; background: var(--night); color: var(--warm); border-radius: var(--r); padding: 18px 20px; display: grid; align-content: space-between; gap: 10px; min-height: 150px; }
+.night::after { content: ""; position: absolute; right: -40px; bottom: -40px; width: 160px; height: 160px; border-radius: 50%; background: conic-gradient(from 200deg, var(--yellow), var(--magenta), var(--sky), var(--yellow)); opacity: .28; filter: blur(22px); }
+.night .big { font: 400 3.4rem/1 var(--display); position: relative; }
+.night .eyebrow { color: rgba(244, 239, 230, .72); position: relative; }
+.night .verse { font: italic 400 1.05rem/1.3 var(--verse); color: rgba(244, 239, 230, .82); position: relative; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(128px, 1fr)); gap: 10px; }
+.stat { background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; display: grid; gap: 2px; text-align: left; }
+button.stat { cursor: pointer; } button.stat:hover, button.stat[aria-pressed="true"] { border-color: var(--accent); }
+.stat .v { font: 400 2.1rem/1.05 var(--display); font-variant-numeric: tabular-nums; }
+.stat .k { font-size: .82rem; color: var(--muted); display: flex; align-items: center; gap: 7px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; flex: none; display: inline-block; }
+
+.filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.filters select, .filters input { background-color: var(--sheet); border: 1px solid var(--rule2); border-radius: 999px; padding: 7px 14px; min-height: 40px; min-width: 0; color: var(--ink); }
+.filters input { flex: 1 1 200px; }
+.filters select { appearance: none; -webkit-appearance: none; padding-right: 32px; cursor: pointer; max-width: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%235B5047' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+.seg { display: inline-flex; border: 1px solid var(--rule2); border-radius: 999px; padding: 3px; background: var(--sheet); }
+.seg button { border: 0; background: none; border-radius: 999px; padding: 6px 14px; min-height: 34px; cursor: pointer; font-size: .82rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--warm); }
+.showing { font-size: .82rem; color: var(--muted); }
+.clear { border: 0; background: none; color: var(--accent); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; padding: 0; font-size: .82rem; }
+
+.skybox { position: relative; background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; display: grid; place-items: center; padding: 10px; }
+.skybox canvas { display: block; width: 100%; max-width: 760px; aspect-ratio: 1; touch-action: manipulation; cursor: crosshair; }
+.tip { position: absolute; pointer-events: none; background: var(--night); color: var(--warm); padding: 6px 11px 5px; border-radius: 8px; font-size: .82rem; white-space: nowrap; transform: translate(-50%, -130%); opacity: 0; transition: opacity .12s; z-index: 2; }
+.tip.on { opacity: 1; }
+.tip i { font-family: var(--verse); color: rgba(244, 239, 230, .8); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .8rem; color: var(--muted); justify-content: center; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+.list { display: grid; background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.row { display: grid; grid-template-columns: minmax(0, 1.6fr) auto minmax(0, 1fr); gap: 4px 14px; align-items: center; padding: 11px 16px; border: 0; border-top: 1px solid var(--line); background: none; text-align: left; cursor: pointer; width: 100%; color: inherit; }
+.row:first-child { border-top: 0; }
+.row:hover { background: color-mix(in srgb, var(--accent-soft) 45%, transparent); }
+.row .nm { font: 400 1.05rem/1.25 var(--display); letter-spacing: .04em; min-width: 0; overflow-wrap: anywhere; }
+.row .nm i { font: italic 400 1rem var(--verse); color: var(--muted); letter-spacing: 0; margin-left: 6px; }
+.row .tags { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.yrs { display: inline-flex; gap: 3px; align-items: center; }
+.yrs b { width: 8px; height: 8px; border-radius: 50%; border: 1px solid var(--rule2); display: inline-block; }
+.yrs b.on { background: var(--ink); border-color: var(--ink); }
+.yrs b.on.m { background: var(--accent); border-color: var(--accent); }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 2px; border-radius: 999px; font-size: .74rem; font-weight: 500; white-space: nowrap; letter-spacing: .04em; }
+.chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.tag { display: inline-block; padding: 2px 10px 1px; border-radius: 999px; font-size: .74rem; border: 1px solid var(--rule2); color: var(--muted); white-space: nowrap; }
+.c-lead { color: var(--accent); background: var(--accent-soft); } .c-builder { color: var(--cyan); background: var(--cyan-soft); }
+.c-applicant { color: var(--magenta-ink); background: #F8E3EF; } .c-supporter { color: var(--brass); background: #F3EAD6; } .c-orbit { color: var(--idle); background: var(--idle-soft); }
+.c-camp { color: var(--good); background: var(--good-soft); } .c-invited { color: var(--warn); background: var(--warn-soft); } .c-quiet { color: var(--idle); background: var(--idle-soft); }
+.c-customer, .c-consented { color: var(--good); background: var(--good-soft); } .c-not-asked { color: var(--warn); background: var(--warn-soft); } .c-declined { color: var(--bad); background: var(--bad-soft); }
+.more { justify-self: center; margin-top: 10px; }
+.empty { padding: 22px 18px; color: var(--muted); font: italic 400 1.1rem/1.4 var(--verse); }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.bars { display: grid; gap: 6px; }
+.bar { display: grid; grid-template-columns: 13ch minmax(0, 1fr) 5ch; gap: 10px; align-items: center; font-size: .84rem; }
+.bar .track { height: 8px; border-radius: 999px; background: var(--idle-soft); overflow: hidden; }
+.bar .track span { display: block; height: 100%; background: var(--ink); border-radius: 999px; }
+.bar .track span.m { background: var(--prism); }
+.note { font-size: .86rem; padding: 9px 14px; border-radius: var(--r-s); background: var(--paper-2); color: var(--muted); }
+
+#scrim { position: fixed; inset: 0; background: rgba(20, 14, 10, .42); z-index: 40; opacity: 0; pointer-events: none; transition: opacity .2s; }
+#scrim.on { opacity: 1; pointer-events: auto; }
+#drawer { position: fixed; z-index: 41; top: 0; right: 0; bottom: 0; width: min(440px, 100vw); background: var(--sheet); border-left: 1px solid var(--line); transform: translateX(102%); visibility: hidden; transition: transform .3s var(--ease), visibility 0s linear .3s; overflow-y: auto; padding: 22px 22px 40px; display: grid; align-content: start; gap: 18px; }
+#drawer.on { transform: none; visibility: visible; transition: transform .3s var(--ease); }
+#drawer .x { position: absolute; top: 14px; right: 14px; }
+#drawer h2 { font-size: 1.9rem; padding-right: 54px; }
+#drawer h2::after { content: ""; display: block; width: 110px; height: 1px; margin-top: 14px; background: var(--prism); }
+#drawer .playa { font: italic 400 1.25rem var(--verse); color: var(--muted); margin-top: -10px; }
+#drawer dl { display: grid; gap: 12px; margin: 0; }
+#drawer dt { font-size: .7rem; text-transform: uppercase; letter-spacing: .16em; color: var(--muted); }
+#drawer dd { margin: 3px 0 0; }
+#drawer .links { display: grid; gap: 4px; }
+#drawer .links button { border: 0; background: none; padding: 2px 0; cursor: pointer; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; font-size: .95rem; text-align: left; }
+.ringyears { display: flex; gap: 6px; flex-wrap: wrap; }
+.ringyears span { display: grid; justify-items: center; gap: 3px; font-size: .68rem; color: var(--muted); }
+.ringyears span b { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--rule2); }
+.ringyears span.on b { border: 0; background: var(--ink); }
+.ringyears span.on.m b { background: conic-gradient(from 210deg, var(--yellow), var(--magenta), var(--sky), var(--yellow)); }
+
+.gate { max-width: 560px; margin: 11vh auto 0; text-align: center; display: grid; gap: 14px; justify-items: center; padding: 0 16px; }
+.gate .hello { font: italic 400 1.35rem/1.2 var(--verse); color: var(--muted); margin-bottom: -6px; }
+.gate h2 { font: 400 clamp(2.3rem, 7vw, 3.4rem)/1.04 var(--display); letter-spacing: .04em; }
+.gate h2::after { content: ""; display: block; width: 160px; height: 1px; margin: 18px auto 2px; background: var(--prism); }
+.gate p { font-size: 1.05rem; line-height: 1.6; max-width: 30em; }
+.gate .btn { min-height: 46px; padding: 11px 22px 10px; font-size: 1rem; }
+.gate .orb { width: 120px; height: 120px; position: relative; margin-bottom: 4px; }
+.gate .orb i { position: absolute; inset: 0; border-radius: 50%; border: 1px solid var(--rule2); }
+.gate .orb i:nth-child(2) { inset: 18px; border-color: var(--line); }
+.gate .orb i:nth-child(3) { inset: 38px; border: 0; background: conic-gradient(from 210deg, var(--yellow), var(--magenta), var(--sky), var(--yellow)); opacity: .55; filter: blur(4px); }
+.loading { display: grid; place-items: center; min-height: 50vh; gap: 12px; text-align: center; }
+.breathe { animation: breathe 2.4s var(--ease) infinite; }
+@keyframes breathe { 50% { transform: scale(.9); opacity: .6; } }
+@media (prefers-reduced-motion: reduce) { .breathe { animation: none; } #drawer, #scrim { transition: none; } }
+
+@media (max-width: 720px) {
+  .hero { grid-template-columns: 1fr; }
+  .night { min-height: 0; }
+  .night .big { font-size: 2.8rem; }
+  .row { grid-template-columns: minmax(0, 1fr) auto; }
+  .row .tags { grid-column: 1 / -1; justify-content: flex-start; }
+  #drawer { top: auto; left: 0; width: 100vw; max-height: 86vh; border-left: 0; border-top: 1px solid var(--line); border-radius: 18px 18px 0 0; transform: translateY(102%); }
+  .brand .bc { font-size: 1.25rem; }
+  .tools .btn { padding: 7px 13px 6px; min-height: 38px; font-size: .84rem; }
+}
+</style>
+<meta name="robots" content="noindex">
+<script src="site.js?v=8"></script>
+<script src="assets/shim/claude-shim.js?v=13"></script>
+
+<header class="top">
+  <div class="toprow">
+    <a class="brand" href="#" aria-label="Community map home">
+      <h1><span class="wm">Mahala</span><span class="bc">Community</span></h1>
+      <div class="sub" id="asof">The community map</div>
+    </a>
+    <nav class="tools" aria-label="Elsewhere on Mahala">
+      <a class="btn" href="basecamp.html" id="toBasecamp" hidden>Basecamp</a>
+      <a class="btn" href="me.html">Your Mahala</a>
+      <button class="btn" id="acct" type="button" hidden>Sign in</button>
+    </nav>
+  </div>
+</header>
+<div class="wrap">
+  <div class="roleline" id="roleline" hidden></div>
+  <main id="view"><div class="loading"><svg class="breathe" width="54" height="54" viewBox="0 0 54 54" aria-hidden="true"><circle cx="27" cy="27" r="25" fill="none" stroke="#C9BCA9"/><circle cx="27" cy="27" r="15" fill="none" stroke="#DCD2C3"/><circle cx="27" cy="27" r="6" fill="#8E1B45"/></svg><div class="lede">Opening the map…</div></div></main>
+</div>
+<div id="scrim"></div>
+<aside id="drawer" role="dialog" aria-modal="true" aria-labelledby="dName" tabindex="-1"></aside>
+
+<script>
+'use strict';
+// Words live here; the data comes from community_map() (the community map migration in Mahala OS), cut by the viewer's role.
+const RINGS = { lead: 'Camp leads', builder: 'Builders', applicant: 'Applicants', supporter: 'Supporters', orbit: 'Orbit',
+  you: 'You', circle: 'Core team and camp leads', called: 'The people you called in', camp: 'The 2027 camp', crew: 'Your crew' };
+const RING_COLOR = { lead: '#8E1B45', builder: '#0B6E95', applicant: '#A3105E', supporter: '#8A6A2E', orbit: '#9A8D7F',
+  you: '#2A221C', circle: '#8E1B45', called: '#A3105E', camp: '#2E6B4F', crew: '#0B6E95' };
+const STAGE = { camp: ['In the camp', 'c-camp', '#2E6B4F'], applicant: ['Applied', 'c-builder', '#0B6E95'], invited: ['Invited', 'c-invited', '#B08A00'], quiet: ['Not shown yet', 'c-quiet', '#9A8D7F'] };
+const ROLE = { core: 'Core team', camp_lead: 'Camp lead', crew_lead: 'Crew lead', treasurer: 'Treasurer' };
+const CONSENT = { customer: ['Camped with us', 'May receive Mahala news, with an opt-out.'], consented: ['Said yes', 'May receive Mahala news, with an opt-out.'],
+  'not-asked': ['Not asked yet', 'One consent request only, with no promotion or donation ask inside it.'], declined: ['Declined', 'No messages at all.'] };
+const LINK = { nominated_by: ['Nominated by', 'Nominated'], invited_by: ['Invited by', 'Invited'], guided_by: ['Guided by', 'Guided'],
+  interviewed_by: ['Interviewed by', 'Interviewed'], connected_to: ['Connected to', 'Connected to'], added_to_group_by: ['Added to a group by', 'Added to a group'],
+  shared_tent_with: ['Shared a tent with', 'Shared a tent with'] };
+const MAHALA_ERA = 2025;          // the camp has been Mahala since 2025
+const PAGE = 120;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const plural = (n, a, b) => `${n} ${n === 1 ? a : (b || a + 's')}`;
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const day = iso => { if (!iso) return ''; const d = new Date(iso); return `${d.getDate()} ${MON[d.getMonth()]} ${d.getFullYear()}`; };
+const andList = a => a.length <= 1 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+const roleLabel = r => { const [k, crew] = String(r).split(':'); return (ROLE[k] || k) + (crew ? ' · ' + crew : ''); };
+
+let WHO = null, DATA = null, M = { nodes: [], byKey: {}, rings: [], edges: [], years: [], camps: [] };
+const S = { q: '', year: '', camp: '', ring: '', role: '', consent: '', view: 'sky', shown: PAGE, sel: null, hover: null };
+try { const v = localStorage.getItem('community.view'); if (v === 'list' || v === 'sky') S.view = v; } catch (e) {}
+
+// ------------------------------------------------------------------ the model, per tier
+function model(who, d) {
+  const nodes = [], edges = [];
+  const add = (n) => { if (!M.byKey[n.key]) { M.byKey[n.key] = n; nodes.push(n); } return M.byKey[n.key]; };
+  M = { nodes, byKey: {}, rings: [], edges, years: [], camps: d.camps || [] };
+  if (who.view === 'core') {
+    d.people.forEach(p => add({ key: p.id, name: p.n, first: p.c, playa: p.p, ring: p.r, years: p.y || [], camps: p.k || p.y || [], roles: p.o || [], consent: p.s, home: p.h }));
+    (d.links || []).forEach(([a, b, type, year]) => { if (M.byKey[a] && M.byKey[b]) edges.push({ a, b, type, year }); });
+    M.rings = ['lead', 'builder', 'applicant', 'supporter', 'orbit'].filter(r => nodes.some(n => n.ring === r));
+  } else {
+    const me = (d.circle || []).find(c => c.me) || Object.values(d.crew || {}).flat().find(c => c.me);
+    const person = (c, ring, extra) => ({ key: c.k, name: c.n, first: c.n, playa: c.p, ring, years: c.y || [], camps: c.y || [], roles: c.o || [], ...extra });
+    if (me) add(person(me, 'you', { me: true }));
+    if (who.view === 'lead') {
+      (d.mine || []).forEach(c => { const n = add(person(c, 'called', { stage: c.quiet ? 'quiet' : c.stage || null, quiet: !!c.quiet, mine: true, hasStage: 'stage' in c })); if (me) edges.push({ a: me.k, b: n.key, type: 'called' }); });
+      (d.camp || []).forEach(c => add(person(c, 'camp', { stage: c.quiet ? 'quiet' : c.stage || null, hasStage: 'stage' in c })));
+    } else {
+      Object.entries(d.crew || {}).forEach(([crew, list]) => list.forEach(c => { const n = add(person(c, 'crew', { crew })); if (me && n.key !== me.k) edges.push({ a: me.k, b: n.key, type: 'crew' }); }));
+    }
+    (d.circle || []).forEach(c => add(person(c, 'circle')));
+    M.rings = ['you', who.view === 'lead' ? 'called' : 'crew', 'circle', 'camp'].filter(r => nodes.some(n => n.ring === r));
+  }
+  M.years = [...new Set(nodes.flatMap(n => n.years))].sort();
+  nodes.forEach(n => { n.hay = [n.name, n.first, n.playa, ...(n.roles || []).map(roleLabel)].join(' ').toLowerCase(); n.first0 = n.years[0] || 9999; });
+}
+
+function matches(n) {
+  if (S.q && !n.hay.includes(S.q)) return false;
+  if (S.year && !n.years.includes(+S.year)) return false;
+  if (S.camp) { const ys = M.camps.filter(c => c.name === S.camp).map(c => c.year); if (!n.camps.some(y => ys.includes(y))) return false; }
+  if (S.ring && n.ring !== S.ring) return false;
+  if (S.role && !(S.role === 'any' ? n.roles.length : n.roles.some(r => r.split(':')[0] === S.role))) return false;
+  if (S.consent && n.consent !== S.consent) return false;
+  return true;
+}
+const filtered = () => M.nodes.filter(matches);
+const anyFilter = () => !!(S.q || S.year || S.camp || S.ring || S.role || S.consent);
+
+// ------------------------------------------------------------------ drawing the page
+function render() {
+  const d = DATA, core = WHO.view === 'core';
+  const f = filtered();
+  let h = '';
+  if (core) h += heroCore(d);
+  else if (WHO.view === 'lead') h += heroLead(d);
+  else h += heroCrew(d);
+  h += `<section class="block" aria-labelledby="mapH"><div class="head"><h2 id="mapH">${core ? 'Everyone Mahala knows' : WHO.view === 'lead' ? 'Your corner of the map' : 'Your crew on the map'}</h2>
+    <div class="seg" role="group" aria-label="How to show the map"><button type="button" data-view="sky" aria-pressed="${S.view === 'sky'}">Constellation</button><button type="button" data-view="list" aria-pressed="${S.view === 'list'}">List</button></div></div>
+    ${filtersHtml()}
+    <div class="showing" id="showing" aria-live="polite">${showing(f)}</div>
+    <div id="mapbody">${S.view === 'sky' ? skyHtml() : listHtml(f)}</div></section>`;
+  if (WHO.view === 'lead') h += leadSections(d);
+  if (d.counts && d.counts.people) h += countsHtml(d.counts);
+  $('#view').innerHTML = h;
+  if (S.view === 'sky') sky.mount();
+}
+
+function showing(f) {
+  return `${anyFilter() ? `Showing ${f.length} of ${plural(M.nodes.length, 'person', 'people')}. <button type="button" class="clear" data-clear>Clear filters</button>` : plural(M.nodes.length, 'person', 'people') + ' on this map.'}`;
+}
+
+function heroCore(d) {
+  const c = d.counts || {}, rings = c.rings || {};
+  const stat = (r) => `<button type="button" class="stat" data-ring="${r}" aria-pressed="${S.ring === r}"><span class="v num">${rings[r] || 0}</span><span class="k"><i class="dot" style="background:${RING_COLOR[r]}"></i>${RINGS[r]}</span></button>`;
+  const camps = Object.keys(c.camps || {});
+  return `<section class="hero" aria-label="The community in numbers"><div class="night"><span class="eyebrow">The community map</span><span class="big num">${M.nodes.length}</span>
+    <span class="verse">people across ${plural(M.camps.length, 'camp')}${camps.length ? ', from ' + esc(andList(camps)) : ''}, and ${plural(M.edges.length, 'thread')} between them.</span></div>
+    <div class="stats">${M.rings.map(stat).join('')}<div class="stat"><span class="v num">${M.nodes.filter(n => n.roles.length).length}</span><span class="k">With a role for 2027</span></div></div></section>`;
+}
+function heroLead(d) {
+  const mine = M.nodes.filter(n => n.mine), L = d.live || {};
+  return `<section class="hero" aria-label="Your corner of the community"><div class="night"><span class="eyebrow">The people you called in</span><span class="big num">${mine.length + (d.hiddenMine || 0)}</span>
+    <span class="verse">${mine.length ? 'Each one a thread you are weaving into The Seed.' : 'When you nominate someone for 2027, they appear here.'}</span></div>
+    <div class="stats"><div class="stat"><span class="v num">${L.invited ?? 0}</span><span class="k"><i class="dot" style="background:${STAGE.invited[2]}"></i>Invited for 2027</span></div>
+    <div class="stat"><span class="v num">${L.applicant ?? 0}</span><span class="k"><i class="dot" style="background:${STAGE.applicant[2]}"></i>Applied</span></div>
+    <div class="stat"><span class="v num">${L.camp ?? 0}</span><span class="k"><i class="dot" style="background:${STAGE.camp[2]}"></i>In the camp</span></div>
+    <div class="stat"><span class="v num">${M.nodes.filter(n => n.ring === 'circle' || n.ring === 'you').length}</span><span class="k"><i class="dot" style="background:${RING_COLOR.circle}"></i>In the circle</span></div></div></section>`;
+}
+function heroCrew(d) {
+  const crews = Object.keys(d.crew || {}), members = M.nodes.filter(n => n.ring === 'crew' || (n.me && n.crew));
+  return `<section class="hero" aria-label="Your crew"><div class="night"><span class="eyebrow">${crews.length ? esc(andList(crews)) + ' crew' : 'Your crew'}</span><span class="big num">${members.length}</span>
+    <span class="verse">${members.length ? 'The people building with you.' : 'Your crew fills in as people join it.'}</span></div>
+    <div class="stats"><div class="stat"><span class="v num">${M.nodes.filter(n => n.ring === 'circle' || n.ring === 'you').length}</span><span class="k"><i class="dot" style="background:${RING_COLOR.circle}"></i>In the circle</span></div></div></section>`;
+}
+
+function filtersHtml() {
+  const core = WHO.view === 'core';
+  const opt = (v, l, cur) => `<option value="${esc(v)}"${String(cur) === String(v) ? ' selected' : ''}>${esc(l)}</option>`;
+  const campNames = [...new Set(M.camps.map(c => c.name))];
+  const roles = [...new Set(M.nodes.flatMap(n => n.roles.map(r => r.split(':')[0])))].filter(r => ROLE[r]);
+  return `<div class="filters" role="search">
+    <input id="search" type="search" placeholder="${core ? 'Search a name or playa name' : 'Search a first name'}" value="${esc(S.q)}" aria-label="Search the map" autocomplete="off">
+    ${M.years.length > 1 ? `<select id="f-year" aria-label="Year">${opt('', 'Every year', S.year)}${M.years.map(y => opt(y, y + (M.camps.find(c => c.year === y) ? ' · ' + M.camps.find(c => c.year === y).name : ''), S.year)).join('')}</select>` : ''}
+    ${core && campNames.length > 1 ? `<select id="f-camp" aria-label="Camp">${opt('', 'Every camp', S.camp)}${campNames.map(c => opt(c, c, S.camp)).join('')}</select>` : ''}
+    ${M.rings.length > 1 ? `<select id="f-ring" aria-label="${core ? 'Ring' : 'Group'}">${opt('', core ? 'Every ring' : 'Everyone here', S.ring)}${M.rings.map(r => opt(r, RINGS[r], S.ring)).join('')}</select>` : ''}
+    ${roles.length ? `<select id="f-role" aria-label="Role for 2027">${opt('', 'Any or no role', S.role)}${opt('any', 'Has a 2027 role', S.role)}${roles.map(r => opt(r, ROLE[r], S.role)).join('')}</select>` : ''}
+    ${core ? `<select id="f-consent" aria-label="Consent">${opt('', 'Any consent', S.consent)}${Object.entries(CONSENT).map(([k, v]) => opt(k, v[0], S.consent)).join('')}</select>` : ''}
+  </div>`;
+}
+
+function yearsDots(n) {
+  const all = M.camps.length ? M.camps.map(c => c.year) : M.years;
+  return `<span class="yrs" aria-label="${n.years.length ? 'With Mahala in ' + esc(andList(n.years.map(String))) : 'No years with Mahala yet'}">${all.map(y => `<b class="${n.years.includes(y) ? 'on' : ''}${y >= MAHALA_ERA ? ' m' : ''}" title="${y}"></b>`).join('')}</span>`;
+}
+function tagsOf(n) {
+  const t = [];
+  if (WHO.view === 'core') t.push(`<span class="chip c-${esc(n.ring)}">${esc(RINGS[n.ring] || n.ring)}</span>`);
+  if (n.ring === 'called' || n.ring === 'camp') t.push(stageChip(n));
+  n.roles.forEach(r => t.push(`<span class="tag">${esc(roleLabel(r))}</span>`));
+  if (n.me) t.push('<span class="tag">You</span>');
+  if (n.consent && n.consent !== 'customer') t.push(`<span class="chip c-${esc(n.consent)}">${esc(CONSENT[n.consent][0])}</span>`);
+  return t.join('');
+}
+function stageChip(n) {
+  if (!n.hasStage) return '';
+  const s = STAGE[n.stage];
+  return s ? `<span class="chip ${s[1]}">${s[0]}</span>` : '<span class="chip c-quiet">Nominated</span>';
+}
+function listHtml(f) {
+  if (!f.length) return `<div class="list"><p class="empty">${anyFilter() ? 'Nobody on the map matches these filters.' : WHO.view === 'crew' ? 'Your crew fills in as people join it.' : 'Nobody here yet.'}</p></div>`;
+  const rows = f.slice(0, S.shown).map(n => `<button type="button" class="row" data-key="${esc(n.key)}"><span class="nm">${esc(n.name)}${n.playa ? `<i>${esc(n.playa)}</i>` : ''}</span>${yearsDots(n)}<span class="tags">${tagsOf(n)}</span></button>`).join('');
+  return `<div class="list" id="list">${rows}</div>${f.length > S.shown ? `<button type="button" class="btn more" data-more>Show ${Math.min(PAGE, f.length - S.shown)} more of ${f.length - S.shown}</button>` : ''}`;
+}
+function skyHtml() {
+  const lg = M.rings.map(r => `<span><i class="dot" style="background:${RING_COLOR[r]}"></i>${esc(RINGS[r])}</span>`).join('');
+  const st = WHO.view === 'lead' && M.nodes.some(n => n.hasStage) ? Object.values(STAGE).map(s => `<span><i class="dot" style="background:${s[2]};outline:2px solid ${s[2]};outline-offset:1px"></i>${s[0]}</span>`).join('') : '';
+  return `<div class="skybox"><canvas id="sky" role="img" aria-label="${esc(skyLabel())}"></canvas><div class="tip" id="tip"></div></div>
+    <div class="legend" aria-hidden="true">${lg}${st}</div>`;
+}
+function skyLabel() {
+  return 'A constellation of ' + plural(M.nodes.length, 'person', 'people') + ' in rings: ' + M.rings.map(r => `${RINGS[r]}, ${M.nodes.filter(n => n.ring === r).length}`).join('; ') + '. The list shows the same people.';
+}
+
+function leadSections(d) {
+  const mine = M.nodes.filter(n => n.mine), quiet = mine.filter(n => n.quiet).length;
+  let h = `<section class="block" aria-labelledby="calledH"><div class="head"><h2 id="calledH">The people you called in</h2></div>
+    <p class="lede">A warm word from you lands softer than any reminder.</p>`;
+  h += mine.length ? `<div class="list">${mine.map(n => `<button type="button" class="row" data-key="${esc(n.key)}"><span class="nm">${esc(n.name)}${n.playa ? `<i>${esc(n.playa)}</i>` : ''}</span>${yearsDots(n)}<span class="tags">${stageChip(n)}<span class="tag">${n.years.filter(y => y < 2027).length ? 'Returning' : 'New to Mahala'}</span></span></button>`).join('')}</div>`
+    : '<div class="list"><p class="empty">Nobody yet. When you nominate someone for 2027, they appear here.</p></div>';
+  const notes = [];
+  if (quiet) notes.push(`${plural(quiet, 'person', 'people')} you called in ${quiet === 1 ? 'has' : 'have'} still to say yes to showing their name to members on the site, so where they stand stays with them for now.`);
+  if (d.hiddenMine) notes.push(`${plural(d.hiddenMine, 'more person', 'more people')} you called in ${d.hiddenMine === 1 ? 'is' : 'are'} not shown here, by their own choice.`);
+  if (notes.length) h += `<p class="note">${notes.join(' ')}</p>`;
+  return h + '</section>';
+}
+function countsHtml(c) {
+  const years = Object.entries(c.years || {}), maxY = Math.max(1, ...years.map(([, n]) => n));
+  const camps = Object.entries(c.camps || {}), maxC = Math.max(1, ...camps.map(([, n]) => n));
+  const bar = (label, n, max, m) => `<div class="bar"><span>${esc(label)}</span><span class="track"><span class="${m ? 'm' : ''}" style="width:${Math.max(2, Math.round(100 * n / max))}%"></span></span><span class="num muted">${n}</span></div>`;
+  return `<section class="block" aria-labelledby="countH"><div class="head"><h2 id="countH">The whole community, in numbers</h2><span class="small muted">${plural(c.people, 'person', 'people')} · no names</span></div>
+    <div class="two"><div class="bars" aria-label="People by year">${years.map(([y, n]) => bar(y, n, maxY, +y >= MAHALA_ERA)).join('')}</div>
+    <div class="bars" aria-label="People by camp and ring">${camps.map(([k, n]) => bar(k, n, maxC, k === 'Mahala')).join('')}${Object.entries(c.rings || {}).map(([k, n]) => bar(RINGS[k] || k, n, c.people, false)).join('')}</div></div></section>`;
+}
+
+// ------------------------------------------------------------------ the person drawer
+function openPerson(key) {
+  const n = M.byKey[key]; if (!n) return;
+  S.sel = key; sky.draw();
+  const core = WHO.view === 'core';
+  const dl = [];
+  if (core && n.first && n.first !== n.name.split(' ')[0]) dl.push(['Called', esc(n.first)]);
+  dl.push(['Years with Mahala', n.years.length ? `<div class="ringyears">${n.years.map(y => `<span class="on${y >= MAHALA_ERA ? ' m' : ''}"><b></b>${y}</span>`).join('')}</div>` : 'None yet: new to Mahala']);
+  if (core && n.camps.length) {
+    const by = {}; n.camps.forEach(y => { const c = M.camps.find(x => x.year === y); if (c) (by[c.name] = by[c.name] || []).push(y); });
+    dl.push(['Camps', Object.entries(by).map(([k, ys]) => `${esc(k)} ${ys.join(', ')}`).join(' · ')]);
+  }
+  if (core) dl.push(['Ring', `<span class="chip c-${esc(n.ring)}">${esc(RINGS[n.ring] || n.ring)}</span>`]);
+  if (n.roles.length) dl.push(['For 2027', n.roles.map(r => `<span class="tag">${esc(roleLabel(r))}</span>`).join(' ')]);
+  if (n.ring === 'called' || n.ring === 'camp') dl.push(['On the 2027 path', n.hasStage ? (n.quiet ? 'Shown when they say yes to showing their name to members on the site.' : stageChip(n)) : 'Nominated']);
+  if (n.mine) dl.push(['How you know them', 'You called them in for 2027.']);
+  if (n.crew) dl.push(['Crew', esc(n.crew)]);
+  if (core && n.consent) dl.push(['Consent', `<span class="chip c-${esc(n.consent)}">${esc(CONSENT[n.consent][0])}</span> <span class="small muted">${esc(CONSENT[n.consent][1])}</span>`]);
+  if (core && n.home) dl.push(['Based in', esc(n.home)]);
+  if (core) {
+    const groups = {};
+    M.edges.forEach(e => {
+      if (e.a === key && M.byKey[e.b]) (groups[LINK[e.type]?.[0] || e.type] = groups[LINK[e.type]?.[0] || e.type] || []).push([e.b, e.year]);
+      if (e.b === key && M.byKey[e.a]) (groups[LINK[e.type]?.[1] || e.type] = groups[LINK[e.type]?.[1] || e.type] || []).push([e.a, e.year]);
+    });
+    Object.entries(groups).forEach(([label, list]) => dl.push([label, `<div class="links">${list.map(([k, y]) => `<button type="button" data-key="${esc(k)}">${esc(M.byKey[k].name)}${y ? ` <span class="muted">${y}</span>` : ''}</button>`).join('')}</div>`]));
+  }
+  $('#drawer').innerHTML = `<button type="button" class="btn x" data-close aria-label="Close">Close</button>
+    <div><div class="eyebrow">${esc(RINGS[n.ring] || '')}</div><h2 id="dName">${esc(n.name)}</h2></div>${n.playa ? `<p class="playa">${esc(n.playa)}</p>` : ''}
+    <dl>${dl.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>
+    <p class="small muted">${core ? 'Contact details stay in the camp’s vault, never on this page.' : 'Only what you need to welcome them. The rest of their thread stays with them and the stewards.'}</p>`;
+  const was = document.activeElement;
+  $('#drawer').classList.add('on'); $('#scrim').classList.add('on');
+  $('#drawer').dataset.back = was && was.dataset && was.dataset.key ? was.dataset.key : '';
+  $('#drawer').focus();
+}
+function closePerson() {
+  if (!$('#drawer').classList.contains('on')) return;
+  $('#drawer').classList.remove('on'); $('#scrim').classList.remove('on');
+  const back = $('#drawer').dataset.back; S.sel = null; sky.draw();
+  const el = back && document.querySelector(`.row[data-key="${CSS.escape(back)}"]`); if (el) el.focus();
+}
+
+// ------------------------------------------------------------------ the constellation
+// Rings from the centre out, one band each; in a band people sit by the year they first came (a cohort sweeps round),
+// staggered in rows so nobody overlaps. Threads between people are drawn faintly; the chosen person's brightly.
+const sky = {
+  pos: {}, size: 0, ctx: null, el: null,
+  mount() {
+    this.el = $('#sky'); if (!this.el) return;
+    this.ctx = this.el.getContext('2d');
+    this.layout(); this.draw();
+    if (!this.bound) {
+      this.bound = true;
+      window.addEventListener('resize', () => { if ($('#sky')) { this.el = $('#sky'); this.ctx = this.el.getContext('2d'); this.layout(); this.draw(); } });
+    }
+    this.el.addEventListener('pointermove', e => this.hover(e));
+    this.el.addEventListener('pointerleave', () => { S.hover = null; this.tip(null); this.draw(); });
+    this.el.addEventListener('click', e => { const n = this.hit(e); if (n) openPerson(n.key); });
+  },
+  layout() {
+    const w = Math.min(760, this.el.parentElement.clientWidth - 20), dpr = Math.min(2, window.devicePixelRatio || 1);
+    this.size = w; this.el.width = w * dpr; this.el.height = w * dpr; this.el.style.width = w + 'px'; this.el.style.height = w + 'px';
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const R = w / 2 - 14, rings = M.rings, total = M.nodes.length;
+    const dense = total > 120, dot = dense ? Math.max(4, w / 150) : Math.max(9, w / 50);
+    this.dot = dot;
+    // band widths: the centre ring small, others by how many people they hold
+    const counts = rings.map(r => M.nodes.filter(n => n.ring === r).length);
+    const centre = counts[0] <= 1, r0 = centre ? R * 0.14 : R * 0.1;      // one person (you) at the heart, or a small hole
+    const weight = counts.map((c, i) => (i === 0 && c <= 1) ? 0 : Math.max(1.2, Math.sqrt(c)));
+    const sum = weight.reduce((a, b) => a + b, 0) || 1;
+    let inner = r0; this.bands = [];
+    this.pos = {};
+    rings.forEach((r, i) => {
+      const list = M.nodes.filter(n => n.ring === r).sort((a, b) => a.first0 - b.first0 || a.name.localeCompare(b.name));
+      if (i === 0 && centre) { list.forEach(n => { this.pos[n.key] = [w / 2, w / 2]; }); this.bands.push([r, 0, 0]); return; }
+      const width = (R - r0) * weight[i] / sum, outer = inner + width, mid = (inner + outer) / 2;
+      const perRow = Math.max(6, Math.floor(2 * Math.PI * mid / (dot * 1.9))), rows = Math.max(1, Math.ceil(list.length / perRow));
+      const step = rows > 1 ? Math.min(dot * 1.8, (width - dot * 2) / (rows - 1)) : 0;
+      const off = i * 0.37;
+      list.forEach((n, j) => {
+        const a = off + 2 * Math.PI * (j + 0.5) / list.length - Math.PI / 2;
+        const row = j % rows, rr = mid + (row - (rows - 1) / 2) * step;
+        this.pos[n.key] = [w / 2 + rr * Math.cos(a), w / 2 + rr * Math.sin(a)];
+      });
+      this.bands.push([r, inner, outer]);
+      inner = outer;
+    });
+  },
+  radius(n) { return n.me ? this.dot * 1.15 : this.dot * (0.42 + 0.1 * Math.min(6, n.years.length)); },
+  draw() {
+    const c = this.ctx; if (!c || !$('#sky')) return;
+    const w = this.size, cx = w / 2;
+    c.clearRect(0, 0, w, w);
+    // a soft prism at the heart
+    const g = c.createRadialGradient(cx, cx, 0, cx, cx, w * 0.22);
+    g.addColorStop(0, 'rgba(216,25,127,0.10)'); g.addColorStop(0.5, 'rgba(20,168,224,0.06)'); g.addColorStop(1, 'rgba(255,216,31,0)');
+    c.fillStyle = g; c.beginPath(); c.arc(cx, cx, w * 0.22, 0, 7); c.fill();
+    // the rings' guides and names
+    c.font = `500 ${Math.max(9, w / 70)}px Jost, system-ui, sans-serif`; c.textAlign = 'center';
+    this.bands.forEach(([r, a, b]) => {
+      if (!b) return;
+      c.strokeStyle = 'rgba(201,188,169,0.55)'; c.lineWidth = 1; c.setLineDash([2, 5]);
+      c.beginPath(); c.arc(cx, cx, b, 0, 7); c.stroke(); c.setLineDash([]);
+    });
+    const on = new Set(filtered().map(n => n.key)), focus = S.hover || S.sel, filt = anyFilter();
+    // threads
+    M.edges.forEach(e => {
+      const p = this.pos[e.a], q = this.pos[e.b]; if (!p || !q) return;
+      const hot = focus && (e.a === focus || e.b === focus);
+      if (!hot && (filt && !(on.has(e.a) && on.has(e.b)))) return;
+      c.strokeStyle = hot ? 'rgba(142,27,69,0.85)' : 'rgba(42,34,28,0.10)'; c.lineWidth = hot ? 1.6 : 1;
+      const mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2, k = 0.18;
+      c.beginPath(); c.moveTo(p[0], p[1]); c.quadraticCurveTo(mx + (cx - mx) * k, my + (cx - my) * k, q[0], q[1]); c.stroke();
+    });
+    // people
+    M.nodes.forEach(n => {
+      const p = this.pos[n.key]; if (!p) return;
+      const lit = !filt || on.has(n.key), r = this.radius(n);
+      c.globalAlpha = lit ? (n.ring === 'orbit' ? 0.7 : 1) : 0.12;
+      if (n.me) { const h = c.createRadialGradient(p[0], p[1], r * .5, p[0], p[1], r * 2.6); h.addColorStop(0, 'rgba(255,216,31,0.55)'); h.addColorStop(0.5, 'rgba(216,25,127,0.25)'); h.addColorStop(1, 'rgba(20,168,224,0)'); c.fillStyle = h; c.beginPath(); c.arc(p[0], p[1], r * 2.6, 0, 7); c.fill(); }
+      c.fillStyle = RING_COLOR[n.ring] || '#2A221C';
+      c.beginPath(); c.arc(p[0], p[1], r, 0, 7); c.fill();
+      if (n.hasStage) { c.strokeStyle = (STAGE[n.stage] || STAGE.quiet)[2]; c.lineWidth = Math.max(2, r * 0.35); c.beginPath(); c.arc(p[0], p[1], r + c.lineWidth, 0, 7); c.stroke(); }
+      if (n.key === focus) { c.strokeStyle = '#2A221C'; c.lineWidth = 1.5; c.beginPath(); c.arc(p[0], p[1], r + 4, 0, 7); c.stroke(); }
+      if (!this.dense() && lit) { c.globalAlpha = 1; c.fillStyle = '#2A221C'; c.font = `400 ${Math.max(11, w / 52)}px Jost, system-ui, sans-serif`; c.fillText(n.name, p[0], p[1] + r + Math.max(13, w / 44)); }
+      c.globalAlpha = 1;
+    });
+    this.labels();
+  },
+  labels() {   // the rings' names on small paper pills, drawn last so the dots never hide them
+    const c = this.ctx, w = this.size, cx = w / 2, fs = Math.max(9, w / 70);
+    c.font = `500 ${fs}px Jost, system-ui, sans-serif`; c.textAlign = 'center'; c.textBaseline = 'middle';
+    this.bands.forEach(([r, a, b]) => {
+      if (!b) return;
+      const txt = RINGS[r].toUpperCase(), tw = c.measureText(txt).width + 14, y = cx - b;
+      c.fillStyle = 'rgba(251,248,243,0.94)'; c.strokeStyle = 'rgba(201,188,169,0.9)'; c.lineWidth = 1;
+      c.beginPath(); if (c.roundRect) c.roundRect(cx - tw / 2, y - fs * 0.85, tw, fs * 1.7, fs * 0.85); else c.rect(cx - tw / 2, y - fs * 0.85, tw, fs * 1.7);
+      c.fill(); c.stroke();
+      c.fillStyle = 'rgba(91,80,71,0.95)'; c.fillText(txt, cx, y + 0.5);
+    });
+    c.textBaseline = 'alphabetic';
+  },
+  dense() { return M.nodes.length > 60; },
+  hit(e) {
+    const b = this.el.getBoundingClientRect(), x = e.clientX - b.left, y = e.clientY - b.top;
+    let best = null, bd = Infinity; const filt = anyFilter();
+    M.nodes.forEach(n => { const p = this.pos[n.key]; if (!p || (filt && !matches(n))) return; const d = (p[0] - x) ** 2 + (p[1] - y) ** 2; if (d < bd) { bd = d; best = n; } });
+    return bd <= Math.max(14, this.dot * 1.6) ** 2 ? best : null;
+  },
+  hover(e) {
+    const n = this.hit(e), k = n ? n.key : null;
+    if (k !== S.hover) { S.hover = k; this.draw(); }
+    this.tip(n);
+  },
+  tip(n) {
+    const t = $('#tip'); if (!t) return;
+    if (!n) { t.classList.remove('on'); return; }
+    const p = this.pos[n.key], b = this.el.getBoundingClientRect(), pb = this.el.parentElement.getBoundingClientRect();
+    t.innerHTML = esc(n.name) + (n.playa ? ` <i>${esc(n.playa)}</i>` : '');
+    t.style.left = (b.left - pb.left + p[0]) + 'px'; t.style.top = (b.top - pb.top + p[1]) + 'px'; t.classList.add('on');
+  },
+};
+
+// ------------------------------------------------------------------ events
+function refresh() {
+  const f = filtered();
+  const sh = $('#showing'); if (sh) sh.innerHTML = showing(f);
+  if (S.view === 'list') { const mb = $('#mapbody'); if (mb) mb.innerHTML = listHtml(f); }
+  else sky.draw();
+  document.querySelectorAll('button.stat[data-ring]').forEach(b => b.setAttribute('aria-pressed', String(S.ring === b.dataset.ring)));
+}
+document.addEventListener('input', e => {
+  if (e.target.id === 'search') { S.q = e.target.value.trim().toLowerCase(); S.shown = PAGE; refresh(); }
+});
+document.addEventListener('change', e => {
+  const k = { 'f-year': 'year', 'f-camp': 'camp', 'f-ring': 'ring', 'f-role': 'role', 'f-consent': 'consent' }[e.target.id];
+  if (k) { S[k] = e.target.value; S.shown = PAGE; refresh(); }
+});
+document.addEventListener('click', e => {
+  const t = e.target;
+  if (t.closest('#acct') || t.closest('[data-signin]')) { e.preventDefault(); const MM = window.MahalaMembers; if (MM) Promise.resolve(MM.info()).then(i => (i && i.signedIn ? MM.account() : MM.signIn('Sign in to open the community map'))); return; }
+  const v = t.closest('[data-view]'); if (v) { S.view = v.dataset.view; try { localStorage.setItem('community.view', S.view); } catch (x) {} render(); return; }
+  const st = t.closest('button.stat[data-ring]'); if (st) { S.ring = S.ring === st.dataset.ring ? '' : st.dataset.ring; const sel = $('#f-ring'); if (sel) sel.value = S.ring; refresh(); return; }
+  if (t.closest('[data-clear]')) { Object.assign(S, { q: '', year: '', camp: '', ring: '', role: '', consent: '', shown: PAGE }); render(); return; }
+  if (t.closest('[data-more]')) { S.shown += PAGE; refresh(); return; }
+  if (t.closest('[data-close]') || t.id === 'scrim') { closePerson(); return; }
+  const p = t.closest('[data-key]'); if (p) { openPerson(p.dataset.key); return; }
+  if (t.closest('.brand')) { e.preventDefault(); closePerson(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePerson(); });
+
+// ------------------------------------------------------------------ signing in, and the door
+function gate(kind, detail) {
+  $('#roleline').hidden = true; $('#toBasecamp').hidden = true;
+  const back = '<a class="btn" href="./">Back to wearemahala.com</a>';
+  const orb = '<div class="orb" aria-hidden="true"><i></i><i></i><i></i></div>';
+  const body = {
+    signin: `${orb}<p class="hello">For the people who hold the community</p><h2>The community map</h2><p>Everyone who has camped, built and dreamed with Mahala over the years, and the threads between them. It opens for the core team and camp leads.</p><button class="btn primary" type="button" data-signin>Sign in</button>${back}`,
+    none: `${orb}<h2>The community map</h2><p>The community map opens for the core team and camp leads, and for crew leads with their crew. Your own thread with Mahala lives on Your Mahala.</p><a class="btn primary" href="me.html">Your Mahala</a>${back}`,
+    later: `${orb}<h2>The community map</h2><p>The map is on its way from the camp's records. Check back in a little while.</p>${back}`,
+    error: `${orb}<h2>The community map</h2><p>${esc(detail || 'The map could not be reached.')} Check your connection and reload.</p>${back}`,
+  }[kind];
+  $('#view').innerHTML = `<div class="gate">${body}</div>`;
+}
+const ROLE_LINE = {
+  core: 'You are seeing the whole map, as the core team: everyone Mahala knows and how they are woven together. Contact details stay in the vault.',
+  camplead: 'You are seeing the map as a camp lead: the circle, and the people you called in for 2027, by first name.',
+  crewlead: 'You are seeing the map as a crew lead: your crew and the circle, by first name.',
+};
+async function load() {
+  const MM = window.MahalaMembers;
+  if (!MM) { gate('error', 'Sign-in is not set up on this page.'); return; }
+  let info = null;
+  try { await MM.ready; info = await MM.info(); } catch (e) {}
+  const acct = $('#acct'); acct.hidden = false; acct.textContent = info?.signedIn ? (info.name || 'Your account') : 'Sign in';
+  if (!info?.signedIn) { WHO = null; gate('signin'); return; }
+  let r;
+  try { r = await MM.rpc('community_map'); }
+  catch (err) {
+    const m = String(err?.message || '');
+    if (/for the core team and camp leads/.test(m)) gate('none'); else if (/not been sent/.test(m)) gate('later');
+    else if (/claimed a thread/.test(m)) gate('none');
+    else if (err?.code === 'not_granted') gate('signin'); else gate('error');
+    return;
+  }
+  WHO = r.who; DATA = r.data;
+  model(WHO, DATA);
+  $('#asof').textContent = 'The community map' + (r.built ? ' · from the camp’s records, ' + day(r.built) : '');
+  $('#roleline').textContent = ROLE_LINE[WHO.role] || ''; $('#roleline').hidden = !ROLE_LINE[WHO.role];
+  $('#toBasecamp').hidden = false;
+  render();
+}
+let last = null;
+window.MahalaMembers?.onChange(st => { const now = !!(st && st.signedIn); if (now !== last) { last = now; load(); } });
+load().then(() => Promise.resolve(window.MahalaMembers?.info())).then(i => { last = !!(i && i.signedIn); });
+</script>
+</html>
