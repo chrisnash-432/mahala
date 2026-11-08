@@ -570,11 +570,14 @@ html.join-open, html.join-open body { overflow: hidden; }
     var wd = !b ? WD[a.getDay()] + ' ' + MO[a.getMonth()] : a.getMonth() === b.getMonth() ? WD[a.getDay()] + ' to ' + WD[b.getDay()] + ' ' + MO[a.getMonth()] : MO[a.getMonth()] + ' to ' + MO[b.getMonth()];
     return '<div class="when"><span class="d">' + d + '</span><span class="wd">' + wd + '</span></div>';
   };
+  // "Hear when it is set": signed in, one tap notes it (yourevents.js, F-027); signed out, one sign-in first
+  var wanted = function (id) { return !!(window.MahalaInterest && window.MahalaInterest.has(id)); };
+  var wantWords = function (e) { return wanted(e.id) ? 'We will tell you' : e.set ? 'Hear when tickets open' : 'Hear when it is set'; };
   var row = function (e) {
     var k = KIND[e.kind] || ['Gathering', 'var(--pine)'];
     var meta = [e.where ? esc(e.where) : '', esc(timeText(e))].filter(Boolean).join('<span class="sep">·</span>') + localNote(e);
     var acts = (e.tickets ? '<a class="act solid" href="' + esc(e.tickets) + '" target="_blank" rel="noopener" data-count="Tickets" data-count-where="' + esc(e.id) + '">' + (e.kind === 'talk' ? 'Save a seat' : 'Tickets') + '</a>'
-      : (e.kind === 'burn' ? '' : '<button class="act" type="button" data-ev-join>' + (e.set ? 'Hear when tickets open' : 'Hear when it is set') + '</button>')) +
+      : (e.kind === 'burn' ? '' : '<button class="act" type="button" data-ev-join="' + esc(e.id) + '" data-ev-title="' + esc(e.title) + '" data-ev-set="' + (e.set ? 1 : 0) + '" aria-pressed="' + wanted(e.id) + '">' + wantWords(e) + '</button>')) +
       '<button class="act quiet" type="button" data-ics="' + esc(e.id) + '">Add to calendar</button>';
     return '<li class="ev ' + esc(e.kind) + '">' + dateBlock(e) + '<div><span class="kind"><i style="background:' + k[1] + '"></i>' + k[0] + '</span>' +
       '<h3>' + esc(e.title) + '<span class="state ' + (e.set ? 'set' : 'pen') + '">' + (e.set ? 'Date set' : 'Pencilled in') + '</span></h3>' +
@@ -594,6 +597,9 @@ html.join-open, html.join-open body { overflow: hidden; }
     $('evlist').innerHTML = h + '</ul>';
   };
   draw();
+  addEventListener('mahala:interest', function () { document.querySelectorAll('[data-ev-join]').forEach(function (b) {
+    var e = upcoming.filter(function (x) { return x.id === b.dataset.evJoin; })[0]; if (!e) return;
+    b.setAttribute('aria-pressed', String(wanted(e.id))); b.textContent = wantWords(e); }); });
   document.querySelectorAll('[data-evf]').forEach(function (b) { b.addEventListener('click', function () {
     filter = b.dataset.evf; document.querySelectorAll('[data-evf]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); draw(); }); });
 
@@ -633,7 +639,19 @@ html.join-open, html.join-open body { overflow: hidden; }
   document.addEventListener('click', function (ev) {
     var t = ev.target;
     if (t.closest('[data-ev-next]')) { ev.preventDefault(); openEvents(true); return; }
-    if (t.closest('[data-ev-join]')) { ev.preventDefault(); var j = document.querySelector('.top-acts [data-tribe-join]'); if (j) j.click(); return; }
+    var w = t.closest('[data-ev-join]');
+    if (w) {
+      ev.preventDefault();
+      var I = window.MahalaInterest;
+      if (!I || !I.on) { var j = document.querySelector('.top-acts [data-tribe-join]'); if (j) j.click(); return; }   // no accounts here: the tribe sign-up, as before
+      w.disabled = true;
+      I.want({ id: w.dataset.evJoin, title: w.dataset.evTitle }).then(function (r) {
+        w.disabled = false;
+        if (r.state === 'on') I.say('Noted. We will tell you when ' + w.dataset.evTitle + (w.dataset.evSet === '1' ? ' has tickets.' : ' is set.'));
+        if (r.state === 'off') I.say('Taken back. We will not write about it.');
+      }, function () { w.disabled = false; I.say('That did not save. Try again in a moment.'); });
+      return;
+    }
     var ic = t.closest('[data-ics]'); if (!ic) return;
     var e = all.filter(function (x) { return x.id === ic.dataset.ics; })[0]; if (!e) return;
     var z = function (ms) { return new Date(ms).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, ''); };
@@ -653,7 +671,9 @@ html.join-open, html.join-open body { overflow: hidden; }
 })();
 </script>
 <script src="site.js?v=8"></script>
+<script src="assets/shim/claude-shim.js?v=10"></script>
 <script src="tribe-join.js"></script>
+<script src="yourevents.js?v=1"></script>
 <script src="analytics.js?v=2"></script>
 </body>
 </html>
