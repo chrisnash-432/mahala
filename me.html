@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400&family=Jost:wght@300;400;500&family=Marcellus&display=swap">
 <script src="site.js?v=8"></script>
-<script src="assets/shim/claude-shim.js?v=10"></script>
+<script src="assets/shim/claude-shim.js?v=11"></script>
 <style>
 /* Your Mahala, prototype 2 (4 Nov 2026). One page about you, the same on the site and in the Mahalaverse.
    The people here are made up; nothing is read from or saved to the member database.
@@ -285,7 +285,59 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
 .yours li { padding: 8px 0; border-top: 1px solid var(--rule); }
 .yours li small { display: block; color: var(--ink-3); }
 
+/* doors back to the website and into the Mahalaverse (F-025) */
+.doors { max-width: 1080px; margin: 0 auto; display: flex; justify-content: space-between; gap: 10px; padding: 10px max(16px, env(safe-area-inset-left, 0px)) 0; font-size: 14px; }
+.doors a { text-decoration: none; color: var(--ink-2); display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 4px; }
+.doors a:hover { color: var(--ink); }
+.doors a b { font-weight: 500; color: var(--ink); }
+
+/* your picture (F-034) */
+.portrait { position: relative; width: 112px; height: 112px; margin: 0 0 14px; }
+.portrait::before { content: ""; position: absolute; inset: -5px; border-radius: 50%; background: conic-gradient(from 210deg, var(--yellow), var(--cyan), var(--magenta), var(--yellow)); }
+.portrait img { position: relative; width: 112px; height: 112px; border-radius: 50%; object-fit: cover; display: block; border: 3px solid var(--warm); background: var(--paper-2); }
+.portrait .picbtn { position: absolute; right: -6px; bottom: -2px; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--rule-2); background: var(--sheet); display: grid; place-items: center; cursor: pointer; box-shadow: 0 6px 14px -8px rgba(42, 34, 28, .6); }
+.portrait .picbtn svg { width: 18px; height: 18px; fill: none; stroke: var(--ink); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.picsay { font-size: 13px; color: var(--ink-3); margin: -6px 0 8px; min-height: 1.3em; }
+.picsay .link { font-size: 13px; min-height: 28px; }
+.chipname img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; display: block; }
+
+/* the invitation, front and centre (F-024) */
+.invite { position: relative; margin: 0 0 44px; padding: clamp(22px, 4vw, 40px); border-radius: 28px; color: var(--warm); background:
+  radial-gradient(90% 120% at 100% 0%, color-mix(in srgb, var(--magenta) 45%, transparent), transparent 60%),
+  radial-gradient(90% 120% at 0% 100%, color-mix(in srgb, var(--cyan) 40%, transparent), transparent 60%), var(--ink); overflow: hidden; }
+.invite::after { content: ""; position: absolute; right: -60px; top: -60px; width: 260px; height: 260px; border-radius: 50%; border: 1px solid rgba(244, 239, 230, .18);
+  box-shadow: 0 0 0 26px rgba(244, 239, 230, .04), 0 0 0 52px rgba(244, 239, 230, .03); pointer-events: none; }
+.invite .from { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--yellow); }
+.invite h2 { font: 400 clamp(32px, 6.4vw, 60px)/1.04 var(--name); letter-spacing: .04em; margin: 10px 0 14px; max-width: 16ch; text-wrap: balance; }
+.invite .lead { font: italic 400 clamp(19px, 2.6vw, 23px)/1.35 var(--verse); margin: 0 0 22px; max-width: 46ch; color: rgba(244, 239, 230, .92); }
+.invite ol { list-style: none; margin: 0 0 24px; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; counter-reset: inv; }
+.invite li { counter-increment: inv; padding: 14px 16px 16px; border-radius: 18px; background: rgba(244, 239, 230, .07); border: 1px solid rgba(244, 239, 230, .14); font-size: 14.5px; color: rgba(244, 239, 230, .82); }
+.invite li::before { content: counter(inv); display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(244, 239, 230, .5); font-size: 13px; margin-bottom: 8px; }
+.invite li.done::before { content: "\2713"; background: var(--warm); color: var(--ink); border-color: var(--warm); }
+.invite li.now { background: rgba(244, 239, 230, .14); border-color: var(--yellow); }
+.invite li b { display: block; font: 400 18px/1.25 var(--name); letter-spacing: .04em; color: var(--warm); margin-bottom: 4px; }
+.invite .btn { background: var(--yellow); color: var(--ink); border-color: var(--yellow); font-size: 17px; min-height: 52px; padding: 12px 26px; }
+.invite .btn.ghost { background: transparent; color: var(--warm); border-color: rgba(244, 239, 230, .45); font-size: 15px; min-height: 44px; }
+.invite .fine { font-size: 13.5px; color: rgba(244, 239, 230, .7); margin: 14px 0 0; max-width: 60ch; }
+.invite.quiet h2 { font-size: clamp(28px, 4.6vw, 42px); }
+
+/* your story with Mahala, in the voice of the letters */
+.story { margin: 18px 0 0; padding: 16px 18px 14px; border-radius: 18px; background: var(--sheet); border: 1px solid var(--rule); position: relative; }
+.story::before { content: ""; position: absolute; left: 20px; top: -6px; width: 34px; height: 12px; border-radius: 6px; background: linear-gradient(90deg, var(--yellow), var(--cyan), var(--magenta)); }
+.story p { margin: 0 0 8px; font: italic 400 19px/1.42 var(--verse); color: var(--ink); max-width: 56ch; }
+.story .sig { font: 400 14px/1 var(--name); letter-spacing: .18em; color: var(--ink-2); margin: 6px 0 4px; font-style: normal; }
+.story .fixit { font-size: 13.5px; color: var(--ink-3); }
+.story textarea { width: 100%; font: inherit; font-size: 15px; border: 1px solid var(--rule-2); border-radius: 12px; padding: 8px 10px; background: #fff; color: var(--ink); margin-top: 8px; }
+
+/* signed out: an invitation, never an example (F-032) */
+.door-out { text-align: center; max-width: 640px; margin: 0 auto; }
+.door-out .emb { width: 132px; height: 132px; margin: 24px auto 22px; border-radius: 50%; position: relative; }
+.door-out .emb::before { content: ""; position: absolute; inset: -14px; border-radius: 50%; background: conic-gradient(from 200deg, var(--yellow), var(--cyan), var(--magenta), var(--yellow)); opacity: .25; filter: blur(16px); }
+.door-out .emb img { position: relative; width: 132px; height: 132px; display: block; }
+
 @media (max-width: 860px) {
+  .invite ol { grid-template-columns: minmax(0, 1fr); }
+  .portrait { margin: 0 auto 14px; }
   .altar { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "card" "rest"; gap: 22px; }
   .whohead { text-align: center; }
   .hats { justify-content: center; }
@@ -308,10 +360,11 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
 </head>
 <body>
 <header class="top"><div class="top-in">
-  <a class="mark" href="index.html">MAHALA</a><span class="sp"></span>
+  <a class="mark" href="./">MAHALA</a><span class="sp"></span>
   <button type="button" class="tellbtn" id="tellBtn" aria-haspopup="dialog">Tell us</button>
   <button type="button" class="chipname" id="chip" aria-haspopup="dialog"></button>
 </div></header>
+<nav class="doors" aria-label="Elsewhere on Mahala"><a href="./"><span aria-hidden="true">&larr;</span> The <b>website</b></a><a href="./#mahalaverse">Into the <b>Mahalaverse</b> <span aria-hidden="true">&rarr;</span></a></nav>
 
 <div class="proto" id="proto" hidden role="region" aria-label="About this prototype"><div class="proto-in">
   <b>An example</b><span>Viewing as</span><nav class="seg" id="people" aria-label="Sample person"></nav><small>Made-up people. Nothing is saved. <a href="me.html" style="color:inherit">Your own page</a></small>
@@ -523,12 +576,18 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   function toastSay(t) { var s = document.querySelector('.said'); if (s) s.textContent = t; }
   function cardKey(a) { if (!a) return null; var k = String(a).toLowerCase().replace(/^arch_/, '').replace(/^the\s+/, '').replace(/[^a-z]/g, ''); return DECK.some(function (c) { return c.k === k; }) ? k : null; }
 
+  // With accounts on (wearemahala.com), this page is only ever the signed-in person's own, or an invitation to sign in
+  // or join: never an example (8 Nov 2026, F-032). The made-up people show only in the review copy, which has no accounts.
+  var ACCOUNTS = false;
   function boot() {
     var mm = M();
-    if (ARTIFACT || !mm) { render(); return; }
-    if (PEOPLE[hashKey()]) render(); else $('page').innerHTML = '<p class="lede" style="text-align:center;margin-top:80px">Opening your page\u2026</p>';
+    ACCOUNTS = !ARTIFACT && !!mm;
+    if (!ACCOUNTS) { render(); return; }
+    if (/^#demo-/.test(location.hash)) history.replaceState(null, '', location.pathname + location.search);
+    $('proto').hidden = true;
+    $('page').innerHTML = '<p class="lede" style="text-align:center;margin-top:80px">Opening your page\u2026</p>';
     mm.ready.then(function (info) {
-      if (!info || !info.signedIn) { LIVE.out = true; if (!PEOPLE[hashKey()]) signedOut(); return; }
+      if (!info || !info.signedIn) { LIVE.out = true; LIVE.ended = !!(info && info.ended); signedOut(); return; }
       LIVE.uid = info.uid;
       return Promise.all([mm.rpc('my_thread'), window.claude && window.claude.use ? window.claude.use('db') : null]).then(function (r) {
         LIVE.thread = r[0]; LIVE.db = r[1]; LIVE.info = info;
@@ -537,22 +596,26 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       }).then(function (d) {
         LIVE.store = d[0] || {}; LIVE.builder = d[1] || {}; LIVE.me = d[2] || {}; LIVE.confirm = d[3] || {}; LIVE.tell = d[4] || [];
         LIVE.on = true; LIVE.P = fromLive();
-        if (!PEOPLE[hashKey()]) render();
+        render();
+        picture();
       });
     }).catch(function () {
-      if (!PEOPLE[hashKey()]) $('page').innerHTML = '<section class="movement" style="text-align:center"><h2>Your page could not be reached</h2><p class="lede" style="margin:8px auto">The member database did not answer. Try again in a little while.</p><p><a class="btn" href="me.html">Try again</a></p></section>';
+      $('page').innerHTML = '<section class="movement" style="text-align:center"><h2>Your page could not be reached</h2><p class="lede" style="margin:8px auto">The member database did not answer. Try again in a little while.</p><p><a class="btn" href="me.html">Try again</a></p></section>';
     });
   }
 
   function signedOut() {
     P = null; $('tellBtn').hidden = true; $('proto').hidden = true;
     $('chip').innerHTML = '<span>Sign in</span>';
-    $('page').innerHTML = '<section class="altar" style="grid-template-areas:none;display:block;text-align:center;max-width:620px;margin:0 auto">'
-      + '<div class="cardstage" style="margin:20px auto 26px;width:fit-content"><div class="halo" aria-hidden="true"></div><div class="card own"><div class="face front"><img src="' + IMG('back') + '" alt="The back of a card from the Mahala archetype deck"></div></div></div>'
-      + '<p class="hello">A page that is only yours</p><h1>Your Mahala</h1>'
-      + '<p class="lede" style="margin:14px auto 22px;max-width:46ch">Where you are in the community, the gatherings ahead, your card from the deck, and your thread over the years. The same you, here and in the Mahalaverse.</p>'
-      + '<div class="row" style="justify-content:center"><button type="button" class="btn" id="signInBtn">Sign in or make your account</button><a class="btn ghost" href="#demo-newcomer">See an example</a></div>'
-      + '<p class="sub" style="margin-top:16px">With Google, a password or an email link.</p></section>';
+    var emb = M() && M().emblem ? M().emblem('mahala-' + Math.floor(Date.now() / 864e5)) : IMG('back');
+    $('page').innerHTML = '<section class="door-out" aria-labelledby="youH">'
+      + '<div class="emb" aria-hidden="true"><img src="' + emb + '" alt=""></div>'
+      + (LIVE.ended ? '<p class="hello">Your account is deleted. The door stays open.</p>' : '<p class="hello">A page that is only yours</p>')
+      + '<h1 id="youH">Your Mahala</h1>'
+      + '<p class="lede" style="margin:14px auto 22px;max-width:46ch">Your thread with Mahala over the years, the gatherings ahead, your card from the deck, and, if you are invited, your way into the camp. It opens when you sign in, and it is only ever yours.</p>'
+      + '<div class="row" style="justify-content:center"><button type="button" class="btn" id="signInBtn">Sign in</button><a class="btn ghost" href="tribe.html#join">New here? Join the tribe</a></div>'
+      + '<p class="sub" style="margin-top:16px">With Google, a password or an email link. Joining takes a few minutes, and nobody asks you anything twice.</p></section>';
+    document.title = 'Your Mahala';
   }
 
   function fromLive() {
@@ -608,8 +671,8 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       hello: t.isNew && !years.length ? 'Hello, ' + first + '. You found your way in.' : 'Welcome back, ' + first + '.',
       open: open, newest: open[open.length - 1], rings: years.map(String), hats: roles.map(function (r) { return r; }),
       season: 'This season you are ' + phrase + '. Every circle fills in its own season.',
-      beads: beads, yes: st.yes || {}, next: core && preDecisions ? 'core' : (J && J.tier !== 'tribe') ? 'journey' : 'event', chapters: chapters, before: years.length > 0,
-      journey: W, tier: J ? J.tier : null,
+      beads: beads, yes: st.yes || {}, next: core && preDecisions ? 'core' : (J && J.tier !== 'tribe') ? 'journey' : 'event', chapters: chapters, before: years.length > 0 && !years.some(function (y) { return y < 2025; }),
+      journey: W, tier: J ? J.tier : null, J: J, rec: { name: t.name || '', years: years.slice(), roles: roles.slice(), thread: t.thread || [], nominatedBy: (J && J.nominatedBy) || t.nominatedBy || '', isNew: !!t.isNew, apps: apps },
       quest: { id: q.id, name: q.name, crew: q.crew, steps: q.steps.map(function (x, i) { return [x, seen[i] ? 'ok' : mine[i] ? 'mine' : '']; }) },
       gifts: gifts, gave: null, fields: fields, texts: texts, consent: consent, door: core ? 'core' : lead ? 'lead' : null
     };
@@ -633,16 +696,18 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   // ------------------------------------------------------------------ the page
   var P = null, who = null, steps = [], drawn = null, drawsLeft = 1, myOpen = false, DEMO = true;
   function render() {
-    var key = hashKey(), demo = !!PEOPLE[key] || !LIVE.on;
-    if (demo && !PEOPLE[key]) { if (LIVE.out) { signedOut(); return; } key = 'newcomer'; }
+    var key = hashKey(), demo = !ACCOUNTS;
+    if (ACCOUNTS && !LIVE.on) { if (LIVE.out) signedOut(); return; }
+    if (demo && !PEOPLE[key]) key = 'newcomer';
     DEMO = demo; who = demo ? key : 'live'; P = JSON.parse(JSON.stringify(demo ? PEOPLE[key] : LIVE.P));
     steps = P.quest.steps.map(function (s) { return s[1]; }); drawn = null; drawsLeft = 1; myOpen = false;
     $('proto').hidden = !demo; $('tellBtn').hidden = false;
     $('people').innerHTML = Object.keys(PEOPLE).map(function (k) { return '<a href="#demo-' + k + '"' + (demo && k === key ? ' aria-current="page"' : '') + '>' + PEOPLE[k].tab + '</a>'; }).join('');
-    $('chip').innerHTML = sigil(P, 'mini') + '<span>' + esc(P.first) + '</span><span class="vh">: your choices</span>';
+    $('chip').innerHTML = (P.live && M().emblem ? '<img id="chipPic" alt="" referrerpolicy="no-referrer" src="' + M().emblem(LIVE.uid) + '">' : sigil(P, 'mini')) + '<span>' + esc(P.first) + '</span><span class="vh">: your choices</span>';
     var sleeps = Math.ceil((RISES - TODAY) / 864e5), h = '';
 
     // the altar
+    h += hero();
     h += '<section class="altar" aria-labelledby="youH"><div class="cardzone">'
       + '<div class="cardstage"><div class="halo" aria-hidden="true"></div>'
       + (P.card ? '<div class="card own" id="own"><div class="face front"><img src="' + IMG(P.card) + '" alt="' + esc(deck(P.card).t) + ', your card from the Mahala archetype deck"></div>'
@@ -651,17 +716,17 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + '<div class="beads" role="group" aria-label="Your beads, only you see them">' + P.beads.map(function (b, i) { return '<button type="button" class="bead' + (b[2] ? ' big' : '') + '" style="background:' + BEADKIND[b[0]][0] + '" data-bead="' + i + '" aria-expanded="false" aria-label="A bead for ' + BEADKIND[b[0]][1] + '"></button>'; }).join('') + '</div></div>'
       + '<p class="beadsay" id="beadsay" aria-live="polite">' + (P.beads.length === 1 ? 'Your first bead. Tap it.' : 'Your beads: tap one for its moment. Only you see them.') + '</p>'
       + (P.card ? '<p class="cardname"><b>' + esc(deck(P.card).t) + '</b>' + esc(deck(P.card).cap) + '</p>' : '<p class="cardname"><b>Your card waits</b>Draw it in the Mahalaverse, beside the Book of Mahala, and it lives here too.</p>')
-      + '<div class="cardbtns">' + (P.card ? '<button type="button" class="btn small ghost" id="turnOwn" aria-pressed="false">Hear your card</button>' : '<a class="btn small ghost" href="index.html#mahalaverse">Draw your card</a>') + '<button type="button" class="btn small" id="drawBtn">Draw a message</button></div>'
+      + '<div class="cardbtns">' + (P.card ? '<button type="button" class="btn small ghost" id="turnOwn" aria-pressed="false">Hear your card</button>' : '<a class="btn small ghost" href="./#mahalaverse">Draw your card</a>') + '<button type="button" class="btn small" id="drawBtn">Draw a message</button></div>'
       + '<div class="drawn" id="drawn"></div></div>'
 
-      + '<div class="whohead"><p class="hello">' + esc(P.hello) + '</p><h1 id="youH">' + esc(P.first) + '</h1>'
+      + '<div class="whohead">' + (P.live ? portrait() : '') + '<p class="hello">' + esc(P.hello) + '</p><h1 id="youH">' + esc(P.first) + '</h1>'
       + (P.playa ? (P.playa === P.first ? '' : '<p class="playa">On the playa: <i>' + esc(P.playa) + '</i></p>') : '<p class="playa"><button type="button" class="link" data-choices>Choose your playa name</button></p>')
       + '<p class="sleeps">' + sleeps + ' sleeps until The Seed rises</p>'
       + (P.hats.length ? '<div class="hats">' + P.hats.map(function (x) { return '<span class="hat">' + HAT + esc(x) + '</span>'; }).join('') + '</div>' : '')
       + '</div><div class="whorest"><div class="seedlife">' + seedOfLife(P) + '<div><p class="season"><b>Where you are now</b>' + esc(P.season) + '</p>'
       + '<p class="petalsay" id="petalsay" aria-live="polite">Tap a circle. Each is a way of belonging, filled in any order. At the centre, where The Seed sits, everyone is a temple builder.</p>'
       + (P.rings.length ? '<p class="rings">The rings around it are your years: ' + andList(P.rings) + '.</p>' : '') + '</div></div>'
-      + nextStep() + letter() + roleDoor() + '</div></section>';
+      + story() + (P.live && P.tier && P.tier !== 'tribe' ? '' : nextStep()) + letter() + roleDoor() + '</div></section>';
 
     // now
     var up = upcoming(), soon = up.filter(function (e) { return e.kind !== 'burn'; }).slice(0, 3);
@@ -678,7 +743,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
         var g = Object.keys(P.yes).filter(function (k) { return P.yes[k] === 'yes'; }).map(function (k) { return EVENTS.events.filter(function (e) { return e.id === k; })[0]; }).filter(Boolean);
         g.forEach(function (e) { h += '<li class="knot glow"><b>' + esc(e.title) + '</b><span>' + fmt(e.date) + '. You said yes; after the day it is tied in here.</span></li>'; });
         if (c[3] === 'waiting' && !g.length) h += '<li class="knot waiting"><b>Your first gathering ties the next knot</b><span>We\u2019ll tie it together.</span></li>';
-        h += '<li class="knot glow" id="questKnot"><b>Your quest: ' + esc(P.quest.name) + '</b><div class="quest"><span class="crew">' + esc(P.quest.crew) + ' · ' + (P.live ? 'tick steps in the Mahalaverse; a steward witnesses them' : 'tick a step when it is done; a steward witnesses it') + '</span><ul class="steps" id="steps">' + stepsHtml() + '</ul>' + (P.live ? '<p style="margin:8px 0 0"><a class="link" href="index.html#mahalaverse">Tick a step in the Mahalaverse</a></p>' : '') + '</div></li>';
+        h += '<li class="knot glow" id="questKnot"><b>Your quest: ' + esc(P.quest.name) + '</b><div class="quest"><span class="crew">' + esc(P.quest.crew) + ' · ' + (P.live ? 'tick steps in the Mahalaverse; a steward witnesses them' : 'tick a step when it is done; a steward witnesses it') + '</span><ul class="steps" id="steps">' + stepsHtml() + '</ul>' + (P.live ? '<p style="margin:8px 0 0"><a class="link" href="./#mahalaverse">Tick a step in the Mahalaverse</a></p>' : '') + '</div></li>';
       }
     });
     if (P.before) h += '<li class="knot"><b>Before Mahala</b><span>The Grateful Heart, The State of Bliss, Nowhere\u2019s End. Were you there? <button type="button" class="link" data-tell="Your thread">Add your years</button></span></li>';
@@ -692,7 +757,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + (P.gave ? '<p class="mine">You gave in ' + esc(P.gave.when) + ', towards the ' + esc(P.gave.towards) + '. Thank you.<small>Only you see this line, and never an amount.</small></p>' : '<p class="mine">When you give, a line appears here that only you can see.<small><a href="seed.html">The Seed and its milestones</a></small></p>')
       + '</div></div></section>';
 
-    h += '<div class="portal"><p><b>Step through the portal</b>The same you waits in the Mahalaverse: your card, your beads, your quest. Tick a step there and it shows here.</p><a class="btn ghost" href="index.html#mahalaverse">Into the Mahalaverse</a></div>';
+    h += '<div class="portal"><p><b>Step through the portal</b>The same you waits in the Mahalaverse: your card, your beads, your quest. Tick a step there and it shows here.</p><a class="btn ghost" href="./#mahalaverse">Into the Mahalaverse</a></div>';
     h += '<p style="margin-top:28px"><button type="button" class="link" data-choices>Your choices: who sees what, what we keep, and leaving</button></p>';
 
     $('page').innerHTML = h;
@@ -702,6 +767,81 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       : '<li>The ladder felt like a ranking<small>Changed, 4 Nov: it became the Golden Seed of Life. Thank you.</small></li>';
     if (P.live && LIVE.store.last && nextNewMoon(new Date(LIVE.store.last.at)) > TODAY) draw(false, LIVE.store.last);
     document.title = 'Your Mahala · ' + P.first + (DEMO ? ' (an example)' : '');
+  }
+
+  // ------------------------------------------------------------------ your invitation, front and centre (F-024)
+  // Invited: the invitation in big letters at the top, with the application and how the camp fee is paid right there.
+  // Applied, or in the camp: the same place says where it stands. Words and steps follow the record (journey_of).
+  function hero() {
+    if (!P.live || !P.J || !P.tier || P.tier === 'tribe') return '';
+    var J = P.J, by = P.rec.nominatedBy, st = {}; (J.steps || []).forEach(function (x) { st[x.key] = x.state; });
+    var cls = function (k) { return st[k] === 'done' ? ' class="done"' : st[k] === 'now' ? ' class="now"' : ''; };
+    var steps = '<ol>'
+      + '<li' + cls('apply') + '><b>Your camp application</b>Four short steps, about ten minutes. What Mahala already knows of you is filled in for you.</li>'
+      + '<li' + cls('call') + '><b>A welcome call</b>Twenty minutes with a camp lead, by video or phone, to meet and find the crew where your hands are needed.</li>'
+      + '<li' + cls('contribution') + '><b>Your camp fee</b>Once your place is confirmed, a secure payment link comes to you by email: one payment, or two or four instalments, with a receipt for each. Nothing is paid on this site.</li>'
+      + '</ol>';
+    if (P.tier === 'invited') return '<section class="invite" id="invite" aria-labelledby="inviteH"><p class="from">Your invitation' + (by ? ', from ' + esc(by) : '') + '</p>'
+      + '<h2 id="inviteH">' + esc(P.first) + ', you are invited to camp with Mahala</h2>'
+      + '<p class="lead">' + (by ? esc(by) + ' called you in. ' : '') + 'AfrikaBurn 2027, 26 April to 2 May, in the Tankwa Karoo, where The Seed rises. Places are limited to 50.</p>'
+      + steps + '<div class="row"><a class="btn" href="camp.html?inv=account#join">Open my application</a><a class="btn ghost" href="camp.html">About the camp</a></div>'
+      + '<p class="fine">Not this season? That is a perfectly good answer: write to love@wearemahala.com, and your place in the tribe stays just as it is.</p></section>';
+    if (P.tier === 'applicant') return '<section class="invite quiet" id="invite" aria-labelledby="inviteH"><p class="from">Camp 2027</p>'
+      + '<h2 id="inviteH">' + (J.stage === 'waitlist' ? 'You are on the waitlist' : 'Your application is in') + '</h2>'
+      + '<p class="lead">' + (J.stage === 'waitlist' ? 'Places are limited to 50, and we will tell you as soon as one opens.' : 'Thank you. The camp leads are reading it, and one of them will be in touch for your welcome call. Nothing to do until then.') + '</p>'
+      + steps + '</section>';
+    return '<section class="invite quiet" id="invite" aria-labelledby="inviteH"><p class="from">Camp 2027</p>'
+      + '<h2 id="inviteH">Your place at camp is confirmed</h2>'
+      + '<p class="lead">Welcome to camp, ' + esc(P.first) + '. Look out for your secure payment link by email, for the plan you chose in your application, with a receipt for each payment.</p>'
+      + steps + '<div class="row"><a class="btn ghost" href="camp.html">About the camp</a></div></section>';
+  }
+
+  // ------------------------------------------------------------------ your picture (F-034)
+  var CAM = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>';
+  function portrait() {
+    return '<div class="portrait"><img id="pic" alt="Your picture" referrerpolicy="no-referrer" src="' + (M().emblem ? M().emblem(LIVE.uid) : '') + '">'
+      + '<label class="picbtn" for="picIn" title="Choose your picture">' + CAM + '<span class="vh">Choose your picture</span></label>'
+      + '<input type="file" id="picIn" accept="image/*" class="vh"></div><p class="picsay" id="picsay" aria-live="polite"></p>';
+  }
+  function picture() {
+    var mm = M(); if (!mm || !mm.picture || !$('pic')) return;
+    mm.picture().then(function (u) { if (u && $('pic')) $('pic').src = u; if (u && $('chipPic')) $('chipPic').src = u; }, function () { });
+    mm.info().then(function (i) {
+      var say = $('picsay'); if (!say) return;
+      say.innerHTML = i.hasPhoto ? '<button type="button" class="link" id="picDel">Use my emblem instead</button>'
+        : i.picture ? 'Your picture from Google. <label class="link" for="picIn" style="cursor:pointer">Choose another</label>'
+        : 'Your emblem, drawn from your thread. <label class="link" for="picIn" style="cursor:pointer">Add a picture</label>';
+    });
+  }
+  document.addEventListener('change', function (ev) {
+    if (ev.target.id !== 'picIn' || !ev.target.files || !ev.target.files[0]) return;
+    var say = $('picsay'); say.textContent = 'Making it small and keeping it safe\u2026';
+    M().setPicture(ev.target.files[0]).then(function (u) { $('pic').src = u; say.textContent = 'Your picture is saved. Only you see it here.'; setTimeout(picture, 2500); }, function (e) { say.textContent = (e && e.message) || 'That picture did not save. Try another.'; });
+    ev.target.value = '';
+  });
+
+  // ------------------------------------------------------------------ your story with Mahala
+  // Like the letters: what the community map holds of you, said back warmly. Only what the record states (years, camps,
+  // hats, who called you in, your thread); never an invented memory. Where it is thin, it says so and asks.
+  var CAMPNAME = function (y) { y = +y; return y === 2027 ? 'The Seed' : y === 2026 ? 'Through the Prism' : y === 2025 ? 'The Portal' : y === 2024 ? 'Nowhere\u2019s End' : y >= 2016 && y <= 2023 ? 'The State of Bliss' : ''; };
+  function story() {
+    if (!P.live) return '';
+    var r = P.rec, yrs = r.years.filter(function (y) { return y < 2027; }), lines = [], who = esc(P.playa && P.playa !== P.first ? P.playa : P.first);
+    var named = function (y) { var n = CAMPNAME(y); return y + (n ? ' (' + n + ')' : ''); };
+    if (yrs.length) {
+      lines.push(who + ', Mahala remembers you. You first camped with us in ' + esc(named(yrs[0])) + (yrs.length > 1 ? ', and walked with us again in ' + esc(andList(yrs.slice(1).map(named))) : '') + '.');
+      var th = (r.thread || []).filter(function (l) { return l && l.text && String(l.year) !== '2027'; });
+      if (th.length) { var last = th[th.length - 1]; lines.push((last.year ? 'In ' + esc(last.year) + ' you ' : 'You ') + esc(String(last.text).replace(/^(you|i)\s+/i, '')) + (/[.!?]$/.test(last.text) ? '' : '.')); }
+    } else if (r.isNew) {
+      lines.push(who + ', you found your way in. Every thread with Mahala starts somewhere, and yours starts here, as The Seed takes shape.');
+    } else {
+      lines.push(who + ', you are part of Mahala\u2019s story. We do not yet hold the years you were with us: tell us, and they join your thread.');
+    }
+    if (r.roles.length) lines.push('The hats you have worn with us: ' + esc(andList(r.roles.slice(0, 4))) + '.');
+    if (P.tier === 'invited' || P.tier === 'applicant' || P.tier === 'camp') lines.push((r.nominatedBy ? esc(r.nominatedBy) + ' called you in for 2027, the year The Seed rises.' : 'For 2027, the year The Seed rises, there is a place for you at camp.'));
+    else lines.push('There are ' + Math.max(0, Math.ceil((RISES - TODAY) / 864e5)) + ' sleeps until The Seed rises, and the gatherings below are where the tribe meets before then.');
+    return '<div class="story" id="story">' + lines.map(function (l) { return '<p>' + l + '</p>'; }).join('') + '<p class="sig">MAHALA</p>'
+      + '<details class="fixit"><summary>Something missing or not quite right?</summary><textarea id="fixText" rows="2" maxlength="1000" placeholder="A year you camped, a hat you wore, a name"></textarea><div class="row" style="margin-top:6px"><button type="button" class="btn small ghost" id="fixSend">Send to the stewards</button></div><p class="said" id="fixSaid" aria-live="polite"></p></details></div>';
   }
 
   function deck(k) { return DECK.filter(function (c) { return c.k === k; })[0]; }
@@ -811,9 +951,11 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     var t = ev.target.closest('button, a, .way'); if (!t) return;
     if (t.matches('[data-close]')) { t.closest('dialog').close(); return; }
     if (t.id === 'signInBtn') { if (M()) M().signIn(); return; }
+    if (t.id === 'picDel') { $('picsay').textContent = 'Back to your emblem\u2026'; M().clearPicture().then(function (u) { if (u) $('pic').src = u; picture(); }, function () { $('picsay').textContent = 'That did not work. Try again.'; }); return; }
+    if (t.id === 'fixSend') { var fx = $('fixText').value.trim(); if (!fx) { $('fixSaid').textContent = 'Tell us what to change or add.'; return; } $('fixSaid').textContent = 'Sending\u2026'; M().correct(fx).then(function () { $('fixText').value = ''; $('fixSaid').textContent = 'Thank you. The stewards will look at it and your thread will follow.'; }, function () { $('fixSaid').textContent = 'That did not send. Try again in a little while.'; }); return; }
     if (t.id === 'chip' && !P) { if (M()) M().signIn(); return; }
     if (t.dataset.live === 'export') { say(t, 'Gathering everything\u2026'); M().rpc('export_my_data').then(function (x) { say(t, download('my-mahala.json', JSON.stringify(x, null, 1), 'application/json') ? 'Your file is downloading.' : 'Your browser did not allow the download.'); }, function () { say(t, 'That did not work. Try again in a little while.'); }); return; }
-    if (t.dataset.live === 'signout') { M().signOut().then(function () { location.href = 'index.html'; }); return; }
+    if (t.dataset.live === 'signout') { M().signOut().then(function () { location.href = './'; }); return; }
     if (t.dataset.live === 'delete') { $('choices').close(); window.claude.__auth.open('delete'); return; }
     if (t.dataset.savefield) { var f = t.dataset.savefield, tx2 = $('ft-' + f).value.trim(), vis = $('f-' + f).value; say(t, 'Saving\u2026'); M().rpc('set_profile', { p_field: f, p_text: tx2, p_visibility: vis }).then(function () { P.texts[f] = tx2; P.fields[f] = vis; LIVE.P.texts[f] = tx2; LIVE.P.fields[f] = vis; $('choiceSaid').textContent = FIELD_NAMES[f][0] + ': saved.'; }, function () { $('choiceSaid').textContent = 'That did not save. Try again.'; }); return; }
     if (t.id === 'chip' || t.matches('[data-choices]')) { open($('choices')); return; }
@@ -883,7 +1025,9 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     var c = $('dcard'); if (keep) c.classList.add('turned'); else setTimeout(function () { c.classList.add('turned'); }, REDUCE ? 0 : 450);
   }
 
-  addEventListener('hashchange', function () { if (LIVE.out && !PEOPLE[hashKey()]) signedOut(); else render(); scrollTo(0, 0); });
+  addEventListener('hashchange', function () { if (ACCOUNTS) return; render(); scrollTo(0, 0); });
+  // the welcome (or anything else in the account sheets) changed the record: draw the page again from it
+  addEventListener('mahala:changed', function () { if (!ACCOUNTS || !LIVE.on) return; LIVE.on = false; boot(); });
   boot();
 })();
 </script>

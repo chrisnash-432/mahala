@@ -228,6 +228,11 @@
   }
   // Signed in: the name and address the account already holds fill the first step, so nobody types them twice.
   // Only empty boxes are filled, and anything typed wins.
+  // What Join the tribe asked (where you live, what you bring) fills the rest, and who called you in comes from the
+  // record (F-024, F-028): nobody is asked twice on the way from the tribe to the camp.
+  var TRIBE_TO_CAMP = { 'Building and carpentry': 'Build', 'Electrics, lighting and power': 'Light', 'Sound, DJing and music production': 'Sound',
+    'Live instruments and voice': 'Sound', 'Art, painting and decor': 'Art', 'Kitchen and feeding the tribe': 'Cook', 'Healing, bodywork and breathwork': 'Care',
+    'Ceremony and space holding': 'Host an event', 'Movement, dance and performance': 'Host an event', 'Logistics and getting things done': 'Money and admin' };
   function prefill() {
     var M = window.MahalaMembers; if (!M || !M.info) return;
     M.info().then(function (i) {
@@ -237,6 +242,17 @@
         A[f[0]] = String(f[2]);
         var el = $(f[1]); if (el && !el.value) el.value = A[f[0]];
       });
+      if (!A.nominatedBy && i.journey && i.journey.nominatedBy) A.nominatedBy = String(i.journey.nominatedBy).slice(0, 60);
+      var t = null; try { t = JSON.parse(localStorage.getItem('mahala.tribeSkills') || localStorage.getItem('mahala.tribe') || 'null'); } catch (e) { /* storage blocked */ }
+      if (!t) return;
+      var redraw = false, open = step === 1 && !box.hidden;
+      if (open) read();                                      // keep anything already typed
+      if (!A.lives && t.country) { A.lives = /south africa|^sa$|^rsa$|^za$/i.test(t.country.trim()) ? 'sa' : 'away'; redraw = true; }
+      if (!A.from && (t.town || t.country)) { A.from = [t.town, t.country].filter(Boolean).join(', ').slice(0, 60); redraw = true; }
+      if (!A.skills.length && t.skills && t.skills.length) {
+        t.skills.forEach(function (k) { var c = TRIBE_TO_CAMP[k]; if (c && A.skills.indexOf(c) < 0) A.skills.push(c); }); redraw = redraw || A.skills.length > 0;
+      }
+      if (redraw && open) draw(false);
     }).catch(function () { /* the boxes stay empty */ });
   }
   // opened straight onto the application from inside the Mahalaverse: closing it hands you back to the world

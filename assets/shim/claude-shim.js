@@ -24,6 +24,11 @@
   // Google sign-in is offered only once site.js says members: { google: true }, after the Google provider is set up in
   // Supabase (platform/docs/SETUP.md). Until then the email link is the one way in.
   var GOOGLE_ON = CFG.google === true;
+  // Your Mahala, the member's own page (site.js members.mePage)
+  var MEPAGE = typeof CFG.mePage === 'string' && /^[a-z0-9-]+\.html$/.test(CFG.mePage) ? CFG.mePage : null;
+  function onMe() { return !!MEPAGE && new RegExp('/' + MEPAGE.replace('.', '\\.') + '$').test(location.pathname); }
+  // Inside a pane over the front page (the tribe page opens in a frame): the front page draws the sheets, not the frame.
+  var EMBEDDED = (function () { try { return window.parent !== window && window.parent.location.origin === location.origin; } catch (e) { return false; } })();
   if (!CFG.url || !CFG.anonKey || window.claude) return;
 
   var RULES_VERSION = '746824445fc6';
@@ -145,11 +150,22 @@
         authFns.slice().forEach(function (f) { try { f({ signedIn: !!now }); } catch (e) { } });
         setTimeout(restart, 900);
       });
-      if (!s) return { signedIn: false, level: 0, rulesVersion: null };
+      if (!s) { var gone = ss.get('mahala.ended') === '1'; ss.set('mahala.ended', null); return { signedIn: false, level: 0, rulesVersion: null, ended: gone }; }
+      // A sign-in that ended with its account (deleted here a moment ago, or on another device): forget it on this
+      // device and carry on signed out, never claim the thread again with it (F-030).
+      var forget = function () {
+        startUser = null; authStore.removeItem(STORE_KEY);
+        c.auth.signOut({ scope: 'local' }).catch(function () { });
+        return { signedIn: false, level: 0, rulesVersion: null, ended: true };
+      };
       return rpc('whoami').then(function (w) {
+        if (w.ended || w.signedIn === false) return forget();
         if (w.claimed) { ls.set(THREAD, null); return w; }
         var tok = letterToken(); ls.set(THREAD, null);
-        return rpc('claim_thread', { p_token: tok });
+        return rpc('claim_thread', { p_token: tok }).catch(function (e) {
+          if (e && /ended with its account/.test(e.message || '')) return forget();
+          throw e;
+        });
       });
     });
   }).then(function (w) {
@@ -176,8 +192,22 @@
     return info;
   });
 
+  // Where the page goes back to after a sign-in round trip: kept for half an hour at most, and never an example page,
+  // so an old one cannot surface much later (8 Nov 2026, F-032: after deleting an account, Your Mahala opened an example
+  // profile left from a sign-in begun on it earlier).
+  function setAfter(h) { ss.set(AFTER, h ? JSON.stringify({ h: h, at: Date.now() }) : null); }
+  function takeAfter() {
+    var a = null; try { a = JSON.parse(ss.get(AFTER) || 'null'); } catch (e) { }
+    ss.set(AFTER, null);
+    return a && typeof a.h === 'string' && Date.now() - a.at < 30 * 60 * 1000 && /^#[A-Za-z0-9_-]{1,38}$/.test(a.h) && !/^#demo/i.test(a.h) ? a.h : null;
+  }
+  var LAND = 'mahala.land';            // the page a first sign-in lands on: Your Mahala (F-024, F-025)
+  var ending = false;                 // the account is being deleted: no restart, the delete sheet leads on
   function restart() {
-    var after = ss.get(AFTER); ss.set(AFTER, null);
+    if (ending) return;
+    var land = ss.get(LAND); ss.set(LAND, null);
+    if (land && MEPAGE && !onMe()) { setAfter(null); goMe(true); return; }
+    var after = takeAfter();
     if (after) location.replace(location.pathname + location.search + after); else location.reload();
   }
 
@@ -405,9 +435,9 @@
   }
   var USER = Object.freeze({
     id: function () { return infoP.then(function (w) { return w.uid || null; }); },
-    me: function () { return infoP.then(function (w) { return profile(w.uid, w.name, false); }); },
+    me: function () { return infoP.then(function (w) { var p = profile(w.uid, w.name, false); return myPicture().then(function (u) { return u ? Object.freeze(Object.assign({}, p, { avatarUrl: u })) : p; }, function () { return p; }); }); },
     name: function () { return infoP.then(function (w) { return w.name || ''; }); },
-    avatarUrl: function () { return infoP.then(function (w) { return w.uid ? avatar(w.name, colourOf(w.uid)) : null; }); },
+    avatarUrl: function () { return infoP.then(function (w) { return w.uid ? myPicture().then(function (u) { return u || avatar(w.name, colourOf(w.uid)); }) : null; }); },
     email: function () { return Promise.resolve(null); },
     isOwner: function () { return infoP.then(function (w) { return w.level >= 4; }); },
     canEdit: function () { return infoP.then(function (w) { return w.level >= 3; }); },
@@ -505,6 +535,77 @@
     },
   });
 
+  /* ------------------------------------------------------------------ your picture (F-034) */
+  // Your own picture, in this order: one you chose (kept in your folder of the private bucket as me-<random>, made
+  // small on your device first), the one Google gave, else your emblem: a Seed of Life drawn from your id, the same
+  // on every device and never anyone else's. Only ever shown to you here; the "photo" choice decides more later.
+  var EMBLEM_HUES = [['#FFD81F', '#14A8E0'], ['#14A8E0', '#D8197F'], ['#D8197F', '#FFD81F'], ['#E06A2C', '#7E57C2'], ['#2E8558', '#FFD81F'], ['#7E57C2', '#14A8E0']];
+  function seeded(seed) { var h = 2166136261, x = String(seed || 'mahala'); for (var i = 0; i < x.length; i++) { h ^= x.charCodeAt(i); h = Math.imul(h, 16777619); } return function () { h = Math.imul(h ^ (h >>> 15), 2246822507); h = Math.imul(h ^ (h >>> 13), 3266489909); h ^= h >>> 16; return (h >>> 0) / 4294967296; }; }
+  function emblem(seed) {
+    var r = seeded(seed), hue = EMBLEM_HUES[Math.floor(r() * EMBLEM_HUES.length)], n = [6, 8, 12][Math.floor(r() * 3)], rot = Math.round(r() * 60);
+    var R = 15 + Math.round(r() * 5), rings = 1 + Math.floor(r() * 2), out = '';
+    for (var k = 0; k < rings; k++) for (var i = 0; i < n; i++) {
+      var a = (i / n) * Math.PI * 2, d = R * (k + 1) * (k ? 0.95 : 1);
+      out += '<circle cx="' + (50 + d * Math.cos(a)).toFixed(2) + '" cy="' + (50 + d * Math.sin(a)).toFixed(2) + '" r="' + R + '" fill="none" stroke="#FBF8F3" stroke-opacity="' + (k ? .45 : .9) + '" stroke-width="' + (k ? .9 : 1.3) + '"/>';
+    }
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="e" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + hue[0] + '"/><stop offset="1" stop-color="' + hue[1] + '"/></linearGradient>' +
+      '<clipPath id="c"><circle cx="50" cy="50" r="50"/></clipPath></defs><g clip-path="url(#c)"><rect width="100" height="100" fill="url(#e)"/><g transform="rotate(' + rot + ' 50 50)">' + out + '</g>' +
+      '<circle cx="50" cy="50" r="' + R + '" fill="none" stroke="#FBF8F3" stroke-width="1.6"/><circle cx="50" cy="50" r="5" fill="#2A221C"/></g></svg>';
+    return 'data:image/svg+xml,' + encodeURIComponent(svg);
+  }
+  function myPicture() {
+    return infoP.then(function (w) {
+      if (!w || !w.signedIn) return null;
+      var fallback = function () { return w.picture || emblem(w.uid || w.personId); };
+      if (w.photo && w.uid) return signUrl(w.uid + '/' + w.photo).then(function (u) { return u || fallback(); }, fallback);
+      return fallback();
+    });
+  }
+  // a picture made square and small (at most 480 px, JPEG) on this device before it goes anywhere
+  function shrink(file) {
+    return new Promise(function (ok, fail) {
+      if (!file || !/^image\//.test(file.type || '')) return fail({ code: 'invalid_argument', message: 'Choose a picture (a photo or an image file).' });
+      if (file.size > 25 * 1024 * 1024) return fail({ code: 'invalid_argument', message: 'That picture is very large. Try a smaller one.' });
+      var url = URL.createObjectURL(file), img = new Image();
+      img.onload = function () {
+        var side = Math.min(img.naturalWidth, img.naturalHeight), out = Math.min(480, side), c = document.createElement('canvas');
+        c.width = c.height = out;
+        var g = c.getContext('2d'); g.fillStyle = '#F7F2EA'; g.fillRect(0, 0, out, out);
+        g.drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, out, out);
+        URL.revokeObjectURL(url);
+        c.toBlob(function (b) { if (b) ok(b); else fail({ code: 'invalid_argument', message: 'That picture could not be read.' }); }, 'image/jpeg', 0.85);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); fail({ code: 'invalid_argument', message: 'That picture could not be read. Try a JPEG or PNG.' }); };
+      img.src = url;
+    });
+  }
+  function setPhoto(file) {
+    return infoP.then(function (w) {
+      if (!w || !w.signedIn || !w.uid) throw { code: 'not_granted', message: 'Sign in first.' };
+      if (!(w.level >= 2)) throw { code: 'not_granted', message: 'Pictures open once your account is a member\'s.' };
+      return shrink(file).then(function (blob) {
+        var name = 'me-' + autoId(24), old = w.photo;
+        return clientP.then(function (c) { return c.storage.from(BUCKET).upload(w.uid + '/' + name, blob, { contentType: 'image/jpeg', upsert: false }); })
+          .then(function (r) { if (r.error) throw toErr(r.error); return rpc('set_profile', { p_field: 'photo', p_text: name, p_visibility: 'me' }); })
+          .then(function () {
+            w.photo = name;
+            if (old && old !== name) clientP.then(function (c) { return c.storage.from(BUCKET).remove([w.uid + '/' + old]); }).catch(function () { });
+            return signUrl(w.uid + '/' + name);
+          });
+      });
+    });
+  }
+  function clearPhoto() {
+    return infoP.then(function (w) {
+      var old = w && w.photo; if (!old) return myPicture();
+      return rpc('set_profile', { p_field: 'photo', p_text: '', p_visibility: 'me' }).then(function () {
+        w.photo = null;
+        clientP.then(function (c) { return c.storage.from(BUCKET).remove([w.uid + '/' + old]); }).catch(function () { });
+        return myPicture();
+      });
+    });
+  }
+
   /* ------------------------------------------------------------------ window.claude */
   function use(name) {
     return infoP.then(function (w) {
@@ -525,7 +626,8 @@
                  isNew: !!w.isNew, rulesDiffer: !!(w.rulesVersion && w.rulesVersion !== RULES_VERSION),
                  // the 2027 journey (tier, next step, roles) and whether the first-sign-in welcome is done, for the
                  // camp page and Your Mahala
-                 journey: w.journey || null, noticeSeen: w.claimed ? !!w.noticeSeen : null, isSteward: !!w.isSteward };
+                 journey: w.journey || null, noticeSeen: w.claimed ? !!w.noticeSeen : null, isSteward: !!w.isSteward,
+                 level: w.level || 0, hasPhoto: !!w.photo, picture: w.picture || null, ended: !!w.ended };
       });
     },
     onChange: function (fn) { if (typeof fn === 'function') authFns.push(fn); return function () { authFns = authFns.filter(function (f) { return f !== fn; }); }; },
@@ -549,7 +651,35 @@
     signOut: AUTH.signOut, rpc: rpc,
     // the Mahalaverse asks for an account before anyone steps onto the playa
     gate: function () { return AUTH.open('gate'); },
+    // Your Mahala (F-034): your picture (chosen, Google's, or your emblem), and choosing or removing one
+    picture: myPicture, setPicture: setPhoto, clearPicture: clearPhoto, emblem: emblem,
+    // the end of Join the tribe: make the account with the address just given, and land on Your Mahala (F-025)
+    join: function (o) { return infoP.then(function () { UI.join(o || {}); }); },
+    correct: function (text) { return rpc('report_correction', { p_text: String(text || '').slice(0, 1000) }); },
+    mePage: MEPAGE,
   });
+
+  /* ------------------------------------------------------------------ Join the tribe, once signed in (F-029) */
+  // Every "Join the tribe" on every page (the front page's menu and frames, the tribe page, The Seed, the camp page)
+  // takes someone already signed in to Your Mahala instead of the form. One listener here, so pages need no change:
+  // links to tribe.html#join, [data-tribe-join] buttons, and anything marked data-mahala-join.
+  var JOIN_SEL = 'a[href*="tribe.html#join"],[data-tribe-join],[data-mahala-join]';
+  function goMe(replace) {
+    if (!MEPAGE) return false;
+    var url = new URL(MEPAGE, location.href).href, w = EMBEDDED ? window.top : window;
+    if (replace) w.location.replace(url); else w.location.href = url;
+    return true;
+  }
+  function hasSession() { try { return !!authStore.getItem(STORE_KEY); } catch (e) { return false; } }
+  window.addEventListener('click', function (e) {
+    var el = e.target && e.target.closest ? e.target.closest(JOIN_SEL) : null;
+    if (!el || !MEPAGE || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    if (el.__mvPass) { el.__mvPass = false; return; }
+    if (info && info.signedIn && info.claimed) { e.preventDefault(); e.stopImmediatePropagation(); goMe(); return; }
+    if (info || !hasSession()) return;                        // signed out: the form, as before
+    e.preventDefault(); e.stopImmediatePropagation();         // still finding out who this is: wait a moment
+    infoP.then(function (w) { if (w && w.signedIn && w.claimed) goMe(); else { el.__mvPass = true; el.click(); } });
+  }, true);
 
   /* ------------------------------------------------------------------ the journey's words */
   // The database says where someone stands and which step is next (journey_of, keys only); the words live here,
@@ -575,10 +705,26 @@
     };
   }
 
+  /* ------------------------------------------------------------------ what Join the tribe already asked */
+  // The tribe form (tribe-join.js) keeps a copy of its answers on this device for a day, so the first sign-in never
+  // asks them again (F-025, F-028): the name, the choices about staying in touch, where you live, what you bring.
+  // The WhatsApp number never comes here; it stays with the camp's sheet.
+  var TRIBE = 'mahala.tribe';
+  function tribeAnswers() { try { var o = JSON.parse(ls.get(TRIBE) || 'null'); if (o && Date.now() - o.at < 864e5) return o; } catch (e) { } return null; }
+  function tribeProfile(a) {
+    var shareTo = a.share ? 'members' : 'stewards', out = [];
+    var home = [a.town, a.country].filter(Boolean).join(', ');
+    if (home) out.push(['home_base', home, 'stewards']);
+    var gifts = [].concat(a.skills || [], a.other ? [a.other] : [], a.passions || []).filter(Boolean).join(', ');
+    if (gifts) out.push(['gifts', gifts, shareTo]);
+    if (a.creating) out.push(['about', a.creating, shareTo]);
+    return out;
+  }
+
   /* ------------------------------------------------------------------ the sheets */
   var NOTICE_VERSION = '2026-11-draft';
   var NOTICE = [
-    ['Who we are', 'Mahala is a theme camp at AfrikaBurn and a community of temple builders. The camp\'s stewards look after this record. You can reach them at wearemahala@gmail.com.'],
+    ['Who we are', 'Mahala is a theme camp at AfrikaBurn and a community of temple builders. The camp\'s stewards look after this record. You can reach them at love@wearemahala.com.'],
     ['What we hold', 'What Mahala already knows of your time with the camp (the years, your roles, who brought you in), what you add here (a playa name, your gifts, your choices), and what you do in the Mahalaverse (your path, your book, the cards you keep). We never ask for health details, ID numbers or bank details here, and other members never see your address.'],
     ['Why', 'To welcome you, to keep your thread with Mahala, and, only if you say yes below, to send you Mahala news.'],
     ['Where it lives', 'In a member database in Frankfurt (Supabase, in the EU, which protects it to the standard POPIA section 72 asks), and in Mahala\'s private record, kept by the stewards. Claude, an AI assistant, helps the stewards read that record; it never contacts anyone by itself.'],
@@ -598,7 +744,7 @@
   var CSS = '' +
     '.mvs-veil{position:fixed;inset:0;z-index:2147483000;overscroll-behavior:contain;background:rgba(14,12,20,.55);display:grid;place-items:center;padding:16px;padding-top:max(16px,env(safe-area-inset-top));padding-bottom:max(16px,env(safe-area-inset-bottom));overflow:auto}' +
     '.mvs-veil,.mvs,.mvs *{box-sizing:border-box} .mvs{--i:#2A221C;--i2:#5B5047;--g:#F7F2EA;--l:#DCD2C3;--a:#8A5A2B;width:min(520px,100%);max-height:calc(var(--mvs-vh,100vh) - 32px);overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;background:var(--g);color:var(--i);border-radius:22px;padding:26px 24px 22px;box-shadow:0 24px 70px rgba(0,0,0,.35);font:400 15.5px/1.55 Jost,"Avenir Next","Segoe UI",system-ui,sans-serif;position:relative;text-align:left}' +
-    '.mvs h2{font:400 26px/1.15 Marcellus,"Cormorant Garamond",Georgia,serif;letter-spacing:.02em;margin:0 36px 8px 0}' +
+    '.mvs h2{font:400 26px/1.15 Marcellus,"Cormorant Garamond",Georgia,serif;letter-spacing:.02em;margin:0 36px 8px 0;text-transform:none;text-align:left}' +
     '.mvs h3{font:500 12px/1.4 Jost,system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--i2);margin:20px 0 8px}' +
     '.mvs p{margin:0 0 10px;color:var(--i2)} .mvs p.lead{color:var(--i)} .mvs small{color:var(--i2);font-size:13px}' +
     '.mvs-x{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;border:1px solid var(--l);background:none;color:var(--i);font-size:20px;line-height:1;cursor:pointer}' +
@@ -665,8 +811,9 @@
     var GOOGLE = '<svg class="mvs-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.6 13.3l7.9 6.1C12.4 13.7 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.6c0-1.6-.1-3.1-.4-4.6H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17z"/><path fill="#FBBC05" d="M10.5 28.6c-.5-1.4-.8-2.9-.8-4.6s.3-3.2.8-4.6l-7.9-6.1C1 16.6 0 20.2 0 24s1 7.4 2.6 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.2-13.5-10l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/></svg>';
 
     function redirectTo(gate) {
-      if (gate || /^#(mahalaverse|enter|play)/i.test(location.hash) || document.documentElement.classList.contains('to-mv') || document.body.classList.contains('from-seed')) ss.set(AFTER, '#mahalaverse');
-      else if (location.hash && location.hash.length < 40) ss.set(AFTER, location.hash);
+      if (ss.get(LAND) === '1' && MEPAGE) { setAfter(null); return new URL(MEPAGE, location.href).href + '?signin=1'; }
+      if (gate || /^#(mahalaverse|enter|play)/i.test(location.hash) || document.documentElement.classList.contains('to-mv') || document.body.classList.contains('from-seed')) setAfter('#mahalaverse');
+      else setAfter(location.hash);
       return location.origin + location.pathname + '?signin=1';
     }
 
@@ -679,7 +826,7 @@
       if (/email not confirmed/i.test(m) || code === 'email_not_confirmed') return 'confirm';
       if (/password should be|weak_password|at least/i.test(m) || code === 'weak_password') return 'Choose a password of at least 8 characters.';
       if (/same password|same_password/i.test(m)) return 'That is your current password. Choose a new one.';
-      if (/signups not allowed|signup_disabled/i.test(m)) return 'New accounts are closed just now. Write to wearemahala@gmail.com.';
+      if (/signups not allowed|signup_disabled/i.test(m)) return 'New accounts are closed just now. Write to love@wearemahala.com.';
       return 'That did not work. Try again in a little while.';
     }
     var PW_MIN = 8;
@@ -856,15 +1003,22 @@
     }
     function drawWelcome(w, t) {
       var fresh = !!w.isNew, asked = !!w.asked, checkedName = '', pending = null, shown = false, answered = false;
-      var el = sheet('<h2>' + (fresh ? 'Welcome to Mahala' : 'Welcome back, ' + esc(w.name || 'temple builder')) + '</h2>' +
-        '<p class="lead">' + (fresh ? 'You are part of Mahala\'s online community now. Tell us what to call you, choose how we stay in touch, and step onto the playa.'
+      // what the tribe form already asked: never asked again, only shown, to change if wanted
+      var ta = tribeAnswers(), said = ta ? { news: !!ta.news, whatsapp: !!ta.wa, name: !!ta.share, directory: !!ta.share } : null;
+      var knownName = (ta && ta.name) || '';
+      var nameRow = knownName
+        ? '<div class="mvs-hold" data-k="namebox"><p>We will call you <b data-k="nmshow">' + esc(knownName) + '</b>, as you told us when you joined. <a href="#" data-k="nmchange">Change</a></p>' +
+          '<input type="text" name="nm" maxlength="80" autocomplete="name" value="' + esc(knownName) + '" hidden></div>'
+        : '<label class="mvs-row"><span>What should we call you? Your first and last name helps us find your thread.</span><input type="text" name="nm" maxlength="80" autocomplete="name" required value="' + esc(w.name || '') + '"></label>';
+      var el = sheet('<h2>' + (fresh ? (knownName ? 'Welcome to the tribe, ' + esc(knownName.split(/\s+/)[0]) : 'Welcome to Mahala') : 'Welcome back, ' + esc(w.name || 'temple builder')) + '</h2>' +
+        '<p class="lead">' + (fresh ? (ta ? 'Your account is made, and what you told us when you joined is already here. One look at how Mahala looks after it, and your page opens.'
+          : 'You are part of Mahala\'s online community now. Tell us what to call you, choose how we stay in touch, and step onto the playa.')
           : 'It is good to see you again. Here is what Mahala holds of your journey with us: have a look, and tell us if anything is missing or wrong.') + '</p>' +
-        (fresh ? '<label class="mvs-row"><span>What should we call you? Your first and last name helps us find your thread.</span><input type="text" name="nm" maxlength="80" autocomplete="name" required value="' + esc(w.name || '') + '"></label>' +
-                 '<div class="mvs-ask" data-k="ask" hidden></div>' +
-                 '<label class="mvs-row"><span>Your playa name, if you have one</span><input type="text" name="playa" maxlength="60" autocomplete="off"></label>'
+        (fresh ? nameRow + '<div class="mvs-ask" data-k="ask" hidden></div>' +
+                 (ta ? '' : '<label class="mvs-row"><span>Your playa name, if you have one</span><input type="text" name="playa" maxlength="60" autocomplete="off"></label>')
                : (t ? holds(t) : '')) +
-        '<h3>Stay in touch</h3>' + SCOPES.map(function (s) { return '<label class="mvs-ck"><input type="checkbox" name="' + s[0] + '"><span>' + esc(s[1]) + '</span></label>'; }).join('') +
-        '<p><small>Nothing is ticked for you, and you can change any of it later in Account and privacy.</small></p>' +
+        '<h3>Stay in touch</h3>' + SCOPES.map(function (s) { return '<label class="mvs-ck"><input type="checkbox" name="' + s[0] + '"' + (said && said[s[0]] ? ' checked' : '') + '><span>' + esc(s[1]) + '</span></label>'; }).join('') +
+        '<p><small>' + (said ? 'Ticked as you chose on the tribe form; nothing else is ticked for you.' : 'Nothing is ticked for you.') + ' You can change any of it later in Account and privacy.</small></p>' +
         '<h3>How Mahala looks after your thread</h3>' + noticeHtml() +
         '<div class="mvs-foot"><button type="button" class="mvs-b" data-k="save">' + (fresh ? 'Make my account' : 'I have read this. Continue') + '</button><div class="mvs-msg" role="status"></div></div>', 'Welcome', false);
       var nm = el.querySelector('[name="nm"]'), playa = el.querySelector('[name="playa"]'), ask = el.querySelector('[data-k="ask"]'), fixbox = el.querySelector('[data-k="fixbox"]');
@@ -892,10 +1046,11 @@
           rpc('ask_for_my_thread', { p_name: checkedName }).then(function (r) {
             asked = !!(r && r.asked); info.asked = asked;
             ask.innerHTML = '<p>' + (asked ? 'Thank you. A steward will join your thread to this account, usually within a day: your years and camps will then appear on Your Mahala.'
-              : 'We could not ask just now. Tell the stewards at wearemahala@gmail.com and they will join your thread.') + '</p>';
+              : 'We could not ask just now. Tell the stewards at love@wearemahala.com and they will join your thread.') + '</p>';
           }, function () { b.disabled = false; });
         }
         if (k === 'no') { ask.hidden = true; answered = true; }
+        if (k === 'nmchange') { e.preventDefault(); b.parentNode.hidden = true; nm.hidden = false; nm.focus(); }
         if (k === 'right') { b.classList.add('on'); var wr = el.querySelector('[data-k="wrong"]'); if (wr) wr.classList.remove('on'); if (fixbox) fixbox.hidden = true; }
         if (k === 'wrong') { b.classList.add('on'); var ri = el.querySelector('[data-k="right"]'); if (ri) ri.classList.remove('on'); if (fixbox) { fixbox.hidden = false; fixbox.querySelector('textarea').focus(); } }
       });
@@ -909,6 +1064,11 @@
           var steps = (nm ? rpc('set_my_name', { p_name: nm.value.trim() }) : Promise.resolve())
             .then(function () { return playa && playa.value.trim() && playa.value.trim() !== ((t && t.playaName) || '') ? rpc('set_profile', { p_field: 'playa_name', p_text: playa.value.trim(), p_visibility: 'members' }) : null; })
             .then(function () { return fix && fix.value.trim() && fixbox && !fixbox.hidden ? rpc('report_correction', { p_text: fix.value.trim() }) : null; })
+            // what the tribe form told us joins the record once, with who sees it as the form said
+            .then(function () {
+              if (!ta) return null;
+              return tribeProfile(ta).reduce(function (p, f) { return p.then(function () { return rpc('set_profile', { p_field: f[0], p_text: f[1].slice(0, 2000), p_visibility: f[2] }).catch(function () { }); }); }, Promise.resolve());
+            })
             .then(function () { return rpc('accept_notice', { p_version: w.noticeVersion }); })
             .then(function () {
               return SCOPES.reduce(function (p, s) {
@@ -917,7 +1077,10 @@
             });
           steps.then(function () {
             close();
-            toast(fresh ? 'Welcome to the Mahalaverse.' : (fix && fix.value.trim() && fixbox && !fixbox.hidden ? 'Thank you. The stewards will look at what you sent.' : 'Your thread is yours. Welcome back.'));
+            if (ta) { ls.set('mahala.tribeSkills', JSON.stringify({ skills: ta.skills || [], country: ta.country || '', town: ta.town || '', at: Date.now() })); ls.set(TRIBE, null); }
+            info.noticeSeen = true;
+            try { window.dispatchEvent(new CustomEvent('mahala:changed', { detail: { welcomed: true } })); } catch (er) { }
+            toast(fresh ? (onMe() ? 'Welcome. This page is yours.' : 'Welcome to the Mahalaverse.') : (fix && fix.value.trim() && fixbox && !fixbox.hidden ? 'Thank you. The stewards will look at what you sent.' : 'Your thread is yours. Welcome back.'));
             if (fresh && nm) { info.name = nm.value.trim().split(/\s+/)[0]; mountChips(true); var c = document.querySelector('#v7-platform-chip .v7-platform-nm'); if (c) c.textContent = info.name; }
             setTimeout(function () { guide(w.journey); }, 600);
           }, function (er) { b.disabled = false; msg(el, (er && er.message) || 'That did not save. Try again.'); });
@@ -929,7 +1092,7 @@
     // camp page the application itself opens; elsewhere a short sheet offers it, once per visit.
     var guided = false;
     function guide(j) {
-      if (guided || !j || j.tier !== 'invited') return;
+      if (guided || !j || j.tier !== 'invited' || onMe()) return;
       guided = true;
       if (/camp\.html$/.test(location.pathname) && window.__join && window.__join.open) {
         if (ss.get('mahala.openJoin') === '1' || /^#(join|apply)$/i.test(location.hash) || ss.get('mahala.guided') !== '1') { ss.set('mahala.openJoin', null); ss.set('mahala.guided', '1'); toast('Your invitation is open.'); window.__join.open(); }
@@ -1006,7 +1169,7 @@
             b.disabled = true;
             rpc('ask_to_be_joined', { p_address: oa || null, p_note: hw || null }).then(function () {
               info.asked = true; jb.outerHTML = '<p class="lead">Thank you. A steward will check and join your thread to this account, usually within a day.</p>'; msg(el, '');
-            }, function (er) { b.disabled = false; msg(el, (er && er.code !== 'unavailable' && er.message) || 'That did not send. Try again, or write to wearemahala@gmail.com.'); });
+            }, function (er) { b.disabled = false; msg(el, (er && er.code !== 'unavailable' && er.message) || 'That did not send. Try again, or write to love@wearemahala.com.'); });
           }
           if (k === 'password') newPassword(true);
           if (k === 'delete') del();
@@ -1077,14 +1240,61 @@
             var names = (r.data || []).map(function (f) { return dir + '/' + f.name; });
             return names.length ? c.storage.from(BUCKET).remove(names) : null;
           }) : Promise.resolve()).catch(function () { });
-        }).then(function () { msg(el, 'Deleting your account...'); return rpc('delete_my_account'); })
-          .then(function () { ls.set(EDITION, null); return clientP.then(function (c) { return c.auth.signOut().catch(function () { }); }); })
-          .then(function () { el.innerHTML = '<h2>Your account is deleted</h2><p class="lead">Thank you for walking with Mahala. The door stays open.</p>'; setTimeout(function () { location.reload(); }, 2500); },
-            function () { go.disabled = false; msg(el, 'That did not work. Try again, or write to the stewards at wearemahala@gmail.com.'); });
+        }).then(function () { msg(el, 'Deleting your account...'); ending = true; return rpc('delete_my_account'); })
+          // Forget the sign-in on this device whatever the server says (8 Nov 2026, F-030: the page reloaded still
+          // holding it, and the account came straight back). Then a fresh page, signed out, with no old return address.
+          .then(function () {
+            [EDITION, THREAD, NOTED, 'mahala.tribe'].forEach(function (k) { ls.set(k, null); });
+            [AFTER, LAND, RECOVERY, 'mahala.lastEmail', 'mahala.openJoin', 'mahala.guided', 'mahala.restarted'].forEach(function (k) { ss.set(k, null); });
+            authStore.removeItem(STORE_KEY); ss.set('mahala.ended', '1');      // the next page says the account is gone
+            return clientP.then(function (c) { return c.auth.signOut({ scope: 'local' }).catch(function () { }); }).then(function () { authStore.removeItem(STORE_KEY); });
+          })
+          .then(function () {
+            el.innerHTML = '<h2>Your account is deleted</h2><p class="lead">Thank you for walking with Mahala. Your sign-in, your choices and what you shared here are gone. The door stays open, whenever you want to come back.</p>' +
+              '<a class="mvs-b" href="./" style="text-decoration:none">Back to the website</a>';
+            setTimeout(function () { location.replace(MEPAGE && onMe() ? MEPAGE : location.pathname); }, 4000);
+          }, function () { ending = false; go.disabled = false; msg(el, 'That did not work. Try again, or write to the stewards at love@wearemahala.com.'); });
+      });
+    }
+
+    // The end of Join the tribe (F-025): the form has the address already, so the account is one tap: Google, or a
+    // link to that address. No second form, and the welcome that follows asks nothing the form asked. Lands on Your Mahala.
+    function join(o) {
+      var addr = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(String(o.email || '').trim()) ? String(o.email).trim() : '';
+      var first = String(o.name || '').trim().split(/\s+/)[0] || '';
+      ss.set(LAND, '1'); setAfter(null);
+      if (addr) ss.set('mahala.lastEmail', addr);
+      var google = GOOGLE_ON ? '<div class="mvs-gw" data-k="gwrap"><button type="button" class="mvs-b q" data-k="google">' + GOOGLE + 'Continue with Google</button></div>' : '';
+      var el = sheet('<h2>Your page is waiting' + (first ? ', ' + esc(first) : '') + '</h2>' +
+        '<p class="lead">You are in the tribe. One last tap opens Your Mahala: your own page, with the gatherings ahead, your card from the deck and your thread with Mahala. Nothing to fill in again.</p>' +
+        google + (addr ? (google ? '<div class="mvs-or">or</div>' : '') +
+          '<button type="button" class="mvs-b' + (google ? ' q' : '') + '" data-k="mail">Email my link to ' + esc(addr) + '</button>' +
+          '<p class="mvs-alt"><small>Open it on this device and you arrive on your page, signed in.</small></p>' : '') +
+        keepBox() +
+        '<div class="mvs-msg" role="status"></div>' +
+        '<p class="mvs-links"><a href="#" data-k="pw">Use a password instead</a><a href="#" data-k="notice">How Mahala looks after your thread</a></p>' +
+        '<button type="button" class="mvs-b q" data-k="later">Later</button>', 'Your page is waiting', true);
+      if (google) mountGoogle(el, false);
+      el.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-k]'); if (!b) return;
+        var k = b.getAttribute('data-k');
+        if (k === 'notice') { e.preventDefault(); showNotice(); }
+        if (k === 'pw') { e.preventDefault(); signIn(false, 'up'); }
+        if (k === 'later') { ss.set(LAND, null); close(); }
+        if (k === 'mail') {
+          b.disabled = true; setKeep(el); msg(el, 'Sending...');
+          clientP.then(function (c) { return c.auth.signInWithOtp({ email: addr, options: { emailRedirectTo: redirectTo(false), shouldCreateUser: true } }); }).then(function (r) {
+            b.disabled = false;
+            if (r && r.error) { msg(el, authMsg(r.error, 'link')); return; }
+            msg(el, '');
+            b.outerHTML = '<p class="lead mvs-sent">A link is on its way to <b>' + esc(addr) + '</b>. Open it on this device, and you arrive on your page. It can take a minute; look in Promotions or Spam too.</p>';
+          }, function () { b.disabled = false; msg(el, 'Signing in is not available right now. Try again in a little while.'); });
+        }
       });
     }
 
     return {
+      join: join,
       toast: toast,
       open: function (mode, note) { if (mode === 'gate') signIn(true); else if (mode === 'newpass') newPassword(false); else if (mode === 'password') newPassword(true); else if (mode === 'link') signIn(false, 'link', note); else if (mode === 'account') account(); else if (mode === 'delete') del(); else if (mode === 'notice') showNotice(); else if (info && info.signedIn) account(); else signIn(false, 'in', note); },
       welcome: welcome, newPassword: newPassword, guide: guide,
@@ -1097,7 +1307,16 @@
       watchBlobs();
       mountChips();
       var needsWelcome = w.signedIn && w.claimed && !w.noticeSeen;
-      if (w.signedIn && ss.get(RECOVERY) === '1') UI.newPassword(false, needsWelcome ? function () { UI.welcome(w); } : null);   // a reset link: the new password first
+      var recovering = w.signedIn && ss.get(RECOVERY) === '1';
+      // The tribe page's Join, opened while signed in (a shared link, or the front page's pane): Your Mahala (F-029)
+      if (!recovering && w.signedIn && w.claimed && /tribe\.html$/.test(location.pathname) && /^#join$/i.test(location.hash) && goMe(true)) return;
+      // The first sign-in lands on Your Mahala, where the welcome happens and an invitation shows in full (F-024,
+      // F-025), wherever it began: the tribe form, the Mahalaverse's door, the camp page, a letter. The one exception:
+      // an application that asked for the account first opens straight after it, on the camp page.
+      var land = ss.get(LAND) === '1'; ss.set(LAND, null);
+      // Basecamp is a working tool someone came to on purpose: it keeps them.
+      if (!recovering && w.signedIn && w.claimed && (needsWelcome || land) && !onMe() && !/basecamp\.html$/.test(location.pathname) && ss.get('mahala.openJoin') !== '1' && goMe(true)) return;
+      if (recovering) UI.newPassword(false, needsWelcome ? function () { UI.welcome(w); } : null);   // a reset link: the new password first
       else if (needsWelcome) UI.welcome(w);
       else if (w.signedIn && w.claimed) setTimeout(function () { UI.guide(w.journey); }, 800);
       else if (!w.signedIn && URL_AUTH && URL_AUTH.error) UI.open('link', 'That link has expired or has already been used. Ask for a new one here.');
@@ -1112,9 +1331,14 @@
       b.dataset.mvOn = '1';
       b.classList.add('mvm-chip'); b.hidden = false;
       b.textContent = info && info.signedIn ? (info.name || 'Your account') : 'Sign in';
+      if (info && info.signedIn) myPicture().then(function (u) {
+        if (!u || b.querySelector('img')) return;
+        var im = document.createElement('img'); im.src = u; im.alt = ''; im.width = im.height = 26; im.referrerPolicy = 'no-referrer';
+        im.style.cssText = 'width:26px;height:26px;border-radius:50%;object-fit:cover;margin-left:-8px'; b.prepend(im);
+      }, function () { });
       // signed in, the chip opens the member's own page (site.js members.mePage), else the account box
       b.addEventListener('click', function () {
-        if (info && info.signedIn && CFG.mePage && !new RegExp(CFG.mePage.replace('.', '\\.') + '$').test(location.pathname)) { location.href = CFG.mePage; return; }
+        if (info && info.signedIn && MEPAGE && !onMe()) { goMe(); return; }
         UI.open(info && info.signedIn ? 'account' : 'signin');
       });
     });
