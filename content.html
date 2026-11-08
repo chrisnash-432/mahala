@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Content desk · Mahala</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&family=Marcellus&display=swap">
+<style>
+/* The content desk wears Basecamp's clothes: warm paper, deep ink, the wine-red wax for what matters and the prism's
+   yellow, magenta and cyan for the signs that move. Marcellus for names, Jost for working text, Cormorant italic for
+   the voice. Phone first: one column of posts, big buttons, a yes in one tap. The page holds no data: the posts come
+   from the member database (content_desk) for the core team only. */
+:root {
+  color-scheme: light;
+  --paper: #F4EFE6; --paper-2: #EFE7DA; --sheet: #FBF8F3; --ink: #2A221C; --muted: #5B5047; --faint: #6F6357;
+  --line: #DCD2C3; --line2: #E8E0D3; --rule2: #C9BCA9;
+  --accent: #8E1B45; --accent-soft: #F4E4E9;
+  --cyan: #0B6E95; --cyan-soft: #DDEFF7;
+  --good: #2E6B4F; --good-soft: #E1EDE5;
+  --warn: #6E5600; --warn-soft: #FBEEB6;
+  --bad: #A62B22; --bad-soft: #F6E0DC;
+  --idle: #6F6357; --idle-soft: #EAE3D8;
+  --yellow: #FFD81F; --magenta: #D8197F; --sky: #14A8E0; --magenta-ink: #A3105E;
+  --prism: linear-gradient(90deg, var(--yellow), var(--magenta) 52%, var(--sky));
+  --night: #15110E; --warm: #F4EFE6;
+  --display: "Marcellus", "Cormorant Garamond", Georgia, serif;
+  --body: "Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --verse: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --ease: cubic-bezier(.2, .7, .1, 1);
+  --r: 14px; --r-s: 10px;
+}
+* { box-sizing: border-box; }
+html { background: var(--paper); -webkit-text-size-adjust: 100%; }
+body { margin: 0; overflow-x: clip; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 15.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 30; opacity: .07; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .22 0 0 0 0 .15 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E"); background-size: 160px; }
+.wrap { max-width: 760px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; text-wrap: balance; margin: 0; letter-spacing: .05em; line-height: 1.15; }
+h2 { font-size: clamp(1.3rem, 1.1rem + 1vw, 1.6rem); } h3 { font-size: 1.2rem; }
+p { margin: 0; }
+.eyebrow { text-transform: uppercase; letter-spacing: .2em; font-size: .7rem; color: var(--muted); font-weight: 500; }
+.muted { color: var(--muted); } .small { font-size: .85rem; } .num { font-variant-numeric: tabular-nums; }
+a { color: var(--accent); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+button, select, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+[hidden] { display: none !important; }
+
+header.top { position: sticky; top: 0; z-index: 6; background: color-mix(in srgb, var(--paper) 92%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line); margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 12px max(16px, env(safe-area-inset-left, 0px)); }
+.toprow { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; max-width: 760px; margin: 0 auto; }
+.brand { flex: 1 1 220px; min-width: 0; color: inherit; text-decoration: none; }
+.brand h1 { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; line-height: 1.1; }
+.brand .wm { font: 400 18px/1 var(--display); letter-spacing: .18em; text-transform: uppercase; }
+.brand .bc { font: italic 400 1.4rem/1 var(--verse); color: var(--accent); }
+.brand .sub { font-size: .78rem; color: var(--muted); margin-top: 4px; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.btn { border: 1px solid var(--rule2); background: transparent; border-radius: 999px; padding: 8px 17px 7px; min-height: 40px; cursor: pointer; font-size: .9rem; white-space: nowrap; color: var(--ink); text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 7px; transition: border-color .2s, background .2s, transform .15s; }
+.btn:hover { border-color: var(--ink); }
+.btn:active { transform: scale(.98); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: var(--warm); }
+.btn.primary:hover { background: #3A2F27; }
+.btn.danger { background: var(--bad); border-color: var(--bad); color: #fff; }
+.btn.ghost-bad { color: var(--bad); border-color: color-mix(in srgb, var(--bad) 45%, var(--rule2)); }
+.btn[disabled] { opacity: .5; cursor: not-allowed; transform: none; }
+.btn.link { border: 0; background: none; padding: 0; min-height: 0; color: var(--accent); text-decoration: underline; text-underline-offset: 3px; font-size: inherit; }
+#acct { max-width: 16ch; overflow: hidden; text-overflow: ellipsis; }
+
+main { padding-block: 18px 56px; display: grid; gap: 26px; min-width: 0; }
+section.block { display: grid; gap: 14px; min-width: 0; }
+.head { display: flex; align-items: baseline; justify-content: space-between; gap: 6px 12px; flex-wrap: wrap; }
+.lede { color: var(--muted); font: italic 400 1.15rem/1.4 var(--verse); }
+.dayhead { font: 400 1rem/1.2 var(--display); letter-spacing: .08em; color: var(--muted); margin-top: 6px; display: flex; align-items: center; gap: 10px; }
+.dayhead::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+/* the pause switch: always at the top, impossible to miss when on */
+.pause { border-radius: var(--r); padding: 14px 16px; display: grid; gap: 10px; border: 1px solid var(--line); background: var(--sheet); }
+.pause .row { display: flex; gap: 10px 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.pause.on { background: var(--bad); border-color: var(--bad); color: #fff; }
+.pause.on .big { font: 400 1.5rem/1.15 var(--display); letter-spacing: .06em; }
+.pause.on .muted { color: rgba(255, 255, 255, .86); }
+.pause.on .btn { background: #fff; border-color: #fff; color: var(--bad); }
+.pause textarea { min-height: 54px; }
+
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.stat { background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px; display: grid; gap: 0; text-decoration: none; color: inherit; }
+.stat .v { font: 400 1.9rem/1.05 var(--display); font-variant-numeric: tabular-nums; }
+.stat .k { font-size: .76rem; color: var(--muted); }
+.stat.alert .v { color: var(--bad); } .stat.warnv .v { color: var(--warn); } .stat.goodv .v { color: var(--good); }
+
+/* a post */
+.card { background: var(--sheet); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: grid; gap: 14px; min-width: 0; scroll-margin-top: 90px; }
+.card.k-block { box-shadow: inset 4px 0 0 var(--bad); }
+.card.k-eye { box-shadow: inset 4px 0 0 var(--warn); }
+.card.done { opacity: .92; }
+.when { display: flex; align-items: baseline; gap: 6px 10px; flex-wrap: wrap; }
+.when b { font: 400 1.25rem/1.1 var(--display); letter-spacing: .04em; }
+.when span { font-size: .84rem; color: var(--muted); }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 2px; border-radius: 999px; font-size: .76rem; font-weight: 500; white-space: nowrap; letter-spacing: .04em; }
+.chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.tag { display: inline-block; padding: 2px 10px 1px; border-radius: 999px; font-size: .76rem; border: 1px solid var(--rule2); color: var(--muted); white-space: nowrap; }
+.s-waiting { color: var(--cyan); background: var(--cyan-soft); }
+.s-held, .s-stale { color: var(--warn); background: var(--warn-soft); }
+.s-approved, .s-published { color: var(--good); background: var(--good-soft); }
+.s-publishing { color: var(--magenta-ink); background: #F8E3EF; }
+.s-failed, .s-rejected { color: var(--bad); background: var(--bad-soft); }
+.title { font: 400 1.25rem/1.25 var(--display); letter-spacing: .04em; overflow-wrap: anywhere; }
+
+.flags { display: grid; gap: 8px; }
+.flag { border-radius: var(--r-s); padding: 10px 12px; display: grid; gap: 2px; font-size: .9rem; }
+.flag strong { font-weight: 600; }
+.flag.block { background: var(--bad-soft); color: var(--bad); border: 1px solid color-mix(in srgb, var(--bad) 35%, transparent); }
+.flag.eye { background: var(--warn-soft); color: var(--warn); border: 1px solid color-mix(in srgb, var(--warn) 30%, transparent); }
+.flag .why { color: var(--ink); opacity: .85; }
+
+.media { border-radius: var(--r-s); overflow: hidden; background: var(--night); display: grid; place-items: center; }
+.media video, .media img { display: block; width: 100%; max-height: 72vh; object-fit: contain; background: var(--night); }
+.media.tall video, .media.tall img { aspect-ratio: 9 / 16; max-width: 420px; margin: 0 auto; }
+.swipe { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+.swipe > * { flex: 0 0 86%; max-width: 420px; scroll-snap-align: center; border-radius: var(--r-s); overflow: hidden; background: var(--night); position: relative; }
+.swipe img, .swipe video { display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+.swipe .n { position: absolute; top: 8px; right: 8px; background: rgba(21, 17, 14, .7); color: var(--warm); font-size: .74rem; padding: 2px 8px; border-radius: 999px; }
+.nomedia { padding: 26px 16px; color: rgba(244, 239, 230, .8); font: italic 400 1.05rem/1.4 var(--verse); text-align: center; }
+
+.ch { display: grid; gap: 6px; padding-top: 12px; border-top: 1px solid var(--line2); }
+.ch .lab { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.ch .lab .eyebrow { color: var(--ink); }
+.count { font-size: .76rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.count.over { color: var(--bad); font-weight: 600; }
+textarea, input.txt, input[type="datetime-local"] { width: 100%; border: 1px solid var(--rule2); border-radius: var(--r-s); padding: 10px 12px; background: #fff; color: var(--ink); }
+textarea { min-height: 96px; resize: vertical; line-height: 1.45; }
+textarea.short { min-height: 64px; }
+.cap { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .95rem; background: var(--paper); border-radius: var(--r-s); padding: 10px 12px; }
+.copyrow { display: flex; gap: 8px; flex-wrap: wrap; }
+.mini { min-height: 34px; padding: 5px 13px 4px; font-size: .82rem; }
+details.more summary { cursor: pointer; color: var(--accent); font-size: .9rem; }
+details.more[open] summary { margin-bottom: 8px; }
+
+.decided { font-size: .88rem; padding: 9px 12px; border-radius: var(--r-s); background: var(--paper); }
+.decided.override { background: var(--bad-soft); color: var(--bad); }
+.err { font-size: .88rem; padding: 9px 12px; border-radius: var(--r-s); background: var(--bad-soft); color: var(--bad); white-space: pre-wrap; overflow-wrap: anywhere; }
+.links { display: flex; gap: 8px; flex-wrap: wrap; }
+.links a { font-size: .9rem; padding: 7px 14px 6px; border: 1px solid var(--rule2); border-radius: 999px; text-decoration: none; min-height: 40px; display: inline-flex; align-items: center; }
+
+.acts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding-top: 12px; border-top: 1px solid var(--line2); }
+.acts .btn { min-height: 50px; font-size: 1rem; }
+.acts .wide { grid-column: 1 / -1; }
+.acts .btn.yes { background: var(--good); border-color: var(--good); color: #fff; font-size: 1.05rem; letter-spacing: .02em; }
+.acts .btn.yes:hover { background: #255a42; }
+.ask { grid-column: 1 / -1; display: grid; gap: 8px; padding: 12px; border-radius: var(--r-s); background: var(--paper); }
+.ask .row { display: flex; gap: 8px; flex-wrap: wrap; }
+.msg { grid-column: 1 / -1; font-size: .86rem; color: var(--muted); min-height: 1.2em; }
+.msg.bad { color: var(--bad); }
+
+.empty { padding: 18px; color: var(--muted); font: italic 400 1.1rem/1.4 var(--verse); background: var(--sheet); border: 1px dashed var(--rule2); border-radius: var(--r); text-align: center; }
+.gate { max-width: 560px; margin: 11vh auto 0; text-align: center; display: grid; gap: 14px; justify-items: center; padding: 0 16px; }
+.gate .hello { font: italic 400 1.35rem/1.2 var(--verse); color: var(--muted); margin-bottom: -6px; }
+.gate h2 { font: 400 clamp(2.3rem, 7vw, 3.4rem)/1.04 var(--display); letter-spacing: .04em; }
+.gate h2::after { content: ""; display: block; width: 160px; height: 1px; margin: 18px auto 2px; background: var(--prism); }
+.gate p { font-size: 1.05rem; line-height: 1.6; max-width: 30em; }
+.gate .btn { min-height: 46px; padding: 11px 22px 10px; font-size: 1rem; }
+.loading { display: grid; place-items: center; min-height: 50vh; gap: 12px; text-align: center; }
+.breathe { animation: breathe 2.4s var(--ease) infinite; }
+@keyframes breathe { 50% { transform: scale(.9); opacity: .6; } }
+@media (prefers-reduced-motion: reduce) { .breathe { animation: none; } .btn { transition: none; } }
+@media (max-width: 560px) {
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .brand .bc { font-size: 1.25rem; }
+  .tools .btn { padding: 7px 13px 6px; min-height: 38px; font-size: .84rem; }
+  .card { padding: 14px; border-radius: 16px; }
+}
+</style>
+<meta name="robots" content="noindex">
+<script src="site.js?v=8"></script>
+<script src="assets/shim/claude-shim.js?v=14"></script>
+
+<header class="top">
+  <div class="toprow">
+    <a class="brand" href="#" aria-label="Content desk, top">
+      <h1><span class="wm">Mahala</span><span class="bc">Content desk</span></h1>
+      <div class="sub" id="asof">Every post waits for a yes</div>
+    </a>
+    <nav class="tools" aria-label="Elsewhere on Mahala">
+      <a class="btn" href="basecamp.html" id="toBasecamp" hidden>Basecamp</a>
+      <button class="btn" id="acct" type="button" hidden>Sign in</button>
+    </nav>
+  </div>
+</header>
+<div class="wrap">
+  <main id="view"><div class="loading"><svg class="breathe" width="44" height="62" viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z" fill="#8E1B45"/></svg><div class="lede">Opening the desk…</div></div></main>
+</div>
+
+<script>
+'use strict';
+// Words live here; the posts come from content_desk() (the content migration in Mahala OS), for the core team only.
+// Every act goes back through content_decide() and content_pause(). The page keeps no names but the deciding person's.
+const FORMAT = { reel: 'Reel', carousel: 'Carousel', image: 'Image', story: 'Story', video: 'YouTube video' };
+const PILLAR = { build: 'We build', reverence: 'We play with reverence', field: 'We hold the field', give: 'We give freely' };
+const ARC = { seed: 'The Seed', builders: 'The Builders', inner: 'The Inner Temple' };
+const STATUS = { waiting: 'Waiting for a yes', held: 'Held', approved: 'Approved', publishing: 'Going out now', published: 'Published',
+  failed: 'Did not go out', rejected: 'Rejected', stale: 'Needs a fresh yes' };
+const CHANNEL = { instagram: 'Instagram', facebook: 'Facebook', youtube: 'YouTube' };
+const LIMIT = { instagram: 2200, facebook: 5000, ytTitle: 100, ytDesc: 5000, alt: 1000 };
+const FLAG = {   // the guard's rules (Mahala OS content/engine.yaml), in plain words
+  render_label: 'Renders and AI clips of The Seed carry "Concept visualisation"',
+  ai_disclosed: 'AI-generated footage is said so in the caption',
+  faces: 'People are in frame: everyone shown needs a yes on the consent form',
+  playa_footage: 'Playa footage stays out of fundraising posts until AfrikaBurn says yes',
+  afrikaburn_name: 'Naming AfrikaBurn in fundraising needs AfrikaBurn\'s written permission',
+  avoid_words: 'A word Mahala does not use (festival, party, perks, VIP, exclusive, raffles, scarcity)',
+  long_dash: 'No long dashes in Mahala copy',
+  one_cta: 'One ask per post, pointing to a place Mahala owns',
+  specs: 'Size, length or format does not fit the platform',
+  figures: 'Money figures must match the site and BackaBuddy',
+  people_named: 'A named person must have said yes to being named',
+};
+const ACTED = { approve: 'Approved', reject: 'Rejected', hold: 'Held', reopen: 'Sent back to waiting', edit: 'Edited' };
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTH = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const WD = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const SAST = 2 * 36e5;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const safeUrl = u => (typeof u === 'string' && /^https:\/\//.test(u)) ? u : '';
+const len = s => [...String(s ?? '')].length;
+const plural = (n, a, b) => `${n} ${n === 1 ? a : (b || a + 's')}`;
+// Times in SAST, whatever the phone's own clock says.
+const sastParts = ms => { const d = new Date(ms + SAST); return { y: d.getUTCFullYear(), m: d.getUTCMonth(), d: d.getUTCDate(), wd: d.getUTCDay(), hh: String(d.getUTCHours()).padStart(2, '0'), mm: String(d.getUTCMinutes()).padStart(2, '0') }; };
+const dayKey = ms => { const p = sastParts(ms); return `${p.y}-${String(p.m + 1).padStart(2, '0')}-${String(p.d).padStart(2, '0')}`; };
+const dayName = ms => { const p = sastParts(ms); return `${WD[p.wd]} ${p.d} ${MONTH[p.m]}`; };
+const short = ms => { const p = sastParts(ms); return `${WD[p.wd].slice(0, 3)} ${p.d} ${MON[p.m]} · ${p.hh}:${p.mm}`; };
+const clock = ms => { const p = sastParts(ms); return `${p.hh}:${p.mm}`; };
+const localInput = ms => { const p = sastParts(ms); return `${dayKey(ms)}T${p.hh}:${p.mm}`; };
+function rel(ms) {
+  const m = Math.round((ms - Date.now()) / 6e4), a = Math.abs(m);
+  const t = a < 60 ? plural(a, 'minute') : a < 48 * 60 ? plural(Math.round(a / 60), 'hour') : plural(Math.round(a / 1440), 'day');
+  return a < 1 ? 'now' : m > 0 ? `in ${t}` : `${t} ago`;
+}
+
+let DESK = null, ME = null;
+const S = { draft: {}, ask: {}, msg: {}, busy: new Set(), pauseAsk: false };
+
+// ------------------------------------------------------------------ the posts
+const blocks = p => (p.flags || []).filter(f => f.level === 'block');
+const eyes = p => (p.flags || []).filter(f => f.level === 'eye');
+const editable = p => ['waiting', 'held', 'approved', 'failed'].includes(p.status);
+const ts = p => Date.parse(p.slot);
+const toDecide = p => ['waiting', 'held'].includes(p.status) || (p.status === 'approved' && p.stale);
+const going = p => (p.status === 'approved' && !p.stale) || p.status === 'publishing';
+const recent = p => ['published', 'failed', 'rejected'].includes(p.status);
+
+function base(p) {
+  const c = p.channels || {};
+  return { ig: c.instagram?.caption ?? '', fb: c.facebook?.caption ?? '', ytT: c.youtube?.title ?? '', ytD: c.youtube?.description ?? '',
+    alt: p.alt_text ?? '', slot: localInput(ts(p)) };
+}
+function draftOf(p) { return S.draft[p.id] || base(p); }
+function edits(p) {
+  const d = S.draft[p.id]; if (!d) return null;
+  const b = base(p), e = {}, cap = {}, yt = {};
+  if (p.channels?.instagram && d.ig !== b.ig) cap.instagram = d.ig;
+  if (p.channels?.facebook && d.fb !== b.fb) cap.facebook = d.fb;
+  if (p.channels?.youtube && d.ytT !== b.ytT) yt.title = d.ytT;
+  if (p.channels?.youtube && d.ytD !== b.ytD) yt.description = d.ytD;
+  if (Object.keys(cap).length) e.captions = cap;
+  if (Object.keys(yt).length) e.youtube = yt;
+  if (d.alt !== b.alt) e.alt_text = d.alt;
+  if (d.slot && d.slot !== b.slot) e.slot = d.slot + ':00+02:00';
+  return Object.keys(e).length ? e : null;
+}
+function overLimit(p) {
+  const d = draftOf(p);
+  return len(d.ig) > LIMIT.instagram || len(d.fb) > LIMIT.facebook || len(d.ytT) > LIMIT.ytTitle || len(d.ytD) > LIMIT.ytDesc || len(d.alt) > LIMIT.alt
+    || (p.channels?.youtube && !d.ytT.trim());
+}
+
+function mediaHtml(p) {
+  const items = (p.media || []).filter(m => m && m.role !== 'cover');
+  const one = m => {
+    const u = safeUrl(m.preview_url);
+    if (!u) return `<div class="nomedia">The preview link is not ready yet.</div>`;
+    return m.kind === 'video' ? `<video src="${esc(u)}" controls muted playsinline preload="metadata"></video>` : `<img src="${esc(u)}" alt="${esc(p.alt_text || '')}" loading="lazy">`;
+  };
+  if (!items.length) return `<div class="media"><div class="nomedia">No media on this post.</div></div>`;
+  if (p.format === 'carousel' || items.length > 1)
+    return `<div class="swipe" aria-label="Slides, swipe to see them all">${items.map((m, i) => `<div>${one(m)}<span class="n">${i + 1} / ${items.length}</span></div>`).join('')}</div>`;
+  return `<div class="media${['reel', 'story'].includes(p.format) ? ' tall' : ''}">${one(items[0])}</div>`;
+}
+
+function field(p, key, label, limit, opts = {}) {
+  const d = draftOf(p), v = d[key], n = len(v);
+  const counter = `<span class="count${n > limit ? ' over' : ''}" data-count="${key}">${n} / ${limit}</span>`;
+  const input = editable(p)
+    ? (opts.line ? `<input class="txt" type="text" data-f="${key}" value="${esc(v)}" aria-label="${esc(label)}">`
+                 : `<textarea data-f="${key}" class="${opts.small ? 'short' : ''}" aria-label="${esc(label)}">${esc(v)}</textarea>`)
+    : `<div class="cap">${esc(v) || '<span class="muted">(none)</span>'}</div>`;
+  const copy = opts.copy ? `<button class="btn mini" type="button" data-copy="${key}">Copy</button>` : '';
+  return `<div class="ch"><div class="lab"><span class="eyebrow">${esc(label)}</span><span class="copyrow">${counter}${copy}</span></div>${input}</div>`;
+}
+
+function youtubeHtml(p) {
+  const y = p.channels?.youtube; if (!y) return '';
+  const pack = y.mode === 'pack';
+  const main = (p.media || []).find(m => m.kind === 'video') || (p.media || [])[0];
+  const u = safeUrl(main?.preview_url);
+  const name = String(main?.file || 'mahala.mp4').split('/').pop().replace(/[^A-Za-z0-9._-]/g, '') || 'mahala.mp4';
+  const dl = u ? `${u}${u.includes('?') ? '&' : '?'}download=${encodeURIComponent(name)}` : '';
+  const head = pack ? `<div class="ch"><div class="lab"><span class="eyebrow">YouTube · ready to upload by hand</span></div>
+      <p class="small muted">Download the film, then paste the title and description into YouTube Studio.</p>
+      <div class="copyrow">${dl ? `<a class="btn primary mini" href="${esc(dl)}" download="${esc(name)}">Download</a>` : '<span class="small muted">The download link is not ready yet.</span>'}</div></div>` : '';
+  return head + field(p, 'ytT', 'YouTube title', LIMIT.ytTitle, { line: true, copy: pack }) + field(p, 'ytD', 'YouTube description', LIMIT.ytDesc, { copy: pack, small: true });
+}
+
+function linksHtml(p) {
+  const r = p.results || {}, out = [];
+  for (const ch of ['instagram', 'facebook', 'youtube']) {
+    const x = r[ch]; if (!x || typeof x !== 'object') continue;
+    const u = safeUrl(x.permalink || x.url);
+    if (u) out.push(`<a href="${esc(u)}" target="_blank" rel="noopener">See it on ${CHANNEL[ch]}</a>`);
+    else if (ch === 'youtube' && x.status === 'packed') out.push(`<span class="tag">Packed for YouTube Studio</span>`);
+  }
+  return out.length ? `<div class="links">${out.join('')}</div>` : '';
+}
+
+function decidedHtml(p) {
+  const d = p.decision || {}; if (!d.action) return '';
+  const who = d.name ? ` by ${esc(d.name)}` : d.auto ? ' by the engine' : '';
+  const at = d.at ? `, ${short(Date.parse(d.at))}` : '';
+  const ov = d.override ? `<br><strong>Steward override</strong> of ${esc((d.overridden || []).join(', '))}.` : '';
+  return `<div class="decided${d.override ? ' override' : ''}">${esc(ACTED[d.action] || d.action)}${who}${at}${d.note ? `: ${esc(d.note)}` : ''}${d.edited && d.action !== 'edit' ? ' (words edited on the desk)' : ''}${ov}</div>`;
+}
+
+function actsHtml(p) {
+  const id = esc(p.id), ask = S.ask[p.id], busy = S.busy.has(p.id), dis = busy ? ' disabled' : '';
+  const dirty = !!edits(p), over = overLimit(p), blocked = blocks(p).length > 0, steward = !!ME?.steward;
+  const msg = S.msg[p.id] ? `<p class="msg${S.msg[p.id].bad ? ' bad' : ''}" role="status">${esc(S.msg[p.id].text)}</p>` : '<p class="msg" role="status"></p>';
+  if (p.status === 'published') return '';
+  if (p.status === 'publishing') return `<div class="acts">${Date.now() - Date.parse(p.updated) > 36e5 ? `<button class="btn wide" type="button" data-act="hold" data-id="${id}"${dis}>Hold (it has been going out for over an hour)</button>` : '<p class="msg">Going out now. Nothing to do here.</p>'}${msg}</div>`;
+  if (p.status === 'rejected') return `<div class="acts"><button class="btn wide" type="button" data-act="reopen" data-id="${id}"${dis}>Reopen</button>${msg}</div>`;
+  const b = [];
+  const fresh = p.status === 'approved' && !p.stale;
+  if (!fresh) {
+    const label = dirty ? 'Save and approve' : p.status === 'failed' ? 'Approve again' : p.stale ? 'Approve again' : 'Approve';
+    if (blocked) {
+      b.push(`<button class="btn yes wide" type="button" disabled title="A block flag stops approval">Approve</button>`);
+      if (steward) b.push(`<button class="btn ghost-bad wide" type="button" data-ask="override" data-id="${id}"${dis}>Override as steward</button>`);
+      else b.push(`<p class="msg">A block flag stops approval. Fix what it names, or ask a steward to override it with a reason.</p>`);
+    } else b.push(`<button class="btn yes wide" type="button" data-act="approve" data-id="${id}"${dis || (over ? ' disabled' : '')}>${label}</button>`);
+  }
+  b.push(`<button class="btn ghost-bad" type="button" data-ask="reject" data-id="${id}"${dis}>Reject</button>`);
+  if (p.status !== 'held') b.push(`<button class="btn" type="button" data-act="hold" data-id="${id}"${dis}>Hold</button>`);
+  else b.push(`<button class="btn" type="button" data-act="reopen" data-id="${id}"${dis}>Back to waiting</button>`);
+  if (fresh) b.push(`<button class="btn wide" type="button" data-act="reopen" data-id="${id}"${dis}>Back to waiting</button>`);
+  b.push(`<button class="btn wide" type="button" data-act="edit" data-id="${id}"${dirty && !over && !busy ? '' : ' disabled'}>${p.status === 'approved' ? 'Save edits (it goes back to waiting)' : 'Save edits'}</button>`);
+  if (ask === 'reject') b.push(`<div class="ask"><label class="small" for="r-${id}">Why not? The reason guides the next batch.</label><textarea class="short" id="r-${id}" data-reason></textarea>
+      <div class="row"><button class="btn danger" type="button" data-act="reject" data-id="${id}"${dis}>Reject it</button><button class="btn" type="button" data-ask="" data-id="${id}">Cancel</button></div></div>`);
+  if (ask === 'override') b.push(`<div class="ask"><label class="small" for="o-${id}">You are approving past ${plural(blocks(p).length, 'block flag')}. Write why (10 characters or more); it is kept with the post.</label><textarea class="short" id="o-${id}" data-reason data-min="10"></textarea>
+      <div class="row"><button class="btn danger" type="button" data-act="approve" data-id="${id}" data-override disabled>Approve with override</button><button class="btn" type="button" data-ask="" data-id="${id}">Cancel</button></div></div>`);
+  return `<div class="acts">${b.join('')}${msg}</div>`;
+}
+
+function card(p) {
+  const t = ts(p), bl = blocks(p), ey = eyes(p), st = p.status === 'approved' && p.stale ? 'stale' : p.status;
+  const flags = [...bl, ...ey].map(f => `<div class="flag ${f.level}"><strong>${f.level === 'block' ? 'Blocks approval' : 'Look before approving'}: ${esc(f.code)}</strong>
+      <span class="why">${esc(FLAG[f.code] || '')}${f.note ? `${FLAG[f.code] ? '. ' : ''}${esc(String(f.note).charAt(0).toUpperCase() + String(f.note).slice(1))}` : ''}</span></div>`).join('');
+  const c = p.channels || {};
+  const slot = editable(p) ? `<details class="more"><summary>Move the time</summary><input type="datetime-local" data-f="slot" value="${esc(draftOf(p).slot)}" aria-label="New time, South African time"><p class="small muted">South African time.</p></details>` : '';
+  return `<article class="card${bl.length ? ' k-block' : ey.length ? ' k-eye' : ''}${recent(p) ? ' done' : ''}" id="post-${esc(p.id)}" data-post="${esc(p.id)}">
+    <div class="when"><b>${esc(short(t))}</b><span>${esc(rel(t))}</span></div>
+    <div class="chips"><span class="chip s-${st}">${esc(STATUS[st] || st)}</span><span class="tag">${esc(FORMAT[p.format] || p.format)}</span>
+      <span class="tag">${esc(PILLAR[p.pillar] || p.pillar)}</span><span class="tag">${esc(ARC[p.arc] || p.arc)}</span>
+      ${Object.keys(c).map(k => `<span class="tag">${esc(CHANNEL[k] || k)}</span>`).join('')}</div>
+    ${p.title ? `<h3 class="title">${esc(p.title)}</h3>` : ''}
+    ${flags ? `<div class="flags">${flags}</div>` : ''}
+    ${p.error ? `<div class="err">${esc(p.error)}</div>` : ''}
+    ${p.status === 'approved' && p.stale ? `<div class="decided">This yes is more than ${DESK.approvalDays || 7} days older than the post's time, so it needs a fresh one.</div>` : ''}
+    ${decidedHtml(p)}
+    ${linksHtml(p)}
+    ${mediaHtml(p)}
+    ${c.instagram ? field(p, 'ig', 'Instagram caption', LIMIT.instagram) : ''}
+    ${c.facebook ? field(p, 'fb', 'Facebook caption', LIMIT.facebook) : ''}
+    ${youtubeHtml(p)}
+    ${field(p, 'alt', 'Alt text (for people who cannot see the picture)', LIMIT.alt, { small: true })}
+    ${slot}
+    ${actsHtml(p)}
+  </article>`;
+}
+
+function byDay(list) {
+  let last = '', out = '';
+  list.forEach(p => { const k = dayKey(ts(p)); if (k !== last) { last = k; out += `<h3 class="dayhead">${esc(dayName(ts(p)))}</h3>`; } out += card(p); });
+  return out;
+}
+
+function pauseHtml() {
+  const z = DESK.paused || {};
+  if (z.on) return `<section class="pause on" aria-live="polite"><div class="row"><div><div class="big">Everything is paused</div>
+      <p class="muted">Nothing goes out, approved posts included.${z.name ? ` Paused by ${esc(z.name)}` : ''}${z.at ? `, ${esc(short(Date.parse(z.at)))}` : ''}${z.note ? `: ${esc(z.note)}` : '.'}</p></div>
+      <button class="btn" type="button" data-resume>Resume</button></div></section>`;
+  return `<section class="pause"><div class="row"><p class="small muted">Approved posts go out at their time. If the camp needs to be quiet, stop everything at once.</p>
+      <button class="btn ghost-bad" type="button" data-pauseask>Pause everything</button></div>
+      ${S.pauseAsk ? `<div class="ask"><label class="small" for="pz">Why (so the others know)? Optional.</label><textarea id="pz" class="short"></textarea>
+        <div class="row"><button class="btn danger" type="button" data-pause>Pause now</button><button class="btn" type="button" data-pauseask>Cancel</button></div></div>` : ''}</section>`;
+}
+
+function render() {
+  const posts = DESK.posts || [];
+  const decide = posts.filter(toDecide), go = posts.filter(going), past = posts.filter(recent).sort((a, b) => ts(b) - ts(a));
+  const failed = past.filter(p => p.status === 'failed').length;
+  $('#view').innerHTML = `${pauseHtml()}
+    <div class="stats">
+      <a class="stat${decide.length ? ' alert' : ''}" href="#decide"><span class="v">${decide.length}</span><span class="k">To decide</span></a>
+      <a class="stat goodv" href="#going"><span class="v">${go.length}</span><span class="k">Going out</span></a>
+      <a class="stat" href="#recent"><span class="v">${past.filter(p => p.status === 'published').length}</span><span class="k">Published, 14 days</span></a>
+      <a class="stat${failed ? ' warnv' : ''}" href="#recent"><span class="v">${failed}</span><span class="k">Did not go out</span></a>
+    </div>
+    <section class="block" id="decide"><div class="head"><h2>To decide</h2><span class="small muted">Not approved by ${DESK.reviewByHours || 24} hours before its time, a post is held, never sent.</span></div>
+      ${decide.length ? byDay(decide) : '<div class="empty">Nothing waiting. The next batch comes on Sunday.</div>'}</section>
+    <section class="block" id="going"><div class="head"><h2>Approved, going out</h2></div>
+      ${go.length ? byDay(go) : '<div class="empty">Nothing approved yet.</div>'}</section>
+    <section class="block" id="recent"><div class="head"><h2>The last 14 days</h2><span class="small muted">Published, did not go out, or rejected.</span></div>
+      ${past.length ? past.map(card).join('') : '<div class="empty">Nothing yet.</div>'}</section>`;
+}
+
+// ------------------------------------------------------------------ acting
+function errText(err) {
+  const m = String(err?.message || '');
+  if (/a lot for one hour/.test(m)) return 'That is a lot for one hour. Try again a little later.';
+  if (err?.code === 'not_granted' && !/content desk/.test(m)) return 'Your sign-in has ended. Sign in again, then try once more.';
+  if (err?.code === 'unavailable' || !m) return 'That did not go through. Check your connection and try again.';
+  return m.charAt(0).toUpperCase() + m.slice(1) + (/[.!?]$/.test(m) ? '' : '.');
+}
+function replace(p) { const i = DESK.posts.findIndex(x => x.id === p.id); if (i >= 0) DESK.posts[i] = p; else DESK.posts.push(p); }
+
+async function act(id, action, btn) {
+  const p = DESK.posts.find(x => x.id === id); if (!p || S.busy.has(id)) return;
+  const box = btn.closest('.card'), reason = box.querySelector('[data-reason]');
+  const note = reason ? reason.value.trim() : '';
+  if (action === 'reject' && note.length < 3) { S.msg[id] = { text: 'Say why first. The reason guides the next batch.', bad: true }; render(); return; }
+  if (btn.hasAttribute('data-override') && len(note) < 10) return;
+  const e = (action === 'approve' || action === 'edit') ? edits(p) : null;
+  if (action === 'edit' && !e) return;
+  S.busy.add(id); S.msg[id] = { text: action === 'approve' ? 'Approving…' : 'Saving…' }; render();
+  try {
+    const r = await window.MahalaMembers.rpc('content_decide', { p_id: id, p_action: action, p_note: note, p_edits: e });
+    replace(r); delete S.draft[id]; delete S.ask[id];
+    S.msg[id] = { text: { approve: 'Approved. It goes out at its time.', reject: 'Rejected.', hold: 'Held.', reopen: 'Back to waiting.', edit: 'Saved.' }[action] };
+  } catch (err) { S.msg[id] = { text: errText(err), bad: true }; }
+  S.busy.delete(id); render();
+  document.getElementById('post-' + id)?.scrollIntoView({ block: 'nearest' });
+}
+
+document.addEventListener('input', e => {
+  const t = e.target, box = t.closest('[data-post]');
+  if (box && t.dataset.f) {
+    const p = DESK.posts.find(x => x.id === box.dataset.post); if (!p) return;
+    const d = S.draft[p.id] || (S.draft[p.id] = base(p));
+    d[t.dataset.f] = t.value;
+    const c = box.querySelector(`[data-count="${t.dataset.f}"]`), lim = { ig: LIMIT.instagram, fb: LIMIT.facebook, ytT: LIMIT.ytTitle, ytD: LIMIT.ytDesc, alt: LIMIT.alt }[t.dataset.f];
+    if (c) { const n = len(t.value); c.textContent = `${n} / ${lim}`; c.classList.toggle('over', n > lim); }
+    const dirty = !!edits(p), over = overLimit(p);
+    const save = box.querySelector('[data-act="edit"]'); if (save) save.disabled = !dirty || over;
+    const yes = box.querySelector('[data-act="approve"]:not([data-override])');
+    if (yes) { yes.disabled = over; yes.textContent = dirty ? 'Save and approve' : p.status === 'failed' || p.stale ? 'Approve again' : 'Approve'; }
+    if (!dirty) delete S.draft[p.id];
+  }
+  if (t.matches('[data-reason][data-min]')) { const b = t.closest('.ask').querySelector('[data-override]'); if (b) b.disabled = len(t.value.trim()) < +t.dataset.min; }
+});
+document.addEventListener('click', e => {
+  const t = e.target;
+  if (t.closest('#acct') || t.closest('[data-signin]')) { e.preventDefault(); const MM = window.MahalaMembers; if (MM) Promise.resolve(MM.info()).then(i => (i && i.signedIn ? MM.account() : MM.signIn('Sign in to open the content desk'))); return; }
+  if (t.closest('.brand')) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+  const ask = t.closest('[data-ask]'); if (ask) { const id = ask.dataset.id; S.ask[id] = ask.dataset.ask || null; delete S.msg[id]; render(); setTimeout(() => document.querySelector(`#post-${CSS.escape(id)} [data-reason]`)?.focus(), 0); return; }
+  const a = t.closest('[data-act]'); if (a && !a.disabled) { act(a.dataset.id, a.dataset.act, a); return; }
+  const cp = t.closest('[data-copy]'); if (cp) {
+    const box = cp.closest('[data-post]'), p = DESK.posts.find(x => x.id === box.dataset.post), v = draftOf(p)[cp.dataset.copy];
+    const done = () => { cp.textContent = 'Copied'; setTimeout(() => { cp.textContent = 'Copy'; }, 1600); };
+    try { navigator.clipboard.writeText(v).then(done, () => { cp.textContent = 'Select and copy'; }); } catch (er) { cp.textContent = 'Select and copy'; }
+    return;
+  }
+  if (t.closest('[data-pauseask]')) { S.pauseAsk = !S.pauseAsk; render(); if (S.pauseAsk) setTimeout(() => $('#pz')?.focus(), 0); return; }
+  if (t.closest('[data-pause]')) { setPause(true, $('#pz')?.value || '', t.closest('button')); return; }
+  if (t.closest('[data-resume]')) { if (confirm('Resume? Approved posts whose time has come go out at the next run.')) setPause(false, '', t.closest('button')); return; }
+});
+async function setPause(on, note, btn) {
+  btn.disabled = true;
+  try { DESK.paused = await window.MahalaMembers.rpc('content_pause', { p_paused: on, p_note: note.trim().slice(0, 600) }); S.pauseAsk = false; render(); }
+  catch (err) { btn.disabled = false; alert(errText(err)); }
+}
+
+// ------------------------------------------------------------------ signing in, and the door
+function gate(kind, detail) {
+  $('#toBasecamp').hidden = true;
+  const back = '<a class="btn" href="./">Back to wearemahala.com</a>';
+  const body = {
+    signin: `<p class="hello">For the core team</p><h2>Content desk</h2><p>Every post Mahala shares waits here for a yes from the core team before it goes out.</p><button class="btn primary" type="button" data-signin>Sign in</button>${back}`,
+    none: `<h2>Content desk</h2><p>The content desk is for the core team. Your own thread with Mahala lives on Your Mahala.</p><a class="btn primary" href="me.html">Your Mahala</a>${back}`,
+    error: `<h2>Content desk</h2><p>${esc(detail || 'The desk could not be reached.')} Check your connection and reload.</p>${back}`,
+  }[kind];
+  $('#view').innerHTML = `<div class="gate">${body}</div>`;
+}
+async function load(quiet) {
+  const MM = window.MahalaMembers;
+  if (!MM) { gate('error', 'Sign-in is not set up on this page.'); return; }
+  let info = null;
+  try { await MM.ready; info = await MM.info(); } catch (e) {}
+  const acct = $('#acct'); acct.hidden = false; acct.textContent = info?.signedIn ? (info.name || 'Your account') : 'Sign in';
+  if (!info?.signedIn) { DESK = null; gate('signin'); return; }
+  let r;
+  try { r = await MM.rpc('content_desk'); }
+  catch (err) {
+    if (quiet && DESK) return;                           // a missed poll: keep what is on screen
+    const m = String(err?.message || '');
+    if (/content desk is for the core team|claimed a thread/.test(m)) gate('none');
+    else if (err?.code === 'not_granted') gate('signin'); else gate('error');
+    return;
+  }
+  DESK = r; ME = r.who;
+  $('#asof').textContent = 'Every post waits for a yes' + (ME?.name ? ' · ' + ME.name : '');
+  $('#toBasecamp').hidden = false;
+  render();
+}
+function busyTyping() { const a = document.activeElement; return (a && /^(TEXTAREA|INPUT|SELECT)$/.test(a.tagName)) || Object.keys(S.draft).length || Object.values(S.ask).some(Boolean) || S.pauseAsk || S.busy.size; }
+let last = null;
+window.MahalaMembers?.onChange(st => { const now = !!(st && st.signedIn); if (now !== last) { last = now; load(); } });
+load().then(() => Promise.resolve(window.MahalaMembers?.info())).then(i => { last = !!(i && i.signedIn); });
+setInterval(() => { if (DESK && !document.hidden && !busyTyping()) load(true); }, 60000);   // never redraw under someone's typing
+document.addEventListener('visibilitychange', () => { if (DESK && !document.hidden && !busyTyping()) load(true); });
+</script>
+</html>
