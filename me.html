@@ -858,7 +858,8 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + '<p><b>' + esc(n.title) + '.</b> ' + esc(n.text) + '</p>'
       + (path ? '<ol class="pathsteps">' + W.steps.map(function (x) { return '<li class="' + esc(x.state) + '">' + esc(x.label) + (x.state === 'now' ? ' <small>Next</small>' : '') + '</li>'; }).join('') + '</ol>' : '')
       + '<div class="row">' + (n.href ? '<a class="btn" href="' + esc(n.href) + '">' + esc(n.cta) + '</a>' : '')
-      + (W.basecamp ? '<a class="btn ghost" href="' + esc(W.basecamp) + '" target="_blank" rel="noopener">Open Basecamp</a>' : '') + '</div></div>';
+      + (W.basecamp ? '<a class="btn ghost" href="' + esc(W.basecamp) + '" target="_blank" rel="noopener">Open Basecamp</a>' : '')
+      + (P.J && P.J.community ? '<a class="btn ghost" href="community.html">The community map</a>' : '') + '</div></div>';
   }
 
   function letter() {
