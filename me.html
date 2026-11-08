@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400&family=Jost:wght@300;400;500&family=Marcellus&display=swap">
 <script src="site.js?v=8"></script>
-<script src="assets/shim/claude-shim.js?v=14"></script>
+<script src="assets/shim/claude-shim.js?v=15"></script>
 <style>
 /* Your Mahala, prototype 2 (4 Nov 2026). One page about you, the same on the site and in the Mahalaverse.
    The people here are made up; nothing is read from or saved to the member database.
@@ -43,6 +43,16 @@ section, details, .chapter, .ticket { scroll-margin-top: 80px; }
 .top-in { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; gap: 10px; }
 .mark { font: 400 18px/1 var(--name); letter-spacing: .18em; text-decoration: none; }
 .sp { flex: 1; }
+.fbwrap { position: relative; display: inline-flex; }
+@media (max-width: 460px) { .top-in { gap: 6px; } .tellbtn { padding: 8px 11px; } .chipname { padding: 4px; gap: 0; } .chipname > span:not(.vh) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .mark { letter-spacing: .12em; } }
+.fbcard { position: absolute; right: 0; top: calc(100% + 10px); width: min(300px, 82vw); padding: 14px 16px; border-radius: 16px; background: var(--ink); color: var(--warm); font-size: 13.5px; line-height: 1.45;
+  box-shadow: 0 20px 40px -20px rgba(42, 34, 28, .8); opacity: 0; transform: translateY(-4px); pointer-events: none; transition: opacity .2s ease, transform .2s ease; z-index: 20; }
+.fbcard::before { content: ""; position: absolute; right: 26px; top: -6px; width: 12px; height: 12px; background: var(--ink); transform: rotate(45deg); }
+.fbcard b { display: block; font: 400 16px/1.2 var(--name); letter-spacing: .04em; margin-bottom: 4px; color: #fff; }
+.fbwrap:hover .fbcard, .fbwrap:focus-within .fbcard { opacity: 1; transform: none; }
+.shotrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.shotsay { font-size: 13px; color: var(--ink-3); }
+.shotprev { display: block; max-width: 100%; max-height: 220px; margin-top: 10px; border-radius: 10px; border: 1px solid var(--rule); }
 .tellbtn { border: 0; background: var(--magenta); color: #fff; border-radius: 999px; padding: 8px 14px; font-size: 14px; cursor: pointer; min-height: 40px; }
 .chipname { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--rule); background: var(--sheet); border-radius: 999px; padding: 4px 12px 4px 4px; font-size: 14px; cursor: pointer; min-height: 40px; }
 .chipname svg { width: 30px; height: 30px; border-radius: 50%; display: block; }
@@ -343,6 +353,144 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
 .soulask .row { margin-top: 8px; align-items: center; gap: 10px; }
 .soulask .sub { margin: 0; font-size: 13px; }
 .soul .fixit { font-size: 13.5px; color: var(--ink-3); }
+/* the page in folds (Chris, 8 Nov 2026, F-061, F-062): welcome first, then sections that fold away */
+.welcome { display: flex; align-items: center; gap: 26px; margin: 8px 0 22px; }
+.welcome .portrait { margin: 0; flex: none; }
+.welcome .wtext { min-width: 0; }
+.wpic { flex: none; width: 200px; display: grid; justify-items: center; text-align: center; }
+.welcome .picsay { margin: 6px 0 0; font-size: 13px; }
+.sigilwrap { flex: none; width: 112px; }
+.journey:empty, #tasksHost:empty, #eventsHost:empty { display: none; }
+.journey > :first-child { margin-top: 18px; }
+.fold { margin: 26px 0 0; border-top: 1px solid var(--rule); position: relative; }
+.fold::before { content: ""; position: absolute; left: 0; top: -1px; width: 64px; height: 2px; background: linear-gradient(90deg, var(--yellow), var(--cyan), var(--magenta)); opacity: .8; }
+.fold > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 14px; padding: 18px 2px 14px; min-height: 56px; }
+.fold > summary::-webkit-details-marker { display: none; }
+.fold > summary h2 { font: 400 clamp(24px, 3.6vw, 30px)/1.1 var(--name); letter-spacing: .05em; margin: 0; }
+.ftitle { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+.fsub { font-size: 13.5px; color: var(--ink-3); }
+.fdot { width: 10px; height: 10px; border-radius: 50%; flex: none; background: conic-gradient(var(--yellow) 0 33%, var(--cyan) 0 66%, var(--magenta) 0); transition: transform .35s ease; }
+.fold[open] > summary .fdot { transform: rotate(120deg) scale(1.2); }
+.fthumb { width: 30px; height: 40px; border-radius: 5px; object-fit: cover; flex: none; box-shadow: 0 6px 12px -8px rgba(42, 34, 28, .7); transform: rotate(-4deg); }
+.fchev { width: 10px; height: 10px; flex: none; border-right: 1.5px solid var(--ink-3); border-bottom: 1.5px solid var(--ink-3); transform: rotate(45deg) translateY(-3px); transition: transform .3s ease; margin-right: 6px; }
+.fold[open] > summary .fchev { transform: rotate(225deg) translateY(-2px); }
+.fold > summary:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; border-radius: 8px; }
+.foldin { padding: 0 0 8px; }
+.foldin > .lede { margin: 0 0 16px; color: var(--ink-2); max-width: 60ch; }
+.fold .soul { margin-top: 4px; }
+.shareseed { margin-top: 14px; }
+.btn .ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; margin: -2px 8px -3px 0; vertical-align: middle; }
+/* your years as beads (F-064) */
+.mala { margin: 28px 0 4px; }
+.mala h3 { font: 400 18px/1.2 var(--name); letter-spacing: .05em; margin: 0 0 4px; }
+.malastring { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 14px 0 6px; padding: 10px 4px; position: relative; }
+.malastring::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--rule-2); }
+.mbead { position: relative; width: 40px; height: 40px; border-radius: 50%; border: 0; cursor: pointer; background: radial-gradient(circle at 34% 30%, rgba(255, 255, 255, .85), transparent 38%), var(--hue); box-shadow: 0 8px 14px -8px rgba(42, 34, 28, .7); transition: transform .25s ease, box-shadow .25s ease; }
+.mbead .my { position: absolute; inset: 0; display: grid; place-items: center; font: 400 13px/1 var(--name); color: var(--ink); letter-spacing: .02em; }
+.mbead:hover, .mbead:focus-visible { transform: translateY(-3px) scale(1.06); }
+.mbead[aria-expanded="true"] { transform: scale(1.18); box-shadow: 0 0 0 3px var(--warm), 0 0 0 5px var(--ink-2); }
+.malasay:empty { display: none; }
+.malasay { margin: 8px 0 0; padding: 12px 0 0 14px; border-left: 2px solid var(--cyan); }
+.myear { margin: 0 0 6px; font-size: 14px; color: var(--ink-2); }
+.myear b { font: 400 22px/1 var(--name); color: var(--ink); margin-right: 6px; }
+.myear i { font-family: var(--verse); font-size: 18px; color: var(--ink); }
+.malasay ul { margin: 0; padding: 0 0 0 16px; font-size: 14.5px; line-height: 1.55; color: var(--ink-2); }
+.malasay li.more { list-style: none; margin-left: -16px; color: var(--ink-3); }
+/* your card, smaller (F-063) */
+.cardmini { display: flex; gap: 20px; align-items: flex-start; }
+.cardmini .card { width: 104px; flex: none; }
+.cardflip { border: 0; padding: 0; background: none; cursor: pointer; flex: none; transition: transform .3s ease; }
+.cardflip:hover .card.own, .cardflip:focus-visible .card.own { transform: rotate(0deg) translateY(-3px); }
+.cardmini .card .back { padding: 8px; }
+.cardmini .card .back q { font-size: 13px; }
+.cardtext { min-width: 0; flex: 1; }
+.cardtext .cardname { text-align: left; margin: 0; }
+.cardq { margin: 8px 0; font: italic 400 18px/1.35 var(--verse); color: var(--ink); }
+.cardread summary { cursor: pointer; font-size: 14px; color: var(--cyan-ink); text-decoration: underline; text-underline-offset: 3px; }
+.cardread p { font-size: 14.5px; color: var(--ink-2); margin: 6px 0 0; max-width: 56ch; }
+.cardtext .cardbtns { justify-content: flex-start; margin-top: 12px; }
+.fold .beads { justify-content: flex-start; margin-top: 14px; }
+.fold .beadsay { text-align: left; }
+/* your quest, made easy (F-065) */
+.qfilm { display: flex; gap: 14px; align-items: center; margin: 10px 0 12px; flex-wrap: wrap; }
+.qthumb { position: relative; width: 168px; aspect-ratio: 16 / 9; border: 0; padding: 0; border-radius: 10px; overflow: hidden; cursor: pointer; flex: none; background: var(--ink); }
+.qthumb img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .4s ease; }
+.qthumb:hover img { transform: scale(1.04); }
+.qplay { position: absolute; left: 50%; top: 50%; width: 40px; height: 40px; margin: -20px 0 0 -20px; border-radius: 50%; background: rgba(251, 248, 243, .92); }
+.qplay::after { content: ""; position: absolute; left: 16px; top: 12px; border-left: 13px solid var(--ink); border-top: 8px solid transparent; border-bottom: 8px solid transparent; }
+.qvideo { width: min(100%, 420px); border-radius: 10px; background: var(--ink); }
+.qfilmtext { display: grid; gap: 4px; min-width: 0; flex: 1 1 200px; }
+.qfilmtext small { color: var(--ink-3); font-size: 12.5px; }
+.qfilmtext .btn { justify-self: start; margin-top: 4px; }
+.qwhy { margin-top: 10px; }
+.qwhy summary { cursor: pointer; font-size: 14px; color: var(--cyan-ink); text-decoration: underline; text-underline-offset: 3px; }
+.qwhy dl { margin: 8px 0 0; display: grid; gap: 8px; }
+.qwhy dt { font-size: 12.5px; letter-spacing: .04em; color: var(--ink-3); }
+.qwhy dd { margin: 0; font-size: 14.5px; color: var(--ink); }
+@media (max-width: 560px) {
+  .welcome { flex-direction: column; text-align: center; gap: 10px; }
+  .wpic { width: auto; }
+  .cardmini { gap: 14px; }
+  .cardmini .card { width: 88px; }
+  .qthumb { width: 100%; max-width: 360px; }
+}
+/* you, as Mahala knows you: the community map's care, said to you (Chris, 8 Nov 2026, F-044). No boxes: a column of
+   quiet rules, Marcellus for what matters, Jost for the rest, the prism only as a thread of colour */
+.known { margin: 30px 0 0; padding: 26px 0 0; position: relative; text-align: left; }
+.known::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: linear-gradient(90deg, var(--yellow), var(--cyan) 45%, var(--magenta) 80%, transparent); opacity: .55; }
+.khead { display: flex; align-items: center; gap: 16px; }
+.kpic { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; flex: none; background: var(--paper-2); box-shadow: 0 0 0 2px var(--warm), 0 0 0 3.5px color-mix(in srgb, var(--cyan) 55%, var(--rule)); }
+.kkick { margin: 0 0 2px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); }
+.known h2 { margin: 0; font: 400 clamp(24px, 3.4vw, 30px)/1.1 var(--name); letter-spacing: .04em; }
+.kyears { display: flex; flex-wrap: wrap; gap: 4px 2px; margin: 18px 0 0; }
+.kyears > span { min-width: 36px; text-align: center; font-size: 12px; color: var(--ink-3); padding: 5px 2px 4px; border-bottom: 2px solid var(--rule); opacity: .75; }
+.kyears > span.on { opacity: 1; color: var(--ink); border-bottom-color: var(--magenta); }
+.kyears > span.on b { font: 400 13px/1 var(--name); letter-spacing: .04em; }
+.kyears > span.on:nth-child(3n+1) { border-bottom-color: var(--yellow); } .kyears > span.on:nth-child(3n+2) { border-bottom-color: var(--cyan); }
+.kglance { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 20px 0 6px; }
+.kglance div { display: flex; flex-direction: column-reverse; gap: 2px; }
+.kglance dd { margin: 0; font: 400 clamp(26px, 4vw, 34px)/1 var(--name); color: var(--ink); }
+.kglance dt { font-size: 12.5px; color: var(--ink-3); line-height: 1.3; }
+.kbring { margin: 20px 0 4px; }
+.known h3 { font: 400 18px/1.2 var(--name); letter-spacing: .05em; margin: 0 0 8px; }
+.known h3 small, .knote { font: 400 12.5px/1.4 var(--text, inherit); letter-spacing: .02em; color: var(--ink-3); text-transform: none; }
+.kvision { margin: 0 0 10px; font: italic 400 19px/1.4 var(--verse); color: var(--ink); max-width: 54ch; }
+.kpills { display: flex; flex-wrap: wrap; gap: 6px; }
+.kpills span { font-size: 13px; padding: 5px 12px; border-radius: 999px; background: color-mix(in srgb, var(--cyan) 12%, var(--warm)); color: var(--ink); }
+.kpills span.v { background: transparent; box-shadow: inset 0 0 0 1px var(--rule-2); color: var(--ink-2); }
+.kinto { margin: 10px 0 0; font-size: 14px; color: var(--ink-2); }
+.kfold { border-top: 1px solid var(--rule); padding: 0; }
+.kfold:last-of-type { border-bottom: 1px solid var(--rule); }
+.kfold summary { list-style: none; cursor: pointer; display: flex; align-items: baseline; gap: 10px; padding: 14px 2px; min-height: 48px; }
+.kfold summary::-webkit-details-marker { display: none; }
+.kfold summary::before { content: ""; width: 8px; height: 8px; border-radius: 50%; flex: none; align-self: center; background: conic-gradient(var(--yellow) 0 33%, var(--cyan) 0 66%, var(--magenta) 0); transition: transform .3s ease; }
+.kfold[open] summary::before { transform: rotate(120deg) scale(1.25); }
+.kfold .kt { font: 400 17px/1.25 var(--name); letter-spacing: .04em; flex: 1; }
+.kfold .kn { font-size: 12.5px; color: var(--ink-3); }
+.kfold > :not(summary) { margin-left: 18px; }
+.kfold > :last-child { margin-bottom: 16px; }
+.knote { margin: -4px 0 10px; }
+.kq { margin: 0 0 14px; }
+.kq figcaption { font-size: 12.5px; letter-spacing: .04em; color: var(--ink-3); margin-bottom: 3px; }
+.kq blockquote { margin: 0; font: 400 18px/1.45 var(--verse); color: var(--ink); max-width: 56ch; }
+.khist { list-style: none; margin: 0; padding: 0; }
+.khist > li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 10px; padding: 0 0 12px; }
+.ky { font: 400 16px/1.3 var(--name); color: var(--ink-2); }
+.khist b { display: block; font-weight: 500; font-size: 14px; margin-bottom: 2px; }
+.khist ul { margin: 0; padding: 0 0 0 16px; font-size: 14px; color: var(--ink-2); line-height: 1.5; }
+.kthreads { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14.5px; }
+.kthreads span { color: var(--ink-3); } .kthreads b { font-weight: 500; } .kthreads i { font-style: normal; font-size: 12.5px; color: var(--ink-3); }
+.kfacts { margin: 0; display: grid; gap: 8px; }
+.kfacts div { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: 10px; font-size: 14px; }
+.kfacts dt { color: var(--ink-3); } .kfacts dd { margin: 0; color: var(--ink); overflow-wrap: anywhere; }
+.kfoot { margin: 14px 0 6px; font-size: 13px; color: var(--ink-3); max-width: 56ch; }
+.known .fixit { font-size: 13.5px; color: var(--ink-3); }
+.known .fixit textarea { width: 100%; font: inherit; font-size: 15px; border: 1px solid var(--rule-2); border-radius: 12px; padding: 8px 10px; background: #fff; color: var(--ink); margin-top: 8px; }
+@media (max-width: 560px) {
+  .kglance { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 14px; }
+  .kyears > span { min-width: 30px; }
+  .kfacts div { grid-template-columns: minmax(0, 1fr); gap: 0; }
+}
 
 /* signed out: an invitation, never an example (F-032) */
 .door-out { text-align: center; max-width: 640px; margin: 0 auto; }
@@ -379,7 +527,9 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
 <body>
 <header class="top"><div class="top-in">
   <a class="mark" href="./">MAHALA</a><span class="sp"></span>
-  <button type="button" class="tellbtn" id="tellBtn" aria-haspopup="dialog">Tell us</button>
+  <span data-mahala-doors></span>
+  <span class="fbwrap"><button type="button" class="tellbtn" id="tellBtn" aria-haspopup="dialog" aria-describedby="fbCard">Feedback</button>
+  <span class="fbcard" id="fbCard" role="tooltip"><b>Help us make this together</b>Test it, tell us about glitches, share your creative ideas, and co-create a better platform with us. Take a screenshot and share it here.</span></span>
   <button type="button" class="chipname" id="chip" aria-haspopup="dialog"></button>
 </div></header>
 <nav class="doors" aria-label="Elsewhere on Mahala"><a href="./"><span aria-hidden="true">&larr;</span> The <b>website</b></a><a href="./#mahalaverse">Into the <b>Mahalaverse</b> <span aria-hidden="true">&rarr;</span></a></nav>
@@ -392,11 +542,13 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
 
 <dialog class="sheet" id="choices" aria-labelledby="choicesH"><div class="sheetin" id="choicesIn"></div></dialog>
 <dialog class="sheet tellbox" id="tell" aria-labelledby="tellH"><div class="sheetin">
-  <div class="sheethead"><h2 id="tellH">Tell us</h2><button type="button" class="x" data-close>Close</button></div>
-  <p class="sub">During the beta, everything you send goes to the stewards with the part of the page filled in. You will see what happened to it below, usually within a week.</p>
+  <div class="sheethead"><h2 id="tellH">Feedback</h2><button type="button" class="x" data-close>Close</button></div>
+  <p class="sub">Help us test, tell us about glitches, share creative ideas, and co-create a better platform with us. Everything you send goes to the stewards with the part of the page filled in, and you will see what happened to it below, usually within a week.</p>
   <label for="tellWhere">Which part</label><select id="tellWhere"></select>
   <label for="tellText">What you noticed</label><textarea id="tellText" rows="3"></textarea>
   <label for="tellRank">Did anything here make you feel ranked or measured? (optional)</label><textarea id="tellRank" rows="2"></textarea>
+  <div class="shotrow"><label class="btn small ghost" for="tellShot">Add a screenshot</label><input type="file" id="tellShot" accept="image/*" class="vh"><span class="shotsay" id="shotSay">Only you and the stewards can open it.</span></div>
+  <img class="shotprev" id="shotPrev" alt="Your screenshot, ready to send" hidden>
   <div class="row" style="margin-top:12px"><button type="button" class="btn" id="tellSend">Send</button></div>
   <p class="said" id="tellSaid" aria-live="polite"></p>
   <h3>What you have told us</h3><ul class="yours" id="yours"></ul>
@@ -407,7 +559,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   // ------------------------------------------------------------------ data from Mahala OS (public rows and fields only)
   var EVENTS = /*EVENTS-DATA*/{"asOf":"2026-11-04","events":[{"id":"ev-mecca","title":"Road to Mecca, a Mahala fundraiser","kind":"gathering","date":"2026-11-13","time":"19:00","where":"Hollow Tree, Hout Bay","blurb":"A guitar sound journey by the fire with cacao, our first gathering of the season and a fundraiser for The Seed. Doors open at 18:30; bring your own mug. A few words at the end about what is coming.","tickets":"https://www.quicket.co.za/events/404952-road-to-mecca-guitar-sound-journey/","set":true},{"id":"ev-talk-1","title":"Temple Builders, talk 1","kind":"talk","date":"2026-11-29","time":"19:00","where":"Online","blurb":"A monthly talk with people who raise sacred structures. A guest, an hour, and your questions at the end. Guest to be announced.","question":"What is this calling to build temples?","set":true},{"id":"ev-dec-dinner","title":"Dinner and a sound journey","kind":"gathering","date":"2026-12-05","where":"Cape Town, venue to be announced","blurb":"A long table and a sound journey under the Mahala tent as the sun goes down. The first full taste of what Mahala gathers for.","set":true},{"id":"ev-talk-2","title":"Temple Builders, talk 2","kind":"talk","date":"2026-12-13","time":"19:00","where":"Online","blurb":"A guest from the temple builders' world. From this talk on it may also run from a room in Muizenberg, with cushions and a small audience.","question":"What does it take to raise one with many hands?","set":false},{"id":"ev-talk-3","title":"Temple Builders, talk 3","kind":"talk","date":"2027-01-10","time":"19:00","where":"Online","blurb":"Living temples: places built to be lived in, not only visited.","question":"Can a temple be lived in, not only visited?","set":false},{"id":"ev-dunes-jan","title":"Sound Journey in the Dunes","kind":"gathering","date":"2027-01-22","end":"2027-01-24","where":"The dunes near Cape Town, shared with ticket holders","blurb":"Three full moon nights in the dunes. A slow meal, a sound journey lying down, then a second journey that rises into dance, with fire and poetry to close. Come for one night.","set":true},{"id":"ev-build-1","title":"Build day 1","kind":"build","date":"2027-01-30","time":"morning","where":"Cape Town, place to be announced","blurb":"A morning with your hands in it: a coffee rave to wake up, then crews for planting, digging, composting and work on The Seed, then a shared lunch.","set":false},{"id":"ev-build-2","title":"Build day 2","kind":"build","date":"2027-02-07","time":"morning","where":"Cape Town, place to be announced","blurb":"Another morning of building together, then the evening talk opens with footage from the day.","set":false},{"id":"ev-talk-4","title":"Temple Builders, talk 4","kind":"talk","date":"2027-02-07","time":"19:00","where":"Online","blurb":"Sacred geometry, and how form holds meaning.","question":"How does form hold meaning?","set":false},{"id":"ev-dunes-feb","title":"Sound Journey in the Dunes","kind":"gathering","date":"2027-02-19","end":"2027-02-21","where":"The dunes near Cape Town, shared with ticket holders","blurb":"The second full moon weekend in the dunes, with a new chef at the fire. Three nights; come for one.","set":false},{"id":"ev-build-3","title":"Build day 3","kind":"build","date":"2027-03-13","time":"morning","where":"Cape Town, place to be announced","blurb":"The last build morning before The Seed is packed for the desert.","set":false},{"id":"ev-talk-5","title":"Temple Builders, talk 5","kind":"talk","date":"2027-03-21","time":"19:00","where":"Online","blurb":"Temples, silence and ritual theatre, with temple builders from Cape Town.","question":"Why are temples so often silent, and can they hold ritual too?","set":false},{"id":"ev-buildweek","title":"Build week: The Seed rises","kind":"burn","date":"2027-04-19","end":"2027-04-25","where":"Tankwa Karoo","blurb":"The camp arrives and The Seed goes up in the desert.","set":true},{"id":"ev-burn","title":"AfrikaBurn 2027","kind":"burn","date":"2027-04-26","end":"2027-05-02","where":"Tankwa Karoo","blurb":"The Seed stands at Mahala, open day and night.","set":true}]}/*END*/;
   var DECK = [{"k":"alchemist","t":"The Alchemist","cap":"Transformation Master turning ideas into reality","g":"This card calls on you to recognize the tools already within your grasp (your knowledge, experience, passion, and vision) and begin the sacred process of transformation. Trust the process. Mix, mold, test, refine. What once lived only in your imagination is ready to be brought to life.","q":"What are you being called to bring into the world?","s":"When the Alchemist is out of alignment, the pursuit of transformation can become obsession or manipulation. You may be attempting to control outcomes, forcing growth without honoring the process. Or perhaps you are stuck in endless planning, endlessly dreaming, never taking action. This can look like perfectionism, burnout, or staying lost in the planning stage, never grounding the vision. Alternatively, it may be the misuse of one's gifts, crafting illusions instead of truth. The shadow Alchemist becomes a trickster, promising gold but delivering nothing but dust.","sq":"Where are you trying to skip the sacred mess of the creative process?"},{"k":"conductor","t":"The Conductor","cap":"Aligning visions into a cohesive masterpiece, guiding every note into perfect harmony","g":"This card represents leadership, coordination, and the ability to bring disparate elements into harmony, suggesting you are in a position to lead, to align people with a shared vision, and create something greater than the sum of its parts. Whether in work, relationships, or personal projects, you are being asked to direct with purpose, balancing structure with intuition while allowing space for improvisation. Trust in your ability to hold the vision while allowing the inputs and perspectives of others weave into the symphony.","q":"Where are you being asked to step up as the leader of a great vision?","s":"In their shadow, the Conductor may become overly controlling and rigid, micromanaging every detail to the point of stifling spontaneity and creativity. Instead of guiding with fluidity, they may impose rigid structures, fearing that without their control, everything will fall apart. In this state, the Conductor might struggle with trusting others, feeling the need to oversee every step instead of allowing the natural rhythm of collaboration to play its song. Their obsession with timelines and precision can cause them to miss the beauty of imperfection, rejecting moments of unpredictability that could lead to even greater magic.","sq":"How can you lead with clarity while leaving space for spontaneity?"},{"k":"entertainer","t":"The Entertainer","cap":"Setting the stage for connection with presence & flair","g":"This card is calling you to embrace your personal power, to shine without fear, and to create space for others to feel seen and uplifted. The Entertainer understands that joy is a gateway to transformation. By stepping fully into your role as a conduit for wonder, you invite others to do the same.","q":"Where are you playing small or afraid to be seen under the spotlight?","s":"The shadow of the Entertainer emerges when the need to captivate and uplift others becomes a mask, hiding insecurities of being truly seen, using a persona to avoid vulnerability while keeping others entertained. They may seek validation through applause, relying on external approval rather than genuine self-worth. This ends up draining their energy in an endless cycle of giving without replenishing, overcompensating with exaggerated antics rather than embracing the quiet power of presence. In an attempt to always take center stage, they might not realize where they are taking away the opportunity for someone else to shine.","sq":"How can you use joy as a tool for deeper connection and meaning?"},{"k":"guardian","t":"The Guardian","cap":"Protector of truth, keeper of trust, holder of space","g":"This card appears when you are called to stand in protection, whether of yourself, a loved one, a vision, or a sacred space in your life. You may need to set clearer boundaries, honor your own limits, or watch over something precious. Trust that your presence holds immense power. Stand firm in your values and create space for what truly matters, whether that's a dream, a relationship, a truth, or a place. Know that your strength lies in your devotion.","q":"What boundaries do you need to honor in order to protect something meaningful?","s":"The Guardian's Shadow emerges when protection turns into control, and care becomes suffocation. Operating from fear of harm, change, or loss, they build walls so high that nothing new can enter. It may manifest as distrust, or resistance to allowing others to navigate their own journey.","sq":"Where are you shielding yourself or others from growth?"},{"k":"magician","t":"The Magician","cap":"Master of wonder & awe through the unexpected","g":"This card is calling you to step into your creative power. Recognize the tools at your disposal, and use them with intention. Whether through art, words, or action, you have the ability to inspire and transform. Trust in your craft, embrace the mystery, and remember that magic is not just in what you create but in how you share it with the world.","q":"What illusions are you ready to shatter to reveal the deeper magic within?","s":"The shadow of the Magician archetype emerges whilst the Magician is caught in the endless pursuit of more and forgets to look up. There is stillness between spells and true magic waits, yet they are consumed by the need to prove their power. They chase the next ritual, the next sacred object, the next spark of awe, forgetting that the greatest magic is often found in the ordinary, the breath, the quiet unfolding of now. In the Shadow, they cease to listen, to witness, to BE. They forget that presence is power. That just being, in full authenticity, in heartful stillness, is a portal to the miraculous. They over-identify with doing, performing, crafting... forgetting the inherent magic in their being.","sq":"How can you pay more attention to miracles that are unfolding around you?"},{"k":"muse","t":"The Muse","cap":"Sparks creativity & inspiration with authentic beauty","g":"The Muse reminds us that creation is not just about doing; it's about feeling, believing, and becoming. This card is calling you to embrace your unique magic and share it with the world. Whether through art, words, ideas or energy, you have the power to inspire those around you. Let your presence spark something in others: remind them of what is possible when imagination leads the way.","q":"How can you become a living invitation for inspiration?","s":"The shadow of the Muse is elusiveness, self-doubt, and ungrounded inspiration. While they have the power to ignite creativity in others, they may struggle to channel their own brilliance into tangible action. The Muse's energy can become overwhelming or chaotic, flooding others with too many ideas without grounding them in reality, leaving ideas half-formed and unfinished.","sq":"Are you inspiring others while also nurturing your own creativity?"},{"k":"mother","t":"The Mother","cap":"The heart of creation & the power of love","g":"This card suggests you are in a phase of nurturing something important, whether it's a dream, a community, or your own healing. The Mother reminds you to honor cycles, understanding that all seeds of creation must be planted, tended, and allowed to grow in their own time.","q":"What needs nurturing in your life so that it can flourish?","s":"When reversed, the Mother archetype can indicate self-sacrifice to the point of depletion or over-protection that stifles growth. The shadow of the Mother emerges when nurturing turns into control, martyrdom, or smothering. Instead of fostering growth, she may overprotect, manipulate, or make others dependent on her care. Are you nurturing from a place of abundance, or are you pouring from an empty cup? Are you holding on too tightly to something that needs space to evolve? This could also be a sign of neglect, a reminder that true care must include your own well-being.","sq":"Where do you need to trust the natural flow of growth and change?"},{"k":"sage","t":"The Sage","cap":"Storyteller & keeper of wisdom, finding deeper meaning in every moment","g":"This card calls you to embrace your inner wisdom: not just the knowledge you've gathered from books or teachings, but the deep, intuitive knowing that comes from lived experience. Share this knowledge with others. Your experiences hold value. Who might benefit from your insights?","q":"Where in your life can you embrace a beginner's mindset, allowing curiosity to dissolve old paradigms and reveal a new truth?","s":"Instead of guiding others with insight, the shadow Sage may hoard knowledge rather than share it. The shadow Sage may also develop an over-reliance on intellect, avoiding emotional depth or personal connection. Their endless seeking may trap them in a cycle of learning but not applying, using learning as an escape from action. Or, they may reject perspectives that challenge their beliefs, clinging to rigid opinions and becoming isolated in their pursuit of understanding. Trapped in their own intellectual arrogance, the shadow emerges as dismissive and detached, refusing to acknowledge the wisdom found in different perspectives.","sq":"Where in your life can you embrace a beginner's mindset, allowing curiosity to dissolve old paradigms and reveal a new truth?"},{"k":"seeker","t":"The Seeker","cap":"Follows intuition with a spirit of exploration","g":"This card is calling you to embrace the unknown with wonder, to ask the big questions, and to trust that every step forward reveals new layers of truth. Follow your curiosity, let it lead you beyond the familiar, and open yourself to the lessons hidden in each experience.","q":"What truth is waiting to be uncovered if you dare to look beyond the surface?","s":"While the Seeker embodies curiosity, growth, and the pursuit of deeper truths, its shadow emerges when the journey becomes an endless chase, never satisfied, never arriving. The Seeker becomes restless, ungrounded, and addicted to the quest itself, believing that the next book, the next teacher, or the next experience will finally provide the answers they crave. This can lead to spiritual bypassing, where they avoid sitting with discomfort or integrating what they've already learned.","sq":"What would happen if you stopped searching and allowed yourself to simply be?"},{"k":"trickster","t":"The Trickster","cap":"Playfully unpredictable creating moments of joy & chaos","g":"This card is calling you to shake up your life, embrace spontaneity, release attachment to plans, and find more room for creativity and play.","q":"Where can you surrender to the chaos and discover new solutions where familiar ones are no longer working?","s":"While the Trickster is incredibly intelligent and witty, the shadow side can use wit as a weapon, turning jokes into a tool for hiding vulnerability behind sarcasm. Their cleverness becomes a mask, their surprises a means of control. Constantly caught up in the whirlwind, the Trickster can forget to read the room and tune into the sensitivity or emotional needs of others.","sq":"Where might you have a tendency to distract, creating unnecessary chaos that derails progress rather than sparking transformation?"},{"k":"wildone","t":"The Wild One","cap":"Untamed spirit channeling raw energy embodying liberation & fearless creativity","g":"When this card appears, it is calling you to unleash your inner fire. Your wild ideas and rebellious nature are exactly what is needed. Stop overthinking and start doing. Break the rules that once bound you. The Wild One does not conform: they rewrite the script with courage and joy. Trust your instincts. Creativity doesn't come from playing it safe. Take the leap, say yes to adventure, and let your heart lead the way. Inspire others by being your fullest self. Your authenticity gives others permission to embrace their own.","q":"Where are you craving freedom, and what fears are keeping you from fully stepping into it?","s":"The Wild One's raw and electrifying energy, if unchecked, can turn passion into chaos, freedom into recklessness. Pushing boundaries is powerful, but not at the expense of collaboration. The shadow of this card warns against burning bridges, chasing novelty without depth, or ignoring the impact of your actions. The Wild One's instinct is to roam, but this can turn into running from commitment, dodging accountability, a refusal to listen to others or the inability to see things through. When ungrounded, the Wild One can often mistake impulse for intuition, acting on every whim without discernment.","sq":""}];
-  var QUESTS = [{"id":"Q-07","name":"Share the film","crew":"Story crew","steps":["Watch the film","Send it to three people who would love it","Share it on Instagram or in a WhatsApp group"]},{"id":"Q-01","name":"Fund a ring of glass","crew":"Glass crew","steps":["Choose a gate that suits you","Share the film with three people","See your ring glow on the night"]},{"id":"Q-02","name":"Cut the crown star","crew":"Frame crew","steps":["Learn the cut list for the crown","Cut a test set on the CNC","Dry-fit one bay of the crown"]},{"id":"Q-03","name":"Paint the Golden Seed of Life","crew":"Site crew","steps":["Set out the circles from the centre peg","Mark the lines in copper, sea teal, amber and pearl","Plan how it comes off again: leave no trace"]},{"id":"Q-04","name":"Rig the lantern","crew":"Light crew","steps":["Test lamps behind the acrylic","Plan power and safety","Rig it and light it on the night"]},{"id":"Q-05","name":"Host the build kitchen","crew":"Camp crew","steps":["Plan the menu with the camp","Source and pack the kitchen","Run the kitchen roster"]},{"id":"Q-06","name":"Make the first light box","crew":"Temple Tech crew","steps":["Model it in 3D, in Blender","Cut a prototype","Test it with a light inside"]}];   // the Mahalaverse's quests (id, name, crew, steps)
+  var QUESTS = [{"id":"Q-07","name":"Share the film","crew":"Story crew","steps":["Watch the film","Send it to three people who would love it","Share it on Instagram or in a WhatsApp group"],"goal":"The first quest, and the easiest: send the film to the people who would love to build or back the temple.","stage":"Fund","skills":"None needed","crewWhat":"The film, the talks, the invitations"},{"id":"Q-01","name":"Fund a ring of glass","crew":"Glass crew","steps":["Choose a gate that suits you","Share the film with three people","See your ring glow on the night"],"goal":"Each ring of the zome is one colour of cast acrylic. Help fund the sheets for one ring.","stage":"Fund","skills":"None needed","crewWhat":"The coloured glass"},{"id":"Q-02","name":"Cut the crown star","crew":"Frame crew","steps":["Learn the cut list for the crown","Cut a test set on the CNC","Dry-fit one bay of the crown"],"goal":"The top two rings of the frame stay open timber: a star of sky at the crown. Cut and test-fit the first crown timbers.","stage":"Fabricate","skills":"CNC, carpentry","crewWhat":"The timber frame, panel by panel"},{"id":"Q-03","name":"Paint the Golden Seed of Life","crew":"Site crew","steps":["Set out the circles from the centre peg","Mark the lines in copper, sea teal, amber and pearl","Plan how it comes off again: leave no trace"],"goal":"Set out and paint the floor pattern on the playa around the temple.","stage":"Build at Tankwa","skills":"Setting out, painting","crewWhat":""},{"id":"Q-04","name":"Rig the lantern","crew":"Light crew","steps":["Test lamps behind the acrylic","Plan power and safety","Rig it and light it on the night"],"goal":"Design and rig the lantern that makes the dome glow and throws a star of coloured light across the desert floor.","stage":"Light it","skills":"Lighting, electrics","crewWhat":"The lantern and the night"},{"id":"Q-05","name":"Host the build kitchen","crew":"Camp crew","steps":["Plan the menu with the camp","Source and pack the kitchen","Run the kitchen roster"],"goal":"Keep the build crew fed and watered through build week.","stage":"Build at Tankwa","skills":"Cooking, care","crewWhat":"Kitchen, shade and tents"},{"id":"Q-06","name":"Make the first light box","crew":"Temple Tech crew","steps":["Model it in 3D, in Blender","Cut a prototype","Test it with a light inside"],"goal":"Prototype a small light box: a gift for the gates and the first step of the Temple Tech research into light and geometry.","stage":"Fabricate","skills":"3D modelling, making, electronics","crewWhat":"A build sub-crew for the conductive elements: coils, copper pods, pendants and light boxes"}];   // the Mahalaverse's quests (id, name, crew, steps, goal, stage, skills, what the crew does), in mahalaverse.js's words
   var ARTIFACT = false;      // true only in the review copy, which has no accounts
   var BASECAMP = 'basecamp.html', REVIEW = 'https://claude.ai/artifact/LWUKvvyjUZePV57zjn25tk#your-mahala-decisions';
   var IMG = function (k) { return 'assets/deck/sm/' + k + '.jpg'; };   // loaded only when a card is shown or drawn
@@ -692,6 +844,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       beads: beads, yes: st.yes || {}, next: core && preDecisions ? 'core' : (J && J.tier !== 'tribe') ? 'journey' : 'event', chapters: chapters, before: years.length > 0 && !years.some(function (y) { return y < 2025; }),
       journey: W, tier: J ? J.tier : null, J: J, rec: { name: t.name || '', years: years.slice(), roles: roles.slice(), thread: t.thread || [], nominatedBy: (J && J.nominatedBy) || t.nominatedBy || '', isNew: !!t.isNew, apps: apps },
       soul: t.soul && Array.isArray(t.soul.lines) ? t.soul : null, mapPhoto: !!t.mapPhoto,
+      known: t.ownProfile && typeof t.ownProfile === 'object' && !Array.isArray(t.ownProfile) ? t.ownProfile : null,
       quest: { id: q.id, name: q.name, crew: q.crew, steps: q.steps.map(function (x, i) { return [x, seen[i] ? 'ok' : mine[i] ? 'mine' : '']; }) },
       gifts: gifts, gave: null, fields: fields, texts: texts, consent: consent, door: core ? 'core' : lead ? 'lead' : null
     };
@@ -712,6 +865,100 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     try { var u = URL.createObjectURL(new Blob([text], { type: type })), a = document.createElement('a'); a.href = u; a.download = name; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(u); a.remove(); }, 1500); return true; } catch (e) { return false; }
   }
 
+
+  // ------------------------------------------------------------------ folds (F-061): every section folds away; this
+  // device remembers which you keep open (localStorage, and the page works the same without it)
+  var FOLDS_KEY = 'mahala.me.open', FOLDS = (function () { try { return JSON.parse(localStorage.getItem(FOLDS_KEY) || '{}') || {}; } catch (e) { return {}; } })();
+  function fold(id, title, body, o) {
+    o = o || {}; var open = Object.prototype.hasOwnProperty.call(FOLDS, id) ? !!FOLDS[id] : !!o.open;
+    return '<details class="fold" id="' + id + '" data-fold="' + id + '"' + (open ? ' open' : '') + '><summary>'
+      + (o.thumb ? '<img class="fthumb" src="' + o.thumb + '" alt="">' : '<span class="fdot" aria-hidden="true"></span>')
+      + '<span class="ftitle"><h2>' + title + '</h2>' + (o.sub ? '<span class="fsub">' + o.sub + '</span>' : '') + '</span><span class="fchev" aria-hidden="true"></span></summary>'
+      + '<div class="foldin">' + body + '</div></details>';
+  }
+  document.addEventListener('toggle', function (ev) {
+    var d = ev.target; if (!d || !d.dataset || !d.dataset.fold) return;
+    FOLDS[d.dataset.fold] = d.open; try { localStorage.setItem(FOLDS_KEY, JSON.stringify(FOLDS)); } catch (e) { }
+  }, true);
+
+  // ------------------------------------------------------------------ sharing (F-062, F-065): the phone's own share
+  // sheet where there is one, else the link is copied
+  var SHARE_ICON = '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7.5 7.5L12 3l4.5 4.5M5 13v6h14v-6"/></svg>';
+  var DONATE = (window.MAHALA_SITE && window.MAHALA_SITE.donateUrl) || 'https://www.backabuddy.co.za/campaign/the-seed';
+  var FILM_PAGE = 'https://wearemahala.com/seed.html';
+  function share(btn, data, copied) {
+    var done = function (t) { say(btn, t); };
+    if (navigator.share) { navigator.share(data).then(function () { done('Thank you for passing it on.'); }, function () { }); return; }
+    var text = data.url;
+    (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () { done(copied); }, function () {
+      try { var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); var ok = document.execCommand('copy'); ta.remove(); done(ok ? copied : 'Copy this link: ' + text); } catch (e) { done('Copy this link: ' + text); }
+    });
+  }
+
+  // ------------------------------------------------------------------ your years as beads on a string (F-064)
+  // One bead for each year you came. Open one: that year's camp and theme (Mahala OS community/camps/*.md) and your
+  // own threads from it (from your profile, else from your thread).
+  var CAMPS = { 2013: ['Jozi Burrio', ''], 2016: ['State of Bliss', ''], 2017: ['State of Bliss', ''], 2018: ['State of Bliss', ''], 2019: ['State of Bliss', ''],
+    2020: ['State of Bliss', 'burn cancelled'], 2021: ['State of Bliss', 'no burn'], 2022: ['State of Bliss', 'no burn'], 2023: ['State of Bliss', 'no burn'],
+    2024: ['State of Bliss', 'Nowhere’s End'], 2025: ['Mahala', 'The Portal'], 2026: ['Mahala', 'Through the Prism'], 2027: ['Mahala', 'The Seed'] };
+  var BEADHUES = ['var(--yellow)', 'var(--cyan)', 'var(--magenta)'];
+  function yearItems() {
+    var by = {}, K = P.known;
+    if (K && Array.isArray(K.history)) K.history.forEach(function (c) { if (!Array.isArray(c)) return; var y = parseInt(String(c[0]), 10); if (y) by[y] = (by[y] || []).concat((Array.isArray(c[1]) ? c[1] : []).filter(function (x) { return typeof x === 'string'; })); });
+    else if (P.rec) (P.rec.thread || []).forEach(function (l) { if (l && l.year && l.text) (by[l.year] = by[l.year] || []).push(l.text); });
+    else (P.chapters || []).slice(1).forEach(function (c) { var y = parseInt(c[0], 10); if (y) by[y] = [c[1]]; });
+    return by;
+  }
+  function mala() {
+    var by = yearItems(), yrs = (P.rec ? P.rec.years : P.rings.map(Number)).filter(function (y) { return y && y < 2027; });
+    if (!yrs.length) return '';
+    return '<div class="mala" id="mala"><h3>Your history with Mahala</h3><p class="knote">One bead for each year you came. Open one to bring it back.</p>'
+      + '<div class="malastring" role="group" aria-label="Your years, one bead each">' + yrs.map(function (y, i) {
+        return '<button type="button" class="mbead" data-myear="' + y + '" aria-expanded="false" style="--hue:' + BEADHUES[i % 3] + '"><span class="vh">' + y + '</span><span class="my" aria-hidden="true">' + String(y).slice(2) + '</span></button>';
+      }).join('') + '</div><div class="malasay" id="malasay" aria-live="polite"></div></div>';
+  }
+  function malaSay(y) {
+    var c = CAMPS[y] || ['', ''], items = (yearItems()[y] || []).filter(function (x) { return !/^nominated by/i.test(x); }), more = items.length > 12 ? items.length - 12 : 0;
+    return '<p class="myear"><b>' + y + '</b>' + (c[0] ? ' ' + esc(c[0]) : '') + (c[1] ? ' <i>' + esc(c[1]) + '</i>' : '') + '</p>'
+      + (items.length ? '<ul>' + items.slice(0, 12).map(function (x) { return '<li>' + esc(cap(x)) + '</li>'; }).join('') + (more ? '<li class="more">and ' + more + ' more</li>' : '') + '</ul>' : '<p class="knote">You were there. Tell us what you remember, and it joins your thread.</p>');
+  }
+
+  // ------------------------------------------------------------------ your card, smaller and turnable (F-063)
+  function cardMini() {
+    var kept = P.beads.map(function (b, i) { return [b, i]; }).filter(function (x) { return x[0][0] !== 'there'; });
+    if (!P.card) return '<div class="cardmini"><div class="card own" id="own"><div class="face front"><img src="' + IMG('back') + '" alt="Your card, still face down"></div></div>'
+      + '<div class="cardtext"><p class="cardname"><b>Your card waits</b>Draw it in the Mahalaverse, beside the Book of Mahala, and it lives here too.</p><div class="cardbtns"><a class="btn small ghost" href="./#mahalaverse">Draw your card</a><button type="button" class="btn small" id="drawBtn">Draw a message</button></div></div></div><div class="drawn" id="drawn"></div>' + keptBeads(kept);
+    var c = deck(P.card);
+    return '<div class="cardmini"><button type="button" class="cardflip" id="ownThumb" aria-label="Turn your card, ' + esc(c.t) + '"><div class="card own" id="own"><div class="face front"><img src="' + IMG(P.card) + '" alt="' + esc(c.t) + ', your card from the Mahala archetype deck"></div>'
+      + '<div class="face back" aria-live="polite"><b>' + esc(c.t) + '</b><q>' + esc(c.q) + '</q></div></div></button>'
+      + '<div class="cardtext"><p class="cardname"><b>' + esc(c.t) + '</b>' + esc(c.cap) + '</p><p class="cardq">“' + esc(c.q) + '”</p>'
+      + '<details class="cardread"><summary>Read your card</summary><p>' + esc(c.g) + '</p></details>'
+      + '<div class="cardbtns"><button type="button" class="btn small ghost" id="turnOwn" aria-pressed="false">Turn it</button><button type="button" class="btn small" id="drawBtn">Draw a message</button></div></div></div>'
+      + '<div class="drawn" id="drawn"></div>' + keptBeads(kept);
+  }
+  function keptBeads(kept) {
+    return '<div class="beads" role="group" aria-label="What you kept, only you see it">' + kept.map(function (x) { return '<button type="button" class="bead" style="background:' + BEADKIND[x[0][0]][0] + '" data-bead="' + x[1] + '" aria-expanded="false" aria-label="A bead for ' + BEADKIND[x[0][0]][1] + '"></button>'; }).join('') + '</div>'
+      + '<p class="beadsay" id="beadsay" aria-live="polite">' + (kept.length ? 'What you kept and gave: tap a bead.' : 'Keep a message you draw, and a bead joins your string.') + '</p>';
+  }
+
+  // ------------------------------------------------------------------ your quest, made easy (F-065)
+  // The film as a small picture that plays here, one tap to send it to three people, and a fold with why it matters,
+  // what it helps, what you need and its stage, all from the quest's own words in the Mahalaverse (mahalaverse.js).
+  function questKnot() {
+    var q = QUESTS.filter(function (x) { return x.id === P.quest.id; })[0] || {}, film = /film/i.test((q.steps || []).join(' ') + ' ' + (q.goal || ''));
+    return '<li class="knot glow" id="questKnot"><b>Your quest: ' + esc(P.quest.name) + '</b><div class="quest"><span class="crew">' + esc(P.quest.crew) + ' · ' + (P.live ? 'tick steps in the Mahalaverse; a steward witnesses them' : 'tick a step when it is done; a steward witnesses it') + '</span>'
+      + (film ? '<div class="qfilm"><button type="button" class="qthumb" id="qFilm" aria-label="Play the film of The Seed here"><img src="seed/img/film_wide.jpg" alt=""><span class="qplay" aria-hidden="true"></span></button>'
+        + '<div class="qfilmtext"><b>The Seed, in 60 seconds</b><small>Concept visualisation, rendered from the 3D model.</small><button type="button" class="btn small" id="shareFilm">' + SHARE_ICON + 'Send it to three people</button><p class="said" data-said aria-live="polite"></p></div></div>' : '')
+      + '<ul class="steps" id="steps">' + stepsHtml() + '</ul>'
+      + (q.goal ? '<details class="qwhy"><summary>Why it matters, and what you need</summary><dl>'
+        + '<div><dt>Why it matters</dt><dd>' + esc(q.goal) + '</dd></div>'
+        + (q.crewWhat ? '<div><dt>What it helps</dt><dd>' + esc(q.crew) + ': ' + esc(q.crewWhat.charAt(0).toLowerCase() + q.crewWhat.slice(1)) + '.</dd></div>' : '')
+        + '<div><dt>What you need</dt><dd>' + esc(q.skills || '') + (film ? '. The film: <a class="link" href="seed.html">The Seed page</a>.' : '.') + '</dd></div>'
+        + (q.stage ? '<div><dt>When</dt><dd>Its stage on the way to The Seed: ' + esc(q.stage) + '.</dd></div>' : '')
+        + '</dl></details>' : '')
+      + (P.live ? '<p style="margin:8px 0 0"><a class="link" href="./#mahalaverse">Tick a step in the Mahalaverse</a></p>' : '') + '</div></li>';
+  }
+
   // ------------------------------------------------------------------ the page
   var P = null, who = null, steps = [], drawn = null, drawsLeft = 1, myOpen = false, DEMO = true;
   function render() {
@@ -725,63 +972,65 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     $('chip').innerHTML = (P.live && M().emblem ? '<img id="chipPic" alt="" referrerpolicy="no-referrer" src="' + M().emblem(LIVE.uid) + '">' : sigil(P, 'mini')) + '<span>' + esc(P.first) + '</span><span class="vh">: your choices</span>';
     var sleeps = Math.ceil((RISES - TODAY) / 864e5), h = '';
 
-    // the altar
-    h += hero();
-    h += '<section class="altar" aria-labelledby="youH"><div class="cardzone">'
-      + '<div class="cardstage"><div class="halo" aria-hidden="true"></div>'
-      + (P.card ? '<div class="card own" id="own"><div class="face front"><img src="' + IMG(P.card) + '" alt="' + esc(deck(P.card).t) + ', your card from the Mahala archetype deck"></div>'
-      + '<div class="face back" aria-live="polite"><b>' + esc(deck(P.card).t) + '</b><q>' + esc(deck(P.card).q) + '</q><p>' + esc(deck(P.card).g) + '</p></div></div>'
-      : '<div class="card own" id="own"><div class="face front"><img src="' + IMG('back') + '" alt="Your card, still face down"></div></div>')
-      + '<div class="beads" role="group" aria-label="Your beads, only you see them">' + P.beads.map(function (b, i) { return '<button type="button" class="bead' + (b[2] ? ' big' : '') + '" style="background:' + BEADKIND[b[0]][0] + '" data-bead="' + i + '" aria-expanded="false" aria-label="A bead for ' + BEADKIND[b[0]][1] + '"></button>'; }).join('') + '</div></div>'
-      + '<p class="beadsay" id="beadsay" aria-live="polite">' + (P.beads.length === 1 ? 'Your first bead. Tap it.' : 'Your beads: tap one for its moment. Only you see them.') + '</p>'
-      + (P.card ? '<p class="cardname"><b>' + esc(deck(P.card).t) + '</b>' + esc(deck(P.card).cap) + '</p>' : '<p class="cardname"><b>Your card waits</b>Draw it in the Mahalaverse, beside the Book of Mahala, and it lives here too.</p>')
-      + '<div class="cardbtns">' + (P.card ? '<button type="button" class="btn small ghost" id="turnOwn" aria-pressed="false">Hear your card</button>' : '<a class="btn small ghost" href="./#mahalaverse">Draw your card</a>') + '<button type="button" class="btn small" id="drawBtn">Draw a message</button></div>'
-      + '<div class="drawn" id="drawn"></div></div>'
-
-      + '<div class="whohead">' + (P.live ? portrait() : '') + '<p class="hello">' + esc(P.hello) + '</p><h1 id="youH">' + esc(P.first) + '</h1>'
+    // The order Chris asked for (8 Nov, F-062): the welcome and your picture, then the camp 2027 card, then Your story,
+    // then the gatherings, then Growing The Seed; the rest after. Every section folds away, and this device remembers
+    // which ones you keep open (F-061).
+    h += '<section class="welcome" aria-labelledby="youH">' + (P.live ? '<div class="wpic">' + portrait() + '</div>' : '<div class="sigilwrap">' + sigil(P, 'big') + '</div>')
+      + '<div class="wtext"><p class="hello">' + esc(P.hello) + '</p><h1 id="youH">' + esc(P.first) + '</h1>'
       + (P.playa ? (P.playa === P.first ? '' : '<p class="playa">On the playa: <i>' + esc(P.playa) + '</i></p>') : '<p class="playa"><button type="button" class="link" data-choices>Choose your playa name</button></p>')
       + '<p class="sleeps">' + sleeps + ' sleeps until The Seed rises</p>'
-      + (P.live ? soul() : (P.hats.length ? '<div class="hats">' + P.hats.map(function (x) { return '<span class="hat">' + HAT + esc(x) + '</span>'; }).join('') + '</div>' : ''))
-      + '</div><div class="whorest"><div class="seedlife">' + seedOfLife(P) + '<div><p class="season"><b>Where you are now</b>' + esc(P.season) + '</p>'
-      + '<p class="petalsay" id="petalsay" aria-live="polite">Tap a circle. Each is a way of belonging, filled in any order. At the centre, where The Seed sits, everyone is a temple builder.</p>'
-      + (P.rings.length ? '<p class="rings">The rings around it are your years: ' + andList(P.rings) + '.</p>' : '') + '</div></div>'
-      + (P.live && P.tier && P.tier !== 'tribe' ? '' : nextStep()) + letter() + roleDoor() + '</div></section>';
+      + (!P.live && P.hats.length ? '<div class="hats">' + P.hats.map(function (x) { return '<span class="hat">' + HAT + esc(x) + '</span>'; }).join('') + '</div>' : '')
+      + '</div></section>';
+    h += hero() + '<div class="journey">' + (P.live && P.tier && P.tier !== 'tribe' ? '' : nextStep()) + roleDoor() + '</div><div id="tasksHost"></div>';
 
-    // now
+    // 2. your story: the soul portrait, you as Mahala knows you, and your years as beads on a string (F-044, F-064)
+    h += fold('story', 'Your story', (P.live ? soul() + known() : '') + mala(), { open: true, sub: P.live ? 'Only you see it' : '' });
+
+    // 3. the gatherings
     var up = upcoming(), soon = up.filter(function (e) { return e.kind !== 'burn'; }).slice(0, 3);
-    h += curve() + '<section class="movement" id="now" aria-labelledby="nowH"><h2 id="nowH">Gatherings ahead</h2><p class="lede">Build days, talks and evenings together. Open one for the details; say yes and the rest comes closer to the day.</p>'
-      + '<div class="tickets">' + soon.map(ticket).join('') + '</div>'
-      + '<p class="season-link"><a class="link" href="tribe.html#events">The whole season, to the burn</a></p></section>';
+    h += fold('now', 'Gatherings ahead', '<p class="lede">Build days, talks and evenings together. Open one for the details; say yes and the rest comes closer to the day.</p>'
+      + letter() + '<div class="tickets">' + soon.map(ticket).join('') + '</div>'
+      + '<p class="season-link"><a class="link" href="tribe.html#events">The whole season, to the burn</a></p><div id="eventsHost"></div>', { open: true });
 
-    // your path
-    h += curve(true) + '<section class="movement" id="path" aria-labelledby="pathH"><h2 id="pathH">Your thread</h2><p class="lede">Where your thread runs this season, newest first. Something missing? <button type="button" class="link" data-tell="Your thread">Tell the stewards</button>.</p><ol class="thread">';
+    // 4. growing The Seed, with one click to share the crowdfund
+    h += fold('seed', 'Growing The Seed', seedRing()
+      + (P.gave ? '<p class="mine">You gave in ' + esc(P.gave.when) + ', towards the ' + esc(P.gave.towards) + '. Thank you.<small>Only you see this line, and never an amount.</small></p>' : '<p class="mine">When you give, a line appears here that only you can see.<small><a href="seed.html">The Seed and its milestones</a></small></p>')
+      + '<div class="row shareseed"><button type="button" class="btn" id="shareSeed">' + SHARE_ICON + 'Share the crowdfund</button><a class="btn ghost" href="' + esc(DONATE) + '" target="_blank" rel="noopener">Give to The Seed</a></div><p class="said" data-said aria-live="polite"></p>', { open: true });
+
+    // 5. your path this season, with your quest made easy (F-065)
+    var path = '<p class="lede">Where your thread runs this season, newest first. Something missing? <button type="button" class="link" data-tell="Your path this season">Tell the stewards</button>.</p><ol class="thread">';
     P.chapters.forEach(function (c, i) {
-      h += '<li class="knot chapter"><b>' + esc(c[0]) + '</b><span>' + esc(c[1]) + '</span></li>';
+      if (i > 0 && P.live) return;
+      path += '<li class="knot chapter"><b>' + esc(c[0]) + '</b><span>' + esc(c[1]) + '</span></li>';
       if (i === 0) {
-        (c[2] || []).forEach(function (k) { h += '<li class="knot"><b>' + esc(k[0]) + '</b><span>' + esc(k[1]) + '</span></li>'; });
+        (c[2] || []).forEach(function (k) { path += '<li class="knot"><b>' + esc(k[0]) + '</b><span>' + esc(k[1]) + '</span></li>'; });
         var g = Object.keys(P.yes).filter(function (k) { return P.yes[k] === 'yes'; }).map(function (k) { return EVENTS.events.filter(function (e) { return e.id === k; })[0]; }).filter(Boolean);
-        g.forEach(function (e) { h += '<li class="knot glow"><b>' + esc(e.title) + '</b><span>' + fmt(e.date) + '. You said yes; after the day it is tied in here.</span></li>'; });
-        if (c[3] === 'waiting' && !g.length) h += '<li class="knot waiting"><b>Your first gathering ties the next knot</b><span>We\u2019ll tie it together.</span></li>';
-        h += '<li class="knot glow" id="questKnot"><b>Your quest: ' + esc(P.quest.name) + '</b><div class="quest"><span class="crew">' + esc(P.quest.crew) + ' · ' + (P.live ? 'tick steps in the Mahalaverse; a steward witnesses them' : 'tick a step when it is done; a steward witnesses it') + '</span><ul class="steps" id="steps">' + stepsHtml() + '</ul>' + (P.live ? '<p style="margin:8px 0 0"><a class="link" href="./#mahalaverse">Tick a step in the Mahalaverse</a></p>' : '') + '</div></li>';
+        g.forEach(function (e) { path += '<li class="knot glow"><b>' + esc(e.title) + '</b><span>' + fmt(e.date) + '. You said yes; after the day it is tied in here.</span></li>'; });
+        if (c[3] === 'waiting' && !g.length) path += '<li class="knot waiting"><b>Your first gathering ties the next knot</b><span>We’ll tie it together.</span></li>';
+        path += questKnot();
       }
     });
-    if (P.before) h += '<li class="knot"><b>Before Mahala</b><span>The Grateful Heart, The State of Bliss, Nowhere\u2019s End. Were you there? <button type="button" class="link" data-tell="Your thread">Add your years</button></span></li>';
-    h += '</ol></section>';
+    if (P.before) path += '<li class="knot"><b>Before Mahala</b><span>The Grateful Heart, The State of Bliss, Nowhere’s End. Were you there? <button type="button" class="link" data-tell="Your path this season">Add your years</button></span></li>';
+    h += fold('path', 'Your path this season', path + '</ol>', { open: true, sub: 'Your quest: ' + esc(P.quest.name) });
 
-    // what you carry
-    h += curve() + '<section class="movement" id="carry" aria-labelledby="carryH"><h2 id="carryH">What you carry</h2><p class="lede">What you told us once, kept safe so no door asks twice, and The Seed we are growing together.</p><div class="cols">'
-      + '<div><h3>Your gifts</h3><dl class="gifts">' + P.gifts.map(function (g) { return '<div><dt>' + esc(g[0]) + '</dt><dd>' + esc(g[1]) + ' <small>· from ' + esc(g[2]) + '</small></dd></div>'; }).join('') + '</dl>'
-      + '<p><button type="button" class="link" data-choices>Change these, or who sees each one</button></p></div>'
-      + '<div><h3>Growing The Seed</h3>' + seedRing()
-      + (P.gave ? '<p class="mine">You gave in ' + esc(P.gave.when) + ', towards the ' + esc(P.gave.towards) + '. Thank you.<small>Only you see this line, and never an amount.</small></p>' : '<p class="mine">When you give, a line appears here that only you can see.<small><a href="seed.html">The Seed and its milestones</a></small></p>')
-      + '</div></div></section>';
+    // 6. your card from the deck, smaller and turnable (F-063)
+    h += fold('cardz', 'Your card', cardMini(), { open: false, sub: P.card ? esc(deck(P.card).t) : 'Still face down', thumb: P.card ? IMG(P.card) : IMG('back') });
+
+    // 7. where you are now: the Golden Seed of Life
+    h += fold('circles', 'Where you are now', '<div class="seedlife">' + seedOfLife(P) + '<div><p class="season">' + esc(P.season) + '</p>'
+      + '<p class="petalsay" id="petalsay" aria-live="polite">Tap a circle. Each is a way of belonging, filled in any order. At the centre, where The Seed sits, everyone is a temple builder.</p>'
+      + (P.rings.length ? '<p class="rings">The rings around it are your years: ' + andList(P.rings) + '.</p>' : '') + '</div></div>', { open: false });
+
+    // 8. what you told us here
+    h += fold('carry', 'What you told us here', '<p class="lede">Kept safe, so no door asks twice.</p><dl class="gifts">' + P.gifts.map(function (g) { return '<div><dt>' + esc(g[0]) + '</dt><dd>' + esc(g[1]) + ' <small>· from ' + esc(g[2]) + '</small></dd></div>'; }).join('') + '</dl>'
+      + '<p><button type="button" class="link" data-choices>Change these, or who sees each one</button></p>', { open: false });
 
     h += '<div class="portal"><p><b>Step through the portal</b>The same you waits in the Mahalaverse: your card, your beads, your quest. Tick a step there and it shows here.</p><a class="btn ghost" href="./#mahalaverse">Into the Mahalaverse</a></div>';
     h += '<p style="margin-top:28px"><button type="button" class="link" data-choices>Your choices: who sees what, what we keep, and leaving</button></p>';
 
     $('page').innerHTML = h;
     renderChoices();
-    $('tellWhere').innerHTML = ['Where you are now (the Seed of Life)', 'Your card and beads', 'The invitation', 'Gatherings ahead', 'Your thread', 'What you carry', 'Your choices'].concat(P.door === 'lead' ? ['The people you called in'] : P.door === 'core' ? ['Holding the whole'] : []).concat(['Something else']).map(function (x) { return '<option>' + x + '</option>'; }).join('');
+    $('tellWhere').innerHTML = ['Your welcome and picture', 'The invitation', 'Your story', 'Gatherings ahead', 'Growing The Seed', 'Your path this season', 'Your card', 'Where you are now (the Seed of Life)', 'What you told us here', 'Your choices'].concat(P.door === 'lead' ? ['The people you called in'] : P.door === 'core' ? ['Holding the whole'] : []).concat(['Something else']).map(function (x) { return '<option>' + x + '</option>'; }).join('');
     $('yours').innerHTML = P.live ? (LIVE.tell.length ? LIVE.tell.slice().sort(function (a, b) { return (b.at || 0) - (a.at || 0); }).map(function (x) { return '<li>' + esc(x.text || '') + '<small>' + esc(x.reply || 'Heard. The stewards answer within a week.') + '</small></li>'; }).join('') : '<li>Nothing yet.<small>What you send shows here, with what happened to it.</small></li>')
       : '<li>The ladder felt like a ranking<small>Changed, 4 Nov: it became the Golden Seed of Life. Thank you.</small></li>';
     if (P.live && LIVE.store.last && nextNewMoon(new Date(LIVE.store.last.at)) > TODAY) draw(false, LIVE.store.last);
@@ -828,7 +1077,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     var show = function (x) {
       if (!x) return;
       if (emb && x.from !== 'own') x = { src: mm.emblem(LIVE.uid), from: 'chosen-emblem' };
-      if ($('pic')) $('pic').src = x.src; if ($('chipPic')) $('chipPic').src = x.src;
+      if ($('pic')) $('pic').src = x.src; if ($('chipPic')) $('chipPic').src = x.src; if ($('knownPic')) $('knownPic').src = x.src;
       var say = $('picsay'); if (!say) return;
       say.innerHTML = x.from === 'own' ? 'Your picture. Only you see it here. <button type="button" class="link" id="picDel">Remove it</button>'
         : x.from === 'map' ? 'Your picture from the community map. ' + pick + 'Choose another</label> or <button type="button" class="link" id="picEmblem">use my emblem</button>'
@@ -838,10 +1087,21 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     };
     (mm.pictureInfo ? mm.pictureInfo() : mm.picture().then(function (u) { return u && { src: u, from: 'google' }; })).then(show, function () { });
   }
+  // a screenshot for the feedback form (F-060): shown here first, sent with the words
+  var SHOT = null;
+  function clearShot() { SHOT = null; var pv = $('shotPrev'); if (pv) { if (pv.src) URL.revokeObjectURL(pv.src); pv.removeAttribute('src'); pv.hidden = true; } var sy = $('shotSay'); if (sy) sy.textContent = 'Only you and the stewards can open it.'; }
+  document.addEventListener('change', function (ev) {
+    if (ev.target.id !== 'tellShot' || !ev.target.files || !ev.target.files[0]) return;
+    var f = ev.target.files[0]; ev.target.value = '';
+    if (!/^image\//.test(f.type || '')) { $('shotSay').textContent = 'Choose a screenshot or an image file.'; return; }
+    clearShot(); SHOT = f; var pv = $('shotPrev'); pv.src = URL.createObjectURL(f); pv.hidden = false;
+    $('shotSay').innerHTML = 'Ready to send with your words. <button type="button" class="link" id="shotDel">Remove it</button>';
+  });
+  document.addEventListener('click', function (ev) { if (ev.target && ev.target.id === 'shotDel') clearShot(); });
   document.addEventListener('change', function (ev) {
     if (ev.target.id !== 'picIn' || !ev.target.files || !ev.target.files[0]) return;
     var say = $('picsay'); say.textContent = 'Making it small and keeping it safe\u2026';
-    M().setPicture(ev.target.files[0]).then(function (u) { $('pic').src = u; if ($('chipPic')) $('chipPic').src = u; say.textContent = 'Your picture is saved. Only you see it here.'; setTimeout(picture, 2500); }, function (e) { say.textContent = (e && e.message) || 'That picture did not save. Try another.'; });
+    M().setPicture(ev.target.files[0]).then(function (u) { $('pic').src = u; if ($('chipPic')) $('chipPic').src = u; if ($('knownPic')) $('knownPic').src = u; say.textContent = 'Your picture is saved. Only you see it here.'; setTimeout(picture, 2500); }, function (e) { say.textContent = (e && e.message) || 'That picture did not save. Try another.'; });
     ev.target.value = '';
   });
 
@@ -881,8 +1141,45 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
         + '<div class="soulask"><textarea id="soulText" rows="3" maxlength="600" aria-label="Your story, in a few lines" placeholder="A few lines, in your own words"></textarea>'
         + '<div class="row"><button type="button" class="btn small" id="soulSave">Tell us</button><span class="sub">Only you and the stewards see it.</span></div><p class="said" id="soulSaid" aria-live="polite"></p></div>';
     }
-    return '<div class="soul" id="soul">' + h + '<p class="sig">MAHALA</p>' + soulYears()
-      + '<details class="fixit"><summary>Something missing or not quite right?</summary><textarea id="fixText" rows="2" maxlength="1000" placeholder="A year you camped, a hat you wore, a name, a word that is not yours"></textarea><div class="row" style="margin-top:6px"><button type="button" class="btn small ghost" id="fixSend">Send to the stewards</button></div><p class="said" id="fixSaid" aria-live="polite"></p></details></div>';
+    // the door to correct the record sits at the very end: under your profile when there is one, else here
+    return '<div class="soul" id="soul">' + h + '<p class="sig">MAHALA</p>' + soulYears() + (P.known ? '' : FIXIT) + '</div>';
+  }
+  var FIXIT = '<details class="fixit"><summary>Something missing or not quite right?</summary><textarea id="fixText" rows="2" maxlength="1000" placeholder="A year you camped, a hat you wore, a name, a word that is not yours"></textarea><div class="row" style="margin-top:6px"><button type="button" class="btn small ghost" id="fixSend">Send to the stewards</button></div><p class="said" id="fixSaid" aria-live="polite"></p></details>';
+
+  // ------------------------------------------------------------------ you, as Mahala knows you (Chris, 8 Nov 2026, F-044)
+  // The same care and detail as the stewards' community map card, said to you, about you, and shown only to you
+  // (my_thread's ownProfile, made by Mahala OS community/pipelines/own_profile.py at the push). The years you came, four
+  // facts, what you bring, your words, what the one who called you in sees in you (never naming them, and only once
+  // your letter went), your history, your threads by first name, your details. All but the first two parts start
+  // folded, so the page stays gentle. Mahala OS checks every line before it comes; this page escapes every word.
+  var KNOWN_YEARS = [2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027];
+  function known() {
+    var K = P.known; if (!P.live || !K) return '';
+    var arr = function (x) { return Array.isArray(x) ? x : []; }, str = function (x) { return typeof x === 'string' ? x : ''; };
+    var g = K.glance || {}, yrs = arr(K.years).map(Number), B = K.bring && typeof K.bring === 'object' ? K.bring : null;
+    var quotes = function (list) { return arr(list).filter(function (q) { return Array.isArray(q) && str(q[1]); }).map(function (q) { return '<figure class="kq"><figcaption>' + esc(str(q[0])) + '</figcaption><blockquote>' + esc(str(q[1])).replace(/\n/g, '<br>') + '</blockquote></figure>'; }).join(''); };
+    var kfold = function (id, title, n, body, note) {
+      return n ? '<details class="kfold" id="' + id + '"><summary><span class="kt">' + title + '</span><span class="kn">' + n + '</span></summary>' + (note ? '<p class="knote">' + note + '</p>' : '') + body + '</details>' : '';
+    };
+    var num = function (v) { return typeof v === 'number' ? esc(v) : '\u00b7'; };
+    var h = '<section class="known" id="known" aria-labelledby="knownH">'
+      + '<div class="khead"><img class="kpic" id="knownPic" alt="" referrerpolicy="no-referrer" src="' + (M().emblem ? M().emblem(LIVE.uid) : '') + '">'
+      + '<div><p class="kkick">Only you see this</p><h2 id="knownH">You, as Mahala knows you</h2></div></div>'
+      + '<div class="kyears" role="list" aria-label="The years you came">' + KNOWN_YEARS.map(function (y) { var on = yrs.indexOf(y) >= 0; return '<span role="listitem" class="' + (on ? 'on' : '') + '"' + (on ? ' title="' + esc(y + (CAMPNAME(y) ? ', ' + CAMPNAME(y) : '')) + '"' : '') + '>' + (on ? '<b>' + y + '</b>' : "\u2019" + String(y).slice(2)) + (on ? '<span class="vh">, you came</span>' : '') + '</span>'; }).join('') + '</div>'
+      + '<dl class="kglance"><div><dt>' + (g.years === 1 ? 'year' : 'years') + ' with the camp</dt><dd>' + num(g.years) + '</dd></div><div><dt>first came</dt><dd>' + num(g.first) + '</dd></div>'
+      + '<div><dt>roles and offerings</dt><dd>' + num(g.roles) + '</dd></div><div><dt>threads to others</dt><dd>' + num(g.links) + '</dd></div></dl>';
+    if (B) {
+      h += '<div class="kbring"><h3>What you bring <small>as Mahala reads your words</small></h3>'
+        + (str(B.q) ? '<p class="kvision">\u201c' + esc(B.q) + '\u201d</p>' : '')
+        + '<div class="kpills">' + arr(B.tags).map(function (t) { return '<span>' + esc(str(t)) + '</span>'; }).join('') + arr(B.values).map(function (t) { return '<span class="v">' + esc(str(t)) + '</span>'; }).join('') + '</div>'
+        + (arr(B.into).length ? '<p class="kinto">Into: ' + esc(arr(B.into).map(str).join(', ')) + '</p>' : '') + '</div>';
+    }
+    h += kfold('kGifts', 'Your gifts and offerings, in your words', arr(K.gifts).length, quotes(K.gifts))
+      + kfold('kOwn', 'In your own words', arr(K.own).length, quotes(K.own))
+      + kfold('kCalled', 'What the one who called you in sees in you', arr(K.called).length, quotes(K.called), 'From your nomination, in their words, kept for you.')
+      + kfold('kThreads', 'Your threads', arr(K.threads).length, '<ul class="kthreads">' + arr(K.threads).filter(Array.isArray).map(function (t) { return '<li><span>' + esc(cap(str(t[0]))) + '</span> <b>' + esc(str(t[1])) + '</b>' + (typeof t[2] === 'number' ? ' <i>' + t[2] + '</i>' : '') + '</li>'; }).join('') + '</ul>', 'The people your thread runs with, by first name.')
+      + kfold('kFacts', 'Your details', arr(K.facts).length, '<dl class="kfacts">' + arr(K.facts).filter(Array.isArray).map(function (f) { return '<div><dt>' + esc(str(f[0])) + '</dt><dd>' + esc(str(f[1])) + '</dd></div>'; }).join('') + '</dl>');
+    return h + '<p class="kfoot">Built from what you, and the people who know you, have told the camp over the years. Contact details stay with the stewards.</p>' + FIXIT + '</section>';
   }
 
   function deck(k) { return DECK.filter(function (c) { return c.k === k; })[0]; }
@@ -989,7 +1286,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   }
 
   // ------------------------------------------------------------------ what you can try
-  function say(el, t) { var s = el.closest('.letter, .tin, .doorin, .sheetin, section, .cardzone'); s = s && s.querySelector('[data-said], .said'); if (s) s.textContent = t; }
+  function say(el, t) { var s = el.closest('.qfilmtext, .letter, .tin, .doorin, .sheetin, section, .fold, .cardzone'); s = s && s.querySelector('[data-said], .said'); if (s) s.textContent = t; }
   function open(dlg) { try { dlg.showModal(); } catch (e) { dlg.setAttribute('open', ''); } var f = dlg.querySelector('[data-close], textarea'); if (f) f.focus(); }
 
   document.addEventListener('click', function (ev) {
@@ -997,7 +1294,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     if (t.matches('[data-close]')) { t.closest('dialog').close(); return; }
     if (t.id === 'signInBtn') { if (M()) M().signIn(); return; }
     if (t.id === 'picDel') { $('picsay').textContent = 'Taking it away\u2026'; M().clearPicture().then(function () { picture(); }, function () { $('picsay').textContent = 'That did not work. Try again.'; }); return; }
-    if (t.id === 'picEmblem' || t.id === 'picBack') { save({ pic: t.id === 'picEmblem' ? 'emblem' : null }).then(picture); return; }
+    if (t.id === 'picEmblem' || t.id === 'picBack') { save({ pic: t.id === 'picEmblem' ? 'emblem' : null }).then(function () { if (M().pictureChanged) M().pictureChanged(); picture(); }); return; }
     if (t.id === 'soulSave') {
       var st2 = $('soulText').value.trim(); if (!st2) { $('soulSaid').textContent = 'A few words is plenty.'; return; }
       $('soulSaid').textContent = 'Keeping it safe\u2026';
@@ -1018,7 +1315,11 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     if (t.matches('[data-tell]')) { open($('tell')); $('tellWhere').value = t.dataset.tell; return; }
     if (t.classList.contains('way')) { petal(t); return; }
     if (t.dataset.bead != null) { var b = P.beads[+t.dataset.bead]; document.querySelectorAll('.bead').forEach(function (x) { x.setAttribute('aria-expanded', String(x === t)); }); $('beadsay').textContent = b[1]; return; }
-    if (t.id === 'turnOwn') { myOpen = !myOpen; $('own').classList.toggle('turned', myOpen); t.setAttribute('aria-pressed', String(myOpen)); t.textContent = myOpen ? 'Turn it back' : 'Hear your card'; return; }
+    if (t.id === 'turnOwn' || t.id === 'ownThumb') { myOpen = !myOpen; $('own').classList.toggle('turned', myOpen); var tb = $('turnOwn'); if (tb) { tb.setAttribute('aria-pressed', String(myOpen)); tb.textContent = myOpen ? 'Turn it back' : 'Turn it'; } return; }
+    if (t.id === 'shareSeed') { share(t, { title: 'The Seed', text: 'Help us raise The Seed, the first temple of Mahala\u2019s four-year vision.', url: DONATE }, 'The crowdfund link is copied. Paste it wherever your people are.'); return; }
+    if (t.id === 'shareFilm') { share(t, { title: 'The Seed, in 60 seconds', text: 'Watch the film of The Seed, the temple Mahala is raising. I think you would love it.', url: FILM_PAGE }, 'The film\u2019s link is copied. Send it to three people who would love it.'); return; }
+    if (t.id === 'qFilm') { var v = document.createElement('video'); v.src = 'seed/media/film_wide.mp4'; v.controls = true; v.playsInline = true; v.autoplay = true; v.poster = 'seed/img/film_wide.jpg'; v.className = 'qvideo'; v.setAttribute('aria-label', 'The Seed, in 60 seconds. Concept visualisation.'); t.replaceWith(v); v.play().catch(function () { }); return; }
+    if (t.dataset.myear) { var on = t.getAttribute('aria-expanded') !== 'true'; document.querySelectorAll('.mbead').forEach(function (x) { x.setAttribute('aria-expanded', String(x === t && on)); }); $('malasay').innerHTML = on ? malaSay(+t.dataset.myear) : ''; return; }
     if (t.id === 'drawBtn' || t.id === 'drawAgain') { draw(t.id === 'drawAgain'); return; }
     if (t.id === 'flipDrawn') { var c = $('dcard'); c.classList.toggle('turned'); return; }
     if (t.id === 'keepDrawn' && P.live) save({ kept: (LIVE.store.kept || []).concat([{ k: drawn.k, at: (LIVE.store.last || {}).at || Date.now() }]) });
@@ -1031,8 +1332,11 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     if (t.dataset.ics) { var ev2 = EVENTS.events.filter(function (x) { return x.id === t.dataset.ics; })[0]; var ok = !ARTIFACT && download(ev2.id + '.ics', ics(ev2), 'text/calendar'); say(t, ok ? 'Your calendar file is downloading. Adding it again updates the same entry.' : 'On the site this saves a calendar file. (Nothing downloads in this copy.)'); return; }
     if (t.dataset.follow) { say(t, 'You will hear how The Seed rises. The way into the camp is through a camp lead.'); return; }
     if (t.dataset.proto) { say(t, 'In the prototype: ' + t.dataset.proto); return; }
-    if (t.id === 'tellSend' && P && P.live) { var tl = $('tellText').value.trim(); if (!tl) { $('tellSaid').textContent = 'Write a line first, then send.'; return; } var row = { page: 'Your Mahala', part: $('tellWhere').value, text: tl.slice(0, 2000), ranked: $('tellRank').value.trim().slice(0, 1000), at: Date.now() };
-      $('tellSaid').textContent = 'Sending\u2026'; LIVE.db.doc('signups/' + LIVE.uid + '/tellus/' + row.at.toString(36)).set(row).then(function () { LIVE.tell.push(row); $('yours').insertAdjacentHTML('afterbegin', '<li>' + esc(tl) + '<small>Heard. The stewards answer within a week.</small></li>'); $('tellText').value = ''; $('tellRank').value = ''; $('tellSaid').textContent = 'Thank you. It has reached the stewards.'; }, function () { $('tellSaid').textContent = 'That did not send. Try again in a little while.'; }); return; }
+    if (t.id === 'tellSend' && P && P.live) { var tl = $('tellText').value.trim(); if (!tl && !SHOT) { $('tellSaid').textContent = 'Write a line or add a screenshot, then send.'; return; } var row = { page: 'Your Mahala', part: $('tellWhere').value, text: tl.slice(0, 2000), ranked: $('tellRank').value.trim().slice(0, 1000), at: Date.now() };
+      $('tellSaid').textContent = 'Sending\u2026'; t.disabled = true;
+      (SHOT && M().feedbackShot ? M().feedbackShot(SHOT).then(function (r) { row.shot = r.name; }) : Promise.resolve()).then(function () { return LIVE.db.doc('signups/' + LIVE.uid + '/tellus/' + row.at.toString(36)).set(row); })
+        .then(function () { LIVE.tell.push(row); $('yours').insertAdjacentHTML('afterbegin', '<li>' + esc(tl || 'A screenshot') + (row.shot ? ' <span class="pill">with a screenshot</span>' : '') + '<small>Heard. The stewards answer within a week.</small></li>'); $('tellText').value = ''; $('tellRank').value = ''; clearShot(); $('tellSaid').textContent = 'Thank you. It has reached the stewards.'; },
+          function (e) { $('tellSaid').textContent = (e && e.message) || 'That did not send. Try again in a little while.'; }).then(function () { t.disabled = false; }); return; }
     if (t.id === 'tellSend') { var tx = $('tellText').value.trim(); if (!tx) { $('tellSaid').textContent = 'Write a line first, then send.'; return; } $('yours').insertAdjacentHTML('afterbegin', '<li>' + esc(tx) + '<small>Heard. The stewards answer within a week.</small></li>'); $('tellText').value = ''; $('tellRank').value = ''; $('tellSaid').textContent = 'Thank you. It is in the stewards\u2019 feedback log with the part you chose.'; return; }
   });
   document.addEventListener('keydown', function (ev) { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.classList && ev.target.classList.contains('way')) { ev.preventDefault(); petal(ev.target); } });
@@ -1086,8 +1390,8 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   boot();
 })();
 </script>
-<script src="yourtasks.js?v=2" defer></script>
-<script src="yourevents.js?v=1" defer></script>
+<script src="yourtasks.js?v=3" defer></script>
+<script src="yourevents.js?v=2" defer></script>
 <script src="analytics.js?v=2" defer></script>
 </body>
 </html>

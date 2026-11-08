@@ -5,7 +5,7 @@
 /* the front page is wearemahala.com itself: an old link to /index.html shows as the plain address (F-033) */
 try { if (/\/index\.html$/.test(location.pathname)) history.replaceState(history.state, '', location.pathname.replace(/index\.html$/, '') + location.search + location.hash); } catch (e) { }</script>
 <script src="site.js?v=8"></script>
-<script src="assets/shim/claude-shim.js?v=14"></script>
+<script src="assets/shim/claude-shim.js?v=15"></script>
 <style>
 /* No letter on the website, for anyone (F-023): invitations go out as their own link by email, to a clean landing page. */
 #envRest, #envStage { display: none !important; }
@@ -556,15 +556,14 @@ a.act { color: inherit; text-decoration: none; }
   .ask-nums { gap: 8px; margin-bottom: 14px; } .ask-nums b { font-size: 28px; }
 }
 @media (max-height: 700px) { .ask-dome { display: none; } .ask-nums { grid-auto-flow: column; justify-content: center; gap: 22px; } .ask-nums b { font-size: 26px; } }
-/* the last frame: three ways on, Join the tribe in the middle and largest, the Mahalaverse and Donate beside it */
+/* the last frame: three ways on, Join the tribe in the middle and largest, the Mahalaverse and Donate either side of it (F-045, laptop; on a
+   phone Join the tribe stays on its own row above the other two, as Chris chose on 8 Nov) */
 .moment.end-band { width: min(96vw, 980px); }
 .end-acts { display: flex; align-items: center; justify-content: center; gap: clamp(10px, 2vw, 18px); flex-wrap: nowrap; }
 .end-acts .act { margin-top: 0; }
 .end-acts .step { font: 400 12px/1 var(--text); letter-spacing: .2em; text-transform: uppercase; padding: 11px 20px 10px; gap: 9px; animation: none !important; }
 .end-acts .step svg { width: 10px; height: 14px; }
-.end-acts .lead { order: 0; font: 400 clamp(16px, 1.8vw, 20px)/1 var(--name); letter-spacing: .1em; text-transform: none; padding: 18px 32px 17px; gap: 12px; }
-.end-acts .step { order: -1; }
-.end-acts [data-give] { order: 1; }
+.end-acts .lead { font: 400 clamp(16px, 1.8vw, 20px)/1 var(--name); letter-spacing: .1em; text-transform: none; padding: 18px 32px 17px; gap: 12px; }
 .moment.on .end-acts .lead { animation: stepglow 3.2s ease-in-out infinite 2s; }
 @media (prefers-reduced-motion: reduce) { .moment.on .end-acts .lead { animation: none; } }
 @media (max-width: 640px) {
@@ -1586,7 +1585,7 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
     <p>Do you recall it whispering your name? Beckoning you to join in unity. Inviting you to make real the feeling held deep in the core of your being, the remembering that Love always lights the way.</p>
     <p>This is that call. To step into your role as a temple builder, and raise a temple in celebration of life, of love, of freedom, and of all that is possible. To fill it with song and dance, so that it shines as a beacon, inspiring others to remember for themselves. To plant the Seed of Hope, the beginnings of a great new garden.</p>
     <p>And oh, what fun awaits. Roaring cosmic belly laughs fill the air as we work and play with glowing smiles and sparkling eyes, the very things that set our souls ablaze.</p>
-    <p>At AfrikaBurn 2027, the first structure of the temple complex will rise. We call it The Seed. It is year one of a four-year vision to bring this temple to life. Since 2024, Mahala has raised tented temples and filled them with immersive sound, story and vibrational technology. Now the page turns, and a new chapter begins. You are invited to be part of that story.</p>
+    <p>At AfrikaBurn 2027, the first structure of the temple complex will rise. We call it The Seed. It is year one of a four-year vision, and it stands only if we raise it together. Since 2024, Mahala has raised tented temples and filled them with immersive sound, story and vibrational technology. Now the page turns, and a new chapter begins. You are invited to be part of that story.</p>
     <p>The Seed is a dome of timber and coloured acrylic, 8.7 m across and 6.3 m to the tip of its finial. To build it we are raising R 718 875.</p>
     <p>It is a role you have been preparing for your whole life, and perhaps for many lifetimes before. For how often in a lifetime are we called to be a temple builder?</p>
     <p>This is an entirely non-profit offering. We give of ourselves freely, just as Unconditional Love is offered to us freely, and we gift this experience to all who wander into our ambitious tale. The Mahalaverse is open, an evolving world that welcomes you into the story of this temple, and lets you craft your own part in it. Freely. For Mahala.</p>
@@ -1608,7 +1607,7 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
   <template data-after="2"><p data-place="low">This is that call.</p></template>
   <template data-after="3"><p data-place="low">and raise a temple in celebration of life,<br>of love, of freedom, and of all that is possible.</p></template>
   <template data-after="4"><p data-place="low-tall">so that it shines as a beacon,<br>inspiring others to remember for themselves.<br>To plant the Seed of Hope,<br>the beginnings of a great new garden.</p></template>
-  <template data-after="5"><p>Roaring cosmic belly laughs fill the air<br>as we work and play with glowing smiles and sparkling eyes,<br>the very things that set our souls ablaze.</p><p>At AfrikaBurn 2027, the first structure<br>of the temple complex will rise.<br>We call it The Seed.</p><p>It is year one of a four-year vision<br>to bring this temple to life.</p><p>Since 2024, Mahala has raised tented temples<br>and filled them with immersive sound, story and vibrational technology.<br>Now the page turns, and a new chapter begins.</p></template>
+  <template data-after="5"><p>Roaring cosmic belly laughs fill the air<br>as we work and play with glowing smiles and sparkling eyes,<br>the very things that set our souls ablaze.</p><p>At AfrikaBurn 2027, the first structure<br>of the temple complex will rise.<br>We call it The Seed.</p><p>It is year one of a four-year vision,<br>and it stands only if we raise it together.</p><p>Since 2024, Mahala has raised tented temples<br>and filled them with immersive sound, story and vibrational technology.<br>Now the page turns, and a new chapter begins.</p></template>
   <template data-after="6"><p>It is a role you have been preparing for your whole life,<br>and perhaps for many lifetimes before.<br>For how often in a lifetime<br>are we called to be a temple builder?</p><p>This is an entirely non-profit offering.<br>We give of ourselves freely,<br>just as Unconditional Love is offered to us freely,</p><p>and we gift this experience<br>to all who wander into our ambitious tale.<br>The Mahalaverse is open, an evolving world<br>that welcomes you into the story of this temple,<br>and lets you craft your own part in it.</p></template>
 </div>
 
@@ -1687,8 +1686,8 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
 </div>
 <div class="moment low-band end-band" data-m="7" inert>
   <div class="end-acts">
-    <a class="act lead" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Join" data-count-where="the end">Join the tribe</a>
     <a class="act step" id="stepIn" href="#mahalaverse" data-count="Mahalaverse" data-count-where="the end"><svg viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg>Step into the Mahalaverse</a>
+    <a class="act lead" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Join" data-count-where="the end">Join the tribe</a>
     <a class="act" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give data-count="Donate" data-count-where="the end">Donate to The Seed</a>
   </div>
 </div>
@@ -3943,7 +3942,7 @@ async function start3D() {
   frame();
 }
 </script>
-<script src="yourevents.js?v=1" defer></script>
+<script src="yourevents.js?v=2" defer></script>
 <script src="analytics.js?v=2"></script>
 
 </body></html>
