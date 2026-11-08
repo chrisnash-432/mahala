@@ -301,13 +301,13 @@ export async function start(M, ctx) {
   const CHOICES = [['journey', 'star', 'A soul journey reflection', 'The card you drew, the question it asked, what came up. Private unless you share it at the fire.', 'Soul journey'],
     ['piece', 'flame', 'A poem or a story', 'For the fire in Blissfull Drift, where everyone who opens the Mahalaverse can read them.', 'Poem or story'],
     ['art', 'eye', 'Digital art', 'An image of your own, or a link to where it lives, for Art by camp mates.', 'Digital art'],
-    ['set', 'sound', 'A music set or a playlist', 'For the shade of the main tent.', 'Music set'],
+    ['set', 'sound', 'An original track or a set', 'For Music from the camp, the camp\'s music library.', 'Music'],
     ['sound', 'petal', 'A sound journey recording', 'A link to a recording, for the Lotus Mahal.', 'Sound journey']];
   const choicesHTML = (compact = false) => compact
     ? `<div class="v7-co-quick" role="group" aria-label="Offer something new">${CHOICES.map(([k, ic, t, , short]) => `<button class="btn v7-co-sm" type="button" data-co="open:${k}" aria-label="${esc(t)}">${icon(ic)}${esc(short)}</button>`).join('')}</div>`
     : `<div class="v7-co-choices">${CHOICES.map(([k, ic, t, s]) => `<button class="v7-co-choice" type="button" data-co="open:${k}" data-k="${k}"><span class="v7-co-ic">${icon(ic)}</span><b>${esc(t)}</b><small>${esc(s)}</small></button>`).join('')}</div>`;
   const assetSrc = a => (C.assetOk(a) ? '/_blob/' + a : null);           // the one path the platform serves an asset from (on Mahala's own site it redirects to the file)
-  const SEE = { fire: ['fire', 'flame', 'Sit by the fire'], gallery: ['gallery', 'eye', 'See Art by camp mates'], tent: ['tent', 'sound', 'The main tent'], lotus: ['lotus', 'petal', 'The Lotus Mahal'] };
+  const SEE = { fire: ['fire', 'flame', 'Sit by the fire'], gallery: ['gallery', 'eye', 'See Art by camp mates'], tent: ['tent', 'sound', 'Music from the camp'], lotus: ['lotus', 'petal', 'The Lotus Mahal'] };
   function itemRow(it) {
     const K = C.KINDS[it.k], st = it.st, acts = [];
     if (st.s === 'private' && canShare()) acts.push(`<button class="btn v7-co-sm" type="button" data-co="sharebook:${esc(it.i)}">${icon('flame')}Share it at the fire</button>`);
@@ -402,11 +402,11 @@ export async function start(M, ctx) {
     set(a, v) {
       const live = !!(S.db && myId()), can = live ? canShare() : true;   // with no shared store the main tent keeps your sets in this browser
       return { title: 'A music set or a playlist',
-        body: `<p class="v7-co-lede">Share music you love with the camp: a playlist, a DJ set or a recording. It plays in the shade of the main tent.</p>
+        body: `<p class="v7-co-lede">Share music with the camp: an original track of yours, a DJ set or a playlist. It is listed in Music from the camp.</p>
           ${field('v7co-ti', 'title', 'What it is called', v.form.title, { max: C.LIMIT.title })}
           ${field('v7co-u', 'url', 'Its link', v.form.url, { max: C.LIMIT.url, url: true })}
           <div class="field"><span class="v7-co-lab">What kind it is</span>${pickHTML('sk', C.SET_KINDS, v.form.sk || 'playlist', 'What kind it is')}</div>
-          ${errLine}${whoLine(canShare() ? `A steward listens first. Then it is listed in the main tent for everyone who can open the Mahalaverse, shown ${shownAs()}.` : live ? why('share music') : 'The shared Mahalaverse cannot be reached from here, so your link is kept in this browser.')}`,
+          ${errLine}${whoLine(canShare() ? `A steward listens first. Then it is listed in Music from the camp for everyone who can open the Mahalaverse, shown ${shownAs()}.` : live ? why('share music') : 'The shared Mahalaverse cannot be reached from here, so your link is kept in this browser.')}`,
         foot: `<button class="btn" type="button" data-co="close">Not now</button><button class="btn primary" type="button" data-co="submit:set" ${can ? '' : 'disabled'}>${icon('sound')}Offer it</button>` };
     },
     sound(a, v) {
@@ -761,10 +761,10 @@ export async function start(M, ctx) {
       const ok = await V.writeDoc('sounds/' + uid, { p: list, name: V.ME.show ? String(V.ME.name || '').slice(0, 40) : '', at: Date.now() });
       busy(el, false); if (!ok || V.LIVE.write === false) { flash('That did not save. Try again in a moment.'); return; }
       S.last.set(C.keyOf(uid, r.item.i), 'wait'); ctx.bus.emit('contrib:added', { kind: 'set', key: C.keyOf(uid, r.item.i), uid, mine: true });
-      toast('Thank you. A steward listens first, then it plays in the main tent.');
+      toast('Thank you. A steward listens first, then it is listed in Music from the camp.');
     } else {
       V.V5.mySounds = V.V5.mySounds.concat([r.item]).slice(-C.LIMIT.sounds); try { localStorage.setItem('mahala.sounds', JSON.stringify(V.V5.mySounds)); } catch (e) { }
-      toast('Kept in this browser, in the main tent.');
+      toast('Kept in this browser, in Music from the camp.');
     }
     V.chime('soft'); done(); if (V.current === 'CAMP_TENT' && typeof V.refreshCard === 'function') V.refreshCard('CAMP_TENT');
   }
@@ -980,7 +980,7 @@ export async function start(M, ctx) {
   let tentOk = false;
   M.inspector.addEventListener('submit', e => { if (e.target.id !== 'sndForm') return; const t = $('#snd-t'), u = $('#snd-u'); tentOk = !!(t && t.value.trim() && C.safeUrl(u && u.value)); }, true);
   M.inspector.addEventListener('submit', e => { if (e.target.id !== 'sndForm' || !tentOk) return; tentOk = false;
-    if (canShare()) setTimeout(() => { toast('Thank you. A steward listens first, then it plays in the tent for everyone.'); ctx.bus.emit('contrib:added', { kind: 'set', uid: myId(), mine: true }); }, 0); });
+    if (canShare()) setTimeout(() => { toast('Thank you. A steward listens first, then it is listed in Music from the camp.'); ctx.bus.emit('contrib:added', { kind: 'set', uid: myId(), mine: true }); }, 0); });
 
   /* ---------- a few framed works in the world, at the camp: the newest images a steward hung ---------- */
   const ART = { group: null, keys: '', meshes: [], tex: [], view: null };

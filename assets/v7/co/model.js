@@ -25,7 +25,7 @@ export const KINDS = {
   poem: { label: 'A poem', short: 'Poem', noun: 'poem', verb: 'read', where: 'fire', home: 'At the fire' },
   story: { label: 'A story', short: 'Story', noun: 'story', verb: 'read', where: 'fire', home: 'At the fire' },
   art: { label: 'Digital art', short: 'Digital art', noun: 'art', verb: 'looked at', where: 'gallery', home: 'In Art by camp mates' },
-  set: { label: 'A music set or a playlist', short: 'Music', noun: 'music', verb: 'listened to', where: 'tent', home: 'In the main tent' },
+  set: { label: 'An original track or a set', short: 'Music', noun: 'music', verb: 'listened to', where: 'tent', home: 'In Music from the camp' },
   sound: { label: 'A sound journey recording', short: 'Sound journey', noun: 'recording', verb: 'listened to', where: 'lotus', home: 'At the Lotus Mahal' },
 };
 export const KIND_KEYS = Object.keys(KINDS);

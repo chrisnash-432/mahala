@@ -527,7 +527,7 @@ export async function start(M, ctx) {
             <p class="v7-me-mode">${esc(ml.t)}</p>${ml.act ? `<div class="v7-me-modeact">${ml.act}</div>` : ''}
           </div>
         </div>
-        <div class="v7-me-tiles2">${cardTile}${crewTile}</div>`;
+        <div class="v7-me-tiles2">${cardTile}${crew ? crewTile : ''}</div>`;   /* 8 Nov review: crews step back until the season of building */
     },
     figure() {
       const a = worn(), own = ownColour(), U = unlockedSet(), R = rules(), m = mode(), open = !!S.figOpen, card = myCard();
@@ -615,7 +615,7 @@ export async function start(M, ctx) {
     },
     quests() {
       const ME = T.ME, qs = Object.keys(ME.quests || {}).map(id => T.DATA.quests.find(q => q.id === id)).filter(Boolean);
-      return `${H('quests')}${qs.length ? `<p class="v7-me-lede">The quests on your list. Each is a way to help the build, at your own pace.</p><div class="v7-me-rows">${qs.map(q => `<div class="v7-me-row"><span class="v7-me-ic">${icon('pin')}</span><span><b>${esc(q.name)}</b><small>${esc(q.crew)}${ME.quests[q.id] && ME.quests[q.id].at ? ' · on your list since ' + esc(day(ME.quests[q.id].at)) : ''}</small></span><span class="v7-me-acts"><button class="btn v7-me-sm" type="button" data-me="quest:${esc(q.id)}">See it</button><button class="btn ghost v7-me-sm" type="button" data-me="qdrop:${esc(q.id)}" aria-label="Take ${esc(q.name)} off my list">Take it off</button></span></div>`).join('')}</div>`
+      return `${H('quests')}${qs.length ? `<p class="v7-me-lede">The quests on your list. Each is a way to help the build, at your own pace.</p><div class="v7-me-rows">${qs.map(q => `<div class="v7-me-row"><span class="v7-me-ic">${icon('pin')}</span><span><b>${esc(q.name)}</b><small>${esc(q.open ? 'Open to everyone' : q.stage)}${ME.quests[q.id] && ME.quests[q.id].at ? ' · on your list since ' + esc(day(ME.quests[q.id].at)) : ''}</small></span><span class="v7-me-acts"><button class="btn v7-me-sm" type="button" data-me="quest:${esc(q.id)}">See it</button><button class="btn ghost v7-me-sm" type="button" data-me="qdrop:${esc(q.id)}" aria-label="Take ${esc(q.name)} off my list">Take it off</button></span></div>`).join('')}</div>`
         : `<div class="mv-empty"><p>No quests on your list. Each quest is a way to help the build: take one when it calls you.</p><button class="btn" type="button" data-me="quests">${icon('pin')}See the quests</button></div>`}`;
     },
     bell() {
@@ -650,7 +650,7 @@ export async function start(M, ctx) {
   const ruleHere = test => rules().some(r => test(r.id));
   // the ways a gift comes that are here: the other parts' only when they are loaded
   function emptyShelf() {
-    const ways = ['cook a camp dinner', 'share music in the main tent', 'offer words to the fire', 'join a crew', 'apply to the camp or the build'];
+    const ways = ['cook a camp dinner', 'share music in the main tent', 'offer words to the fire', 'apply to the camp or the build'];
     if (ruleHere(id => id === 'seed-carrier')) ways.push('plant a seed');
     if (coHere()) ways.push('offer art');
     if (ruleHere(id => id.startsWith('pay-'))) ways.push('give through a gate');
