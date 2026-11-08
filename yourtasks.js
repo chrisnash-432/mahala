@@ -6,8 +6,10 @@
   var M = window.MahalaMembers, page = document.getElementById('page');
   if (!M || !page) return;
   var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], SHOW = 6;
-  var box = document.createElement('div'), tasks = [], role = '', open = null;
-  box.className = 'letter yourtasks'; box.id = 'yourtasks';
+  // a section that folds away like the rest of Your Mahala (F-061); this device remembers whether it is open
+  var box = document.createElement('details'), tasks = [], role = '', open = null;
+  box.className = 'fold yourtasks'; box.id = 'yourtasks'; box.dataset.fold = 'tasks';
+  try { var o0 = JSON.parse(localStorage.getItem('mahala.me.open') || '{}'); box.open = Object.prototype.hasOwnProperty.call(o0, 'tasks') ? !!o0.tasks : true; } catch (e) { box.open = true; }
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function day(iso) { if (!iso) return ''; var p = String(iso).slice(0, 10).split('-').map(Number); return p[2] + ' ' + MON[p[1] - 1]; }
@@ -16,8 +18,8 @@
   function draw() {
     if (!tasks.length) { box.remove(); return; }
     var shown = tasks.slice(0, SHOW);
-    box.innerHTML = '<span class="from">Your tasks</span>'
-      + '<p>From Basecamp, in your name. Mark one done or say where it stands; it reaches the camp’s task list within the hour.</p>'
+    box.innerHTML = '<summary><span class="fdot" aria-hidden="true"></span><span class="ftitle"><h2>Your tasks</h2><span class="fsub">' + tasks.length + ' open, in your name</span></span><span class="fchev" aria-hidden="true"></span></summary>'
+      + '<div class="foldin"><p>From Basecamp, in your name. Mark one done or say where it stands; it reaches the camp’s task list within the hour.</p>'
       + '<ul class="yt">' + shown.map(function (t) {
         var l = t.latest, sent = t.sent;
         return '<li data-id="' + esc(t.id) + '"><div class="ytt"><b>' + esc(t.title || t.id) + '</b><small>'
@@ -30,14 +32,14 @@
           + '</li>';
       }).join('') + '</ul>'
       + '<div class="row"><a class="btn small ghost" href="basecamp.html#list">' + (tasks.length > SHOW ? 'All ' + tasks.length + ' in Basecamp' : 'Open Basecamp') + '</a></div>'
-      + '<p class="said" data-said aria-live="polite"></p>';
+      + '<p class="said" data-said aria-live="polite"></p></div>';
     place();
   }
 
   // me.html redraws its page: keep the card in place, after the next step and the doors
   function place() {
     if (!tasks.length) return;
-    var demo = document.getElementById('proto'), host = page.querySelector('.whorest');
+    var demo = document.getElementById('proto'), host = page.querySelector('#tasksHost') || page.querySelector('.whorest');
     if (demo && !demo.hidden) { box.remove(); return; }
     if (host && box.parentNode !== host) host.appendChild(box);
   }

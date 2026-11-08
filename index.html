@@ -5,7 +5,7 @@
 /* the front page is wearemahala.com itself: an old link to /index.html shows as the plain address (F-033) */
 try { if (/\/index\.html$/.test(location.pathname)) history.replaceState(history.state, '', location.pathname.replace(/index\.html$/, '') + location.search + location.hash); } catch (e) { }</script>
 <script src="site.js?v=8"></script>
-<script src="assets/shim/claude-shim.js?v=14"></script>
+<script src="assets/shim/claude-shim.js?v=15"></script>
 <style>
 /* No letter on the website, for anyone (F-023): invitations go out as their own link by email, to a clean landing page. */
 #envRest, #envStage { display: none !important; }
@@ -3943,7 +3943,7 @@ async function start3D() {
   frame();
 }
 </script>
-<script src="yourevents.js?v=1" defer></script>
+<script src="yourevents.js?v=2" defer></script>
 <script src="analytics.js?v=2"></script>
 
 </body></html>

@@ -79,7 +79,7 @@
   }
   function place() {
     if (!box || !mine || !mine.length) return;
-    var demo = document.getElementById('proto'), host = page.querySelector('.whorest');
+    var demo = document.getElementById('proto'), host = page.querySelector('#eventsHost') || page.querySelector('.whorest');
     if (demo && !demo.hidden) { box.remove(); return; }
     if (host && box.parentNode !== host) host.appendChild(box);
   }
