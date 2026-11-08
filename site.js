@@ -58,6 +58,44 @@ window.MAHALA_SITE = {
     try { localStorage.setItem('mahala.cur', c === 'R' ? 'R' : '$'); } catch (e) { /* storage blocked */ }
     try { window.dispatchEvent(new CustomEvent('mahala:cur', { detail: c })); } catch (e) { /* old browser */ }
   };
+  // Sound, on by default (Chris's review, 8 Nov 2026, F-049): the front page's music and every film's sound. Browsers
+  // keep a page silent until the visitor's first tap, click or key, so pages start their sound then (sound.first), and
+  // a film that plays by itself tries with sound and falls back to silent until that first tap (sound.play). A visitor
+  // who turns sound off stays off on this device (sound.set), on every page.
+  S.sound = (function () {
+    var KEY = 'mahala.sound', EV = ['pointerup', 'touchend', 'keydown', 'click'];
+    function on() { try { return localStorage.getItem(KEY) !== 'off'; } catch (e) { return true; } }
+    function set(v) {
+      try { localStorage.setItem(KEY, v ? 'on' : 'off'); } catch (e) { /* storage blocked: this visit only */ }
+      try { window.dispatchEvent(new CustomEvent('mahala:sound', { detail: !!v })); } catch (e) { /* old browser */ }
+    }
+    // fn(event) runs on each tap, click or key until it returns anything but false (or a promise that resolves)
+    function first(fn) {
+      var live = true, busy = false;
+      function stop() { live = false; EV.forEach(function (t) { window.removeEventListener(t, h, true); }); }
+      function h(e) {
+        if (!live || busy) return;
+        var r; try { r = fn(e); } catch (er) { r = false; }
+        if (r && typeof r.then === 'function') { busy = true; r.then(function (ok) { busy = false; if (ok !== false) stop(); }, function () { busy = false; }); }
+        else if (r !== false) stop();
+      }
+      EV.forEach(function (t) { window.addEventListener(t, h, { capture: true, passive: true }); });
+      try { if (navigator.userActivation && navigator.userActivation.hasBeenActive) setTimeout(function () { h({ type: 'active', target: document.body }); }, 0); } catch (e) { /* no API */ }
+      return stop;
+    }
+    // play a film that starts by itself: with sound where the browser allows it, else silent
+    function play(v) {
+      if (!on()) { v.muted = true; return v.play().catch(function () { }); }
+      v.muted = false;
+      return v.play().catch(function () { v.muted = true; return v.play().catch(function () { }); });
+    }
+    // a film playing silently because the browser asked: its sound comes on at the first tap
+    function follow(v) {
+      return first(function () { if (!on()) return true; if (!v.paused && v.muted) v.muted = false; else if (v.paused) return false; return true; });
+    }
+    return { on: on, set: set, first: first, play: play, follow: follow };
+  })();
+
   function grp(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
   // both(100, '$') gives "$100 (about R1,670)" abroad and "R1,670 (about $100)" in South Africa
   S.both = function (amount, from, opts) {
