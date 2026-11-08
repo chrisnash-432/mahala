@@ -547,8 +547,8 @@ footer:empty { display: none; }
 
 <meta name="robots" content="noindex">
 <script>window.BASECAMP_SITE = true;</script>
-<script src="site.js?v=8"></script>
-<script src="assets/shim/claude-shim.js?v=15"></script>
+<script src="site.js?v=9"></script>
+<script src="assets/shim/claude-shim.js?v=16"></script>
 <script>
 const ROLES = {
   core:      { label: 'Core team', me: '', who: 'the core team', sees: 'everything: every hub, node, task, budget line and partner, and anyone’s list. Can update any task.', projects: 'all', tasks: 'all', edit: 'all', budget: 'lines', partners: 'full', team: true, pick: true, audiences: ['core', 'leads', 'members'] },
@@ -761,8 +761,21 @@ function viewHome() {
   h += attention();
   h += `<section class="block"><div class="head"><h2>The next seven days</h2><a href="#plan-timeline">Timeline</a></div>${nextDays(myScope)}</section>`;
   h += keyDocs();
+  if (SITE && isCore()) h += questBlock();
   if (store.updates.length) h += feedBlock();
   return h;
+}
+// Quests in the Mahalaverse (F-065): a count per quest from the one record of everyone's quest steps, for the core team
+// only, never a name. The names are the Mahalaverse's own (mahalaverse.js); every quest there has three steps.
+const QUEST_NAMES = { 'Q-07': 'Share the film', 'Q-01': 'Fund a ring of glass', 'Q-02': 'Cut the crown star', 'Q-03': 'Paint the Golden Seed of Life',
+  'Q-04': 'Rig the lantern', 'Q-05': 'Host the build kitchen', 'Q-06': 'Make the first light box' };
+function questBlock() {
+  const qs = store.quests;
+  if (!Array.isArray(qs)) return '';
+  const body = qs.length ? qs.map(q => `<div class="item"><div class="t"><strong>${esc(QUEST_NAMES[q.quest] || q.quest)}</strong> · ${plural(q.people, 'person', 'people')} on it, ${q.complete} finished</div>
+      <div class="meta">${(q.steps || []).slice(0, 3).map((n, i) => `<span>Step ${i + 1}: ${n}</span>`).join('')}</div></div>`).join('')
+    : `<div class="empty">Nobody has taken a quest yet.</div>`;
+  return `<section class="block quests"><div class="head"><h2>Quests in the Mahalaverse</h2><span class="muted small">counts only, never names</span></div><div class="list">${body}</div></section>`;
 }
 function startHere() {
   const c = cfg(), me = meOf();
@@ -1606,6 +1619,7 @@ async function siteLoad() {
   $('#toCommunity').hidden = !(WHO.view === 'core' || ['camplead', 'crewlead'].includes(WHO.role));   // the community map opens for them too
   $('#toContent').hidden = WHO.view !== 'core';            // the content desk is for the core team
   store.dbState = 'waiting';
+  if (WHO.view === 'core') { try { store.quests = await M.rpc('basecamp_quests'); } catch (e) { store.quests = null; } }
   await siteFeed();
   if (!store.polling) {
     store.polling = setInterval(() => { if (!document.hidden && WHO) siteFeed(); }, 20000);

@@ -4,8 +4,8 @@
   window.__MV_MEMBERS = m; window.__V7_ONLY = m ? null : ['platform', 'world']; window.__MAHALA_PUBLIC = !m; })();
 /* the front page is wearemahala.com itself: an old link to /index.html shows as the plain address (F-033) */
 try { if (/\/index\.html$/.test(location.pathname)) history.replaceState(history.state, '', location.pathname.replace(/index\.html$/, '') + location.search + location.hash); } catch (e) { }</script>
-<script src="site.js?v=8"></script>
-<script src="assets/shim/claude-shim.js?v=15"></script>
+<script src="site.js?v=9"></script>
+<script src="assets/shim/claude-shim.js?v=16"></script>
 <style>
 /* No letter on the website, for anyone (F-023): invitations go out as their own link by email, to a clean landing page. */
 #envRest, #envStage { display: none !important; }
@@ -2222,6 +2222,7 @@ function film(on) {
     const src = tall ? 'seed/media/film_tall.mp4' : 'seed/media/film_wide.mp4';
     if (!video.src.endsWith(src)) { video.poster = tall ? 'seed/img/film_tall.jpg' : 'seed/img/film_wide.jpg'; video.src = src; }
     music.duck(true);
+    video.muted = !SOUND.on();
     video.play().catch(() => {});
   } else { video.pause(); music.duck(false); }
 }
@@ -2920,12 +2921,15 @@ function words() {
 }
 
 // ----------------------------------------------------------------------------------------------------------- sound
-// The camp's own music: Acoustic Intro, an original production from the Mahala camp. Silent until Sound is tapped.
+// The camp's own music: Acoustic Intro, an original production from the Mahala camp. Sound is on by default (F-049):
+// browsers keep the page silent until the first tap, click or key, so the music starts then, unless the visitor
+// turned it off (remembered on this device, site.js sound).
 // It plays through the whole story, quietens while a film or a page is open over it, and fades as you step into the
 // Mahalaverse, where the camp's other tracks take over, one for each part of the way.
+const SOUND = SITE.sound || { on: () => false, set() {}, first() {} };
 const music = (() => {
   const SRC = 'assets/audio/acoustic-intro.mp3', LEVEL = 0.85;
-  let ctx = null, gain = null, el = null, on = false, ducked = false, stopT = 0;
+  let ctx = null, gain = null, el = null, on = SOUND.on(), ducked = false, stopT = 0, gone = false;
   function setup() {
     el = new Audio(); el.src = SRC; el.loop = true; el.preload = 'auto';
     const AC = window.AudioContext || window.webkitAudioContext;
@@ -2940,21 +2944,32 @@ const music = (() => {
     if (level() > 0) { if (el.paused) el.play().catch(() => {}); }
     else stopT = setTimeout(() => { if (el && level() === 0) el.pause(); }, tc * 5000 + 200);
   }
+  const mark = () => { const b = $('seedSound'); b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', on ? 'Sound on. Turn it off' : 'Sound off. Turn it on'); };
   function toggle() {
     if (!el) setup();
-    on = !on; $('seedSound').setAttribute('aria-pressed', String(on));
+    on = !on; SOUND.set(on); mark();
     if (on) {
-      el.play().catch((e) => { S.errors.push('audio: ' + e.message); on = false; $('seedSound').setAttribute('aria-pressed', 'false'); });   // within the tap, so phones allow it
+      el.play().catch((e) => { S.errors.push('audio: ' + e.message); });   // within the tap, so phones allow it
       if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
     }
     apply(on ? 0.9 : 0.35);
   }
+  // on by default: the button shows it from the start, and the music begins with the first tap anywhere else
+  mark();
+  SOUND.first((e) => {
+    if (!on || gone) return true;
+    if (e && e.target && e.target.closest && e.target.closest('#seedSound')) return false;   // that tap is the button's own
+    if (!el) setup();
+    if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {});
+    const p = el.play(); apply(0.9);
+    return p && p.then ? p.then(() => true) : true;
+  });
   return {
     toggle,
     state: () => ({ on, loaded: !!el && el.readyState > 2, section: el && !el.paused ? 'acoustic' : null, at: el ? el.currentTime : 0 }),
     moment() { /* one track through the whole story */ },
     duck(d) { ducked = d; apply(d ? 0.3 : 0.8); },
-    fadeOut() { if (!el) return; on = false; apply(0.35); setTimeout(() => { try { el.pause(); if (ctx) ctx.close(); } catch (e) { /* closed */ } }, 2200); },
+    fadeOut() { gone = true; if (!el) return; on = false; apply(0.35); setTimeout(() => { try { el.pause(); if (ctx) ctx.close(); } catch (e) { /* closed */ } }, 2200); },
     lantern() { return 0; },
     home() { },
   };
