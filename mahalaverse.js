@@ -169,6 +169,7 @@ const ME = (() => {
   if (!Array.isArray(d.book)) d.book = [];
   return d;
 })();
+let QREC = null;   // your quests as the member database holds them (MahalaMembers.quests), once read: they win over every copy here
 function saveMe() { try { const o = Object.assign({}, ME); delete o.book; localStorage.setItem('mahala.me', JSON.stringify(o)); localStorage.setItem('mahala.book', JSON.stringify(ME.book)); } catch (e) { } }
 const isBuildCrew = id => !!(id && CREW_BY(id) && CREW_BY(id).build);
 function canEnter(key) {
@@ -1724,7 +1725,7 @@ function openFilm(src, cap, endDoors, loop = false) {
   lastFocus = document.activeElement; $('#filmEnd').hidden = true; $('#filmDoors').innerHTML = doorsHTML(); if (src !== CONFIG.buildFilm) FV.removeAttribute('poster');
   const old = $('.film img', FM); if (old) old.remove(); FV.hidden = false;
   FV.src = src; FV.loop = loop; FV.muted = loop; FV.controls = !loop; FV.dataset.end = endDoors ? '1' : '';
-  $('#filmCap').textContent = cap; FM.hidden = false; FV.play().catch(() => {}); $('#filmClose').focus();
+  $('#filmCap').textContent = cap; FM.hidden = false; if (!loop && window.MAHALA_SITE && MAHALA_SITE.sound) MAHALA_SITE.sound.play(FV); else FV.play().catch(() => {}); $('#filmClose').focus();
 }
 function openImage(key) {
   lastFocus = document.activeElement; $('#filmEnd').hidden = true; FV.pause(); FV.removeAttribute('src'); FV.hidden = true;
@@ -2599,7 +2600,7 @@ async function startLive() {
   sub('leads', s => { LIVE.leads = Object.fromEntries(s.docs.map(d => [d.id, d.data()])); onLive(); });
   if (LIVE.admin) { sub('fire', s => { LIVE.fire = rows(s).sort((a, b) => (a.at || 0) - (b.at || 0)); onLive(); }); sub('signups', s => { LIVE.signups = rows(s); onLive(); }); }
   if (LIVE.uid) {
-    try { const mine = await db.doc('data/users/' + LIVE.uid + '/me').get(); if (mine.exists) { const d = mine.data(); /* v7 me: your name comes back on a new device */ if (!String(ME.name || '').trim() && typeof d.name === 'string' && d.name.trim()) { ME.name = d.name.replace(/\s+/g, ' ').trim().slice(0, 40); if (d.show === true) ME.show = true; } for (const k of ['gate', 'door', 'crew', 'crewOk', 'lines', 'from']) if (d[k] != null && ME[k] == null || (k === 'gate' && d.gate > ME.gate)) ME[k] = d[k]; ME.done = Object.assign({}, d.done || {}, ME.done); ME.quests = Object.assign({}, d.quests || {}, ME.quests); ME.test = Object.assign({}, d.test || {}, ME.test); } } catch (e) { }
+    try { const mine = await db.doc('data/users/' + LIVE.uid + '/me').get(); if (mine.exists) { const d = mine.data(); /* v7 me: your name comes back on a new device */ if (!String(ME.name || '').trim() && typeof d.name === 'string' && d.name.trim()) { ME.name = d.name.replace(/\s+/g, ' ').trim().slice(0, 40); if (d.show === true) ME.show = true; } for (const k of ['gate', 'door', 'crew', 'crewOk', 'lines', 'from']) if (d[k] != null && ME[k] == null || (k === 'gate' && d.gate > ME.gate)) ME[k] = d[k]; ME.done = Object.assign({}, d.done || {}, ME.done); ME.quests = QREC ? questsFromRecord(QREC) : Object.assign({}, d.quests || {}, ME.quests); ME.test = Object.assign({}, d.test || {}, ME.test); } } catch (e) { }
     try { const bk = await db.collection('data/users/' + LIVE.uid + '/me/book').get(); const have = new Set(ME.book.map(b => b.id)); bk.docs.forEach(d => { if (!have.has(d.id)) ME.book.push(d.data()); }); ME.book.sort((a, b) => a.at - b.at); } catch (e) { }
     saveMe(); pushMe(); ME.book.forEach(pushBook);
   }
@@ -2942,7 +2943,7 @@ function sndInit() {
   setInterval(() => { if (!SND.on || SND.fireG.gain.value < 0.005 || Math.random() < 0.45) return; const s = ctx.createBufferSource(); s.buffer = nb; const g = ctx.createGain(); g.gain.value = 0.3 + Math.random(); s.playbackRate.value = 0.6 + Math.random() * 1.2; s.connect(g).connect(bp); s.start(); }, 90);
 }
 function setSound(on) {
-  ME.sound = on; saveMe(); if (on) { sndInit(); if (SND.ctx && SND.ctx.state === 'suspended') SND.ctx.resume(); }
+  ME.sound = on; saveMe(); try { if (window.MAHALA_SITE && MAHALA_SITE.sound) MAHALA_SITE.sound.set(on); } catch (e) { } if (on) { sndInit(); if (SND.ctx && SND.ctx.state === 'suspended') SND.ctx.resume(); }
   SND.on = on && !!SND.ctx; const b = $('#soundBtn'); b.setAttribute('aria-pressed', String(SND.on)); b.setAttribute('aria-label', SND.on ? 'Turn sound off' : 'Turn sound on'); b.innerHTML = icon(SND.on ? 'sound' : 'mute'); mixSound();
 }
 function mixSound() {
@@ -3012,7 +3013,9 @@ function enterWorld(arrival) {
   LIT.mode.value = 0; refreshLight(false); updateLanterns(); renderKpis(); renderBell(); updateNextUp();
   RITE.on = false;
   wayArrive(arrival && !returning);
-  if (ME.sound || (FROM_SEED && FROM_SEED.sound)) setSound(true);
+  // sound is on by default across the site (MAHALA_SITE.sound): it starts at the first tap, as browsers allow; off stays off
+  { const SS = window.MAHALA_SITE && MAHALA_SITE.sound;
+    if (SS ? SS.on() : (ME.sound || (FROM_SEED && FROM_SEED.sound))) { if (FROM_SEED && FROM_SEED.sound) setSound(true); else if (SS) SS.first(() => { if (!SND.on) { setSound(true); musicMix(true); } return true; }); else setSound(true); } }
   if (hasLink) setTimeout(runLink, 300);
   if (WORLD.after) { const f = WORLD.after; WORLD.after = null; setTimeout(f, 300); }
 }
@@ -3428,7 +3431,7 @@ INS.addEventListener('submit', e => {
   if (!title) { toast('Give it a name first.'); return; } if (!url) { toast('That link needs to start with https://'); return; }
   const item = { i: 's' + Date.now().toString(36), t: Date.now(), title, url, k };
   if (canShare()) { const mine = ((V5.sounds.find(d => d.id === LIVE.uid) || {}).p || []).concat([item]).slice(-12);
-    writeDoc('sounds/' + LIVE.uid, { p: mine, name: ME.show ? String(ME.name || '').slice(0, 40) : '', at: Date.now() }); toast('Thank you. A steward listens first, then it plays in the tent for everyone.'); }
+    writeDoc('sounds/' + LIVE.uid, { p: mine, name: ME.show ? String(ME.name || '').slice(0, 40) : '', at: Date.now() }); toast('Thank you. A steward listens first, then it is listed in Music from the camp.'); }
   else { V5.mySounds = V5.mySounds.concat([item]).slice(-12); try { localStorage.setItem('mahala.sounds', JSON.stringify(V5.mySounds)); } catch (er) { } toast('Kept in this browser.'); }
   chime('soft'); refreshCard('CAMP_TENT');
 });
@@ -4378,7 +4381,7 @@ INTRO.addEventListener('click', e => { if (!e.target.closest('[data-intro="go"]'
 { const _ewGate = enterWorld; enterWorld = function (arrival) {
   const M = window.MahalaMembers;
   if (!M || WORLD.entered) { _ewGate(arrival); return; }
-  M.info().then(i => { if (i && i.signedIn) _ewGate(arrival); else M.gate(); }, () => _ewGate(arrival));
+  M.info().then(i => { if (i && i.signedIn) _ewGate(arrival); else tribeDoor(); }, () => _ewGate(arrival));   // F-050: the Mahalaverse is for the tribe
 }; }
 
 /* Your Mahala and Basecamp, at the theme camp (4 Nov 2026). With accounts on, every member finds a door to their own
@@ -4520,10 +4523,12 @@ HOOK7.cardIn.push(it => {
     <div class="actions"><button class="btn" data-sel="CAMP">${icon('tent')}Go to Mahala camp</button><button class="btn" data-sel="CAMP_TENT">${icon('sound')}The main tent</button></div></div>`;
   if (k === 'yard') return head('yard', 'Fabrication', 'The build yard', 'Where The Seed is made') + `<div class="insp-body">
     <p>The frame is cut to the zome's geometry and the glass is prepared here, by volunteers with hand tools, a cutting service and a skilled workshop. Everything you need to know about the build lives here.</p>
-    <div class="sect yard-do"><h4>For camp members</h4>${campMember()
+    ${YARD_WALL ? `<div class="sect yard-do"><h4>For camp members</h4>${campMember()
       ? `<div class="actions yard-acts"><button class="btn primary" data-sel="SHIFTS">${icon('cal')}Sign up for build shifts</button><button class="btn" data-sel="GUIDE">${icon('book')}The build guide</button></div>`
       : `<div class="lockrow">${icon('lock')}<span><b>Build shifts and the build guide</b><small>For camp members. Apply for the camp to build with us.</small></span><button class="btn" data-act="campapply">Apply for the camp</button></div>`}</div>
-    <div class="actions yard-acts"><button class="btn" data-act="spot:MAHAL_COIL">${icon('torus')}See the big coil</button><button class="btn" data-act="buildfilm">${icon('film')}Watch the build</button><button class="btn" data-sel="BENCH">${icon('tools')}The Temple Tech bench</button><button class="btn" data-sel="YARD_CNC">${icon('forms')}The CNC cutting table</button></div></div>`;
+    <div class="actions yard-acts"><button class="btn" data-act="spot:MAHAL_COIL">${icon('torus')}See the big coil</button><button class="btn" data-act="buildfilm">${icon('film')}Watch the build</button><button class="btn" data-sel="BENCH">${icon('tools')}The Temple Tech bench</button><button class="btn" data-sel="YARD_CNC">${icon('forms')}The CNC cutting table</button></div></div>`
+    : `<div class="actions yard-acts"><button class="btn primary" data-sel="GUIDE">${icon('book')}The build guideline</button><button class="btn" data-act="buildfilm">${icon('film')}Watch the build</button><button class="btn" data-act="spot:MAHAL_COIL">${icon('torus')}See the big coil</button><button class="btn" data-sel="BENCH">${icon('tools')}The Temple Tech bench</button><button class="btn" data-sel="YARD_CNC">${icon('forms')}The CNC cutting table</button><button class="btn" data-sel="SHIFTS">${icon('cal')}Build shifts and build days</button></div>
+    <p class="note">For the build crew. Build shift sign-up opens here for camp members once sign-in is live.</p></div>`}`;
   if (k === 'bench') return head('bench', 'The build yard', 'The Temple Tech bench', 'Where the coils are wound') + `<div class="insp-body">
     <p>Temple Tech, an art and research practice, works with light, coils and sacred geometry. At its bench the coils are wound by hand. Last year camp mates learned to wind them here, and the winding guide joins the yard with the build crew.</p>
     <div class="actions"><button class="btn primary" data-act="spot:MAHAL_COIL">${icon('spot')}See the big coil</button><button class="btn" data-sel="YARD">${icon('left')}The build yard</button></div></div>`;
@@ -4592,6 +4597,9 @@ const TORUS = { boost: false, k: 0, group: new THREE.Group(), mats: [], dots: nu
    - music: one card for the camp's own tracks, the sound journeys and the main tent, from the camp and the Lotus Mahal */
 document.body.classList.toggle('mv-test', TEST);
 
+/* ---------- the build yard walled for camp members (V-08): built, then held back on 8 Nov while Chris decides. true brings it back:
+   the yard card's members' block, the walled shifts and guide cards, and the yard stop's three buttons ---------- */
+const YARD_WALL = false;
 /* ---------- who is in the camp: an accepted camp member, or the core team, camp leads and stewards ---------- */
 const MEMBER = { camp: false };
 function campMember() { return !!(MEMBER.camp || ROLE.core || ROLE.lead || ROLE.steward); }
@@ -4654,16 +4662,46 @@ const QUEST_MORE = {
     help: () => go('data-sel="BENCH"', 'The Temple Tech bench', 'tools') + go('data-sel="GATE_4"', 'Gate 4: a light box', 'gift'),
     when: () => 'When the building season starts, at the Temple Tech bench.' },
 };
-/* ---------- quest progress: the one place the Mahalaverse reads and marks it ----------
-   Today it lives in this browser, in ME.quests ({ at, steps: [three true or false] }), and reaches the shared database
-   through pushMe, as it always has. Shared quest progress (Your Mahala, the Mahalaverse and Basecamp) is coming through
-   the member database and the shim: wire it here, and nowhere else. Read a quest with QP.get(id); mark one step done
-   with QP.mark(id, step). There is no ticking in the Mahalaverse: steps are marked by what you do (sharing the film). */
+/* ---------- quest progress: one record across Your Mahala, the Mahalaverse and Basecamp (F-065, second version) ----------
+   The member database holds each person's quests (MahalaMembers.quests, takeQuest, markStep, dropQuest); every change
+   comes back as the window event mahala:quests. Here ME.quests ({ at, steps }) is only the copy the game draws from: the
+   record replaces it whenever it arrives, and the builders/ and data/users/ documents follow it through pushMe. No
+   account (or a test page without the shim): the old copy in this browser carries on. There is no ticking here: steps
+   are marked by what you do (sharing the film). */
+const QM = () => (window.MahalaMembers && typeof window.MahalaMembers.quests === 'function' ? window.MahalaMembers : null);
+function questsFromRecord(rec) {
+  const out = {};
+  for (const id in rec || {}) { if (!DATA.quests.some(q => q.id === id)) continue; const r = rec[id] || {};
+    out[id] = { at: Date.parse(r.takenAt) || Date.now(), steps: Array.isArray(r.steps) ? r.steps.map(Boolean) : [false, false, false] }; }
+  return out;
+}
+function applyQuests(rec) {
+  if (!rec || typeof rec !== 'object' || Array.isArray(rec)) return;
+  QREC = rec; ME.quests = questsFromRecord(rec); saveMe(); pushMe();
+  if (EXPLORE.open && tab === 'quests') renderTabs();
+  if (current && /^Q-/.test(current)) refreshCard(current);
+}
+const questSaid = e => console.warn('The quest did not save:', e && (e.message || e.code));
 const QP = {
   get: id => ME.quests[id] || null,
-  take(id) { if (!ME.quests[id]) { ME.quests[id] = { at: Date.now(), steps: [false, false, false] }; saveMe(); pushMe(); markDone(4, 'quest'); } return ME.quests[id]; },
-  mark(id, step) { const q = ME.quests[id]; if (!q || q.steps[step]) return; q.steps[step] = true; saveMe(); pushMe(); },
+  take(id) {
+    if (!ME.quests[id]) { ME.quests[id] = { at: Date.now(), steps: [false, false, false] }; saveMe(); pushMe(); markDone(4, 'quest'); }
+    const M = QM(); if (M) M.takeQuest(id).catch(questSaid);
+    return ME.quests[id];
+  },
+  mark(id, step, done = true) {
+    const q = ME.quests[id]; if (!q || !!q.steps[step] === !!done) return;
+    q.steps[step] = !!done; saveMe(); pushMe();
+    const M = QM(); if (M) M.markStep(id, step, !!done).catch(questSaid);
+  },
+  drop(id) {
+    delete ME.quests[id]; saveMe(); pushMe();
+    const M = QM(); if (M) M.dropQuest(id).catch(questSaid);
+  },
 };
+addEventListener('mahala:quests', e => applyQuests(e.detail));
+if (QM()) QM().ready.then(i => (i && i.signedIn ? QM().quests().then(applyQuests) : null)).catch(() => { });
+window.__mahala.dropQuest = id => { QP.drop(id); };   // Your path's "Take it off" (assets/v7/me) lets the quest go everywhere
 const filmBlock = () => `<div class="q-film">
     <button class="q-thumb" type="button" data-act="film" aria-label="Watch the film, 60 seconds"><img src="seed/img/film_wide.jpg" alt="" loading="lazy"><span class="play">${icon('play')}</span></button>
     <div class="q-film-t"><b>The Seed, the film</b><small>60 seconds. Watch it, then send it on.</small></div>
@@ -4680,7 +4718,7 @@ function questCard(q) {
       <dl class="q-dl"><div><dt>Why it matters</dt><dd>${esc(M.why)}</dd></div><div><dt>What it helps us do</dt><dd>${M.achieve()}</dd></div>
       <div><dt>What will help you</dt><dd><div class="actions">${M.help()}</div></dd></div><div><dt>When to do it</dt><dd>${esc(M.when())}</dd></div></dl></details>` : ''}
     <div class="chips">${chip(q.stage, tone)}${q.skills && q.skills !== 'None needed' ? chip('Skills: ' + q.skills, 'wait') : chip('No skills needed', 'open')}</div>
-    <div class="actions">${mine || !q.open ? '' : `<button class="btn primary" data-act="take:${q.id}">${icon('check')}Take this quest</button>`}<button class="btn" data-sel="${q.where}">${icon('pin')}Go to ${esc(REG[q.where].title.replace(/^The /, 'the '))}</button></div></div>`;
+    <div class="actions">${mine || !q.open ? '' : `<button class="btn primary" data-act="take:${q.id}">${icon('check')}Take this quest</button>`}<button class="btn" data-sel="${q.where}">${icon('pin')}Go to ${esc(REG[q.where].title.replace(/^The /, 'the '))}</button>${mine ? `<button class="btn ghost" data-act="qdrop:${q.id}">Start again</button>` : ''}</div></div>`;
 }
 { const _rtQ = renderTabs; renderTabs = function () {
   _rtQ(); if (tab !== 'quests') return; const P = $('#panel');
@@ -4689,28 +4727,44 @@ function questCard(q) {
   $$('.row', P).forEach(b => b.classList.toggle('sel', b.dataset.sel === current));
 }; }
 
-/* ---------- music from the camp: the tracks already on the site, the sound journeys and the main tent (F-009, F-020) ---------- */
+/* ---------- music from the camp: the tracks already on the site, the sound journeys and camp mates' own tracks (F-009, F-020) ----------
+   Chris, 8 Nov: Music from the camp makes the main tent redundant, so it takes the main tent's place, with a way to offer an
+   original track to the library. The offer is the main tent's own (v5's sounds/<uid>, the form below), so a steward still
+   listens first (the v7 co plugin's review, through HOOK7.sounds) and the list is the same one camp mates already added to. */
 const TRACKS = [['arrive', 'Downtempo', 'As you arrive: the book, the portal and Blissfull Drift'], ['mahal', 'Acoustic Intro', 'At the Lotus Mahal, and inside it'],
-  ['camp', 'Flower of Life', 'Through the camp and its main tent'], ['seed', 'A track for The Seed', 'At The Seed and inside it. Its title is still to come']];
+  ['camp', 'Flower of Life', 'Through the camp'], ['seed', 'A track for The Seed', 'At The Seed and inside it. Its title is still to come']];
 reg('MUSIC', { kind: 'music', title: 'Music from the camp', chip: 'Camp · music', obj: null, anchor: 'CAMP', focus: () => REG.CAMP_TENT.focus() });
-INDEX.push({ id: 'MUSIC', label: 'Music from the camp', sub: 'Camp · tracks and sound journeys', key: '' });
+{ const ix = INDEX.findIndex(x => x.id === 'CAMP_TENT'); if (ix >= 0) INDEX.splice(ix, 1); }
+INDEX.push({ id: 'MUSIC', label: 'Music from the camp', sub: 'Camp · tracks, sound journeys and camp mates\' music', key: '' });
 GLYPH.music = 'sound'; WAY_OF.MUSIC = 'camp';
-const musicCard = () => head('music', 'Mahala camp · music', 'Music from the camp', 'Original Mahala productions, and the sound journeys') + `<div class="insp-body">
+const musicCard = () => { const mates = soundsAll(), can = canShare();
+  return head('music', 'Mahala camp · music', 'Music from the camp', 'Original Mahala productions, the sound journeys and music by camp mates') + `<div class="insp-body">
   <p>Music is at the heart of the camp. These tracks are original Mahala productions: with Sound on, each plays in its own part of the way. Listen to them here.</p>
   <div class="mv-tracks">${TRACKS.map(([k, t, w]) => `<div class="mv-track"><div><b>${esc(t)}</b><small>${esc(w)}</small></div><audio controls preload="none" src="${esc(MUSIC.src[k])}" aria-label="${esc(t)}"></audio></div>`).join('')}</div>
   <p class="note">Sound: original Mahala productions.</p>
+  <div class="sect"><h4>From camp mates</h4>${mates.length ? `<div class="snd-list">${mates.slice(0, 40).map(sndRow).join('')}</div>` : '<p class="note">Original tracks offered by camp mates are listed here, once a steward has listened.</p>'}
+    <details class="q-more mv-offer"><summary>${icon('plus')}Offer an original track</summary>
+      <form class="snd-form" id="sndForm" autocomplete="off">
+        <p>Made a track of your own? Share it with the camp: a link to where it lives, and its name.</p>
+        <div class="field"><label for="snd-t">What it is called</label><input id="snd-t" maxlength="80" required></div>
+        <div class="field"><label for="snd-u">Its link</label><input id="snd-u" type="url" inputmode="url" maxlength="300" placeholder="https://" required></div>
+        <div class="pick" hidden><button type="button" data-sk="rec" aria-pressed="true">A recording</button></div>
+        <div class="actions"><button class="btn primary" type="submit">${icon('plus')}Offer it</button></div>
+        <p class="note">${can ? 'Only music you made, please. A steward listens first, then it is listed here for everyone in the Mahalaverse, with your name if you chose to show it.' : 'Your link is kept in this browser: it cannot reach the shared list from here.'}</p>
+      </form></details></div>
   <div class="sect"><h4>Sound journeys</h4><p>Sound journeys gather in the Lotus Mahal, the camp's temple tent. Three fundraising sound journeys in Cape Town are coming; dates are announced once they are set.</p>
     <div class="actions"><button class="btn" data-sel="CAMP_LOTUS">${icon('petal')}The Lotus Mahal</button><button class="btn" data-sel="E-02">${icon('cal')}The sound journeys</button></div>
-    <div class="snd"><a href="${esc(CONFIG.album)}" target="_blank" rel="noopener noreferrer"><span class="snd-ic">${icon('sound')}</span><span class="snd-t"><b>Sunrise at the Mahal</b><small>By Gustav Loubser, a camp mate · spotify.com</small></span>${icon('right')}</a></div></div>
-  <div class="sect"><h4>The main tent</h4><p>Playlists, DJ sets and recordings shared by camp mates, in the shade of the main tent.</p>
-    <div class="actions"><button class="btn" data-sel="CAMP_TENT">${icon('sound')}The main tent: music and sets</button></div></div></div>`;
+    <div class="snd"><a href="${esc(CONFIG.album)}" target="_blank" rel="noopener noreferrer"><span class="snd-ic">${icon('sound')}</span><span class="snd-t"><b>Sunrise at the Mahal</b><small>By Gustav Loubser, a camp mate · spotify.com</small></span>${icon('right')}</a></div></div></div>`; };
+// the main tent's list changes (a new offer, a steward's word): the music card follows
+{ const _rcM = refreshCard; refreshCard = function (id, live) { const r = _rcM(id, live); if (id === 'CAMP_TENT' && current === 'MUSIC') _rcM('MUSIC', live); return r; }; }
+INS.addEventListener('submit', e => { if (e.target.id === 'sndForm' && current === 'MUSIC') setTimeout(() => refreshCard('MUSIC'), 60); });
 // one track at a time: the camp's music steps back while you listen here
 INS.addEventListener('play', e => { if (!e.target.matches || !e.target.matches('.mv-track audio')) return; $$('.mv-track audio', INS).forEach(a => { if (a !== e.target) a.pause(); }); MUSIC.level = 0.08; if (SND.on) musicMix(false); }, true);
 INS.addEventListener('pause', e => { if (!e.target.matches || !e.target.matches('.mv-track audio')) return; if (!$$('.mv-track audio', INS).some(a => !a.paused)) { MUSIC.level = 0.6; if (SND.on) musicMix(false); } }, true);
 WAY[WAY_BY.mahal].acts.push(['music', 'sound', 'Music and sound journeys']);
-{ const c = WAY[WAY_BY.camp].acts, j = c.findIndex(x => x[0] === 'tent'); c.splice(j < 0 ? c.length : j + 1, 0, ['music', 'sound', 'Music from the camp']); }
+{ const c = WAY[WAY_BY.camp].acts, j = c.findIndex(x => x[0] === 'tent'); if (j >= 0) c.splice(j, 1, ['music', 'sound', 'Music from the camp']); else c.push(['music', 'sound', 'Music from the camp']); }
 // the build yard's stop opens its card, where the yard says what you can do there
-WAY[WAY_BY.yard].acts = [['yardcard', 'tools', 'Go to the build yard'], ['buildfilm', 'film', 'Watch the build'], ['bigcoil', 'torus', 'See the big coil']];
+if (YARD_WALL) WAY[WAY_BY.yard].acts = [['yardcard', 'tools', 'Go to the build yard'], ['buildfilm', 'film', 'Watch the build'], ['bigcoil', 'torus', 'See the big coil']];
 { const _wa2 = wayAct; wayAct = function (k, el) { if (k === 'music') { select('MUSIC'); return; } if (k === 'yardcard') { select('YARD'); return; } return _wa2(k, el); }; }
 
 /* ---------- the cards: these come first ---------- */
@@ -4718,18 +4772,19 @@ HOOK7.cardIn.unshift(it => {
   const k = it.kind;
   if (k === 'crew' || k === 'role' || k === 'crews') return crewsLater();
   if (k === 'quest') return questCard(it.q);
-  if (k === 'music') return musicCard();
-  if ((k === 'shifts' || k === 'guide') && !campMember()) return walledCard(k, k === 'shifts' ? 'Build shifts and build days' : 'The build guide');
+  if (k === 'music' || k === 'tent') return musicCard();   // the main tent is now Music from the camp
+  if (YARD_WALL && (k === 'shifts' || k === 'guide') && !campMember()) return walledCard(k, k === 'shifts' ? 'Build shifts and build days' : 'The build guide');
   return null;
 });
-// every card: no links to crews or roles; the camp card: a door to the music
+// every card: no links to crews or roles; the camp and kitchen cards: Music from the camp in place of the main tent
 { const _ciM = v4CardIn; v4CardIn = function (it, h) { const o = _ciM(it, h).replace(/<button data-sel="(?:CR|RO)-\d+">.*?<\/button>/g, '');   // no links to crews or roles
-  return it.kind === 'camp' ? o.replace(`${icon('sound')}The main tent: music and sets</button>`, `${icon('sound')}The main tent: music and sets</button><button class="btn" data-sel="MUSIC">${icon('sound')}Music from the camp</button>`) : o; }; }
+  return it.kind === 'camp' || it.kind === 'kitchen' ? o.replace(/<button class="btn" data-sel="CAMP_TENT">.*?<\/button>/, `<button class="btn" data-sel="MUSIC">${icon('sound')}Music from the camp</button>`) : o; }; }
 HOOK7.act.unshift((act, a) => {
   const [k, x] = act.split(':');
   if (k === 'qshare') { shareFilm(x).then(() => { if (current && /^Q-/.test(current)) refreshCard(current); }); return true; }
   if (k === 'take') { const q = DATA.quests.find(z => z.id === x); if (!q) return true; QP.take(x); toast(`On your list: ${q.name}.`); refreshCard(x); return true; }
   if (k === 'step') return true;   // no ticking in the Mahalaverse
+  if (k === 'qdrop') { QP.drop(x); toast('Taken off your list. You can take it again any time.'); refreshCard(x); return true; }
   if (k === 'qgates') { openExplore('gates'); return true; }
   return false;
 });
@@ -4743,6 +4798,49 @@ new MutationObserver(() => {
   const b = document.createElement('button'); b.type = 'button'; b.className = 'keepgoing'; b.textContent = 'Close to keep going';
   b.addEventListener('click', () => x.click()); x.insertAdjacentElement('beforebegin', b);
 }).observe(INS, { childList: true });
+
+/* ---------- F-050: the Mahalaverse is for the tribe. No form of its own: signed out, the way in is Join the tribe ----------
+   Joining makes the account and lands on Your Mahala (the shim's first-sign-in rule, F-024), whose "Into the Mahalaverse"
+   brings them back here, to the stop they were at (ME.way) and, for a link into a place, to that place (kept for a day).
+   Someone already in the tribe signs in here instead; the shim brings a sign-in begun on #mahalaverse straight back. */
+const MV_BACK = 'mahala.mvBack';
+function tribeDoor() {
+  try { const h = (location.hash || '').replace(/^#/, ''); if (/(^|&)(sel|place|way|card|book|fire)=/.test(h) && h.length < 120) localStorage.setItem(MV_BACK, JSON.stringify({ h, at: Date.now() })); } catch (e) { }
+  let D = document.getElementById('tribeDoor');
+  if (!D) {
+    D = document.createElement('div'); D.className = 'modal intro-modal'; D.id = 'tribeDoor';
+    D.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="tdTitle"><div class="sheet-body intro-body">
+      <span class="eyebrow">For the tribe</span>
+      <h3 id="tdTitle">The Mahalaverse is the tribe's home</h3>
+      <p class="intro-lead">This is where Mahala's tribe of temple builders gathers online. Join the tribe to step in: it takes a few minutes, and your own page comes with it.</p>
+      <p>Once you have joined, Into the Mahalaverse on your page brings you back here.</p>
+      <a class="btn primary intro-go" href="tribe.html#join" data-td="join">${icon('star')}Join the tribe</a>
+      <p class="note">Already in the tribe? <button class="linkish td-in" type="button" data-td="signin">Sign in</button> · <a href="./" data-td="back">Back to The Seed</a></p>
+    </div></div>`;
+    document.body.appendChild(D);
+    D.addEventListener('click', e => { const b = e.target.closest('[data-td="signin"]'); if (!b) return; const M = window.MahalaMembers; if (M && M.signIn) M.signIn(); });
+  }
+  D.hidden = false; setTimeout(() => { const a = D.querySelector('[data-td="join"]'); if (a) a.focus(); }, 40);
+}
+// back from joining: the place a link was taking them to
+{ let back = null; try { back = JSON.parse(localStorage.getItem(MV_BACK) || 'null'); } catch (e) { }
+  if (back && !hasLink && Date.now() - back.at < 864e5 && window.MahalaMembers) window.MahalaMembers.ready.then(i => {
+    if (!i || !i.signedIn) return; try { localStorage.removeItem(MV_BACK); } catch (e) { }
+    const L = {}; String(back.h).split('&').forEach(p => { const [k, v] = p.split('='); L[k] = v == null ? true : decodeURIComponent(v); });
+    const go = () => { if (L.sel && REG[L.sel]) select(L.sel); else if (L.place) select({ mahal: 'CAMP_LOTUS', camp: 'CAMP', zome: 'TEMPLE', yard: 'YARD', fire: 'CAMP_FIRE' }[L.place] || 'TEMPLE'); else if (L.way) goWay(+L.way - 1); else if (L.card && ARCH_BY[L.card]) openFireside(ARCH_BY[L.card].id, 'show'); else if (L.book) openBook(+L.book || 0); else if (L.fire) openFireside(); };
+    const wait = () => (WORLD.entered ? setTimeout(go, 900) : setTimeout(wait, 500)); wait();
+  }).catch(() => { }); }
+/* ---------- no forms of the Mahalaverse's own: each door leads where it is answered ---------- */
+const takePartCard = () => head('welcome', 'Take part', 'Ways to take part', 'Each one leads where it is answered') + `<div class="insp-body">
+  <div class="actions yard-acts"><button class="btn primary" data-act="campapply">${icon('tent')}Apply to join the camp</button><button class="btn" data-act="donate">${icon('gift')}Donate to The Seed</button><button class="btn" data-sel="Q-07">${icon('pin')}Send the film: quest 1</button><button class="btn" data-act="qgates">${icon('gate')}The gates: ways to give</button></div>
+  <p class="note">The camp is invite only: invited builders apply on the camp page, which opens over the world.</p></div>`;
+openJoin = function (door) {
+  if (door === 'camp') { openCampPane('join'); return; }
+  if (door === 'back') { handoff('donate'); return; }
+  if (door === 'build') { select('YARD'); return; }
+  if (door === 'notnow') return;
+  current = null; setInspector(takePartCard());
+};
 
 /* ---------- styles for this section (kept here, so index.html stays as it is) ---------- */
 { const st = document.createElement('style'); st.id = 'mvReview0811'; st.textContent = `
@@ -4779,6 +4877,9 @@ body.walked .way-more { display: inline-flex; align-self: start; align-items: ce
 .mv-track { display: grid; gap: 6px; padding: 10px 12px; border: 1px solid var(--card-line); border-radius: 12px; background: var(--hover); }
 .mv-track b { display: block; font-size: 14.5px; } .mv-track small { color: var(--ink-3); font-size: 12.5px; }
 .mv-track audio { width: 100%; height: 36px; }
+.mv-offer { margin-top: 10px; } .mv-offer .snd-form { padding: 0 0 12px; border: 0; background: none; }
+#tribeDoor .td-in { border: 0; background: none; padding: 0; font: inherit; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+#tribeDoor .intro-go { text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
 @media (max-width: 760px) { body.walking .way { max-height: min(58vh, 500px); } .q-film { grid-template-columns: 96px minmax(0, 1fr); } }
 `; document.head.appendChild(st); }
 
