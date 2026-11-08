@@ -578,7 +578,7 @@
   /* ------------------------------------------------------------------ the sheets */
   var NOTICE_VERSION = '2026-11-draft';
   var NOTICE = [
-    ['Who we are', 'Mahala is a theme camp at AfrikaBurn and a community of temple builders. The camp\'s stewards look after this record. You can reach them at wearemahala@gmail.com.'],
+    ['Who we are', 'Mahala is a theme camp at AfrikaBurn and a community of temple builders. The camp\'s stewards look after this record. You can reach them at love@wearemahala.com.'],
     ['What we hold', 'What Mahala already knows of your time with the camp (the years, your roles, who brought you in), what you add here (a playa name, your gifts, your choices), and what you do in the Mahalaverse (your path, your book, the cards you keep). We never ask for health details, ID numbers or bank details here, and other members never see your address.'],
     ['Why', 'To welcome you, to keep your thread with Mahala, and, only if you say yes below, to send you Mahala news.'],
     ['Where it lives', 'In a member database in Frankfurt (Supabase, in the EU, which protects it to the standard POPIA section 72 asks), and in Mahala\'s private record, kept by the stewards. Claude, an AI assistant, helps the stewards read that record; it never contacts anyone by itself.'],
@@ -679,7 +679,7 @@
       if (/email not confirmed/i.test(m) || code === 'email_not_confirmed') return 'confirm';
       if (/password should be|weak_password|at least/i.test(m) || code === 'weak_password') return 'Choose a password of at least 8 characters.';
       if (/same password|same_password/i.test(m)) return 'That is your current password. Choose a new one.';
-      if (/signups not allowed|signup_disabled/i.test(m)) return 'New accounts are closed just now. Write to wearemahala@gmail.com.';
+      if (/signups not allowed|signup_disabled/i.test(m)) return 'New accounts are closed just now. Write to love@wearemahala.com.';
       return 'That did not work. Try again in a little while.';
     }
     var PW_MIN = 8;
@@ -892,7 +892,7 @@
           rpc('ask_for_my_thread', { p_name: checkedName }).then(function (r) {
             asked = !!(r && r.asked); info.asked = asked;
             ask.innerHTML = '<p>' + (asked ? 'Thank you. A steward will join your thread to this account, usually within a day: your years and camps will then appear on Your Mahala.'
-              : 'We could not ask just now. Tell the stewards at wearemahala@gmail.com and they will join your thread.') + '</p>';
+              : 'We could not ask just now. Tell the stewards at love@wearemahala.com and they will join your thread.') + '</p>';
           }, function () { b.disabled = false; });
         }
         if (k === 'no') { ask.hidden = true; answered = true; }
@@ -1006,7 +1006,7 @@
             b.disabled = true;
             rpc('ask_to_be_joined', { p_address: oa || null, p_note: hw || null }).then(function () {
               info.asked = true; jb.outerHTML = '<p class="lead">Thank you. A steward will check and join your thread to this account, usually within a day.</p>'; msg(el, '');
-            }, function (er) { b.disabled = false; msg(el, (er && er.code !== 'unavailable' && er.message) || 'That did not send. Try again, or write to wearemahala@gmail.com.'); });
+            }, function (er) { b.disabled = false; msg(el, (er && er.code !== 'unavailable' && er.message) || 'That did not send. Try again, or write to love@wearemahala.com.'); });
           }
           if (k === 'password') newPassword(true);
           if (k === 'delete') del();
@@ -1080,7 +1080,7 @@
         }).then(function () { msg(el, 'Deleting your account...'); return rpc('delete_my_account'); })
           .then(function () { ls.set(EDITION, null); return clientP.then(function (c) { return c.auth.signOut().catch(function () { }); }); })
           .then(function () { el.innerHTML = '<h2>Your account is deleted</h2><p class="lead">Thank you for walking with Mahala. The door stays open.</p>'; setTimeout(function () { location.reload(); }, 2500); },
-            function () { go.disabled = false; msg(el, 'That did not work. Try again, or write to the stewards at wearemahala@gmail.com.'); });
+            function () { go.disabled = false; msg(el, 'That did not work. Try again, or write to the stewards at love@wearemahala.com.'); });
       });
     }
 

@@ -62,7 +62,7 @@ export async function start(M, ctx) {
   const myId = () => S.me.id || null;
   const canShare = () => !!(S.db && S.me.id && S.me.canWrite && !S.readOnly && V.LIVE.write !== false);
   const isSteward = () => !!(S.db && S.me.id && S.me.isSteward);
-  const CAMP_MAIL = 'wearemahala@gmail.com';     // the camp's own address (the camp page and the sign-in sheet use it), shown as text, never a mailto link
+  const CAMP_MAIL = 'love@wearemahala.com';     // the camp's own address (the camp page and the sign-in sheet use it), shown as text, never a mailto link
   const TO_CAMP = 'To take part, write to the camp at ' + CAMP_MAIL + '.', TO_STEWARDS = 'Write to the stewards at ' + CAMP_MAIL + '.';
   function why(what = 'offer your work') {                         // why this viewer cannot write here, in words; null when they can
     if (canShare()) return null;

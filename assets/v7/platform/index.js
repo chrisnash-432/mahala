@@ -15,8 +15,8 @@ const COPY = {
   signIn: 'Sign in', you: 'A builder', dashboard: 'Your path', account: 'Account and privacy', signOut: 'Sign out',
   menuLabel: 'Your account', signedInAs: 'Signed in as', deleteAccount: 'Delete my account',
   // on claude.ai a viewer who cannot write cannot be let in from the page: say so, and give the camp's own address
-  claudeSignIn: 'You can look around from this link, but not take part yet. To take part, write to the camp at wearemahala@gmail.com.',
-  claudeSignedOut: 'You can look around from this link, but not take part yet. To take part, write to the camp at wearemahala@gmail.com.',
+  claudeSignIn: 'You can look around from this link, but not take part yet. To take part, write to the camp at love@wearemahala.com.',
+  claudeSignedOut: 'You can look around from this link, but not take part yet. To take part, write to the camp at love@wearemahala.com.',
   claudeWriter: 'You are signed in through claude.ai, so you can take part here already.',
   claudeSignOut: 'You are signed in through claude.ai: sign out there.',
   soloSignIn: 'This copy of the Mahalaverse runs on its own, so there is no account to sign in to here.',

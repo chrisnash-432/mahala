@@ -6,9 +6,9 @@
  */
 var SHEET_ID = '1xbxEWSTKn0ULESNiuAWGSng4OMkqXHOx8yt8crQq6Q0';
 // who hears about each new camp application (comma separated)
-var NOTIFY_EMAIL = 'bioharmonicpermaculture@gmail.com, wearemahala@gmail.com, hi@meredithdetko.com';
+var NOTIFY_EMAIL = 'bioharmonicpermaculture@gmail.com, love@wearemahala.com, hi@meredithdetko.com';
 // who hears about each new tribe member: the camp inbox only (the stewards read the Tribe tab weekly)
-var TRIBE_NOTIFY = 'wearemahala@gmail.com';
+var TRIBE_NOTIFY = 'love@wearemahala.com';
 
 function doGet() {
   return ContentService.createTextOutput('Mahala applications backend is running.');
