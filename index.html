@@ -4,13 +4,15 @@
   window.__MV_MEMBERS = m; window.__V7_ONLY = m ? null : ['platform', 'world']; window.__MAHALA_PUBLIC = !m; })();</script>
 <script src="site.js?v=8"></script>
 <script src="assets/shim/claude-shim.js?v=10"></script>
+<style>
+/* No letter on the website, for anyone (F-023): invitations go out as their own link by email, to a clean landing page. */
+#envRest, #envStage { display: none !important; }
+</style>
 <style id="publicEdition">
 /* the public edition (for AfrikaBurn's Art Committee): no sign-ups, payments, crew or shift sign-ups, testing buttons or claude.ai links */
 .testbtn, [data-act="join"], [data-act^="join:"], [data-act="givegate"], [data-act^="give:"], [data-act^="pledge:"], [data-act^="crewjoin:"],
 [data-act^="shift:"], [data-act^="notify:"], [data-g="give"], [data-g="test"], a[href^="https://claude.ai/"], #takePart, .topbar .who,
 [data-w="take"], [data-w="path"], [data-w="apply"], [data-w="crews"], [data-w="give"], [data-w="gate6"], [data-act^="take:"], [data-act^="step:"], [data-choose] { display: none !important; }
-/* no letter on the public page */
-#envRest { display: none !important; }
 #menuPop [data-m="take"], #menuPop [data-m="path"], #youBtn, #bellBtn, #kpiPathCard { display: none !important; }
 </style>
 <style id="membersEdition" media="not all">
