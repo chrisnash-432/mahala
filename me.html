@@ -310,7 +310,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
 .invite .from { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--yellow); }
 .invite h2 { font: 400 clamp(32px, 6.4vw, 60px)/1.04 var(--name); letter-spacing: .04em; margin: 10px 0 14px; max-width: 16ch; text-wrap: balance; }
 .invite .lead { font: italic 400 clamp(19px, 2.6vw, 23px)/1.35 var(--verse); margin: 0 0 22px; max-width: 46ch; color: rgba(244, 239, 230, .92); }
-.invite ol { list-style: none; margin: 0 0 24px; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; counter-reset: inv; }
+.invite ol { list-style: none; margin: 22px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; counter-reset: inv; }
 .invite li { counter-increment: inv; padding: 14px 16px 16px; border-radius: 18px; background: rgba(244, 239, 230, .07); border: 1px solid rgba(244, 239, 230, .14); font-size: 14.5px; color: rgba(244, 239, 230, .82); }
 .invite li::before { content: counter(inv); display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(244, 239, 230, .5); font-size: 13px; margin-bottom: 8px; }
 .invite li.done::before { content: "\2713"; background: var(--warm); color: var(--ink); border-color: var(--warm); }
@@ -336,7 +336,10 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
 .door-out .emb img { position: relative; width: 132px; height: 132px; display: block; }
 
 @media (max-width: 860px) {
-  .invite ol { grid-template-columns: minmax(0, 1fr); }
+  .invite ol { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .invite li { padding: 12px 14px 12px 50px; position: relative; font-size: 14px; }
+  .invite li::before { position: absolute; left: 14px; top: 13px; margin: 0; }
+  .invite li b { font-size: 17px; }
   .portrait { margin: 0 auto 14px; }
   .altar { grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "card" "rest"; gap: 22px; }
   .whohead { text-align: center; }
@@ -784,7 +787,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     if (P.tier === 'invited') return '<section class="invite" id="invite" aria-labelledby="inviteH"><p class="from">Your invitation' + (by ? ', from ' + esc(by) : '') + '</p>'
       + '<h2 id="inviteH">' + esc(P.first) + ', you are invited to camp with Mahala</h2>'
       + '<p class="lead">' + (by ? esc(by) + ' called you in. ' : '') + 'AfrikaBurn 2027, 26 April to 2 May, in the Tankwa Karoo, where The Seed rises. Places are limited to 50.</p>'
-      + steps + '<div class="row"><a class="btn" href="camp.html?inv=account#join">Open my application</a><a class="btn ghost" href="camp.html">About the camp</a></div>'
+      + '<div class="row"><a class="btn" href="camp.html?inv=account#join">Open my application</a><a class="btn ghost" href="camp.html">About the camp</a></div>' + steps
       + '<p class="fine">Not this season? That is a perfectly good answer: write to love@wearemahala.com, and your place in the tribe stays just as it is.</p></section>';
     if (P.tier === 'applicant') return '<section class="invite quiet" id="invite" aria-labelledby="inviteH"><p class="from">Camp 2027</p>'
       + '<h2 id="inviteH">' + (J.stage === 'waitlist' ? 'You are on the waitlist' : 'Your application is in') + '</h2>'
@@ -833,13 +836,13 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       var th = (r.thread || []).filter(function (l) { return l && l.text && String(l.year) !== '2027'; });
       if (th.length) { var last = th[th.length - 1]; lines.push((last.year ? 'In ' + esc(last.year) + ' you ' : 'You ') + esc(String(last.text).replace(/^(you|i)\s+/i, '')) + (/[.!?]$/.test(last.text) ? '' : '.')); }
     } else if (r.isNew) {
-      lines.push(who + ', you found your way in. Every thread with Mahala starts somewhere, and yours starts here, as The Seed takes shape.');
+      lines.push('Every thread with Mahala starts somewhere, ' + who + ', and yours starts here, in the season The Seed takes shape.');
     } else {
       lines.push(who + ', you are part of Mahala\u2019s story. We do not yet hold the years you were with us: tell us, and they join your thread.');
     }
     if (r.roles.length) lines.push('The hats you have worn with us: ' + esc(andList(r.roles.slice(0, 4))) + '.');
     if (P.tier === 'invited' || P.tier === 'applicant' || P.tier === 'camp') lines.push((r.nominatedBy ? esc(r.nominatedBy) + ' called you in for 2027, the year The Seed rises.' : 'For 2027, the year The Seed rises, there is a place for you at camp.'));
-    else lines.push('There are ' + Math.max(0, Math.ceil((RISES - TODAY) / 864e5)) + ' sleeps until The Seed rises, and the gatherings below are where the tribe meets before then.');
+    else lines.push('The gatherings below are where the tribe meets before The Seed rises. We would love to see you at one.');
     return '<div class="story" id="story">' + lines.map(function (l) { return '<p>' + l + '</p>'; }).join('') + '<p class="sig">MAHALA</p>'
       + '<details class="fixit"><summary>Something missing or not quite right?</summary><textarea id="fixText" rows="2" maxlength="1000" placeholder="A year you camped, a hat you wore, a name"></textarea><div class="row" style="margin-top:6px"><button type="button" class="btn small ghost" id="fixSend">Send to the stewards</button></div><p class="said" id="fixSaid" aria-live="polite"></p></details></div>';
   }
