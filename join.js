@@ -101,7 +101,6 @@
       var f = fee(), L = lines(), t = total();
       return '<h2 class="h-sub">Your place at the camp</h2>' + feeBig(f.place) +
         '<p class="centre small">A place in Mahala camp, the kitchen, the Lotus Mahal, the fire, and your coil necklace.</p>' +
-        '<div class="coil"><img src="camp-media/icons/wait-coil.png" width="256" height="256" alt="" loading="lazy"><p><b>Your coil necklace.</b> Every camp member wears one around the neck: a yantra, a small piece of the temple that carries its pattern. A torus, eight times round and seven times through. It magnifies what we build together, and keeps you in the field wherever you are.</p></div>' +
         '<label class="opt tick"><input type="checkbox" id="jCoil"' + (A.bigCoil ? ' checked' : '') + '><span><b>Add the big coil</b>, ' + money(f.coil) + ': about 40 cm across, wound by hand.</span></label>' +
         '<fieldset class="field"><legend class="flabel">An extra gift to the art piece <small>(optional)</small></legend>' + chips('gift', GIFTS.map(function (g) { return [String(g), g ? money(g) : 'None']; }), String(A.gift), false) + '</fieldset>' +
         '<fieldset class="field"><legend class="flabel">Pay in</legend>' + chips('payIn', [['1', 'One payment'], ['2', '2 instalments'], ['4', '4 instalments']], String(A.payIn), false) + '</fieldset>' +
