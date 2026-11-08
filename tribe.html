@@ -39,7 +39,7 @@ a { color: inherit; }
 .bar .back:hover { border-color: var(--ink); }
 .bar .back svg { width: 16px; height: 16px; } .bar .back svg path { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; }
 .bar .ttl { margin: 0; font: 400 13px/1 var(--name); letter-spacing: .3em; text-transform: uppercase; padding-left: .3em; white-space: nowrap; }
-.bar .side { min-width: 44px; }
+.bar .side { min-width: 44px; display: flex; justify-content: flex-end; }
 main { position: relative; z-index: 1; padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px)); padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
 .col { width: min(100%, 980px); margin: 0 auto; }
 section { padding-block: clamp(44px, 7vw, 84px) 0; }
@@ -254,7 +254,7 @@ html.join-open, html.join-open body { overflow: hidden; }
 <div class="bar">
   <button class="back" type="button" data-page-close><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>Close</button>
   <h1 class="ttl" style="margin:0;font-size:13px;letter-spacing:.3em">The tribe</h1>
-  <span class="side"></span>
+  <span class="side"><button type="button" data-mahala-account hidden></button></span>
 </div>
 <main>
   <div class="col">
@@ -327,7 +327,7 @@ html.join-open, html.join-open body { overflow: hidden; }
       <div class="body" id="bNeed">
         <ul class="needs" id="needs"></ul>
         <p class="strong" id="strong"></p>
-        <div class="acts"><button class="act solid" type="button" data-tribe-join>Join the tribe</button><a class="act" href="seed.html" data-open="seed">About The Seed</a><a class="act" href="./#mahalaverse" data-go-verse data-count="Mahalaverse" data-count-where="The tribe page">Step into the Mahalaverse</a></div>
+        <div class="acts"><a class="act" href="seed.html" data-open="seed">About The Seed</a><button class="act solid" type="button" data-tribe-join>Join the tribe</button><a class="act" href="./#mahalaverse" data-go-verse data-count="Mahalaverse" data-count-where="The tribe page">Step into the Mahalaverse</a></div>
         <p class="door-note">Anyone can join the tribe. The camp at AfrikaBurn is by invitation: join, tell us you would love to come, and the camp leads read every introduction.</p>
       </div>
     </section>
@@ -671,9 +671,9 @@ html.join-open, html.join-open body { overflow: hidden; }
 })();
 </script>
 <script src="site.js?v=8"></script>
-<script src="assets/shim/claude-shim.js?v=14"></script>
+<script src="assets/shim/claude-shim.js?v=15"></script>
 <script src="tribe-join.js?v=2"></script>
-<script src="yourevents.js?v=1"></script>
+<script src="yourevents.js?v=2"></script>
 <script src="analytics.js?v=2"></script>
 </body>
 </html>
