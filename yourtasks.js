@@ -73,12 +73,15 @@
   M.ready.then(load);
 
   var css = document.createElement('style');
+  // dressed as Basecamp is: Jost 500 titles, quiet ink-3 detail, overdue in the plan's red, a sent update in green
   css.textContent = '.yourtasks .yt{list-style:none;margin:12px 0 4px;padding:0;display:grid;gap:12px}'
-    + '.yourtasks .yt li{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:8px 12px;padding-top:12px;border-top:1px solid rgba(42,34,28,.12)}'
-    + '.yourtasks .ytc{grid-column:1/-1;display:grid;gap:8px}.yourtasks .ytc[hidden]{display:none}'
+    + '.yourtasks .yt li{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:8px 12px;padding-top:12px;border-top:1px solid var(--rule,#DCD2C3)}'
+    + '.yourtasks .ytc{grid-column:1/-1;display:grid;gap:8px;padding:12px;border-radius:12px;background:var(--paper,#F7F2EA)}.yourtasks .ytc[hidden]{display:none}'
     + '.yourtasks .yt li:first-child{border-top:0;padding-top:0}'
-    + '.yourtasks .ytt{display:grid;gap:2px}.yourtasks .ytt small{opacity:.75;line-height:1.5}.yourtasks .late{color:#A62B22;opacity:1}'
+    + '.yourtasks .ytt{display:grid;gap:2px;min-width:0}.yourtasks .ytt > b{font-weight:500;overflow-wrap:anywhere}'
+    + '.yourtasks .ytt small{color:var(--ink-3,#6F6357);font-size:13.5px;line-height:1.5}.yourtasks .ytt small b{font-weight:500;color:var(--ok,#2E6B4F)}'
+    + '.yourtasks .late{color:#A62B22;font-weight:500}'
     + '.yourtasks .row{display:flex;flex-wrap:wrap;gap:8px}'
-    + '.yourtasks .ytnote{width:100%;box-sizing:border-box;font:inherit;font-size:.9rem;padding:8px 10px;border:1px solid rgba(42,34,28,.2);border-radius:10px;background:transparent;color:inherit}';
+    + '.yourtasks .ytnote{width:100%;box-sizing:border-box;font:inherit;font-size:15px;padding:9px 12px;border:1px solid var(--rule-2,#C9BCA9);border-radius:10px;background:#fff;color:var(--ink,#2A221C);min-height:42px}';
   document.head.appendChild(css);
 })();
