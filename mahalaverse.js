@@ -2201,7 +2201,10 @@ function updateDeck(dt, t) {
     c.g.visible = vis; c.g.children.forEach(m => m.visible = vis); if (!vis) { c.init = false; return; }
     const drawn = DKX.drawn === c.a.key, slot = DKX.order.indexOf(i), ang = slot / N * Math.PI * 2 + DKX.spin;
     if (drawn) {   // the drawn card lifts out of the ring and hangs in the air before you, above the words
-      _dkP.set(0, (innerWidth > 760 ? 0.2 : 0.3) + 0.012 * Math.sin(t * 1.1), 0.5).unproject(camera).sub(camera.position).normalize().multiplyScalar(3.8).add(camera.position); _dkM.lookAt(camera.position, _dkP, _dkUp); }
+      // 8 Nov review: centred in the open sky between the top bar and the card below, and drawn a little further off when that gap is small, so it is never cut off
+      const fr = FI.el.querySelector('.fire-card').getBoundingClientRect(), top = 80, low = fr.top > top + 80 ? fr.top : innerHeight * 0.6, gap = Math.max(80, low - top - 16);
+      const fh = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)), dist = clamp(0.62 * innerHeight / (fh * gap * 0.9), 3.8, 4.8);
+      _dkP.set(0, 1 - (top + low) / innerHeight + 0.012 * Math.sin(t * 1.1), 0.5).unproject(camera).sub(camera.position).normalize().multiplyScalar(dist).add(camera.position); _dkM.lookAt(camera.position, _dkP, _dkUp); }
     else { _dkP.set(C.x + Math.cos(ang) * R, C.y + 0.3 + DKX.rise * 0.6 + 0.045 * Math.sin(t * 1.3 + i * 0.9), C.z + Math.sin(ang) * R);   // 8 Nov review: the ring sits lower, so no card is cut off at the top
       _dkC.copy(_dkP).sub(camera.position).setY(0).normalize().add(_dkP); _dkM.lookAt(_dkC, _dkP, _dkUp); }   // face down: each card turns its back to you
     _dkQ.setFromRotationMatrix(_dkM);
@@ -3098,7 +3101,7 @@ function v4Act(act, a) {
   if (k === 'path') { openPath(); return true; }
   if (k === 'beyond') { goBeyond(+x); return true; }
   if (k === 'write') { openWrite(x, +y); return true; }
-  if (k === 'take') { const q = DATA.quests.find(z => z.id === x); ME.quests[x] = { at: Date.now(), steps: [false, false, false] }; saveMe(); pushMe(); markDone(4, 'quest'); toast(`On your list: ${q.name}. Tick each step as you do it.`); renderInspector(REG[x]); return true; }
+  if (k === 'take') { const q = DATA.quests.find(z => z.id === x); ME.quests[x] = { at: Date.now(), steps: [false, false, false] }; saveMe(); pushMe(); markDone(4, 'quest'); toast(`On your list: ${q.name}.`); renderInspector(REG[x]); return true; }
   if (k === 'step') { const s2 = ME.quests[x]; if (!s2) return true; s2.steps[+y] = !s2.steps[+y]; saveMe(); pushMe(); refreshLight(); renderInspector(REG[x]); return true; }
   if (k === 'crewjoin') { ME.crew = x; ME.crewOk = canEnter('crews'); saveMe(); pushMe(); toast(ME.crewOk ? `You are on the ${CREW_BY(x).name}.${isBuildCrew(x) ? ' The yard and the workshop are open to you.' : ''}` : `Asked to join the ${CREW_BY(x).name}. A steward will accept you.`); renderInspector(REG[x]); renderKpis(); return true; }
   if (k === 'notify') { const e2 = DATA.events.find(z => z.id === x), I = window.MahalaInterest;
@@ -4611,6 +4614,8 @@ const FILM_PAGE = 'https://wearemahala.com/seed.html';
 const FILM_TEXT = 'Meet The Seed, a temple of coloured glass that Mahala, a community of temple builders, is raising for AfrikaBurn 2027. Watch the film:';
 const waHref = () => 'https://wa.me/?text=' + encodeURIComponent(FILM_TEXT + ' ' + FILM_PAGE);
 async function shareFilm(how) {
+  for (const id of ['Q-07', 'Q-01']) QP.mark(id, id === 'Q-07' ? 2 : 1);   // the step that says share it (only on a quest you took)
+  if (how === 'wa') return;                                                  // the WhatsApp link opens by itself
   if (how === 'share') {
     try { if (navigator.share) { await navigator.share({ title: 'The Seed', text: FILM_TEXT, url: FILM_PAGE }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
   }
@@ -4618,53 +4623,62 @@ async function shareFilm(how) {
   catch (e) { toast(FILM_PAGE); }
 }
 const go = (attr, label, ic) => `<button class="btn" ${attr}>${icon(ic)}${esc(label)}</button>`;
-// the fold out for each quest: from what the quest already says, the cards of the places it touches and the build plan
+// the fold out for each quest, in plain words: from what the quest already says, the cards of the places it touches and the build plan
 const QUEST_MORE = {
-  'Q-07': { why: 'The film shows The Seed in sixty seconds. Every person you send it to might build it, back it or pass it on.',
-    achieve: () => `The fundraise for The Seed, year one of a four-year vision towards the full temple in 2030.${budgetBar()}`,
-    help: () => go('data-act="film"', 'The film', 'film') + go('data-act="seedpage"', 'The Seed page', 'book') + go('data-act="donate"', 'Donate to The Seed', 'gift'),
-    when: () => `Now, while the fundraise is open: AfrikaBurn 2027 is ${days} days away (26 April to 2 May).` },
-  'Q-01': { why: 'Each ring of the zome is one colour of cast acrylic. The glass is what paints the floor and the people inside in fields of colour.',
-    achieve: () => `The sheets of acrylic for one ring, and the fundraise for The Seed.${budgetBar()}`,
-    help: () => go('data-act="qgates"', 'The ways to give', 'gate') + go('data-act="donate"', 'Donate to The Seed', 'gift') + go('data-sel="RING_E"', 'A ring of glass', 'glass'),
-    when: () => 'During the fundraise, before the glass is cut and glazed in the workshop.' },
-  'Q-02': { why: 'The top two rings of the frame stay open timber: the star of sky at the crown. A test set shows the cut list works before the full crown is cut.',
-    achieve: () => 'The first crown timbers, cut on the CNC and dry-fitted.',
-    help: () => go('data-sel="GUIDE"', 'The build guide', 'book') + go('data-sel="YARD_CNC"', 'The CNC cutting table', 'forms'),
-    when: () => 'In the workshop, in the season of building.' },
-  'Q-03': { why: 'The coloured light falls across the floor pattern by day and at night, so the pattern is part of the temple.',
-    achieve: () => 'The Golden Seed of Life set out and painted around The Seed, with a plan to take it off again: leave no trace.',
-    help: () => go('data-sel="FLOOR_GRID"', 'The Golden Seed of Life', 'seed') + go('data-sel="GUIDE"', 'The build guide', 'book'),
-    when: () => 'The first day of the build on the playa: setting out the floor pattern comes first.' },
-  'Q-04': { why: 'At night the lantern inside throws a wheel of coloured rays across the desert floor.',
-    achieve: () => 'A lantern tested behind the acrylic, powered safely and lit on the night.',
+  'Q-07': { why: 'The film shows The Seed in one minute. Each person who sees it might help build it, give to it, or send it on to someone else.',
+    achieve: () => `It helps us raise the money for The Seed: the first year of a four-year dream, the full temple in 2030.${budgetBar()}`,
+    help: () => go('data-act="film"', 'Watch the film', 'film') + go('data-act="seedpage"', 'The Seed page', 'book') + go('data-act="donate"', 'Donate to The Seed', 'gift'),
+    when: () => `Now. We are raising the money, and AfrikaBurn 2027 is ${days} days away (26 April to 2 May).` },
+  'Q-01': { why: 'Each ring of the dome is glass of one colour. When the sun shines through it, the floor and the people inside fill with colour.',
+    achieve: () => `It pays for the glass of one ring, and helps us raise the money for The Seed.${budgetBar()}`,
+    help: () => go('data-act="qgates"', 'The ways to give', 'gate') + go('data-act="donate"', 'Donate to The Seed', 'gift') + go('data-sel="RING_E"', 'See a ring of glass', 'glass'),
+    when: () => 'While we are raising the money, before the glass is cut in the workshop.' },
+  'Q-02': { why: 'The top of the dome is left open, so you see a star of sky. Cutting a small test set first shows the measurements are right.',
+    achieve: () => 'The first wooden pieces of the crown, cut and tried together.',
+    help: () => go('data-sel="GUIDE"', 'The build guide', 'book') + go('data-sel="YARD_CNC"', 'The cutting table', 'forms'),
+    when: () => 'In the workshop, when the building season starts.' },
+  'Q-03': { why: 'The coloured light falls on the pattern on the ground, day and night, so the pattern is part of the temple.',
+    achieve: () => 'The pattern drawn and painted around The Seed, and a plan to take it all away again, leaving no trace.',
+    help: () => go('data-sel="FLOOR_GRID"', 'See the pattern', 'seed') + go('data-sel="GUIDE"', 'The build guide', 'book'),
+    when: () => 'On the first day of building in the desert. The pattern is marked out before anything else.' },
+  'Q-04': { why: 'At night a lantern inside the dome sends coloured light across the desert.',
+    achieve: () => 'A lantern that is tested, safe, and lit on the night.',
     help: () => go('data-sel="TEMPLE"', 'The Seed', 'dome') + go('data-act="night"', 'See it at night', 'moon'),
-    when: () => 'Lamps tested before the build; the lights go in on the last day of the build, after the cap and the petals.' },
-  'Q-05': { why: 'The build crew raises The Seed in five days on the playa. The kitchen keeps them fed and watered.',
-    achieve: () => 'A menu planned with the camp, a packed kitchen and a kitchen roster for build week.',
+    when: () => 'Test the lamps before the build. The lights go in on the last day of building.' },
+  'Q-05': { why: 'The builders raise The Seed in five days in the desert. Good food keeps them going.',
+    achieve: () => 'A menu made with the camp, a kitchen packed and ready, and a plan for who cooks when.',
     help: () => go('data-sel="CAMP_KITCHEN"', 'The camp kitchen', 'users') + go('data-sel="CAMP"', 'Mahala camp', 'tent'),
-    when: () => 'Planning before the burn; cooking through build week on the playa.' },
-  'Q-06': { why: 'A light box is a gift for the gates, and the first step of the Temple Tech research into light and geometry.',
-    achieve: () => 'A first light box: modelled, cut and tested with a light inside.',
+    when: () => 'Plan it before the burn. Cook during build week in the desert.' },
+  'Q-06': { why: 'A light box is a thank-you gift for people who give, and our first step in exploring light and shape.',
+    achieve: () => 'A first light box: drawn on a computer, cut, and tested with a light inside.',
     help: () => go('data-sel="BENCH"', 'The Temple Tech bench', 'tools') + go('data-sel="GATE_4"', 'Gate 4: a light box', 'gift'),
-    when: () => 'In the season of building, at the Temple Tech bench.' },
+    when: () => 'When the building season starts, at the Temple Tech bench.' },
+};
+/* ---------- quest progress: the one place the Mahalaverse reads and marks it ----------
+   Today it lives in this browser, in ME.quests ({ at, steps: [three true or false] }), and reaches the shared database
+   through pushMe, as it always has. Shared quest progress (Your Mahala, the Mahalaverse and Basecamp) is coming through
+   the member database and the shim: wire it here, and nowhere else. Read a quest with QP.get(id); mark one step done
+   with QP.mark(id, step). There is no ticking in the Mahalaverse: steps are marked by what you do (sharing the film). */
+const QP = {
+  get: id => ME.quests[id] || null,
+  take(id) { if (!ME.quests[id]) { ME.quests[id] = { at: Date.now(), steps: [false, false, false] }; saveMe(); pushMe(); markDone(4, 'quest'); } return ME.quests[id]; },
+  mark(id, step) { const q = ME.quests[id]; if (!q || q.steps[step]) return; q.steps[step] = true; saveMe(); pushMe(); },
 };
 const filmBlock = () => `<div class="q-film">
     <button class="q-thumb" type="button" data-act="film" aria-label="Watch the film, 60 seconds"><img src="seed/img/film_wide.jpg" alt="" loading="lazy"><span class="play">${icon('play')}</span></button>
     <div class="q-film-t"><b>The Seed, the film</b><small>60 seconds. Watch it, then send it on.</small></div>
-    <div class="actions q-share"><button class="btn primary" type="button" data-act="qshare:share">${icon('share')}Share the film</button><a class="btn" href="${esc(waHref())}" target="_blank" rel="noopener noreferrer">${icon('users')}WhatsApp</a><button class="btn" type="button" data-act="qshare:copy">${icon('save')}Copy for Instagram</button></div></div>`;
+    <div class="actions q-share"><button class="btn primary" type="button" data-act="qshare:share">${icon('share')}Share the film</button><a class="btn" href="${esc(waHref())}" target="_blank" rel="noopener noreferrer" data-act="qshare:wa">${icon('users')}WhatsApp</a><button class="btn" type="button" data-act="qshare:copy">${icon('save')}Copy for Instagram</button></div></div>`;
 function questCard(q) {
-  const n = QNUM(q.id), mine = ME.quests[q.id], M = QUEST_MORE[q.id], film = q.id === 'Q-07' || q.id === 'Q-01';
+  const n = QNUM(q.id), mine = QP.get(q.id), M = QUEST_MORE[q.id], film = q.id === 'Q-07' || q.id === 'Q-01';
   const tone = 'c-' + { y: 'yellow', c: 'cyan', m: 'magenta' }[q.tone];
   return head('quest', `Quest ${n} of ${DATA.quests.length}`, q.name, q.open ? 'Open to everyone' : `${esc(q.stage)} · opens later`) + `<div class="insp-body">
     <p>${esc(q.goal)}</p>
     ${film ? filmBlock() : ''}
-    ${mine && window.__MV_MEMBERS ? `<div class="ticks">${q.steps.map((s2, i) => { const dn = !!(mine.steps || [])[i]; return `<button class="tick ${dn ? 'on' : ''}" data-act="step:${q.id}:${i}"><span class="bx">${dn ? icon('check') : ''}</span>${esc(s2)}</button>`; }).join('')}</div>`
-      : `<ol class="steps-ol">${q.steps.map(s2 => `<li>${esc(s2)}</li>`).join('')}</ol>`}
+    <ol class="steps-ol">${q.steps.map((s2, i) => `<li${mine && (mine.steps || [])[i] ? ' class="done"' : ''}>${esc(s2)}${mine && (mine.steps || [])[i] ? ` <span class="note">${icon('check')}done</span>` : ''}</li>`).join('')}</ol>
     ${q.open ? '' : `<div class="lockrow">${icon('cal')}<span><b>Opens with the season of building</b><small>Start with the film for now: it is open to everyone.</small></span><button class="btn" data-sel="Q-07">Quest 1</button></div>`}
-    ${M ? `<details class="q-more"><summary>${icon('down')}Why it matters, and how to do it well</summary>
-      <dl class="q-dl"><div><dt>Why it matters</dt><dd>${esc(M.why)}</dd></div><div><dt>What it helps achieve</dt><dd>${M.achieve()}</dd></div>
-      <div><dt>What helps</dt><dd><div class="actions">${M.help()}</div></dd></div><div><dt>Best timing</dt><dd>${esc(M.when())}</dd></div></dl></details>` : ''}
+    ${M ? `<details class="q-more"><summary>${icon('down')}Why this quest matters</summary>
+      <dl class="q-dl"><div><dt>Why it matters</dt><dd>${esc(M.why)}</dd></div><div><dt>What it helps us do</dt><dd>${M.achieve()}</dd></div>
+      <div><dt>What will help you</dt><dd><div class="actions">${M.help()}</div></dd></div><div><dt>When to do it</dt><dd>${esc(M.when())}</dd></div></dl></details>` : ''}
     <div class="chips">${chip(q.stage, tone)}${q.skills && q.skills !== 'None needed' ? chip('Skills: ' + q.skills, 'wait') : chip('No skills needed', 'open')}</div>
     <div class="actions">${mine || !q.open ? '' : `<button class="btn primary" data-act="take:${q.id}">${icon('check')}Take this quest</button>`}<button class="btn" data-sel="${q.where}">${icon('pin')}Go to ${esc(REG[q.where].title.replace(/^The /, 'the '))}</button></div></div>`;
 }
@@ -4708,12 +4722,14 @@ HOOK7.cardIn.unshift(it => {
   if ((k === 'shifts' || k === 'guide') && !campMember()) return walledCard(k, k === 'shifts' ? 'Build shifts and build days' : 'The build guide');
   return null;
 });
-// the camp card: a door to the music
-{ const _ciM = v4CardIn; v4CardIn = function (it, h) { const o = _ciM(it, h);
+// every card: no links to crews or roles; the camp card: a door to the music
+{ const _ciM = v4CardIn; v4CardIn = function (it, h) { const o = _ciM(it, h).replace(/<button data-sel="(?:CR|RO)-\d+">.*?<\/button>/g, '');   // no links to crews or roles
   return it.kind === 'camp' ? o.replace(`${icon('sound')}The main tent: music and sets</button>`, `${icon('sound')}The main tent: music and sets</button><button class="btn" data-sel="MUSIC">${icon('sound')}Music from the camp</button>`) : o; }; }
 HOOK7.act.unshift((act, a) => {
   const [k, x] = act.split(':');
-  if (k === 'qshare') { shareFilm(x); return true; }
+  if (k === 'qshare') { shareFilm(x).then(() => { if (current && /^Q-/.test(current)) refreshCard(current); }); return true; }
+  if (k === 'take') { const q = DATA.quests.find(z => z.id === x); if (!q) return true; QP.take(x); toast(`On your list: ${q.name}.`); refreshCard(x); return true; }
+  if (k === 'step') return true;   // no ticking in the Mahalaverse
   if (k === 'qgates') { openExplore('gates'); return true; }
   return false;
 });
@@ -4732,8 +4748,9 @@ new MutationObserver(() => {
 { const st = document.createElement('style'); st.id = 'mvReview0811'; st.textContent = `
 body:not(.mv-test) .testbtn { display: none !important; }
 body.mv-test .testbtn { display: inline-flex !important; }
-.insp-head .keepgoing { align-self: center; margin-left: auto; flex: none; }
-.insp-head .keepgoing + .x { margin-left: 0; }
+.insp-head { flex-wrap: wrap; }
+.insp-head > div:not(.glyph) { flex: 1 1 0; }
+.insp-head .keepgoing { order: 9; flex: 1 0 100%; margin: -10px 0 -6px; padding: 2px 4px; text-align: right; }
 body.walking .way-more { display: none !important; }
 body.walked .way:not(.more) .way-lines p + p, body.walked .way:not(.more) .way-tiles { display: none; }
 body.walked .way-more { display: inline-flex; align-self: start; align-items: center; margin: -6px 0; padding: 0; border: 0; background: none; font: inherit; font-size: 13px; color: var(--ink-2); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
@@ -4755,13 +4772,14 @@ body.walked .way-more { display: inline-flex; align-self: start; align-items: ce
 .q-dl { display: grid; gap: 10px; margin: 0 0 12px; }
 .q-dl dt { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 2px; }
 .q-dl dd { margin: 0; line-height: 1.5; }
+.steps-ol li.done { color: var(--ink-3); } .steps-ol li .note svg.i { width: 13px; height: 13px; vertical-align: -2px; margin-right: 2px; }
 .q-dl .actions { margin: 4px 0 0; } .q-dl .btn { height: 34px; font-size: 13px; }
 .yard-do h4 { margin-bottom: 6px; }
 .mv-tracks { display: grid; gap: 10px; }
 .mv-track { display: grid; gap: 6px; padding: 10px 12px; border: 1px solid var(--card-line); border-radius: 12px; background: var(--hover); }
 .mv-track b { display: block; font-size: 14.5px; } .mv-track small { color: var(--ink-3); font-size: 12.5px; }
 .mv-track audio { width: 100%; height: 36px; }
-@media (max-width: 760px) { .insp-head .keepgoing { font-size: 12px; padding: 4px; } .q-film { grid-template-columns: 96px minmax(0, 1fr); } }
+@media (max-width: 760px) { body.walking .way { max-height: min(58vh, 500px); } .q-film { grid-template-columns: 96px minmax(0, 1fr); } }
 `; document.head.appendChild(st); }
 
 import('./assets/together.js').then(m => m.start(window.__mahala)).catch(e => console.warn('The together layer did not start:', e));
