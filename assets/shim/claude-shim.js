@@ -547,7 +547,7 @@
   /* ------------------------------------------------------------------ your picture (F-034) */
   // Your own picture, in this order: one you chose (kept in your folder of the private bucket as me-<random>, made
   // small on your device first), the one from your slide in the members' directory that the community map holds
-  // (pushed by Mahala OS, read only by you: my_map_photo), the one Google gave, else your emblem: a Seed of Life drawn
+  // (pushed by Mahala OS, read only by you: my_map_photo), else your emblem: a Seed of Life drawn
   // from your id, the same on every device and never anyone else's. Only ever shown to you here; the "photo" choice
   // decides more later. myPictureInfo says which one it is, for the words under it.
   var EMBLEM_HUES = [['#FFD81F', '#14A8E0'], ['#14A8E0', '#D8197F'], ['#D8197F', '#FFD81F'], ['#E06A2C', '#7E57C2'], ['#2E8558', '#FFD81F'], ['#7E57C2', '#14A8E0']];
@@ -569,7 +569,9 @@
     var useMap = !(opts && opts.map === false);
     return infoP.then(function (w) {
       if (!w || !w.signedIn) return null;
-      var last = function () { return w.picture ? { src: w.picture, from: 'google' } : { src: emblem(w.uid || w.personId), from: 'emblem' }; };
+      // Never the picture Google gave (Chris, 8 Nov 2026): it is often just a letter, and the community map's is the one
+      // Mahala knows people by. Your own, then the community map's, then your emblem.
+      var last = function () { return { src: emblem(w.uid || w.personId), from: 'emblem' }; };
       var fallback = function () {
         if (!useMap || !w.claimed) return last();
         mapPhotoP = mapPhotoP || rpc('my_map_photo').then(function (r) { return r && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(r.photo || '') ? r.photo : null; }, function () { return null; });
@@ -670,7 +672,7 @@
     signOut: AUTH.signOut, rpc: rpc,
     // the Mahalaverse asks for an account before anyone steps onto the playa
     gate: function () { return AUTH.open('gate'); },
-    // Your Mahala (F-034): your picture (chosen, the community map's, Google's, or your emblem), and choosing or removing one
+    // Your Mahala (F-034): your picture (chosen, the community map's, or your emblem), and choosing or removing one
     picture: myPicture, pictureInfo: myPictureInfo, setPicture: setPhoto, clearPicture: clearPhoto, emblem: emblem,
     // the end of Join the tribe: make the account with the address just given, and land on Your Mahala (F-025)
     join: function (o) { return infoP.then(function () { UI.join(o || {}); }); },
