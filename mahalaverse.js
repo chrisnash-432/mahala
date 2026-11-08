@@ -4878,7 +4878,9 @@ body.walked .way-more { display: inline-flex; align-self: start; align-items: ce
 .mv-track b { display: block; font-size: 14.5px; } .mv-track small { color: var(--ink-3); font-size: 12.5px; }
 .mv-track audio { width: 100%; height: 36px; }
 .mv-offer { margin-top: 10px; } .mv-offer .snd-form { padding: 0 0 12px; border: 0; background: none; }
-#tribeDoor .td-in { border: 0; background: none; padding: 0; font: inherit; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+#tribeDoor { z-index: 45; }   /* over the lobby, which waits behind it (z-index 40) */
+#tribeDoor .note a { color: var(--ink); text-underline-offset: 3px; }
+#tribeDoor .td-in { display: inline; min-height: 0; margin: 0; border: 0; background: none; padding: 0; font: inherit; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
 #tribeDoor .intro-go { text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
 @media (max-width: 760px) { body.walking .way { max-height: min(58vh, 500px); } .q-film { grid-template-columns: 96px minmax(0, 1fr); } }
 `; document.head.appendChild(st); }
