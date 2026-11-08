@@ -268,6 +268,11 @@ html.js .rv:not(.on) { opacity: 0; transform: translateY(12px); }
 .reel .r-title { position: absolute; left: 14px; bottom: 12px; color: var(--warm); font: 400 clamp(16px, 2vw, 22px)/1 var(--name); letter-spacing: .2em; text-transform: uppercase; text-shadow: 0 0 12px rgba(0, 0, 0, .7); pointer-events: none; }
 .reel .r-sound { position: absolute; right: 10px; bottom: 10px; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid rgba(244, 239, 230, .5); background: rgba(13, 11, 9, .5); color: var(--warm); font: 400 13px/1 var(--text); letter-spacing: .08em; cursor: pointer; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .reel .r-sound:hover { background: rgba(13, 11, 9, .75); }
+/* the reel's own sound, on by default (F-049): a small switch beside Watch with sound */
+.reel .r-mute { position: absolute; left: 10px; bottom: 10px; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(244, 239, 230, .5); background: rgba(13, 11, 9, .5); color: var(--warm); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.reel .r-mute:hover { background: rgba(13, 11, 9, .75); }
+.reel .r-mute svg { width: 18px; height: 18px; } .reel .r-mute svg path { fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.reel .r-mute .on-w { display: none; } .reel .r-mute[aria-pressed="true"] .on-w { display: inline; } .reel .r-mute[aria-pressed="true"] .off-x { display: none; }
 .reel .r-sound svg { width: 16px; height: 16px; } .reel .r-sound svg path { fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 .reel-cap { font: 400 13px/1.4 var(--text); color: var(--ink-3); margin: 8px 2px 0; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
@@ -570,6 +575,10 @@ html.join-open, html.join-open body { overflow: hidden; }
 .join-acts { margin-top: 26px; }
 .join-acts .primary[aria-disabled="true"] { background: #b9ada0; border-color: #b9ada0; }
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+/* where you live, already known (F-046): shown with a way to change it, not asked again */
+.place-line { margin: 0; font: 400 17px/1.4 var(--text); display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; }
+.place-line b { font-weight: 500; }
+.place-line .linkish { background: none; border: 0; padding: 6px 0; font: 400 15px/1 var(--text); cursor: pointer; min-height: 32px; }
 .join-done .next { margin: 0 0 8px; padding-left: 1.3em; display: grid; gap: 14px; font: 300 17px/1.5 var(--text); }
 .join-done .next b { font-weight: 500; }
 .give .intro { margin-bottom: clamp(18px, 3vw, 26px); }
@@ -628,6 +637,7 @@ html.join-open, html.join-open body { overflow: hidden; }
       <div class="reel" id="campReel">
         <video muted loop playsinline preload="none" data-poster="camp-media/camp-reel-poster.jpg" data-src="camp-media/camp-reel.mp4" aria-label="The camp at AfrikaBurn. Sound: Flower of Life, an original Mahala production"></video>
         <button class="r-sound" type="button" data-reel-full><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h2.5l3.5-3v10l-3.5-3H2z"/><path d="M10.5 5.8c.8.6 1.2 1.3 1.2 2.2s-.4 1.6-1.2 2.2M12.4 4c1.3 1 2 2.4 2 4s-.7 3-2 4"/></svg><span>Watch with sound</span></button>
+        <button class="r-mute" type="button" data-reel-mute aria-pressed="false" aria-label="Sound off. Turn it on"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 6h2.5l3.5-3v10l-3.5-3H2z"/><path class="on-w" d="M10.5 5.8c.8.6 1.2 1.3 1.2 2.2s-.4 1.6-1.2 2.2"/><path class="off-x" d="M10.6 6l3.6 4M14.2 6l-3.6 4"/></svg></button>
       </div>
       <p class="reel-cap"><span>Sound: Flower of Life, an original Mahala production</span><span>53 s</span></p>
     </div>
@@ -733,8 +743,8 @@ html.join-open, html.join-open body { overflow: hidden; }
   </div>
   <div class="page join-page"><div id="joinBody"></div></div>
 </section>
-<script src="site.js?v=8"></script>
-<script src="assets/shim/claude-shim.js?v=15"></script>
+<script src="site.js?v=9"></script>
+<script src="assets/shim/claude-shim.js?v=16"></script>
 <script>
 (function () {
   var SITE = window.MAHALA_SITE || {};
@@ -787,26 +797,36 @@ html.join-open, html.join-open body { overflow: hidden; }
 })();
 </script>
 <script>
-// the camp reel: its poster at once, plays (muted) while it is on screen, full screen with sound when asked
+// the camp reel: its poster at once, plays while it is on screen, full screen with sound when asked. Sound is on by
+// default (F-049): with sound where the browser allows it, else silent until the first tap; the switch turns it off
+// for the whole site on this device (site.js sound).
 (function () {
-  var camp = document.querySelector('#campReel video');
+  var camp = document.querySelector('#campReel video'), SND = (window.MAHALA_SITE || {}).sound;
+  var mb = document.querySelector('#campReel [data-reel-mute]');
+  var mark = function () { var on = !camp.muted; mb.setAttribute('aria-pressed', String(on)); mb.setAttribute('aria-label', on ? 'Sound on. Turn it off' : 'Sound off. Turn it on'); };
+  camp.addEventListener('volumechange', mark);
+  mb.addEventListener('click', function () {
+    var on = camp.muted; camp.muted = !on; mark(); if (SND) SND.set(on);
+    if (on) { load(camp); camp.play().catch(function () {}); }
+  });
   if (camp.dataset.poster) camp.poster = camp.dataset.poster;
   var load = function (v) { if (v.dataset.src && !v.getAttribute('src')) v.src = v.dataset.src; };
   // Data Saver or reduced motion: the poster stays until Watch with sound is tapped
   var quiet = (navigator.connection && navigator.connection.saveData) || matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (quiet) { /* nothing plays by itself */ } else if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (ents) {
-      ents.forEach(function (e) { var v = e.target; if (e.isIntersecting) { load(v); v.play().catch(function () {}); } else v.pause(); });
+      ents.forEach(function (e) { var v = e.target; if (e.isIntersecting) { load(v); if (SND) SND.play(v); else v.play().catch(function () {}); } else v.pause(); });
     }, { threshold: 0.35 }).observe(camp);
+    if (SND) SND.follow(camp);
   } else load(camp);
   document.querySelector('#campReel [data-reel-full]').addEventListener('click', function () {
     load(camp); camp.muted = false; camp.currentTime = 0; camp.play().catch(function () {});
     if (camp.requestFullscreen) camp.requestFullscreen().catch(function () {});
     else if (camp.webkitEnterFullscreen) { try { camp.webkitEnterFullscreen(); } catch (e) { } }
   });
-  var mute = function () { if (!document.fullscreenElement) camp.muted = true; };
+  var mute = function () { if (!document.fullscreenElement) camp.muted = !(SND && SND.on()); };
   document.addEventListener('fullscreenchange', mute);
-  camp.addEventListener('webkitendfullscreen', function () { camp.muted = true; });
+  camp.addEventListener('webkitendfullscreen', function () { camp.muted = !(SND && SND.on()); });
 
   // the photographs: in a new order each visit, drifting slowly along until you take them in hand
   var track = document.getElementById('carTrack'), count = document.getElementById('carCount');

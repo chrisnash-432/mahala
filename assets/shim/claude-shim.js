@@ -759,6 +759,75 @@
     finishRemoval: function (uid) { return rpc('steward_finish_removal', { p_user: uid }).then(function () { return { ok: true }; }, function () { return { ok: false }; }); },
   };
 
+  /* ------------------------------------------------------------------ quest progress, one record (F-065) */
+  // Each person's quests live in the member database (quest_progress, migration 20261110000600), so a step ticked on
+  // Your Mahala shows in the Mahalaverse and on Basecamp, and the other way round. Quest ids are the Mahalaverse's
+  // (Q-01 to Q-07); steps count from 0. Each call gives back every quest of yours, as
+  //   { 'Q-07': { steps: [true, false, false], takenAt: '...', updatedAt: '...' } }
+  // quests() gives {} when signed out; the others refuse. Every change is also announced on the window as the event
+  // 'mahala:quests' (detail: the same object), so any page open in the same tab can redraw.
+  function questsSaid(q) {
+    q = q && typeof q === 'object' && !Array.isArray(q) ? q : {};
+    try { window.dispatchEvent(new CustomEvent('mahala:quests', { detail: q })); } catch (e) { }
+    return q;
+  }
+  function asMember(fn) {
+    return infoP.then(function (w) { if (!(w.signedIn && w.claimed)) throw { code: 'unauthenticated', message: 'sign in first' }; return fn(); });
+  }
+  var QUESTS = {
+    quests: function () { return infoP.then(function (w) { return w.signedIn && w.claimed ? rpc('my_quests').then(function (q) { return q || {}; }) : {}; }); },
+    markStep: function (quest, step, done) {
+      var i = Number(step);
+      if (!(i >= 0 && i <= 11 && Math.floor(i) === i)) return Promise.reject({ code: 'invalid-argument', message: 'unknown step' });
+      return asMember(function () { return rpc('quest_mark', { p_quest: String(quest || ''), p_step: i, p_done: done !== false }).then(questsSaid); });
+    },
+    takeQuest: function (quest) { return asMember(function () { return rpc('quest_mark', { p_quest: String(quest || ''), p_step: null, p_done: true }).then(questsSaid); }); },
+    dropQuest: function (quest) { return asMember(function () { return rpc('quest_drop', { p_quest: String(quest || '') }).then(questsSaid); }); },
+  };
+
+  /* ------------------------------------------------------------------ what Mahala already knows (F-050) */
+  // For any form to fill in, so nobody is asked anything twice: from this device (the copy Join the tribe keeps for a
+  // day, and the forms this browser sent; the WhatsApp number lives only there, since the member record never holds a
+  // phone number) and, signed in, from the member record (name, address, playa name, where you live, what you bring,
+  // who called you in). The record wins over the device. `from` says where each answer came from: 'profile' or 'device'.
+  function splitHome(h) {
+    var s = String(h || '').trim(), at = s.lastIndexOf(',');
+    return at > 0 ? { town: s.slice(0, at).trim(), country: s.slice(at + 1).trim() } : { town: s, country: '' };
+  }
+  function known() {
+    var out = { signedIn: false, name: '', email: '', playaName: '', based: '', town: '', country: '', home: '', gifts: '', skills: [], nominatedBy: '', whatsapp: '', from: {}, seen: {} };
+    var put = function (k, v, from) { if (v && (!out[k] || from === 'profile') && !(Array.isArray(v) && !v.length)) { out[k] = v; out.from[k] = from; } };
+    var box = [], ts = null;
+    try { box = JSON.parse(ls.get('mahala.outbox') || '[]') || []; } catch (e) { }
+    try { ts = JSON.parse(ls.get('mahala.tribeSkills') || 'null'); } catch (e) { }
+    var sent = (Array.isArray(box) ? box : []).slice().reverse(), tribeRow = sent.filter(function (r) { return r && r.type === 'tribe'; })[0] || null;
+    var t = tribeAnswers() || ts || tribeRow || {};
+    var wa = sent.filter(function (r) { return r && r.whatsapp && (r.type !== 'tribe' || r.whatsappCommunity); })[0];
+    put('name', String((tribeRow && tribeRow.name) || t.name || (sent.filter(function (r) { return r && r.name; })[0] || {}).name || '').slice(0, 80), 'device');
+    put('email', String((sent.filter(function (r) { return r && r.email; })[0] || {}).email || '').slice(0, 120), 'device');
+    put('town', String(t.town || '').slice(0, 60), 'device');
+    put('country', String(t.country || '').slice(0, 60), 'device');
+    put('based', t.based === 'sa' || t.based === 'away' ? t.based : t.country ? (SA_RE.test(String(t.country).trim()) ? 'sa' : 'away') : '', 'device');
+    put('skills', Array.isArray(t.skills) ? t.skills.slice(0, 20) : [], 'device');
+    put('whatsapp', wa ? String(wa.whatsapp).slice(0, 30) : '', 'device');
+    return infoP.then(function (w) {
+      if (!(w.signedIn && w.claimed)) return out;
+      out.signedIn = true;
+      put('email', w.email || '', 'profile');
+      return rpc('my_thread').then(function (th) {
+        var prof = {}; (th.profile || []).forEach(function (f) { prof[f.field] = f.text; out.seen[f.field] = f.visibility; });   // seen: who sees each field
+        put('name', th.name || th.goesBy || w.name || '', 'profile');
+        put('playaName', prof.playa_name || th.playaName || '', 'profile');
+        if (prof.based === 'sa' || prof.based === 'away') put('based', prof.based, 'profile');
+        if (prof.home_base) { var h = splitHome(prof.home_base); put('home', prof.home_base, 'profile'); put('town', h.town, 'profile'); put('country', h.country, 'profile'); }
+        put('gifts', prof.gifts || '', 'profile');
+        put('nominatedBy', (th.journey && th.journey.nominatedBy) || th.nominatedBy || '', 'profile');
+        if (!out.home) out.home = [out.town, out.country].filter(Boolean).join(', ');
+        return out;
+      }, function () { return out; });
+    }).then(function (o) { if (!o.home) o.home = [o.town, o.country].filter(Boolean).join(', '); return o; });
+  }
+
   window.claude = Object.freeze({ use: use, __standalone: true, __auth: Object.freeze(AUTH) });
   window.MahalaMembers = Object.freeze({
     ready: infoP.then(function () { return AUTH.info(); }),
@@ -774,6 +843,10 @@
     // the end of Join the tribe: make the account with the address just given, and land on Your Mahala (F-025)
     join: function (o) { return infoP.then(function () { UI.join(o || {}); }); },
     correct: function (text) { return rpc('report_correction', { p_text: String(text || '').slice(0, 1000) }); },
+    // quest progress, one record for Your Mahala, the Mahalaverse and Basecamp (F-065)
+    quests: QUESTS.quests, markStep: QUESTS.markStep, takeQuest: QUESTS.takeQuest, dropQuest: QUESTS.dropQuest,
+    // what Mahala already knows of you, for any form to fill in (F-050)
+    known: known,
     mePage: MEPAGE,
   });
 
@@ -828,11 +901,15 @@
   // asks them again (F-025, F-028): the name, the choices about staying in touch, where you live, what you bring.
   // The WhatsApp number never comes here; it stays with the camp's sheet.
   var TRIBE = 'mahala.tribe';
+  var SA_RE = /^(south africa|suid-afrika|sa|rsa|za)$/i;
   function tribeAnswers() { try { var o = JSON.parse(ls.get(TRIBE) || 'null'); if (o && Date.now() - o.at < 864e5) return o; } catch (e) { } return null; }
   function tribeProfile(a) {
     var shareTo = a.share ? 'members' : 'stewards', out = [];
     var home = [a.town, a.country].filter(Boolean).join(', ');
     if (home) out.push(['home_base', home, 'stewards']);
+    // where you live, asked once (F-046): in South Africa or abroad, so the camp application never asks again
+    var based = a.based === 'sa' || a.based === 'away' ? a.based : a.country ? (SA_RE.test(String(a.country).trim()) ? 'sa' : 'away') : '';
+    if (based) out.push(['based', based, 'stewards']);
     var gifts = [].concat(a.skills || [], a.other ? [a.other] : [], a.passions || []).filter(Boolean).join(', ');
     if (gifts) out.push(['gifts', gifts, shareTo]);
     if (a.creating) out.push(['about', a.creating, shareTo]);
@@ -1217,7 +1294,7 @@
             });
           steps.then(function () {
             close();
-            if (ta) { ls.set('mahala.tribeSkills', JSON.stringify({ skills: ta.skills || [], country: ta.country || '', town: ta.town || '', at: Date.now() })); ls.set(TRIBE, null); }
+            if (ta) { ls.set('mahala.tribeSkills', JSON.stringify({ skills: ta.skills || [], country: ta.country || '', town: ta.town || '', based: ta.based || '', at: Date.now() })); ls.set(TRIBE, null); }
             info.noticeSeen = true;
             try { window.dispatchEvent(new CustomEvent('mahala:changed', { detail: { welcomed: true } })); } catch (er) { }
             toast(fresh ? (onMe() ? 'Welcome. This page is yours.' : 'Welcome to the Mahalaverse.') : (fix && fix.value.trim() && fixbox && !fixbox.hidden ? 'Thank you. The stewards will look at what you sent.' : 'Your thread is yours. Welcome back.'));

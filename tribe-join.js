@@ -24,7 +24,7 @@
     'Movement, dance and performance', 'Logistics and getting things done'];
   var MAX_VALUES = 3, MAX_PASSIONS = 5, STEPS = 5;
 
-  var A = { name: '', email: '', town: '', country: '', found: '', broughtBy: '', adult: false, draws: '', values: [], skills: [], other: '',
+  var A = { name: '', email: '', based: '', town: '', country: '', found: '', broughtBy: '', adult: false, draws: '', values: [], skills: [], other: '',
     passions: [], creating: '', more: '', world: '', news: false, whatsappCommunity: false, whatsapp: '', share: false, loveToCome: false, ref: '' };
   try {
     var q = new URLSearchParams(location.search);
@@ -32,6 +32,18 @@
     if (q.get('by')) { A.found = FOUND[0]; A.broughtBy = q.get('by').slice(0, 60); }
     A.ref = (q.get('ref') || q.get('inv') || '').slice(0, 60);
   } catch (e) { }
+  // What this browser already sent (a camp application, an email sign-up) fills the same boxes here, so nobody types
+  // it twice (F-050). Only empty answers are filled.
+  try {
+    var sent = (JSON.parse(localStorage.getItem('mahala.outbox') || '[]') || []).slice().reverse();
+    var had = function (k) { var r = sent.filter(function (x) { return x && x[k]; })[0]; return r ? String(r[k]) : ''; };
+    if (!A.name) A.name = had('name').slice(0, 40);
+    if (!A.email) A.email = had('email').slice(0, 80);
+    var w = had('whatsapp'); if (w) { A.whatsapp = w.slice(0, 30); }
+    var lv = had('livesIn'), tf = had('travelFrom');
+    if (lv) { A.based = /south africa/i.test(lv) ? 'sa' : 'away'; if (A.based === 'sa') A.country = 'South Africa'; }
+    if (tf) A.town = tf.slice(0, 50);
+  } catch (e) { /* storage blocked */ }
   var step = 1;
 
   function field(id, label, input, hint) { return '<div class="field"><label for="' + id + '">' + label + '</label>' + (hint ? '<p class="hint" id="' + id + 'H">' + hint + '</p>' : '') + input + '</div>'; }
@@ -49,8 +61,11 @@
       return '<h2 class="h-sub">Who you are</h2>' +
         field('tName', 'What name do you go by?', '<input type="text" id="tName" maxlength="40" autocomplete="name" value="' + esc(A.name) + '">', 'Your playa name is welcome.') +
         field('tEmail', 'Your email', '<input type="email" id="tEmail" maxlength="80" autocomplete="email" inputmode="email" value="' + esc(A.email) + '">', 'So we can welcome you, and later open your own page in the tribe. Never shown to anyone.') +
-        '<div class="two">' + field('tTown', 'Where do you live?', '<input type="text" id="tTown" maxlength="50" autocomplete="address-level2" placeholder="Town or city" value="' + esc(A.town) + '">') +
-        field('tCountry', 'Country', '<input type="text" id="tCountry" maxlength="40" autocomplete="country-name" value="' + esc(A.country) + '">') + '</div>' +
+        // where you live, asked once here (F-046): the camp application reads it from your profile and never asks again
+        '<fieldset class="field"><legend class="flabel">Where do you live?</legend>' + chips('based', [['sa', 'South Africa'], ['away', 'International']], A.based, false) + '</fieldset>' +
+        (A.based === 'sa' ? field('tTown', 'Which town or city?', '<input type="text" id="tTown" maxlength="50" autocomplete="address-level2" value="' + esc(A.town) + '">') : '') +
+        (A.based === 'away' ? '<div class="two">' + field('tTown', 'Which town or city?', '<input type="text" id="tTown" maxlength="50" autocomplete="address-level2" value="' + esc(A.town) + '">') +
+          field('tCountry', 'Which country?', '<input type="text" id="tCountry" maxlength="40" autocomplete="country-name" value="' + esc(A.country) + '">') + '</div>' : '') +
         '<fieldset class="field"><legend class="flabel">How did you find Mahala?</legend>' + chips('found', FOUND, A.found, false) + '</fieldset>' +
         (A.found === FOUND[0] ? field('tBy', 'Who brought you?', '<input type="text" id="tBy" maxlength="60" value="' + esc(A.broughtBy) + '">', 'So we can thank them.') : '') +
         tick('tAdult', A.adult, '<b>I am 18 or over.</b>');
@@ -90,7 +105,7 @@
 
   var okEmail = function () { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(A.email.trim()); };
   function canGo() {
-    if (step === 1) return !!A.name.trim() && okEmail() && !!A.town.trim() && !!A.country.trim() && !!A.found && A.adult;
+    if (step === 1) return !!A.name.trim() && okEmail() && !!A.based && !!A.town.trim() && !!A.country.trim() && !!A.found && A.adult;
     if (step === 2) return A.draws.trim().length >= 3;
     if (step === 5) return !A.whatsappCommunity || A.whatsapp.replace(/\D/g, '').length >= 8;
     return true;
@@ -99,7 +114,9 @@
     if (step === 1) {
       if (!A.name.trim()) return 'Tell us the name you go by.';
       if (!okEmail()) return 'Add your email address so we can welcome you.';
-      if (!A.town.trim() || !A.country.trim()) return 'Tell us your town or city, and your country.';
+      if (!A.based) return 'Tell us where you live: South Africa, or international.';
+      if (!A.town.trim()) return 'Tell us your town or city.';
+      if (!A.country.trim()) return 'Tell us which country you live in.';
       if (!A.found) return 'Choose how you found Mahala.';
       return 'Profiles are for adults: please confirm you are 18 or over.';
     }
@@ -109,7 +126,8 @@
   }
   function read() {
     var v = function (id) { var e = $(id); return e ? e.value : null; }, c = function (id) { var e = $(id); return e ? e.checked : null; };
-    if (step === 1) { A.name = (v('tName') || '').trim(); A.email = (v('tEmail') || '').trim(); A.town = (v('tTown') || '').trim(); A.country = (v('tCountry') || '').trim();
+    if (step === 1) { A.name = (v('tName') || '').trim(); A.email = (v('tEmail') || '').trim(); if ($('tTown')) A.town = v('tTown').trim(); if ($('tCountry')) A.country = v('tCountry').trim();
+      if (A.based === 'sa') A.country = 'South Africa';
       if ($('tBy')) A.broughtBy = v('tBy').trim(); A.adult = !!c('tAdult'); }
     if (step === 2) A.draws = v('tDraws') || '';
     if (step === 3) A.other = (v('tOther') || '').trim();
@@ -152,10 +170,12 @@
       read();
       var k = p.dataset.pick, v = p.dataset.v;
       if (k === 'found') A.found = v;
+      else if (k === 'based') { A.based = v; A.country = v === 'sa' ? 'South Africa' : (/^south africa$/i.test(A.country) ? '' : A.country); }
       else { var arr = A[k], at = arr.indexOf(v); if (at >= 0) arr.splice(at, 1); else if (k !== 'values' || arr.length < MAX_VALUES) arr.push(v); }
       keep(function () { draw(false); });
       var again = body.querySelector('[data-pick="' + k + '"][data-v="' + v.replace(/"/g, '\\"') + '"]'); if (again) again.focus({ preventScroll: true });
       if (k === 'found' && v === FOUND[0] && $('tBy')) $('tBy').focus({ preventScroll: true });
+      if (k === 'based' && $('tTown') && !A.town) $('tTown').focus({ preventScroll: true });
       return;
     }
     var u = e.target.closest('[data-untag]');
@@ -185,7 +205,7 @@
       var MM = window.MahalaMembers, accounts = !!(MM && MM.join);
       if (accounts) {
         // never the WhatsApp number or the private answer ("more"): those stay with the camp's sheet
-        try { localStorage.setItem('mahala.tribe', JSON.stringify({ name: A.name, town: A.town, country: A.country, skills: A.skills, other: A.other, passions: A.passions,
+        try { localStorage.setItem('mahala.tribe', JSON.stringify({ name: A.name, based: A.based, town: A.town, country: A.country, skills: A.skills, other: A.other, passions: A.passions,
           creating: A.creating.trim(), news: A.news, wa: A.whatsappCommunity, share: A.share, love: A.loveToCome, at: Date.now() })); } catch (e) { /* storage blocked */ }
       }
       var who = (A.name || '').split(/\s+/)[0];

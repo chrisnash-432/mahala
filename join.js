@@ -32,7 +32,7 @@
     'Civic responsibility', 'Leave no trace', 'Participation', 'Immediacy', 'Each one teach one'];
   var ARROW = '<svg viewBox="0 0 16 22" aria-hidden="true"><path d="M8 1v19M2 14l6 6 6-6"/></svg>';
 
-  var A = { name: '', email: '', whatsapp: '', waFrom: '', based: '', city: '', skills: [], bigCoil: false, gift: 0, payIn: 1, coupon: '', agreed: [],
+  var A = { name: '', email: '', whatsapp: '', waFrom: '', based: '', city: '', country: '', placeFrom: '', placeOpen: false, skills: [], bigCoil: false, gift: 0, payIn: 1, coupon: '', agreed: [],
     message: '', nominatedBy: '', booked: false, when: '', date: '', proof: '', proofUrl: '' };
   try { var q = new URLSearchParams(location.search); if (q.get('name')) A.name = q.get('name').slice(0, 40); if (q.get('by')) A.nominatedBy = q.get('by').slice(0, 60); } catch (e) { }
   var LAST = 5, step = 1, payOnly = false, box = $('join'), body = $('joinBody'), stepEl = $('joinStep');
@@ -57,6 +57,10 @@
   function today() { var d = new Date(); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
   function longDate(iso) { try { var d = new Date(iso + 'T12:00:00'); return d.toLocaleDateString('en-ZA', { day: 'numeric', month: 'long' }); } catch (e) { return iso; } }
   function waOk() { return A.whatsapp.replace(/\D/g, '').length >= 8; }
+  // where you live, as one line: "Cape Town, South Africa", or "Berlin, Germany"
+  function placeText() { return [A.city, A.based === 'sa' ? 'South Africa' : A.country].filter(Boolean).join(', '); }
+  // asked once (F-046): known from your profile or from Join the tribe on this device, it is shown, not asked again
+  function placeKnown() { return !!(A.placeFrom && !A.placeOpen && A.based && A.city.trim()); }
 
   function field(id, label, input, hint) { return '<div class="field"><label for="' + id + '">' + label + '</label>' + (hint ? '<p class="hint">' + hint + '</p>' : '') + input + '</div>'; }
   function chips(name, items, chosen, multi) {
@@ -93,8 +97,10 @@
         field('jEmail', 'Email', '<input type="email" id="jEmail" maxlength="80" autocomplete="email" inputmode="email" value="' + esc(A.email) + '" required>', 'So we can reply, and send your receipts.') +
         field('jWa', 'WhatsApp number', '<input type="tel" id="jWa" maxlength="30" autocomplete="tel" placeholder="+27 …" value="' + esc(A.whatsapp) + '" required>',
           A.waFrom ? 'From your profile. Change it if it has moved.' : 'With the country code, for the camp group. Only the camp leads see it.') +
-        '<fieldset class="field"><legend class="flabel">Where are you based?</legend>' + chips('based', [['sa', 'South Africa'], ['away', 'International']], A.based, false) + '</fieldset>' +
-        (A.based ? field('jCity', 'Which city?', '<input type="text" id="jCity" maxlength="60" autocomplete="address-level2" value="' + esc(A.city) + '">') : '') +
+        (placeKnown() ? '<div class="field known-place"><span class="flabel">Where you live</span><p class="place-line"><b id="jPlace">' + esc(placeText()) + '</b> <button type="button" class="linkish" id="jPlaceChange">Change</button></p>' +
+            '<p class="hint">As you told us when you joined. Change it if you have moved.</p></div>'
+          : '<fieldset class="field"><legend class="flabel">Where are you based?</legend>' + chips('based', [['sa', 'South Africa'], ['away', 'International']], A.based, false) + '</fieldset>' +
+            (A.based ? field('jCity', 'Which city?', '<input type="text" id="jCity" maxlength="60" autocomplete="address-level2" value="' + esc(A.city) + '">') : '')) +
         '<fieldset class="field"><legend class="flabel">What can you bring? <small>As many as you like.</small></legend>' + chips('skills', SKILLS.map(function (s) { return s[0]; }), A.skills, true) + '</fieldset>';
     },
     2: function () {
@@ -198,6 +204,7 @@
   function refreshGo() { var g = $('jGo'); if (!g) return; if (canGo()) { g.removeAttribute('aria-disabled'); $('jErr').textContent = ''; } else g.setAttribute('aria-disabled', 'true'); }
 
   body.addEventListener('input', function (e) {
+    if (e.target.id === 'jCity') A.placeOpen = true;        // answered here: the profile does not overwrite it
     read();
     if (step === 2 && (e.target.id === 'jCoupon')) return;          // the summary is redrawn when the coupon box is left
     refreshGo();
@@ -214,7 +221,7 @@
       read();
       var k = p.dataset.pick, v = p.dataset.v;
       if (k === 'skills') { var at = A.skills.indexOf(v); if (at >= 0) A.skills.splice(at, 1); else A.skills.push(v); }
-      else if (k === 'based') A.based = v;
+      else if (k === 'based') { if (v !== A.based) A.country = ''; A.based = v; A.placeOpen = true; }
       else if (k === 'gift') A.gift = +v;
       else if (k === 'payIn') A.payIn = +v;
       else if (k === 'when') { A.when = v; if (v === 'now') A.date = ''; }
@@ -224,6 +231,7 @@
       return;
     }
     if (e.target.closest('#jBook')) { A.booked = true; return; }
+    if (e.target.closest('#jPlaceChange')) { read(); A.placeOpen = true; redraw(); var bp = body.querySelector('[data-pick="based"].on') || body.querySelector('[data-pick="based"]'); if (bp) bp.focus({ preventScroll: true }); return; }
     if (e.target.closest('[data-signin]')) { saveDraft(); try { sessionStorage.setItem('mahala.openJoin', '1'); } catch (er) { } window.MahalaMembers.signIn('Sign in to see the camp\'s banking details. Your application stays as you left it.'); return; }
     if (e.target.closest('#jBack')) { read(); if (step === 1 || payOnly) closeJoin(); else { step--; draw(true); } return; }
     if (e.target.closest('#jGo')) {
@@ -360,8 +368,20 @@
     return M.info().then(function (i) {
       if (!i.signedIn) return null;
       var a = {}; keep.forEach(function (k) { if (row[k] !== undefined && row[k] !== '' && row[k] !== null) a[k] = row[k]; });
-      return M.rpc('submit_application', { p_answers: a }).catch(function () { /* the sheet has it; the record can catch up */ }).then(noteIntent);
+      return M.rpc('submit_application', { p_answers: a }).catch(function () { /* the sheet has it; the record can catch up */ }).then(keepPlace).then(noteIntent);
     }).catch(function () { return null; });
+  }
+
+  // Where you live joins your profile once, so no other form asks again, on any device (F-046): when the profile did
+  // not have it, or you changed it here. Never the WhatsApp number: the member record holds no phone numbers.
+  var PROF = { based: '', home: '', homeVis: '', basedVis: '' };
+  function keepPlace() {
+    var M = window.MahalaMembers; if (!M || !A.based) return Promise.resolve();
+    var home = placeText(), jobs = [];
+    if (A.based !== PROF.based) jobs.push(['based', A.based, PROF.basedVis || 'stewards']);
+    if (home && (!PROF.home || (A.placeOpen && home !== PROF.home))) jobs.push(['home_base', home, PROF.homeVis || 'stewards']);
+    return jobs.reduce(function (p, j) { return p.then(function () { return M.rpc('set_profile', { p_field: j[0], p_text: j[1], p_visibility: j[2] }).catch(function () { }); }); }, Promise.resolve())
+      .then(function () { PROF.based = A.based; if (home) PROF.home = home; });
   }
 
   /* ------------------------------------------------------------------ opening and closing */
@@ -422,21 +442,41 @@
     if (!A.whatsapp) { var w = sent.filter(function (r) { return r && r.whatsapp && (r.type !== 'tribe' || r.whatsappCommunity); })[0]; if (w) { A.whatsapp = String(w.whatsapp).slice(0, 30); A.waFrom = 'profile'; } }
     t = t || tribe;
     if (!t) return;
-    if (!A.based && t.country) A.based = /south africa|^sa$|^rsa$|^za$/i.test(String(t.country).trim()) ? 'sa' : 'away';
-    if (!A.city && t.town) A.city = String(t.town).slice(0, 60);
+    if (!A.based && (t.based === 'sa' || t.based === 'away' || t.country)) {
+      A.based = t.based === 'sa' || t.based === 'away' ? t.based : /south africa|^sa$|^rsa$|^za$/i.test(String(t.country).trim()) ? 'sa' : 'away';
+      if (!A.city && t.town) A.city = String(t.town).slice(0, 60);
+      if (A.based === 'away' && t.country && !A.country) A.country = String(t.country).slice(0, 60);
+      if (A.city) A.placeFrom = 'device';
+    }
     if (!A.skills.length && t.skills && t.skills.length) t.skills.forEach(function (k) { var c = TRIBE_TO_CAMP[k]; if (c && A.skills.indexOf(c) < 0) A.skills.push(c); });
   }
-  // Signed in: the name and address the account already holds, and who called you in (F-024, F-028).
+  // Signed in: what the account already holds (F-024, F-028, F-050): the name and address, where you live (your
+  // profile wins over this device, so it is the same on every device), what you bring, and who called you in.
+  // Anything typed here wins over both.
   function prefill() {
     var M = window.MahalaMembers; if (!M || !M.info) return;
-    M.info().then(function (i) {
-      if (!i || !i.signedIn) return;
+    var fill = function (k) {
+      if (!k || !k.signedIn) return;
       var open = step === 1 && !box.hidden, changed = false;
       if (open) read();                                      // keep anything already typed
-      [['name', i.name], ['email', i.email]].forEach(function (f) { if (f[1] && !A[f[0]]) { A[f[0]] = String(f[1]); changed = true; } });
-      if (!A.nominatedBy && i.journey && i.journey.nominatedBy) A.nominatedBy = String(i.journey.nominatedBy).slice(0, 60);
+      [['name', k.name], ['email', k.email]].forEach(function (f) { if (f[1] && !A[f[0]]) { A[f[0]] = String(f[1]); changed = true; } });
+      if (!A.nominatedBy && k.nominatedBy) A.nominatedBy = String(k.nominatedBy).slice(0, 60);
+      var fr = k.from || {};
+      if (fr.based === 'profile') { PROF.based = k.based; PROF.basedVis = (k.seen && k.seen.based) || ''; }
+      if (fr.home === 'profile') { PROF.home = k.home; PROF.homeVis = (k.seen && k.seen.home_base) || ''; }
+      if (!A.placeOpen && fr.based === 'profile') {
+        A.based = k.based;
+        if (fr.town === 'profile') { A.city = String(k.town || '').slice(0, 60); A.country = A.based === 'away' ? String(k.country || '').slice(0, 60) : ''; }
+        if (A.city) A.placeFrom = 'profile';
+        changed = true;
+      }
+      if (!A.skills.length && k.gifts) Object.keys(TRIBE_TO_CAMP).forEach(function (lab) { var c = TRIBE_TO_CAMP[lab]; if (k.gifts.indexOf(lab) >= 0 && A.skills.indexOf(c) < 0) { A.skills.push(c); changed = true; } });
+      if (!A.whatsapp && k.whatsapp) { A.whatsapp = String(k.whatsapp).slice(0, 30); A.waFrom = 'profile'; changed = true; }
       if (changed && open) redraw();
-    }).catch(function () { /* the boxes stay empty */ });
+    };
+    // the account's name and address at once; then what the record and this device know (a moment longer)
+    M.info().then(function (i) { fill({ signedIn: i && i.signedIn, name: i && i.name, email: i && i.email, nominatedBy: i && i.journey && i.journey.nominatedBy, from: {} }); })
+      .then(function () { return M.known ? M.known().then(fill) : null; }).catch(function () { /* the boxes stay empty */ });
   }
   // opened straight onto the application from inside the Mahalaverse: closing it hands you back to the world
   var direct = /^#(join|apply)$/i.test(location.hash);
