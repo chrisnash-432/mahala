@@ -10,7 +10,7 @@ This repo is the public website of Mahala, an AfrikaBurn theme camp and communit
 ## Never put in this repo
 
 - People data of any kind: members' or nominees' names, stories, nominators' words, applications, consent status, anything from Mahala OS `community/`.
-- Contact details other than the camp inbox, wearemahala@gmail.com.
+- Contact details other than the camp inbox, love@wearemahala.com (since 8 Nov 2026; it replaced wearemahala@gmail.com everywhere on the site).
 - Strategy drafts, budgets beyond the public target, task lists, meeting notes.
 - Secrets: keys, passphrases, tokens, private sheet links with edit access.
 - Personal letters or "Your Mahala thread" pages. They need a private host or unguessable links, never a public repo.

@@ -46,7 +46,7 @@ export function countLine(n) {
 
 /* the words for who can plant, the same on the map and in Your path. mode is the platform's: 'claude' (the claude.ai
    link), 'standalone' (Mahala's own site) or 'solo' (a saved copy of the page) */
-export const CAMP_MAIL = 'wearemahala@gmail.com';      // the camp's own address, shown as text, never a mailto link
+export const CAMP_MAIL = 'love@wearemahala.com';      // the camp's own address, shown as text, never a mailto link
 export const WHO_LINE = 'The map shows how many seeds each place holds, not who planted them.';
 // with no shared store, seeds stay in this browser: why, by where the page runs
 export function localLine(mode) {

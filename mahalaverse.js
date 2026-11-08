@@ -76,14 +76,14 @@ const DATA = {
     { n: 7, id: 'GATE_7', name: 'The lighthouses', amount: '$100,000 to $10,000,000', space: 'lighthouse', col: 'yellow', gift: 'Everything below, and a gift of thanks', extra: 'The much bigger picture, a vision: a permanent temple in Cape Town, and lighthouse temples seeded around the world', builds: 'The camp and The Seed, and the vision of temples to come' },
   ],
   events: [   // Nov 2026: the camp's next gatherings. Dates are set by the stewards; nothing here is dated until they are. An event with a url has tickets on sale.
-    { id: 'E-00', name: 'Road to Mecca, a Mahala fundraiser', format: 'A guitar sound journey by the fire, Hollow Tree, Hout Bay', ticket: 'From R200, on Quicket', date: 'Fri 13 Nov 2026, 19:00', where: 'CAMP_LOTUS', set: true,
+    { id: 'E-00', ref: 'ev-mecca', name: 'Road to Mecca, a Mahala fundraiser', format: 'A guitar sound journey by the fire, Hollow Tree, Hout Bay', ticket: 'From R200, on Quicket', date: 'Fri 13 Nov 2026, 19:00', where: 'CAMP_LOTUS', set: true,
       url: 'https://www.quicket.co.za/events/404952-road-to-mecca-guitar-sound-journey/',
       text: 'Our first gathering of the season, and a fundraiser for The Seed: a guitar sound journey by the fire, with cacao. Doors open at 18:30; bring your own mug. A few words at the end about what is coming.' },
-    { id: 'E-01', name: 'New moon online call', format: 'Online, free, for the wider community', ticket: 'Free', date: 'To be announced', where: 'CAMP_LOTUS',
+    { id: 'E-01', ref: 'new-moon-call', name: 'New moon online call', format: 'Online, free, for the wider community', ticket: 'Free', date: 'To be announced', where: 'CAMP_LOTUS',
       text: 'A free call on the new moon for everyone who feels the pull of the temple: the wider community of temple builders, wherever you are. The sign-up link is shared here once it is set.' },
-    { id: 'E-02', name: 'Fundraising sound journeys', format: 'Three evenings in Cape Town', ticket: 'To be set', date: 'To be announced', where: 'CAMP_LOTUS',
+    { id: 'E-02', ref: 'sound-journeys', name: 'Fundraising sound journeys', format: 'Three evenings in Cape Town', ticket: 'To be set', date: 'To be announced', where: 'CAMP_LOTUS',
       text: 'Three sound journeys in Cape Town that gather the community and raise money for The Seed. Dates are announced once they are set.' },
-    { id: 'E-03', name: 'Build days', format: 'Three days in Cape Town', ticket: 'Free', date: 'To be announced', where: 'YARD',
+    { id: 'E-03', ref: 'build-days', name: 'Build days', format: 'Three days in Cape Town', ticket: 'Free', date: 'To be announced', where: 'YARD',
       text: 'Three build days in Cape Town where the temple takes shape by many hands. Dates are announced once they are set.' },
   ],
   crews: [
@@ -1582,7 +1582,7 @@ function renderInspector(it) {
   if (k === 'event') { const e = it.e;
     h = head(k, 'Event · fundraising', e.name, esc(e.format)) + `<div class="insp-body"><div class="chips">${chip(e.date, e.set ? 'open' : 'wait')}</div><p>${esc(e.text)}</p>
       ${kv([['Format', esc(e.format)], ['Tickets', esc(e.ticket)], ['Date', esc(e.date)], ...(e.speaker ? [['Speaker', esc(e.speaker)]] : [])])}
-      <div class="actions">${e.url ? `<a class="btn primary" href="${esc(e.url)}" target="_blank" rel="noopener noreferrer">${icon('cal')}Get tickets</a>` : `<button class="btn" data-act="notify:${e.id}">${icon('bell')}Tell me when it is set</button>`}<button class="btn" data-sel="${e.where}">Go there</button></div></div>`; }
+      <div class="actions">${e.url ? `<a class="btn primary" href="${esc(e.url)}" target="_blank" rel="noopener noreferrer">${icon('cal')}Get tickets</a>` : `<button class="btn" data-act="notify:${e.id}" aria-pressed="${evWanted(e)}">${icon('bell')}${evWanted(e) ? 'We will tell you' : 'Tell me when it is set'}</button>`}<button class="btn" data-sel="${e.where}">Go there</button></div></div>`; }
   if (k === 'crew') { const c = it.c;
     h = head(k, 'Crew', c.name, esc(c.what)) + `<div class="insp-body"><div class="chips">${chip('Forming', 'now')}</div><p>Crews form around one part of the temple. Ask through Join the build and choose what you can bring.</p>
       ${links(DATA.quests.filter(q => q.crew === c.name).map(q => [q.id, q.id, q.name]).concat(DATA.roles.filter(r => r.crew.includes(c.name.split(' ')[0])).map(r => [r.id, 'Role', r.name])))}
@@ -3081,6 +3081,9 @@ function v4CardIn(it, h) {
   if (k === 'portal') return injectTop(h, `<div class="lockrow" style="border-style:solid">${icon('flame')}<span><b>Through the portal, the fire</b><small>${canEnter('fire') ? 'The fire is open for you.' : 'Gate 1 · $10, working figure'}</small></span><button class="btn primary" data-act="${canEnter('fire') ? 'fire' : 'gate:1'}">${canEnter('fire') ? 'Sit by the fire' : 'See the gate'}</button></div>`);
   return h;
 }
+const evRef = e => e.ref || e.id.toLowerCase();
+const evWanted = e => !!(window.MahalaInterest && window.MahalaInterest.has(evRef(e)));
+addEventListener('mahala:interest', () => { if (typeof current !== 'undefined' && current && REG[current] && REG[current].kind === 'event') renderInspector(REG[current]); });
 function v4Act(act, a) {
   const [k, x, y] = act.split(':');
   if (k === 'film' && x == null) { playTeaser(); return true; }
@@ -3097,7 +3100,13 @@ function v4Act(act, a) {
   if (k === 'take') { const q = DATA.quests.find(z => z.id === x); ME.quests[x] = { at: Date.now(), steps: [false, false, false] }; saveMe(); pushMe(); markDone(4, 'quest'); toast(`On your list: ${q.name}. Tick each step as you do it.`); renderInspector(REG[x]); return true; }
   if (k === 'step') { const s2 = ME.quests[x]; if (!s2) return true; s2.steps[+y] = !s2.steps[+y]; saveMe(); pushMe(); refreshLight(); renderInspector(REG[x]); return true; }
   if (k === 'crewjoin') { ME.crew = x; ME.crewOk = canEnter('crews'); saveMe(); pushMe(); toast(ME.crewOk ? `You are on the ${CREW_BY(x).name}.${isBuildCrew(x) ? ' The yard and the workshop are open to you.' : ''}` : `Asked to join the ${CREW_BY(x).name}. A steward will accept you.`); renderInspector(REG[x]); renderKpis(); return true; }
-  if (k === 'notify') { const e2 = DATA.events.find(z => z.id === x); ME.notify = Object.assign({}, ME.notify, { [x]: true }); saveMe();
+  if (k === 'notify') { const e2 = DATA.events.find(z => z.id === x), I = window.MahalaInterest;
+    // F-027: on wearemahala.com the ask is one row in the member database: no sign-up questions, never a second sign-in
+    if (I && I.on) { a.disabled = true; I.want({ id: evRef(e2), title: e2.name }).then(r => { a.disabled = false;
+      if (r.state === 'on') toast(`Noted. We will tell you when ${e2.name} is set. You can take it back on Your Mahala.`);
+      else if (r.state === 'off') toast(`Taken back. We will not write about ${e2.name}.`);
+      if (current && REG[current] && REG[current].kind === 'event') renderInspector(REG[current]); }, () => { a.disabled = false; toast('That did not save. Try again in a moment.'); }); return true; }
+    ME.notify = Object.assign({}, ME.notify, { [x]: true }); saveMe();
     if (ME.contact && ME.consent) { pushSignup({ notify: ME.notify }); toast(`We will tell you when ${e2.name} is set. Only the stewards see your contact.`); } else openJoin(ME.door || 'build', null, 'touch'); a.disabled = true; return true; }
   if (k === 'workshop') { if (!canEnter('yard')) { showGate(5); return true; } select('BENCH'); setTimeout(() => { setInspector(head('bench', 'The workshop · build crews', 'The crew board', 'What the build crews are working on') + `<div class="insp-body">
       ${DATA.crews.filter(c => c.build).map(c => `<div class="sect"><h4>${esc(c.name)}${LIVE.on ? ` · ${LIVE.builders.filter(b => b.crew === c.id).length} on the crew` : ''}</h4>${links(DATA.quests.filter(q => q.crew === c.name).map(q => [q.id, q.id, q.name + (LIVE.on ? ` · ${questTakers(q.id)} on it` : '')]))}</div>`).join('')}

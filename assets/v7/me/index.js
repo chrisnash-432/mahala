@@ -34,7 +34,7 @@ const PHONE = () => matchMedia('(max-width: 760px)').matches;
 const cssq = x => (window.CSS && CSS.escape ? CSS.escape(x) : String(x).replace(/[^A-Za-z0-9_-]/g, c => '\\' + c));
 const REDUCED = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const WALK = new Set(['w', 'a', 's', 'd', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright', 'shift']);
-const CAMP_MAIL = 'wearemahala@gmail.com';     // the camp's own address (the camp page and the sign-in sheet use it), shown as text, never a mailto link
+const CAMP_MAIL = 'love@wearemahala.com';     // the camp's own address (the camp page and the sign-in sheet use it), shown as text, never a mailto link
 const TO_STEWARDS = 'write to the stewards at ' + CAMP_MAIL;
 const FRAMING = 'Not your horoscope: a way we have of seeing each other, and we feel this force is very strong in you.';
 
