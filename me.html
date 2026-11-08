@@ -357,7 +357,8 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
 .welcome { display: flex; align-items: center; gap: 26px; margin: 8px 0 22px; }
 .welcome .portrait { margin: 0; flex: none; }
 .welcome .wtext { min-width: 0; }
-.welcome .picsay { margin: 6px 0 0; }
+.wpic { flex: none; width: 200px; display: grid; justify-items: center; text-align: center; }
+.welcome .picsay { margin: 6px 0 0; font-size: 13px; }
 .sigilwrap { flex: none; width: 112px; }
 .journey:empty, #tasksHost:empty, #eventsHost:empty { display: none; }
 .journey > :first-child { margin-top: 18px; }
@@ -428,6 +429,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
 .qwhy dd { margin: 0; font-size: 14.5px; color: var(--ink); }
 @media (max-width: 560px) {
   .welcome { flex-direction: column; text-align: center; gap: 10px; }
+  .wpic { width: auto; }
   .cardmini { gap: 14px; }
   .cardmini .card { width: 88px; }
   .qthumb { width: 100%; max-width: 360px; }
@@ -973,7 +975,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     // The order Chris asked for (8 Nov, F-062): the welcome and your picture, then the camp 2027 card, then Your story,
     // then the gatherings, then Growing The Seed; the rest after. Every section folds away, and this device remembers
     // which ones you keep open (F-061).
-    h += '<section class="welcome" aria-labelledby="youH">' + (P.live ? portrait() : '<div class="sigilwrap">' + sigil(P, 'big') + '</div>')
+    h += '<section class="welcome" aria-labelledby="youH">' + (P.live ? '<div class="wpic">' + portrait() + '</div>' : '<div class="sigilwrap">' + sigil(P, 'big') + '</div>')
       + '<div class="wtext"><p class="hello">' + esc(P.hello) + '</p><h1 id="youH">' + esc(P.first) + '</h1>'
       + (P.playa ? (P.playa === P.first ? '' : '<p class="playa">On the playa: <i>' + esc(P.playa) + '</i></p>') : '<p class="playa"><button type="button" class="link" data-choices>Choose your playa name</button></p>')
       + '<p class="sleeps">' + sleeps + ' sleeps until The Seed rises</p>'

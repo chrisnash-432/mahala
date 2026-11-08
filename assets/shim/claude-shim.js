@@ -1127,7 +1127,7 @@
       var th = (K.threads || []).filter(function (x) { return Array.isArray(x) && str(x[1]); }).slice(0, 2);
       if (tags.length) pts.push('What you bring: ' + esc(tags.join(', ')) + '.');
       else if (th.length) pts.push('Your thread runs with ' + esc(th.map(function (x) { return x[1]; }).join(' and ')) + '.');
-      if (pts.length < 2) (t.thread || []).slice().reverse().filter(function (l) { return l && l.text && !/nominated by/i.test(l.text); }).slice(0, 3 - pts.length)
+      if (pts.length < 2) (t.thread || []).slice().reverse().filter(function (l) { return l && l.text && +l.year !== 2027 && !/nominated/i.test(l.text); }).slice(0, 3 - pts.length)
         .forEach(function (l) { pts.push((l.year ? '<b>' + esc(l.year) + '</b>: ' : '') + esc(cut(l.text, 120))); });
       return pts.slice(0, 3);
     }
