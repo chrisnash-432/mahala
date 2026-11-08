@@ -574,6 +574,11 @@
       var last = function () { return { src: emblem(w.uid || w.personId), from: 'emblem' }; };
       var fallback = function () {
         if (!useMap || !w.claimed) return last();
+        // chose the emblem over the community map's picture on Your Mahala (kept in their own yourmahala document)
+        prefP = prefP || (w.level >= 2 && w.uid ? docRef('data/users/' + w.uid + '/yourmahala').get().then(function (d) { return d.exists && d.data() && d.data().pic === 'emblem'; }, function () { return false; }) : Promise.resolve(false));
+        return prefP.then(function (emb) { return emb ? { src: emblem(w.uid || w.personId), from: 'chosen-emblem' } : mapped(); });
+      };
+      var mapped = function () {
         mapPhotoP = mapPhotoP || rpc('my_map_photo').then(function (r) { return r && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(r.photo || '') ? r.photo : null; }, function () { return null; });
         return mapPhotoP.then(function (u) { return u ? { src: u, from: 'map' } : last(); });
       };
@@ -582,6 +587,96 @@
     });
   }
   function myPicture(opts) { return myPictureInfo(opts).then(function (x) { return x && x.src; }); }
+  var prefP = null;
+
+  // The account chip on every page shows the same picture as Your Mahala (own, the community map's, the emblem):
+  // <button data-mahala-account> (the shim's chips) and any element marked data-mahala-picture (a page's own account
+  // button, as on Basecamp and the community map). Page code that rewrites the button's text loses the picture, so
+  // each chip is watched and the picture put back.
+  var CHIP_PIC = 'width:26px;height:26px;border-radius:50%;object-fit:cover;margin:0 8px 0 -8px;vertical-align:middle;flex:none';
+  function paintChip(b, src) {
+    var im = b.querySelector('img.mvm-pic');
+    if (!src) { if (im) im.remove(); return; }
+    if (!im) { im = document.createElement('img'); im.className = 'mvm-pic'; im.alt = ''; im.width = im.height = 26; im.referrerPolicy = 'no-referrer'; im.style.cssText = CHIP_PIC; b.prepend(im); }
+    if (im.getAttribute('src') !== src) im.src = src;
+  }
+  var chipSrc = null, chipWatch = typeof MutationObserver === 'function' ? new MutationObserver(function (list) {
+    list.forEach(function (m) { var b = m.target.closest ? m.target.closest('[data-mahala-account], [data-mahala-picture]') : null; if (b && chipSrc && !b.querySelector('img.mvm-pic')) paintChip(b, chipSrc); });
+  }) : null;
+  function paintChips() {
+    return infoP.then(function (w) {
+      var all = document.querySelectorAll('[data-mahala-account], [data-mahala-picture]');
+      if (!all.length) return;
+      var go = function (src) {
+        chipSrc = src;
+        Array.prototype.forEach.call(all, function (b) {
+          paintChip(b, src);
+          if (chipWatch && !b.dataset.mvPicWatch) { b.dataset.mvPicWatch = '1'; chipWatch.observe(b, { childList: true }); }
+        });
+      };
+      if (!w || !w.signedIn || !w.claimed) return go(null);
+      return myPicture().then(go, function () { });
+    });
+  }
+  // Basecamp and the Tribe Map & CRM in the top bar, beside the account chip, on every page (Chris, 8 Nov 2026,
+  // F-059): only for the people the database opens them to (journey_of: basecamp, community). A page marks the
+  // place with data-mahala-doors, else they sit just before its account chip. A page's own way there is not repeated.
+  var DOORS_CSS = '.mvm-doors{display:inline-flex;align-items:center;gap:6px;margin:0 6px;vertical-align:middle}' +
+    '.mvm-door{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border-radius:999px;border:1px solid currentColor;color:inherit;' +
+    'font:500 12.5px/1 Jost,system-ui,sans-serif;letter-spacing:.04em;text-decoration:none;white-space:nowrap;opacity:.9}' +
+    '.mvm-door:hover,.mvm-door:focus-visible{opacity:1;background:rgba(127,127,127,.12)}' +
+    '.mvm-door svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;margin-right:6px;flex:none}' +
+    '@media (max-width:640px){.mvm-doors{gap:4px;margin:0 2px}.mvm-door{width:34px;min-height:34px;padding:0;justify-content:center}.mvm-door svg{margin:0}.mvm-door .mvm-dl{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}';
+  var DOOR_ICONS = {
+    basecamp: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h18M5 20l7-14 7 14M12 6v14M9.5 20l2.5-5 2.5 5"/></svg>',
+    community: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="7" r="2.2"/><circle cx="18" cy="6" r="2.2"/><circle cx="12" cy="17" r="2.2"/><path d="M8 8.2l2.8 6.9M16.4 7.5l-3.2 7.6M8.2 7h7.6"/></svg>' };
+  function mountDoors() {
+    return infoP.then(function (w) {
+      var j = w && w.signedIn && w.claimed ? w.journey || {} : {}, old = document.getElementById('mvm-doors');
+      if (old) old.remove();
+      var anchor = document.querySelector('[data-mahala-doors]') || document.querySelector('[data-mahala-account], [data-mahala-picture]');
+      var here = (location.pathname.split('/').pop() || 'index.html'), links = [];
+      if (j.basecamp && here !== 'basecamp.html' && !document.getElementById('toBasecamp')) links.push(['basecamp.html', 'Basecamp', 'basecamp']);
+      if (j.community && here !== 'community.html' && !document.getElementById('toCommunity')) links.push(['community.html', 'Tribe Map &amp; CRM', 'community']);
+      if (!anchor || !links.length) return;
+      if (!document.getElementById('mvm-doors-css')) { var st = document.createElement('style'); st.id = 'mvm-doors-css'; st.textContent = DOORS_CSS; document.head.appendChild(st); }
+      var sp = document.createElement('span'); sp.id = 'mvm-doors'; sp.className = 'mvm-doors';
+      sp.innerHTML = links.map(function (a) { var label = a[1].replace(/<[^>]+>/g, ''); return '<a class="mvm-door" data-door="' + a[2] + '" href="' + a[0] + '" title="' + label + '" aria-label="' + label + '">' + DOOR_ICONS[a[2]] + '<span class="mvm-dl">' + a[1] + '</span></a>'; }).join('');
+      if (anchor.hasAttribute('data-mahala-doors')) anchor.appendChild(sp); else anchor.parentNode.insertBefore(sp, anchor);
+    });
+  }
+
+  // A screenshot for the feedback form (F-060): made smaller on this device (at most 1600 px wide, JPEG), then kept in
+  // the person's own folder of the private bucket as fb-<random>.jpg, which only they and the stewards can open.
+  function shotOf(file) {
+    return new Promise(function (ok, fail) {
+      if (!file || !/^image\//.test(file.type || '')) return fail({ code: 'invalid_argument', message: 'Choose a screenshot or an image file.' });
+      if (file.size > 25 * 1024 * 1024) return fail({ code: 'invalid_argument', message: 'That image is very large. Try a smaller one.' });
+      var url = URL.createObjectURL(file), img = new Image();
+      img.onload = function () {
+        var k = Math.min(1, 1600 / img.naturalWidth), c = document.createElement('canvas');
+        c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+        var g = c.getContext('2d'); g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(function (b) { if (b) ok(b); else fail({ code: 'invalid_argument', message: 'That image could not be read.' }); }, 'image/jpeg', 0.82);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); fail({ code: 'invalid_argument', message: 'That image could not be read. Try a PNG or JPEG.' }); };
+      img.src = url;
+    });
+  }
+  function feedbackShot(file) {
+    return infoP.then(function (w) {
+      if (!w || !w.signedIn || !w.uid || !(w.level >= 2)) throw { code: 'not_granted', message: 'Sign in first.' };
+      return shotOf(file).then(function (blob) {
+        var name = 'fb-' + autoId(24) + '.jpg';
+        return clientP.then(function (c) { return c.storage.from(BUCKET).upload(w.uid + '/' + name, blob, { contentType: 'image/jpeg', upsert: false }); })
+          .then(function (r) { if (r.error) throw toErr(r.error); return { name: name, bytes: blob.size }; });
+      });
+    });
+  }
+
+  // After a picture is chosen, removed or swapped for the emblem: read it again and repaint every chip on this page.
+  function pictureChanged() { mapPhotoP = null; prefP = null; return paintChips(); }
   // a picture made square and small (at most 480 px, JPEG) on this device before it goes anywhere
   function shrink(file) {
     return new Promise(function (ok, fail) {
@@ -673,7 +768,9 @@
     // the Mahalaverse asks for an account before anyone steps onto the playa
     gate: function () { return AUTH.open('gate'); },
     // Your Mahala (F-034): your picture (chosen, the community map's, or your emblem), and choosing or removing one
-    picture: myPicture, pictureInfo: myPictureInfo, setPicture: setPhoto, clearPicture: clearPhoto, emblem: emblem,
+    picture: myPicture, pictureInfo: myPictureInfo, emblem: emblem, pictureChanged: pictureChanged, feedbackShot: feedbackShot,
+    setPicture: function (f) { return setPhoto(f).then(function (u) { pictureChanged(); return u; }); },
+    clearPicture: function () { return clearPhoto().then(function (u) { pictureChanged(); return u; }); },
     // the end of Join the tribe: make the account with the address just given, and land on Your Mahala (F-025)
     join: function (o) { return infoP.then(function () { UI.join(o || {}); }); },
     correct: function (text) { return rpc('report_correction', { p_text: String(text || '').slice(0, 1000) }); },
@@ -776,7 +873,7 @@
     '.mvs textarea{min-height:80px;resize:vertical} .mvs label{display:block}' +
     '.mvs label.mvs-ck{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--l);cursor:pointer} .mvs-ck input{-webkit-appearance:none;appearance:none;width:20px;height:20px;margin:2px 0 0;flex:none;border:1.5px solid var(--i);border-radius:5px;background:#fff;display:grid;place-items:center;cursor:pointer}' +
     '.mvs-ck input:checked{background:var(--i)} .mvs-ck input:checked::after{content:"";width:5px;height:10px;border:solid var(--g);border-width:0 2px 2px 0;transform:translateY(-1px) rotate(45deg)} .mvs-ck input:focus-visible{outline:2px solid var(--a);outline-offset:2px}' +
-    '.mvs-row{display:grid;gap:6px;margin:0 0 12px} .mvs-row .mvs-two{display:grid;grid-template-columns:1fr auto;gap:8px}' +
+    '.mvs [hidden]{display:none!important} .mvs-row{display:grid;gap:6px;margin:0 0 12px} .mvs-row .mvs-two{display:grid;grid-template-columns:1fr auto;gap:8px}' +
     '.mvs-rung{border:1px solid var(--l);border-radius:16px;padding:12px 14px;margin:6px 0 4px} .mvs-rung b{font:400 19px Marcellus,Georgia,serif;display:block}' +
     '.mvs ul.mvs-th{margin:0;padding:0 0 0 18px;color:var(--i2)} .mvs ul.mvs-th li{margin:3px 0}' +
     '.mvs details{border-top:1px solid var(--l);padding:8px 0} .mvs summary{cursor:pointer;color:var(--i)}' +
@@ -1012,12 +1109,33 @@
       if (w.isNew) return drawWelcome(w, null);
       rpc('my_thread').then(function (t) { drawWelcome(w, t); }, function () { drawWelcome(w, null); });
     }
+    // Three points at most (Chris, 8 Nov 2026, F-047): when you last camped with Mahala, then what is yours alone and
+    // shows you are known and loved (your own words, what you bring, the people your thread runs with), from your own
+    // profile (my_thread, only ever yours). Enough to be sure it is you; the rest waits on Your Mahala.
+    var CAMP_OF = { 2024: 'Nowhere\u2019s End', 2025: 'The Portal', 2026: 'Through the Prism', 2027: 'The Seed' };
+    function threePoints(t) {
+      var years = (t.years || []).map(Number).filter(function (y) { return y && y < 2027; }), last = years.length ? Math.max.apply(null, years) : 0;
+      var K = t.ownProfile && typeof t.ownProfile === 'object' ? t.ownProfile : {}, S = t.soul && Array.isArray(t.soul.lines) ? t.soul.lines : [];
+      var str = function (x) { return typeof x === 'string' ? x : ''; }, cut = function (x, n) { x = str(x).replace(/\s+/g, ' ').trim(); return x.length > n ? x.slice(0, n - 1).replace(/\s+\S*$/, '') + '\u2026' : x; };
+      var pts = [];
+      if (last) pts.push('You last camped with us in <b>' + last + '</b>' + (CAMP_OF[last] ? ', ' + esc(CAMP_OF[last]) : (last <= 2023 ? ', at The State of Bliss' : '')) + (years.length > 1 ? ', one of your ' + years.length + ' years with Mahala.' : '.'));
+      var own = (K.own || []).concat(K.gifts || []).filter(function (q) { return Array.isArray(q) && str(q[1]).length > 12; })[0];
+      var said = S.filter(function (l) { return l && str(l.q); })[0];
+      if (own) pts.push('In your words: <i>\u201c' + esc(cut(own[1], 110)) + '\u201d</i>');
+      else if (said) pts.push('In your words: <i>\u201c' + esc(cut(said.q, 110)) + '\u201d</i>');
+      var B = K.bring && typeof K.bring === 'object' ? K.bring : null, tags = B ? (B.tags || []).concat(B.values || []).filter(str).slice(0, 3) : [];
+      var th = (K.threads || []).filter(function (x) { return Array.isArray(x) && str(x[1]); }).slice(0, 2);
+      if (tags.length) pts.push('What you bring: ' + esc(tags.join(', ')) + '.');
+      else if (th.length) pts.push('Your thread runs with ' + esc(th.map(function (x) { return x[1]; }).join(' and ')) + '.');
+      if (pts.length < 2) (t.thread || []).slice().reverse().filter(function (l) { return l && l.text && !/nominated by/i.test(l.text); }).slice(0, 3 - pts.length)
+        .forEach(function (l) { pts.push((l.year ? '<b>' + esc(l.year) + '</b>: ' : '') + esc(cut(l.text, 120))); });
+      return pts.slice(0, 3);
+    }
     function holds(t) {
-      var years = (t.years || []).filter(function (y) { return y < 2027; }), lines = (t.thread || []).slice(-5).reverse();
-      return '<h3>What Mahala holds of you</h3><div class="mvs-hold">' +
-        '<p><b>' + esc(t.name || t.goesBy || '') + '</b>' + (years.length ? '<br><small>With Mahala in ' + esc(years.join(', ')) + '</small>' : '') + '</p>' +
-        (t.invited ? '<p class="mvs-inv">Invited to camp with Mahala in 2027' + (t.nominatedBy ? ', called in by ' + esc(t.nominatedBy) : '') + '.</p>' : '') +
-        (lines.length ? '<ul class="mvs-th">' + lines.map(function (l) { return '<li>' + (l.year ? '<b>' + esc(l.year) + '</b>: ' : '') + esc(l.text) + '</li>'; }).join('') + '</ul>' : '') +
+      var pts = threePoints(t);
+      return '<h3>Is this you?</h3><div class="mvs-hold">' +
+        '<p><b>' + esc(t.name || t.goesBy || '') + '</b></p>' +
+        (pts.length ? '<ul class="mvs-th mvs-three">' + pts.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>' : '') +
         '</div>' +
         '<label class="mvs-row"><span>Your playa name</span><input type="text" name="playa" maxlength="60" autocomplete="off" value="' + esc(t.playaName || '') + '" placeholder="The name you go by at the burn"></label>' +
         '<div class="mvs-two"><button type="button" class="mvs-b q on" data-k="right" style="margin:0">Yes, that is me</button><button type="button" class="mvs-b q" data-k="wrong" style="margin:0">Something is not right</button></div>' +
@@ -1349,21 +1467,17 @@
   // Pages without the game (camp.html, seed.html) put <button data-mahala-account> where a sign-in belongs.
   function mountChips(refresh) {
     Array.prototype.forEach.call(document.querySelectorAll('[data-mahala-account]'), function (b) {
-      if (b.dataset.mvOn) { if (refresh) b.textContent = info && info.signedIn ? (info.name || 'Your account') : 'Sign in'; return; }
+      if (b.dataset.mvOn) { if (refresh) { b.textContent = info && info.signedIn ? (info.name || 'Your account') : 'Sign in'; paintChips(); } return; }
       b.dataset.mvOn = '1';
       b.classList.add('mvm-chip'); b.hidden = false;
       b.textContent = info && info.signedIn ? (info.name || 'Your account') : 'Sign in';
-      if (info && info.signedIn) myPicture().then(function (u) {
-        if (!u || b.querySelector('img')) return;
-        var im = document.createElement('img'); im.src = u; im.alt = ''; im.width = im.height = 26; im.referrerPolicy = 'no-referrer';
-        im.style.cssText = 'width:26px;height:26px;border-radius:50%;object-fit:cover;margin-left:-8px'; b.prepend(im);
-      }, function () { });
       // signed in, the chip opens the member's own page (site.js members.mePage), else the account box
       b.addEventListener('click', function () {
         if (info && info.signedIn && MEPAGE && !onMe()) { goMe(); return; }
         UI.open(info && info.signedIn ? 'account' : 'signin');
       });
     });
+    paintChips(); mountDoors();
     if (document.querySelector('[data-mahala-account]') && !document.getElementById('mvs-css')) { var s = document.createElement('style'); s.id = 'mvs-css'; s.textContent = CSS; document.head.appendChild(s); }
   }
 })();
