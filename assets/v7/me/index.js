@@ -527,7 +527,7 @@ export async function start(M, ctx) {
             <p class="v7-me-mode">${esc(ml.t)}</p>${ml.act ? `<div class="v7-me-modeact">${ml.act}</div>` : ''}
           </div>
         </div>
-        <div class="v7-me-tiles2">${cardTile}${crewTile}</div>`;
+        <div class="v7-me-tiles2">${cardTile}${crew ? crewTile : ''}</div>`;   /* 8 Nov review: crews step back until the season of building */
     },
     figure() {
       const a = worn(), own = ownColour(), U = unlockedSet(), R = rules(), m = mode(), open = !!S.figOpen, card = myCard();
@@ -650,7 +650,7 @@ export async function start(M, ctx) {
   const ruleHere = test => rules().some(r => test(r.id));
   // the ways a gift comes that are here: the other parts' only when they are loaded
   function emptyShelf() {
-    const ways = ['cook a camp dinner', 'share music in the main tent', 'offer words to the fire', 'join a crew', 'apply to the camp or the build'];
+    const ways = ['cook a camp dinner', 'share music in the main tent', 'offer words to the fire', 'apply to the camp or the build'];
     if (ruleHere(id => id === 'seed-carrier')) ways.push('plant a seed');
     if (coHere()) ways.push('offer art');
     if (ruleHere(id => id.startsWith('pay-'))) ways.push('give through a gate');

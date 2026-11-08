@@ -120,6 +120,7 @@ const CONFIG = {
   principles: 'https://www.afrikaburn.org/about/our-guiding-principles/',
 };
 const PANELS_N = 143;
+const TEST = /(^|[?&])test=1(&|$)/.test(location.search.slice(1));   // camp lead testing buttons, only with ?test=1 in the address (8 Nov review)
 const GATE0 = { n: 0, id: 'GATE_0', name: 'The invitation', amount: 'Free', col: 'cyan', gift: 'The teaser, the story, a tour of the playa and the Book of Mahala, up to the portal of the camp' };
 const GATE_BY = n => n === 0 ? GATE0 : DATA.gates.find(g => g.n === n);
 // the spaces, and the gate that opens each one. A build crew also opens the yard and the workshop.
@@ -150,7 +151,7 @@ const PATHS = [
     reflect: 'Where in your life do you need a gathering place, and who would you invite in?', poem: 'Write a poem shaped like a bell: one short line, two long ones, one short.', art: 'Sketch a pendant: one ring, and the way you would wind it.' },
   { feel: 'Part of the camp', steps: [['circle', 'Meet the camp'], ['week', 'Choose your days: setup, the burn, breakdown'], ['call', 'Book your welcome call'], ['lnt', 'Read the Sacred Agreements and plan to leave no trace']],
     reflect: 'What gift will you bring to the camp that is not a thing?', poem: 'Write a blessing for the people you will camp beside.', art: 'Map your corner of the camp: where the sun rises, where the fire is, where you sleep.' },
-  { feel: 'A builder', steps: [['zome', 'Step inside the zome'], ['crew', 'Choose a crew'], ['quest', 'Take a quest'], ['panel', 'Light a panel of glass']],
+  { feel: 'A builder', steps: [['zome', 'Step inside the zome'], ['crew', 'Choose a crew'], ['quest', 'Take a quest']],
     reflect: 'Something rises inside you as the temple rises outside. What is it?', poem: 'Write a verse for a stone at the build yard.', art: 'Design one panel of glass: its colour, and the light it would throw.' },
   { feel: 'A keeper of the space', steps: [['all', 'Walk every space'], ['host', 'Bring a newcomer to the fire'], ['gather', 'Offer to host a gathering']],
     reflect: 'What does it mean to you to hold a place open for others?', poem: 'Write a welcome for the next builder through the portal.', art: 'Draw the temple as you hope it will look on the night it is lit.' },
@@ -280,7 +281,7 @@ const BOOK = { ratio: 595 / 842,
     {"src": "assets/book/p09.jpg", "alt": "The airship crashed in an orange desert, its balloon slumped beside the broken hull", "text": "Suddenly they were swept up in a Storm of Uncertainty, and the airship came crashing down in a strange and liminal space...\n\nIt wasn't quite here. Nor was it there."},
     {"src": "assets/book/p10.jpg", "alt": "A glowing sign reading Nowhere's End in a desert at night, in an ornate orange frame", "text": "It was Nowhere's End, where the Blissmakers found themselves.\n\nWith many great mysteries abound,\nan opportunity, perhaps, for something new to be found."},
     {"src": "assets/book/p11.jpg", "alt": "The Blissmakers make themselves at home", "text": "Never to waste an opportunity for discovery, the Blissmakers salvaged what they could, and made themselves comfortably at home with a delicious blend of tea and songs to keep them happy."},
-    {"src": "assets/book/p12.jpg", "alt": "A glowing bell tent at dusk with music notes rising, beside a little tea bar", "text": "Within the warmth created by firelight and friendship, a profound realisation emerged...\n\nNowhere's End is actually\njust Anywhere's Beginning..."},
+    {"src": "assets/book/p12.jpg", "alt": "A glowing canvas tent at dusk with music notes rising, beside a little tea bar", "text": "Within the warmth created by firelight and friendship, a profound realisation emerged...\n\nNowhere's End is actually\njust Anywhere's Beginning..."},
     {"src": "assets/book/p13.jpg", "alt": "The search for a sign", "text": "But if the beginning is anywhere, then which way to go?\n\nThey searched the wreckage for a sign.\n\nAnd even in the depths of perceived darkness, deep inside, they found it.\n\nA portal into the heart of the Divine and with it, the great remembering..."},
     {"src": "assets/book/p14.jpg", "alt": "A painted card of a glowing red heart under a sun and moon, among flowers", "text": "That Unconditional Love remains ever-present\n\nA boundless, luminous force, the most potent catalyst for transformation.\n\nAnd so, from the ashes of revelation, it became evident that the long voyage was all for a reason as it had given rise to a new story..."},
     {"src": "assets/book/p15.jpg", "alt": "The Mahala emblem: a lotus of coloured leaves above the word Mahala", "text": "MAHALA"},
@@ -322,27 +323,27 @@ const PODS_INFO = {
   ICOSA: { name: 'Icosahedron', element: 'Water', where: 'East south east, by the way in', hubs: 12, struts: 30, edge: '1.735', height: '2.62', tube: '52.1', opp: 'POD_DODECA',
     faces: 'twenty triangles', means: 'The roundest of the forms made only of triangles. Plato paired it with water. It flanks the way in with the tetrahedron.' },
   OCTA: { name: 'Octahedron', element: 'Air', where: 'South', hubs: 6, struts: 12, edge: '2.334', height: '1.91', tube: '28.0', opp: 'POD_CUBE',
-    faces: 'eight triangles', means: 'Two pyramids, base to base. Plato paired it with air. Its partner, the cube, faces it across the temple: put a point at the centre of each face of one and you have the other.' },
+    faces: 'eight triangles', means: 'Two pyramids, base to base. Plato paired it with air. Its partner is the cube: put a point at the centre of each face of one and you have the other.' },
   VE: { name: 'Vector equilibrium', element: 'Balance, the mother form', where: 'West south west', hubs: 12, struts: 24, edge: '1.650', height: '2.33', tube: '39.6', opp: 'POD_TETRA',
     faces: 'eight triangles and six squares', means: 'Not one of Plato\'s five: Buckminster Fuller\'s vector equilibrium, the cuboctahedron. Every edge is as long as the distance from the centre to each corner, so all its forces sit in balance. It is the mother form of the set.' },
   DODECA: { name: 'Dodecahedron', element: 'Aether, the heavens', where: 'West north west', hubs: 20, struts: 30, edge: '1.178', height: '2.62', tube: '35.3', opp: 'POD_ICOSA',
-    faces: 'twelve pentagons', means: 'Twelve pentagons. Plato kept it for the whole of the heavens; later writers called it aether. Its partner, the icosahedron, faces it across the temple.' },
+    faces: 'twelve pentagons', means: 'Twelve pentagons. Plato kept it for the whole of the heavens; later writers called it aether. Its partner is the icosahedron.' },
   CUBE: { name: 'Cube', element: 'Earth', where: 'North', hubs: 8, struts: 12, edge: '1.905', height: '1.91', tube: '22.9', opp: 'POD_OCTA',
-    faces: 'six squares', means: 'Six squares, the form that sits square on the ground. Plato paired it with earth. Its partner, the octahedron, faces it across the temple.' },
+    faces: 'six squares', means: 'Six squares, the form that sits square on the ground. Plato paired it with earth. Its partner is the octahedron.' },
 };
 const POD_CENTRES = { TETRA: [9.802, 0.55, -5.659], CUBE: [0, 0.953, -11.319], OCTA: [0, 0.953, 11.319], VE: [-9.802, 1.167, 5.659], DODECA: [-9.802, 1.311, -5.659], ICOSA: [9.802, 1.311, 5.659] };
 const TECH_ORDER = ['CENTRE', 'MAHAL_COIL', 'COIL_140', 'PENDANT', 'POD_TETRA', 'POD_ICOSA', 'POD_OCTA', 'POD_VE', 'POD_DODECA', 'POD_CUBE'];
 const SPOT = {
-  CENTRE: { eye: 'Temple Tech · the heart of the temple', title: 'The centrepiece', chips: [['Concept model', 'wait'], ['Stirrer being tested', 'now']],
+  CENTRE: { eye: 'Inside The Seed · the heart of the temple', title: 'The centrepiece', chips: [],
     what: 'A glass egg resting on a nest of copper coil, on a carved hardwood column at the very centre of the temple, under the open crown.',
     how: 'The nest is a black ring, 3D-printed with grooves like the 140 mm coil and sized, like every part of the centrepiece, by the golden ratio. Two windings of 3 mm copper cross in its grooves: one lies in deep channels and one in shallow channels, so the copper passes cleanly over itself, and each goes seven times through the hole for every eight times round the ring. Under the egg a magnet turns and a stir bar in the water follows it, drawing the water into a slow vortex. Whether a stirrer can do that through the glass is still being tested.',
-    means: 'A torus flows out, around and back in through its own centre. Here it holds the egg, the seed at the heart of the temple. The same grooved ring and the same winding run through the big coil at the camp, the coils you can hold and every pendant, so each one carries the pattern back to this centre: one field, many hands around it.',
+    means: 'A torus flows out, around and back in through its own centre. Here it holds the egg, the seed at the heart of the temple.',
     facts: [['Column', '<span class="mono">1.02 m</span> to the top, six hardwood panels'], ['Egg', '<span class="mono">0.39 m</span> high, blunt end down'], ['Water', 'about <span class="mono">15</span> litres'], ['Coil', 'Two windings: 8 times round, 7 through'], ['Copper', 'about <span class="mono">77 m</span> of 3 mm wire'], ['Light', 'A warm white ring under the egg'], ['Sizes', 'From the temple\'s base radius, <span class="mono">4.32 m</span>, divided by the golden ratio again and again']] },
-  MAHAL_COIL: { eye: 'Temple Tech · at the camp', title: 'The big coil', chips: [['Made by hand', 'done'], ['Temple Tech', 'c-cyan']], render: ['render_coil_big', 'The big coil, rendered'], photos: [['photo_coil_pole', 'On the centre pole'], ['photo_coil_figure', 'On a carved figure']],
+  MAHAL_COIL: { eye: 'Temple Tech · at the camp', title: 'The big coil', chips: [], render: ['render_coil_big', 'The big coil, rendered'], photos: [['photo_coil_pole', 'On the centre pole']],
     what: 'A black ring wound by hand with copper wire, about 40 cm across. It sits on the centre pole of the Lotus Mahal, the camp\'s temple tent, at heart height.',
     how: 'The black ring is 3D-printed with grooves that guide two windings that cross. One runs in deep channels and one in shallow channels, so the copper passes cleanly over itself. Each winding goes seven times through the hole as it circles the ring eight times, then meets its own start. Shown here as the 140 mm ring, scaled up.',
     means: 'The camp\'s centre, and the big sister of the pendants: the same pattern at a size you can stand beside. Winding it is slow, careful work, and the care is part of the piece.',
-    facts: [['Across', 'about <span class="mono">40 cm</span>'], ['Where', 'The centre pole of the Lotus Mahal, <span class="mono">1.2 to 1.4 m</span> up'], ['Windings', 'Two that cross, each 8 times round and 7 times through'], ['Made', 'A 3D-printed grooved ring, wound by hand'], ['Gift', 'A big coil is a gift at Gate 4']] },
+    facts: [['Across', 'about <span class="mono">40 cm</span>'], ['Where', 'The centre pole of the Lotus Mahal, <span class="mono">1.2 to 1.4 m</span> up'], ['Windings', 'Two that cross, each 8 times round and 7 times through'], ['Made', 'A 3D-printed grooved ring, wound by hand']] },
   COIL_140: { eye: 'Temple Tech · to hold', title: 'The 140 mm coil', chips: [['Made by hand', 'done'], ['Gate 4', 'c-cyan']], render: ['render_coil_140', 'The 140 mm coil, rendered'],
     what: 'A black ring 140 mm across with a 43.8 mm hole, 3D-printed with grooves and wound by hand with copper wire. It sits in two hands.',
     how: 'Two windings cross on the ring. One lies in deep channels and one in shallow channels, so one passes cleanly over the other where they cross. Each goes seven times through the hole as it circles the ring eight times, then closes on itself. The raised black lands between the grooves make the diamond pattern you see.',
@@ -359,7 +360,7 @@ for (const k in PODS_INFO) { const f = PODS_INFO[k];
     what: `A space frame of copper tube and copper ball hubs: ${f.faces}, ${f.hubs} hubs and ${f.struts} struts, drawn inside a sphere 1.65 m in radius. It stands 11.32 m from the centre of the temple, on one of the six outer circles of the floor pattern.`,
     how: 'Each strut is cut 80 mm shorter than the distance between hub centres, so it seats 40 mm from each hub centre. All six forms share the one sphere, and its size comes from the same golden-ratio ladder as the temple and the floor, where each size is the one before divided by the golden ratio: 11.32, 7.00, 4.32, 2.67 and 1.65 m.',
     means: f.means + ' Together the six forms ring the temple: the old building blocks of the world, gathered around one centre.',
-    facts: [['Hubs and struts', `<span class="mono">${f.hubs}</span> and <span class="mono">${f.struts}</span>`], ['Edge', `<span class="mono">${f.edge} m</span>, hub to hub`], ['Top hub', `<span class="mono">${f.height} m</span> up`], ['Copper tube', `<span class="mono">${f.tube} m</span> in all`], ['Faces it', PODS_INFO[f.opp.slice(4)].name]] };
+    facts: [['Hubs and struts', `<span class="mono">${f.hubs}</span> and <span class="mono">${f.struts}</span>`], ['Edge', `<span class="mono">${f.edge} m</span>, hub to hub`], ['Top hub', `<span class="mono">${f.height} m</span> up`], ['Copper tube', `<span class="mono">${f.tube} m</span> in all`]] };
 }
 const JOURNEY = [
   ['Dream', 'done', 'seed', 'The vision'], ['Design', 'done', 'pen', 'Oct 2026'], ['Film', 'done', 'film', 'Oct 2026'],
@@ -1507,7 +1508,7 @@ function renderInspector(it) {
       <p>Petals of plywood fretwork wrap the base of the dome like the bracts of a king protea.</p>${links([['CR-3', 'Crew', 'Petal crew'], ['PETAL_A01', 'East', 'The way in']])}</div>`;
   }
   if (k === 'camp') h = head(k, 'Theme camp · AfrikaBurn 2027', 'Mahala camp', 'Home for the builders during the build and the burn') + `<div class="insp-body"><div class="chips">${chip('Door 1: join the camp', 'c-yellow')}${chip('Illustrative layout', 'wait')}</div>
-    <p>You come in through the MAHALA portal. Inside: the Lotus Mahal with the big coil on its pole, Blissfull Drift with its fireside, the kitchen, the main tent and the bell tents. Camp members help build the temple.</p>
+    <p>You come in through the MAHALA portal. Inside: the Lotus Mahal with the big coil on its pole, Blissfull Drift with its fireside, the kitchen, the main tent and the canvas tents. Camp members help build the temple.</p>
     <div class="tiles">${tile('img:photo_portal', 'assets/photo_portal.jpg', 'The portal')}${tile('img:photo_lotus_tent', 'assets/photo_lotus_tent.jpg', 'The Lotus Mahal')}${tile('img:photo_drift_night', 'assets/photo_drift_night.jpg', 'Blissfull Drift')}</div>
     ${kv(DATES.map(([k2, v2]) => [k2, esc(v2)]))}
     <div class="sect"><h4>The team: four circles</h4>${circlesHTML()}<p class="note">Your welcome call places you in one of them. The temple's build crews sit within Art and Gifting.</p></div>
@@ -1529,7 +1530,7 @@ function renderInspector(it) {
     ${links([['CAMP_FIRE', 'Fireside', 'Poems and camp stories'], ['CAMP_LOTUS', 'Place', 'The Lotus Mahal'], ['CAMP', 'Camp', 'Mahala camp']])}</div>`;
   if (k === 'fire') h = head(k, 'Blissfull Drift · the fireside', 'The fireside', 'Poems and camp stories, around the protea fire') + `<div class="insp-body"><div class="chips">${chip(FIRESIDE.length + ' pieces', 'c-yellow')}${chip('Best after dark', 'wait')}</div>
     <p>In the hull of the boat, tiers of seats step down to a steel fire pit shaped like a king protea. Sit by the fire and read the poems and stories camp mates have written.</p>
-    <div class="actions"><button class="btn primary" data-act="fire">${icon('flame')}Sit by the fire</button><button class="btn" data-act="fire:random">Let the fire choose</button><button class="btn" data-act="fire:deck">Draw a card</button></div>
+    <div class="actions"><button class="btn primary" data-act="fire">${icon('flame')}Sit by the fire</button><button class="btn" data-act="fire:random">Let the fire choose</button></div>
     <div class="linklist">${FIRESIDE.map(p => `<button data-fire="${p.id}"><span class="k">${p.kind}</span>${esc(p.title)}${icon('right')}</button>`).join('')}</div>
     <p class="note">Written by Mahala camp mates and shared for the Mahalaverse.</p></div>`;
   if (k === 'book') h = head(k, 'The start of the way', 'The Book of Mahala', 'The camp\'s own book, on a carved plinth') + `<div class="insp-body"><div class="chips">${chip((BOOK.pages.length - 1) + ' pages', 'c-yellow')}${chip('11 archetypes', 'c-magenta')}</div>
@@ -1589,7 +1590,7 @@ function renderInspector(it) {
       <div class="actions"><button class="btn primary" data-act="join:build">${icon('users')}Join this crew</button></div></div>`; }
   if (k === 'deck') h = head(k, 'Beside the book · the way in', 'The Mahala Archetype Deck', 'Eleven cards from the Book of Mahala') + `<div class="insp-body"><div class="chips">${chip('11 cards', 'c-magenta')}${chip('Drawn at the fire', 'c-yellow')}</div>
     <button class="bk-cover dk-cover" data-act="fire:deck"><img src="assets/deck/back.jpg" alt=""><span>${icon('flame')}Draw a card at the fire</span></button>
-    <p>The camp's archetypes: the forces that dance among the people who join the mission, each with a gift, a question and a shadow. Take the deck down to the fire in Blissfull Drift, where the cards rise in a ring over the flames. Choose one, read it, pass it round the circle, or keep it as your archetype for the visit.</p>
+    <p>The camp's archetypes: the forces that dance among the people who join the mission, each with a gift, a question and a shadow. Take the deck down to the fire in Blissfull Drift, where the cards rise in a ring over the flames. Choose one, read it, or keep it as your archetype for the visit.</p>
     <div class="linklist">${ARCH.map(a => `<button data-fire="${a.id}"><span class="k">Card</span>${esc(a.title)}${icon('right')}</button>`).join('')}</div>
     <p class="note">The cards as they are printed in the Book of Mahala.</p></div>`;
   if (k === 'role') { const r = it.r;
@@ -1728,7 +1729,7 @@ function openFilm(src, cap, endDoors, loop = false) {
 function openImage(key) {
   lastFocus = document.activeElement; $('#filmEnd').hidden = true; FV.pause(); FV.removeAttribute('src'); FV.hidden = true;
   let im = $('.film img', FM); if (!im) { im = document.createElement('img'); im.style.cssText = 'display:block;width:100%;height:auto;max-height:calc(100vh - 140px);object-fit:contain;background:#000'; $('.film', FM).prepend(im); }
-  const PHOTO = { photo_drift_day: 'Blissfull Drift, the camp boat, by day.', photo_drift_sunset: 'Blissfull Drift at sunset.', photo_drift_night: 'Blissfull Drift lit up at night.', photo_lotus_tent: 'The Lotus Mahal at the camp.', photo_portal: 'The MAHALA portal, the way into the camp, lit at night.', photo_coil_pole: 'The big coil going onto the central pole.', photo_coil_figure: 'The big coil on a carved figure.' };
+  const PHOTO = { photo_drift_day: 'Blissfull Drift, the camp boat, by day.', photo_drift_sunset: 'Blissfull Drift at sunset.', photo_drift_night: 'Blissfull Drift lit up at night.', photo_lotus_tent: 'The Lotus Mahal at the camp.', photo_portal: 'The MAHALA portal, the way into the camp, lit at night.', photo_coil_pole: 'The big coil going onto the central pole.' };
   const RENDER = { render_coil_big: 'The big coil on the centre pole of the Lotus Mahal, about 40 cm across.', render_coil_140: 'The 140 mm coil: two windings crossing on a grooved ring.', render_pendant: 'A pendant, about 35 mm across, on a braided cord.' };
   im.src = `assets/${key}.jpg`; im.alt = RENDER[key] || PHOTO[key] || 'A render of the temple';
   $('#filmCap').textContent = RENDER[key] ? RENDER[key] + ' Rendered from the 3D model of the grooved ring.' : PHOTO[key] ? PHOTO[key] + ' Photo from the camp.' : { K6: 'The crown, looking straight up from inside.', K7a: 'Sunset: the sun on the tip of the finial.', K2b: 'From above at dawn, 34 m up.', K4m: 'At the ogee arch of the way in.', K1b: 'First light through the open crown.' }[key] + ' Rendered from the 3D model.';
@@ -1900,7 +1901,7 @@ function renderEnding(B, F) {
       <div class="actions">${donate}</div>`;
   else if (o.door === 'build') body = `${badge}<p>Thank you${nm}. You asked to join the <b>${esc(o.crew.name)}</b>, chosen from ${esc(o.why)}. ${ME.crewOk ? 'You are on the crew now.' : 'A steward accepts you, then the crew\'s quests open to you.'}${isBuildCrew(o.crew.id) ? ' When a steward welcomes you onto the crew, your crew\'s builder gift comes with it.' : ''}</p>
       <div class="sect"><h4>Your crew and a first quest</h4>${links([[o.crew.id, 'Crew', o.crew.name], ...(o.quest ? [[o.quest.id, o.quest.id, o.quest.name]] : [])])}</div>
-      ${ME.crewOk ? '' : `<div class="actions"><button class="btn testbtn" data-j="crewok">${icon('unlock')}Camp lead testing: accept me onto the crew</button></div>`}
+      ${ME.crewOk || !TEST ? '' : `<div class="actions"><button class="btn testbtn" data-j="crewok">${icon('unlock')}Camp lead testing: accept me onto the crew</button></div>`}
       <p class="note">The crew is drawn from what you told us, not assigned for good. The build-only path is still being shaped with the stewards.</p><div class="actions">${donate}</div>`;
   else if (o.door === 'back') { const g = o.gate; body = `${badge}<p>Thank you${nm}. You chose Gate ${g.n}, ${esc(g.name.replace(/^The /, 'the '))}.</p>${gateRow(g.n)}
       ${g.builds ? `<p>Your gift builds ${esc(g.builds.charAt(0).toLowerCase() + g.builds.slice(1))}.</p>` : ''}
@@ -2101,8 +2102,8 @@ function leaveFireside(goTo = true) {
   if (goTo) deselect();
 }
 function renderCircle() {
-  fire.piece = null; DKX.on = false; DKX.drawn = null; FI.el.querySelector('.fire-card').classList.remove('dk-mode'); FI.eye.textContent = 'The fireside · Blissfull Drift'; FI.title.textContent = 'Around the fire';
-  FI.body.innerHTML = `<p class="fi-lead">Choose one to read by the fire. ${TOUCH ? 'Tap' : 'Click'} the fire directly to add a log.</p><p class="fi-meta" style="margin:0">Poems and stories written by Mahala camp mates.</p>
+  fire.piece = null; DKX.on = false; DKX.drawn = null; FI.el.querySelector('.fire-card').classList.remove('dk-mode'); FI.eye.textContent = 'The fireside · Blissfull Drift · around the fire'; FI.title.textContent = 'Choose one to read by the fire.';
+  FI.body.innerHTML = `<p class="fi-hint">${icon('flame')}<span>${TOUCH ? 'Tap' : 'Click'} the fire to add a log.</span></p><p class="fi-meta" style="margin:0">Poems and stories written by Mahala camp mates.</p>
     <div class="fi-list">${FIRESIDE.map(p => `<button class="fi-item" data-piece="${p.id}"><span class="k">${p.kind}${p.when ? ' · ' + p.when : ''}</span><b>${esc(p.title)}</b><small>${esc(p.stanzas[0][0])}</small></button>`).join('')}</div>`;
   FI.foot.innerHTML = `<button class="btn primary" data-fi="random">${icon('shuffle')}Let the fire choose</button>`;
 }
@@ -2184,7 +2185,7 @@ function showKept() {
 async function shareCard(a) {
   const text = `By the fire in the Mahalaverse I drew ${a.title}: "${a.cap}." ${a.q || a.sq || ''}`.trim();
   try { if (navigator.share) { await navigator.share({ title: a.title, text }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
-  try { await navigator.clipboard.writeText(text); toast('Copied. Pass it round the circle.'); } catch (e) { toast(`${a.title}: ${a.cap}`); }
+  try { await navigator.clipboard.writeText(text); toast('Copied.'); } catch (e) { toast(`${a.title}: ${a.cap}`); }
 }
 { try { const k = localStorage.getItem('mahala.archetype'); if (ARCH_BY[k]) DKX.kept = k; } catch (e) { }
   showKept(); const who = $('.who');
@@ -2200,8 +2201,8 @@ function updateDeck(dt, t) {
     c.g.visible = vis; c.g.children.forEach(m => m.visible = vis); if (!vis) { c.init = false; return; }
     const drawn = DKX.drawn === c.a.key, slot = DKX.order.indexOf(i), ang = slot / N * Math.PI * 2 + DKX.spin;
     if (drawn) {   // the drawn card lifts out of the ring and hangs in the air before you, above the words
-      _dkP.set(0, 0.34 + 0.012 * Math.sin(t * 1.1), 0.5).unproject(camera).sub(camera.position).normalize().multiplyScalar(3.8).add(camera.position); _dkM.lookAt(camera.position, _dkP, _dkUp); }
-    else { _dkP.set(C.x + Math.cos(ang) * R, C.y + 0.4 + DKX.rise * 0.85 + 0.045 * Math.sin(t * 1.3 + i * 0.9), C.z + Math.sin(ang) * R);
+      _dkP.set(0, (innerWidth > 760 ? 0.2 : 0.3) + 0.012 * Math.sin(t * 1.1), 0.5).unproject(camera).sub(camera.position).normalize().multiplyScalar(3.8).add(camera.position); _dkM.lookAt(camera.position, _dkP, _dkUp); }
+    else { _dkP.set(C.x + Math.cos(ang) * R, C.y + 0.3 + DKX.rise * 0.6 + 0.045 * Math.sin(t * 1.3 + i * 0.9), C.z + Math.sin(ang) * R);   // 8 Nov review: the ring sits lower, so no card is cut off at the top
       _dkC.copy(_dkP).sub(camera.position).setY(0).normalize().add(_dkP); _dkM.lookAt(_dkC, _dkP, _dkUp); }   // face down: each card turns its back to you
     _dkQ.setFromRotationMatrix(_dkM);
     if (!c.init) { c.g.position.copy(C).setY(C.y + 0.4); c.g.quaternion.copy(_dkQ); c.init = true; }
@@ -2348,12 +2349,13 @@ function openSpot(key) {
   sp.cam.near = R / 60; sp.cam.far = R * 60; sp.cam.position.set(dist * 0.62, dist * 0.42, dist * 0.66); sp.cam.lookAt(0, 0, 0); sp.cam.updateProjectionMatrix();
   sp.ctl.target.set(0, 0, 0); sp.ctl.minDistance = R * 1.2; sp.ctl.maxDistance = dist * 2.2; sp.ctl.autoRotate = !REDUCED; sp.ctl.update();
   const isPod = key.startsWith('POD_');
-  $('#spotText').innerHTML = `<div class="eyebrow">${esc(d.eye)}</div><h3 id="spotTitle">${esc(d.title)}</h3><div class="chips">${d.chips.map(([t, tone]) => chip(t, tone)).join('')}</div>
+  $('#spotText').innerHTML = `<div class="eyebrow">${esc(d.eye)}</div><h3 id="spotTitle">${esc(d.title)}</h3>${d.chips.length ? `<div class="chips">${d.chips.map(([t, tone]) => chip(t, tone)).join('')}</div>` : ''}
     <div class="sect"><h4>What it is</h4><p>${d.what}</p></div><div class="sect"><h4>How it works</h4><p>${d.how}</p></div><div class="sect"><h4>What it means</h4><p>${d.means}</p></div>
     ${kv(d.facts)}
-    <div class="actions">${key === 'PENDANT' ? `<button class="btn" data-spotgo="gate:2">${icon('gift')}Gate 2: a pendant</button>` : ''}${key === 'MAHAL_COIL' || key === 'COIL_140' ? `<button class="btn" data-spotgo="gate:4">${icon('gift')}Gate 4: a big coil</button>` : ''}<button class="btn" data-spotgo="sel:${key}">${icon('pin')}Show me where it is</button></div>
-    <p class="note">${isPod ? 'The forms are shown in a first arrangement. Which form stands where is still open.' : key === 'CENTRE' ? 'A concept model: the egg, the coil and the stirrer are still being tested.' : 'Modelled on the 140 mm grooved ring, with the copper laid in its grooves.'} Temple Tech pieces are art and research in copper, geometry and craft. They make no medical claims.</p>`;
+    <div class="actions">${key === 'PENDANT' ? `<button class="btn" data-spotgo="gate:2">${icon('gift')}Gate 2: a pendant</button>` : ''}${key === 'COIL_140' ? `<button class="btn" data-spotgo="gate:4">${icon('gift')}Gate 4: a big coil</button>` : ''}<button class="btn" data-spotgo="sel:${key}">${icon('pin')}Show me where it is</button></div>
+    <p class="note">${isPod ? 'The forms are shown in a first arrangement. Which form stands where is still open.' : key === 'CENTRE' ? 'A concept model: the egg, the coil and the stirrer are still being tested.' : 'Modelled on the 140 mm grooved ring, with the copper laid in its grooves.'}</p>`;
   $('#spotText').scrollTop = 0; $('#spotClose').focus();
+  const nav = $('#spotModal .spot-nav'); if (nav) nav.style.display = isPod ? '' : 'none';   // 8 Nov review: the arrows step through the six forms only
 }
 function closeSpot() { $('#spotModal').hidden = true; spotKey = null; if (lastFocus && document.contains(lastFocus)) lastFocus.focus(); }
 $('#spotClose').addEventListener('click', closeSpot);
@@ -2362,7 +2364,7 @@ $('#spotFlow').addEventListener('click', () => { const f = SP && SP.obj && SP.ob
 $('#spotModal').addEventListener('click', e => { if (e.target.id === 'spotModal') closeSpot();
   const g = e.target.closest('[data-spotgo]'); if (!g) return; const [k, v] = g.dataset.spotgo.split(':'); closeSpot();
   if (k === 'gate') openJoin('back', +v); if (k === 'sel') { if (v === 'CENTRE' && !inside) enterTemple(); else select(v); } });
-const stepSpot = dir => { const i = TECH_ORDER.indexOf(spotKey); openSpot(TECH_ORDER[(i + dir + TECH_ORDER.length) % TECH_ORDER.length]); };
+const stepSpot = dir => { const P = spotKey && spotKey.startsWith('POD_') ? TECH_ORDER.filter(k => k.startsWith('POD_')) : TECH_ORDER, i = P.indexOf(spotKey); openSpot(P[(i + dir + P.length) % P.length]); };
 $('#spotPrev').addEventListener('click', () => stepSpot(-1)); $('#spotNext').addEventListener('click', () => stepSpot(1));
 addEventListener('resize', () => { if (!$('#spotModal').hidden) spotSize(); });
 
@@ -2680,7 +2682,7 @@ function showGate(n, then = null, intro = '') {
     <div class="sect"><h4>Your creative work at this gate</h4><p>${esc(PATHS[n].reflect)}</p></div>`;
   $('#gateFoot').innerHTML = `<span class="note strong">${n ? 'Working amounts, not final. No payment is taken here yet. Mahala is not yet a public benefit organisation, so gifts are not tax deductible.' : 'Free, for everyone who is invited.'}</span>
     <button class="btn" data-g="close">Not now</button>
-    ${open ? `<button class="btn primary" data-g="go">${icon('gate')}Go there</button>` : `<button class="btn testbtn" data-g="test">${icon('unlock')}Camp lead testing: open Gate ${n}</button><button class="btn primary" data-g="give">${icon('gift')}Give ${esc(g.amount.split(' to ')[0])}</button>`}`;
+    ${open ? `<button class="btn primary" data-g="go">${icon('gate')}Go there</button>` : `${TEST ? `<button class="btn testbtn" data-g="test">${icon('unlock')}Camp lead testing: open Gate ${n}</button>` : ''}<button class="btn primary" data-g="give">${icon('gift')}Give ${esc(g.amount.split(' to ')[0])}</button>`}`;
   GM.hidden = false; setTimeout(() => ($('[data-g="give"]', GM) || $('[data-g="go"]', GM) || $('#gateClose')).focus(), 30);
 }
 function closeGate() { GM.hidden = true; gateThen = null; if (lastFocus && document.contains(lastFocus)) lastFocus.focus(); }
@@ -2693,7 +2695,7 @@ GM.addEventListener('click', e => { if (e.target === GM) { closeGate(); return; 
 function give(n) {
   const url = CONFIG.pay[n];
   if (url) { try { window.open(url + (url.includes('?') ? '&' : '?') + 'ref=gate' + n, '_blank', 'noopener'); } catch (e) { } toast('The payment page opened in a new tab. Come back here when it is done.'); }
-  else toast('The payment page is not set up yet: the camp is still choosing who runs payments. Camp leads can test with the dashed button.');
+  else toast('The payment page is not set up yet: the camp is still choosing who runs payments.' + (TEST ? ' Camp leads can test with the dashed button.' : ''));
 }
 function testOpen(n, then) {
   const was = ME.gate; ME.gate = Math.max(ME.gate, n); ME.test[n] = Date.now(); saveMe(); pushMe();
@@ -2720,7 +2722,7 @@ const TOUR = [
   { title: 'The build yard', clock: 10 * 60 + 30, view: () => ({ t: V3(YARD.x, 1, YARD.z), d: 52, p: 1.0, a: 0.95 }),
     lines: ['Here the frame is cut and the gifts are made.'] },
   { title: 'The camp', clock: 17 * 60 + 40, view: () => ({ t: CAMP.clone().setY(2), d: 64, p: 1.05, a: 2.3 }),
-    lines: ['Mahala camp: the Lotus Mahal, Blissfull Drift with its fire, the kitchen and the bell tents.', 'The MAHALA portal is the way in.'] },
+    lines: ['Mahala camp: the Lotus Mahal, Blissfull Drift with its fire, the kitchen and the canvas tents.', 'The MAHALA portal is the way in.'] },
   { title: 'The Book of Mahala', clock: 18 * 60 + 30, view: () => ({ t: BOOK_AT.clone().setY(1.0), d: 6, p: 1.12, a: BOOK_RY + 0.3 }),
     lines: ['At the start of the way, on a carved plinth, lies the camp\'s own book: the story of Mahala, its values and its eleven archetypes, each with a card you can draw.'],
     act: ['book', 'book', 'Open the book, then walk to the portal of the camp.', 'Open the book'] },
@@ -2779,7 +2781,7 @@ function renderPath() {
     <div class="sect"><h4>The gates</h4><div class="ladder">${[GATE0, ...DATA.gates].map(x => `<button class="rung ${ME.gate >= x.n ? 'open' : ''} ${x.n === st ? 'here' : ''}" data-p="stage:${x.n}"><span class="n" style="${ME.gate >= x.n ? `background:${GATE_COL[x.col]}` : ''}">${x.n}</span><span><b>${esc(x.name)}</b><small>${esc(!x.n ? 'The teaser, the story, the tour and the book' : spaceOf(x) === x.name ? x.gift : spaceOf(x))}</small></span><span class="amt">${esc(x.amount)}<br>${ME.gate >= x.n ? chip('Open', 'done') : chip('Locked', 'lock')}</span></button>`).join('')}</div></div>
     <div class="sect ph-only"><h4>From the camp</h4><div class="hearth">${(LIVE.bell || []).slice(0, 3).map(i => `<p style="font-size:15px">${esc(i.t)}<br><small>${esc(i.s)}</small></p>`).join('')}</div></div>
     ${leadTools()}
-    <div class="sect"><h4>Prototype testing</h4><div class="actions"><button class="btn testbtn" data-p="reset">Reset my path in this browser</button>${ME.crew && !ME.crewOk ? `<button class="btn testbtn" data-p="crewok">Camp lead testing: accept my crew</button>` : ''}</div></div>`;
+    ${TEST ? `<div class="sect"><h4>Prototype testing</h4><div class="actions"><button class="btn testbtn" data-p="reset">Reset my path in this browser</button>${ME.crew && !ME.crewOk ? `<button class="btn testbtn" data-p="crewok">Camp lead testing: accept my crew</button>` : ''}</div></div>` : ''}`;
   $('#pathFoot').innerHTML = `<span class="note">Prompts are drafts for the camp to shape. Your book is private: it stays in this browser, and in your own space in the shared database when you are signed in.</span><button class="btn" data-p="download">${icon('save')}Download my book</button><button class="btn primary" data-p="close">Close</button>`;
 }
 PM.addEventListener('change', e => {
@@ -3030,7 +3032,7 @@ function showWelcome(since = null) {
     <p class="spine">You were chosen to become a temple builder: of a temple on the playa, and of the temple within.<small>From the draft script of the Seed of Hope film</small></p>
     ${back}
     <div class="lockrow" style="border-style:solid">${icon('path')}<span><b>Your path · Gate ${ME.gate}, ${esc(g.name.replace(/^The /, 'the '))}</b><small>${nx ? 'Next: ' + esc(nx.label) : 'Every gate is open for you.'}</small></span>${nx ? `<button class="btn primary" data-act="next">${TOUCH ? 'Go' : 'Go'}</button>` : ''}</div>
-    <div class="livebar"><div class="lab"><span>Glass panels lit${sharedMode() ? ` by ${fmtN(liveBuilders())} builder${liveBuilders() === 1 ? '' : 's'}` : ' by you, in this browser'}</span><span class="mono">${lit} / ${PANELS_N}</span></div><div class="bar"><span style="width:${(lit / PANELS_N * 100).toFixed(1)}%"></span></div></div>${budgetBar()}
+    ${budgetBar()}
     <div class="actions"><button class="btn" data-act="story">${icon('book')}Begin the story</button><button class="btn" data-act="tour">${icon('pin')}Take the tour</button><button class="btn" data-act="path">${icon('path')}Your path</button></div>
     <p>The Mahalaverse is the online home of the people building the Mahala temple, a temple of coloured glass for AfrikaBurn 2027. ${TOUCH ? 'Tap' : 'Click'} anything to look closer.</p>
     <div class="doors">${doorsHTML()}</div>
@@ -3052,14 +3054,14 @@ function v4CardIn(it, h) {
       ${kv([['Opens', esc(spaceOf(g))], ['Gift', esc(g.gift)], ['What it builds', esc(g.builds)], ...(g.badge ? [['Badge', esc(g.badge)]] : [])])}
       ${g.extra ? `<p>${esc(g.extra)}.</p>` : ''}
       ${g.n === 2 ? `<div class="linklist"><button data-act="spot:PENDANT"><span class="k">Spotlight</span>See the pendant${icon('right')}</button></div>` : ''}${g.n === 4 ? `<div class="linklist"><button data-act="spot:MAHAL_COIL"><span class="k">Spotlight</span>See the big coil${icon('right')}</button></div>` : ''}
-      <div class="actions">${open ? `<button class="btn primary" data-act="goto:${g.n}">${icon('gate')}Go there</button>` : `<button class="btn primary" data-act="give:${g.n}">${icon('gift')}Give ${esc(g.amount.split(' to ')[0])}</button><button class="btn testbtn" data-act="test:${g.n}">${icon('unlock')}Camp lead testing</button>`}
+      <div class="actions">${open ? `<button class="btn primary" data-act="goto:${g.n}">${icon('gate')}Go there</button>` : `<button class="btn primary" data-act="give:${g.n}">${icon('gift')}Give ${esc(g.amount.split(' to ')[0])}</button>${TEST ? `<button class="btn testbtn" data-act="test:${g.n}">${icon('unlock')}Camp lead testing</button>` : ''}`}
         ${g.n > 1 ? `<button class="btn" data-sel="GATE_${g.n - 1}">Gate ${g.n - 1}</button>` : ''}${g.n < 7 ? `<button class="btn" data-sel="GATE_${g.n + 1}">Gate ${g.n + 1}</button>` : ''}</div>
       <p class="note strong">Amounts are working figures and may change. No payment is taken here yet. Mahala is not yet a public benefit organisation, so gifts are not tax deductible.</p></div>`; }
   if (k === 'quest') { const q = it.q, mine = ME.quests[q.id], crew = CREW_OF_NAME(q.crew), conf = (LIVE.confirm[LIVE.uid] || {})[q.id] || [];
     const can = q.open || (crew && ME.crew === crew.id), n = questTakers(q.id);
     return head(k, `${q.id} · quest`, q.name, `${q.crew} · ${q.stage}`) + `<div class="insp-body"><div class="chips">${chip(mine ? 'On your list' : 'Open', mine ? 'done' : 'open')}${chip(q.stage, 'c-' + { y: 'yellow', c: 'cyan', m: 'magenta' }[q.tone])}</div>
       <p>${esc(q.goal)}</p>
-      ${mine ? `<div class="ticks">${q.steps.map((s2, i) => { const dn = !!(mine.steps || [])[i]; return `<button class="tick ${dn ? 'on' : ''}" data-act="step:${q.id}:${i}"><span class="bx">${dn ? icon('check') : ''}</span>${esc(s2)}${dn ? ` <span class="note">· ${conf[i] ? 'confirmed by a crew lead' : 'waiting for a crew lead'}</span>` : ''}</button>`; }).join('')}</div><p class="note">Each step a crew lead confirms lights a panel of glass.</p>`
+      ${mine ? `<div class="ticks">${q.steps.map((s2, i) => { const dn = !!(mine.steps || [])[i]; return `<button class="tick ${dn ? 'on' : ''}" data-act="step:${q.id}:${i}"><span class="bx">${dn ? icon('check') : ''}</span>${esc(s2)}${dn ? ` <span class="note">· ${conf[i] ? 'confirmed by a crew lead' : 'waiting for a crew lead'}</span>` : ''}</button>`; }).join('')}</div>`
         : `<ol class="steps-ol">${q.steps.map(s2 => `<li>${esc(s2)}</li>`).join('')}</ol>`}
       ${kv([['Crew', esc(q.crew)], ['Skills', esc(q.skills)], ['Where', esc(REG[q.where].title)]])}
       ${mine || can ? `<div class="actions">${mine ? '' : `<button class="btn primary" data-act="take:${q.id}">${icon('check')}Take this quest</button>`}<button class="btn" data-sel="${q.where}">Go to ${esc(REG[q.where].title.replace(/^The /, 'the '))}</button></div>`
@@ -3070,8 +3072,8 @@ function v4CardIn(it, h) {
       ${links(DATA.quests.filter(q => q.crew === c.name).map(q => [q.id, q.id, q.name]).concat(DATA.roles.filter(r => r.crew.includes(c.name.split(' ')[0])).map(r => [r.id, 'Role', r.name])))}
       <div class="actions">${mine ? '' : `<button class="btn primary" data-act="crewjoin:${c.id}">${icon('users')}${canEnter('crews') ? 'Join this crew' : 'Ask to join this crew'}</button>`}</div>
       </div>`; }
-  if (k === 'temple') return injectTop(h, `<div class="livebar"><div class="lab"><span>${LIT.mode.value ? 'Panels lit by builders' : 'Showing the full design'}</span><span class="mono">${Math.min(PANELS_N, litNow())} / ${PANELS_N}</span></div><div class="bar"><span style="width:${(Math.min(PANELS_N, litNow()) / PANELS_N * 100).toFixed(1)}%"></span></div></div>${budgetBar(true)}
-    <div class="actions"><button class="btn" data-act="litmode">${icon('eye')}${LIT.mode.value ? 'See the full design' : 'See it as lit by builders'}</button><button class="btn" data-act="beyond:6">${icon(canEnter('beyond') ? 'star' : 'lock')}Beyond the zome</button><button class="btn" data-act="beyond:7">${icon(canEnter('lighthouse') ? 'light' : 'lock')}The lighthouses</button></div>`);
+  if (k === 'temple') return injectTop(h, `${budgetBar(true)}
+    <div class="actions"><button class="btn" data-act="beyond:6">${icon(canEnter('beyond') ? 'star' : 'lock')}Beyond the zome</button><button class="btn" data-act="beyond:7">${icon(canEnter('lighthouse') ? 'light' : 'lock')}The lighthouses</button></div>`);
   if (k === 'camp') return injectTop(h, (canEnter('camp') ? `<div class="sect"><h4>Your place in the camp</h4>${kv([['Camp access', 'Open for you (what it covers is still being set by the camp)'], ['Your days', esc((ME.week || []).join(', ') || 'Not chosen yet')], ...(LIVE.on ? [['Camp mates', String(LIVE.builders.filter(b => b.door).length)]] : [])])}</div>` : lockRow(3, 'Your place in the camp')) + campDoors());
   if (k === 'kitchen') return injectTop(h, canEnter('kitchen') ? chip('Open for you', 'done') : lockRow(4, 'The kitchen'));
   if (k === 'lotus') return injectTop(h, canEnter('mahal') ? `<p class="note strong">Sound journeys and a live online workshop gather here. Dates and the guest are announced once confirmed.</p>` : lockRow(2, 'The Lotus Mahal'));
@@ -3096,7 +3098,6 @@ function v4Act(act, a) {
   if (k === 'path') { openPath(); return true; }
   if (k === 'beyond') { goBeyond(+x); return true; }
   if (k === 'write') { openWrite(x, +y); return true; }
-  if (k === 'litmode') { LIT.mode.value = LIT.mode.value ? 0 : 1; LM.dirty = true; starDecal.material.opacity = nightK * litFrac(); if (current) renderInspector(REG[current]); toast(LIT.mode.value ? 'The temple as builders have lit it so far.' : 'The full design, every panel in colour.'); return true; }
   if (k === 'take') { const q = DATA.quests.find(z => z.id === x); ME.quests[x] = { at: Date.now(), steps: [false, false, false] }; saveMe(); pushMe(); markDone(4, 'quest'); toast(`On your list: ${q.name}. Tick each step as you do it.`); renderInspector(REG[x]); return true; }
   if (k === 'step') { const s2 = ME.quests[x]; if (!s2) return true; s2.steps[+y] = !s2.steps[+y]; saveMe(); pushMe(); refreshLight(); renderInspector(REG[x]); return true; }
   if (k === 'crewjoin') { ME.crew = x; ME.crewOk = canEnter('crews'); saveMe(); pushMe(); toast(ME.crewOk ? `You are on the ${CREW_BY(x).name}.${isBuildCrew(x) ? ' The yard and the workshop are open to you.' : ''}` : `Asked to join the ${CREW_BY(x).name}. A steward will accept you.`); renderInspector(REG[x]); renderKpis(); return true; }
@@ -3110,7 +3111,7 @@ function v4Act(act, a) {
     if (ME.contact && ME.consent) { pushSignup({ notify: ME.notify }); toast(`We will tell you when ${e2.name} is set. Only the stewards see your contact.`); } else openJoin(ME.door || 'build', null, 'touch'); a.disabled = true; return true; }
   if (k === 'workshop') { if (!canEnter('yard')) { showGate(5); return true; } select('BENCH'); setTimeout(() => { setInspector(head('bench', 'The workshop · build crews', 'The crew board', 'What the build crews are working on') + `<div class="insp-body">
       ${DATA.crews.filter(c => c.build).map(c => `<div class="sect"><h4>${esc(c.name)}${LIVE.on ? ` · ${LIVE.builders.filter(b => b.crew === c.id).length} on the crew` : ''}</h4>${links(DATA.quests.filter(q => q.crew === c.name).map(q => [q.id, q.id, q.name + (LIVE.on ? ` · ${questTakers(q.id)} on it` : '')]))}</div>`).join('')}
-      <p class="note">Crew leads confirm the steps of each quest. Every confirmed step lights a panel of glass.</p></div>`); }, 400); return true; }
+      <p class="note">Crew leads confirm the steps of each quest.</p></div>`); }, 400); return true; }
   if (k === 'story' && x == null) { startStory(0); return true; }
   return false;
 }
@@ -3198,7 +3199,7 @@ const WAY = [
     acts: [['mahal', 'gate', 'Step inside']] },
   { id: 'camp', short: 'Camp', eye: 'Home for the builders', name: 'The camp', clock: 15 * 60 + 30,
     view: () => ({ t: V3(CAMP.x + 1, 1, CAMP.z + 2), d: 66, p: 0.92, a: 2.45 }),
-    lines: ['Canvas tents, a kitchen inside a big container and a main chill space with a piano: home for the builders through build week and the burn.', 'The camp is invite only. Camp mates apply for their place, then choose how they will help.'],
+    lines: ['Canvas tents, a kitchen inside a big container and a main chill space with a piano: home for the builders through build week and the burn.', 'Canvas tents, camping mattresses and stretchers are there to rent, for an extra fee: they are not included in the camp fee.', 'The camp is invite only. Camp mates apply for their place, then choose how they will help.'],
     acts: [['campcard', 'tent', 'Go to Mahala camp'], ['kitchen', 'users', 'Go to the camp kitchen'], ['tent', 'sound', 'The main tent: music and sets'], ['campapply', 'right', 'Apply to join the camp']] },
   { id: 'yard', short: 'Yard', eye: 'Where it is made', name: 'The build yard', clock: 17 * 60 + 15,
     view: () => ({ t: V3(YARD.x, 1, YARD.z), d: 52, p: 1.0, a: 0.95 }),
@@ -4502,10 +4503,10 @@ HOOK7.cardIn.push(it => {
   if (k === 'camp') return head('camp', 'Theme camp · AfrikaBurn 2027', 'Mahala camp', 'Home for the builders during the build and the burn') + `<div class="insp-body">
     <div class="tiles">${CAMP_PICS.map(([src, l, c]) => picTile(src, l, c)).join('')}</div>
     <p>You come in through the MAHALA portal. Inside: canvas tents, a kitchen inside a big container and a main chill space with a piano, beside the Lotus Mahal and Blissfull Drift. Camp members help build the temple.</p>
-    <div class="actions"><button class="btn" data-sel="CAMP_KITCHEN">${icon('users')}Go to the camp kitchen</button><button class="btn" data-sel="CAMP_TENT">${icon('sound')}The main tent: music and sets</button><button class="btn" data-sel="CREWS">${icon('users')}Join a crew</button></div>
+    <div class="actions"><button class="btn" data-sel="CAMP_KITCHEN">${icon('users')}Go to the camp kitchen</button><button class="btn" data-sel="CAMP_TENT">${icon('sound')}The main tent: music and sets</button></div>
     ${kv(DATES.map(([k2, v2]) => [k2, esc(v2)]))}
-    <div class="sect"><h4>Camping supplies to rent</h4><ul class="plain"><li>Canvas tents and camping mattresses, when you need them</li><li>Stretchers</li></ul>
-      <p class="note">These cost extra and are not part of the camp fee. They are there so builders coming from far away need not bring their own.</p></div>
+    <div class="sect"><h4>Sleeping: camping supplies to rent</h4><ul class="plain"><li>Canvas tents</li><li>Camping mattresses</li><li>Stretchers</li></ul>
+      <p class="note strong">For an extra fee: they are not included in the camp fee.</p><p class="note">They are there so builders coming from far away need not bring their own.</p></div>
     <div class="sect"><h4>Your coil</h4><p>Every camp member wears one: a copper coil wound on the same grooved ring as the temple's heart. Anyone, in the camp or not, can also receive a pendant as a gift of thanks at Gate 2.</p>
       <div class="actions"><button class="btn" data-act="spot:PENDANT">${icon('spot')}See the pendant</button><button class="btn" data-act="spot:COIL_140">${icon('spot')}See the coil you hold</button></div></div>
     <p class="note strong">The camp is invite only. Invited builders apply and pay in one go; everyone else joins the waitlist, and a camp lead calls.</p>
@@ -4516,8 +4517,10 @@ HOOK7.cardIn.push(it => {
     <div class="actions"><button class="btn" data-sel="CAMP">${icon('tent')}Go to Mahala camp</button><button class="btn" data-sel="CAMP_TENT">${icon('sound')}The main tent</button></div></div>`;
   if (k === 'yard') return head('yard', 'Fabrication', 'The build yard', 'Where The Seed is made') + `<div class="insp-body">
     <p>The frame is cut to the zome's geometry and the glass is prepared here, by volunteers with hand tools, a cutting service and a skilled workshop. Everything you need to know about the build lives here.</p>
-    <div class="actions yard-acts"><button class="btn primary" data-sel="GUIDE">${icon('book')}The build guideline</button><button class="btn" data-act="buildfilm">${icon('film')}Watch the build</button><button class="btn" data-act="spot:MAHAL_COIL">${icon('torus')}See the big coil</button><button class="btn" data-sel="BENCH">${icon('tools')}The Temple Tech bench</button><button class="btn" data-sel="YARD_CNC">${icon('forms')}The CNC cutting table</button><button class="btn" data-sel="SHIFTS">${icon('cal')}Build shifts and build days</button></div>
-    <p class="note">For the build crew. Build shift sign-up opens here for camp members once sign-in is live.</p></div>`;
+    <div class="sect yard-do"><h4>For camp members</h4>${campMember()
+      ? `<div class="actions yard-acts"><button class="btn primary" data-sel="SHIFTS">${icon('cal')}Sign up for build shifts</button><button class="btn" data-sel="GUIDE">${icon('book')}The build guide</button></div>`
+      : `<div class="lockrow">${icon('lock')}<span><b>Build shifts and the build guide</b><small>For camp members. Apply for the camp to build with us.</small></span><button class="btn" data-act="campapply">Apply for the camp</button></div>`}</div>
+    <div class="actions yard-acts"><button class="btn" data-act="spot:MAHAL_COIL">${icon('torus')}See the big coil</button><button class="btn" data-act="buildfilm">${icon('film')}Watch the build</button><button class="btn" data-sel="BENCH">${icon('tools')}The Temple Tech bench</button><button class="btn" data-sel="YARD_CNC">${icon('forms')}The CNC cutting table</button></div></div>`;
   if (k === 'bench') return head('bench', 'The build yard', 'The Temple Tech bench', 'Where the coils are wound') + `<div class="insp-body">
     <p>Temple Tech, an art and research practice, works with light, coils and sacred geometry. At its bench the coils are wound by hand. Last year camp mates learned to wind them here, and the winding guide joins the yard with the build crew.</p>
     <div class="actions"><button class="btn primary" data-act="spot:MAHAL_COIL">${icon('spot')}See the big coil</button><button class="btn" data-sel="YARD">${icon('left')}The build yard</button></div></div>`;
@@ -4572,6 +4575,194 @@ const TORUS = { boost: false, k: 0, group: new THREE.Group(), mats: [], dots: nu
     p.needsUpdate = true;
   });
 }
+
+/* ====================== The 8 Nov 2026 review: the last Mahalaverse items, and quests made easy (F-065) ======================
+   From the Mahalaverse review and the gates brief (Mahala Website Review and Edits). What changes here:
+   - camp lead testing buttons only with ?test=1 in the address (TEST, near the top)
+   - crews and roles leave the Mahalaverse for now: no crew cards, links or search rows; they come back with the season
+     of building (the plan of 31 Oct, Stage 4)
+   - the build yard: build shifts and the build guide for camp members, walled for everyone else
+   - quests: Send the film is quest 1; every quest carries the film, a share button and a fold out (why it matters, what
+     it helps achieve, what helps, the best timing), written from the quest itself and the build plan
+   - the first walk: the way card stays open the whole walk, then folds to its first line; "Close to keep going" beside
+     the X of every card
+   - music: one card for the camp's own tracks, the sound journeys and the main tent, from the camp and the Lotus Mahal */
+document.body.classList.toggle('mv-test', TEST);
+
+/* ---------- who is in the camp: an accepted camp member, or the core team, camp leads and stewards ---------- */
+const MEMBER = { camp: false };
+function campMember() { return !!(MEMBER.camp || ROLE.core || ROLE.lead || ROLE.steward); }
+const refreshWalled = () => { if (current && REG[current] && /^(yard|shifts|guide)$/.test(REG[current].kind)) refreshCard(current); };
+if (window.MahalaMembers) window.MahalaMembers.ready.then(i => { MEMBER.camp = !!(i && i.signedIn && i.journey && i.journey.tier === 'camp'); refreshWalled(); setTimeout(refreshWalled, 2500); }).catch(() => { });
+const walledCard = (k, title) => head(k, 'The build yard · for camp members', title, 'For the people building The Seed with the camp') + `<div class="insp-body">
+  <div class="lockrow">${icon('lock')}<span><b>For camp members</b><small>Build shifts, build days and the build guide open to camp members. Apply for the camp to build with us.</small></span><button class="btn" data-act="campapply">Apply for the camp</button></div>
+  <div class="actions"><button class="btn" data-act="buildfilm">${icon('film')}Watch the build</button><button class="btn" data-sel="YARD">${icon('left')}The build yard</button></div></div>`;
+
+/* ---------- crews and roles, for now: gone from the lists, the links and search ---------- */
+for (let i = INDEX.length - 1; i >= 0; i--) if (/^(CR-|RO-)/.test(INDEX[i].id) || INDEX[i].id === 'CREWS') INDEX.splice(i, 1);
+const crewsLater = () => head('crews', 'Mahala camp', 'Crews and roles', 'Back with the season of building') + `<div class="insp-body">
+  <p>Crews and roles come back with the season of building. For now, the first quest is open to everyone: send the film.</p>
+  <div class="actions"><button class="btn primary" data-sel="Q-07">${icon('pin')}Send the film</button><button class="btn" data-sel="CAMP">${icon('tent')}Go to Mahala camp</button></div></div>`;
+
+/* ---------- quests: the film first, and each one easy to act on ---------- */
+{ const q = DATA.quests.find(x => x.id === 'Q-07'); q.name = 'Send the film'; REG['Q-07'].title = q.name; const ix = INDEX.find(x => x.id === 'Q-07'); if (ix) ix.label = q.name; }
+const QNUM = id => DATA.quests.findIndex(q => q.id === id) + 1;
+const FILM_PAGE = 'https://wearemahala.com/seed.html';
+const FILM_TEXT = 'Meet The Seed, a temple of coloured glass that Mahala, a community of temple builders, is raising for AfrikaBurn 2027. Watch the film:';
+const waHref = () => 'https://wa.me/?text=' + encodeURIComponent(FILM_TEXT + ' ' + FILM_PAGE);
+async function shareFilm(how) {
+  if (how === 'share') {
+    try { if (navigator.share) { await navigator.share({ title: 'The Seed', text: FILM_TEXT, url: FILM_PAGE }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
+  }
+  try { await navigator.clipboard.writeText(FILM_TEXT + ' ' + FILM_PAGE); toast(how === 'copy' ? 'Copied. Paste it into an Instagram story or post, or into any chat.' : 'Copied, with the link to the film. Paste it to three people who would love it.'); }
+  catch (e) { toast(FILM_PAGE); }
+}
+const go = (attr, label, ic) => `<button class="btn" ${attr}>${icon(ic)}${esc(label)}</button>`;
+// the fold out for each quest: from what the quest already says, the cards of the places it touches and the build plan
+const QUEST_MORE = {
+  'Q-07': { why: 'The film shows The Seed in sixty seconds. Every person you send it to might build it, back it or pass it on.',
+    achieve: () => `The fundraise for The Seed, year one of a four-year vision towards the full temple in 2030.${budgetBar()}`,
+    help: () => go('data-act="film"', 'The film', 'film') + go('data-act="seedpage"', 'The Seed page', 'book') + go('data-act="donate"', 'Donate to The Seed', 'gift'),
+    when: () => `Now, while the fundraise is open: AfrikaBurn 2027 is ${days} days away (26 April to 2 May).` },
+  'Q-01': { why: 'Each ring of the zome is one colour of cast acrylic. The glass is what paints the floor and the people inside in fields of colour.',
+    achieve: () => `The sheets of acrylic for one ring, and the fundraise for The Seed.${budgetBar()}`,
+    help: () => go('data-act="qgates"', 'The ways to give', 'gate') + go('data-act="donate"', 'Donate to The Seed', 'gift') + go('data-sel="RING_E"', 'A ring of glass', 'glass'),
+    when: () => 'During the fundraise, before the glass is cut and glazed in the workshop.' },
+  'Q-02': { why: 'The top two rings of the frame stay open timber: the star of sky at the crown. A test set shows the cut list works before the full crown is cut.',
+    achieve: () => 'The first crown timbers, cut on the CNC and dry-fitted.',
+    help: () => go('data-sel="GUIDE"', 'The build guide', 'book') + go('data-sel="YARD_CNC"', 'The CNC cutting table', 'forms'),
+    when: () => 'In the workshop, in the season of building.' },
+  'Q-03': { why: 'The coloured light falls across the floor pattern by day and at night, so the pattern is part of the temple.',
+    achieve: () => 'The Golden Seed of Life set out and painted around The Seed, with a plan to take it off again: leave no trace.',
+    help: () => go('data-sel="FLOOR_GRID"', 'The Golden Seed of Life', 'seed') + go('data-sel="GUIDE"', 'The build guide', 'book'),
+    when: () => 'The first day of the build on the playa: setting out the floor pattern comes first.' },
+  'Q-04': { why: 'At night the lantern inside throws a wheel of coloured rays across the desert floor.',
+    achieve: () => 'A lantern tested behind the acrylic, powered safely and lit on the night.',
+    help: () => go('data-sel="TEMPLE"', 'The Seed', 'dome') + go('data-act="night"', 'See it at night', 'moon'),
+    when: () => 'Lamps tested before the build; the lights go in on the last day of the build, after the cap and the petals.' },
+  'Q-05': { why: 'The build crew raises The Seed in five days on the playa. The kitchen keeps them fed and watered.',
+    achieve: () => 'A menu planned with the camp, a packed kitchen and a kitchen roster for build week.',
+    help: () => go('data-sel="CAMP_KITCHEN"', 'The camp kitchen', 'users') + go('data-sel="CAMP"', 'Mahala camp', 'tent'),
+    when: () => 'Planning before the burn; cooking through build week on the playa.' },
+  'Q-06': { why: 'A light box is a gift for the gates, and the first step of the Temple Tech research into light and geometry.',
+    achieve: () => 'A first light box: modelled, cut and tested with a light inside.',
+    help: () => go('data-sel="BENCH"', 'The Temple Tech bench', 'tools') + go('data-sel="GATE_4"', 'Gate 4: a light box', 'gift'),
+    when: () => 'In the season of building, at the Temple Tech bench.' },
+};
+const filmBlock = () => `<div class="q-film">
+    <button class="q-thumb" type="button" data-act="film" aria-label="Watch the film, 60 seconds"><img src="seed/img/film_wide.jpg" alt="" loading="lazy"><span class="play">${icon('play')}</span></button>
+    <div class="q-film-t"><b>The Seed, the film</b><small>60 seconds. Watch it, then send it on.</small></div>
+    <div class="actions q-share"><button class="btn primary" type="button" data-act="qshare:share">${icon('share')}Share the film</button><a class="btn" href="${esc(waHref())}" target="_blank" rel="noopener noreferrer">${icon('users')}WhatsApp</a><button class="btn" type="button" data-act="qshare:copy">${icon('save')}Copy for Instagram</button></div></div>`;
+function questCard(q) {
+  const n = QNUM(q.id), mine = ME.quests[q.id], M = QUEST_MORE[q.id], film = q.id === 'Q-07' || q.id === 'Q-01';
+  const tone = 'c-' + { y: 'yellow', c: 'cyan', m: 'magenta' }[q.tone];
+  return head('quest', `Quest ${n} of ${DATA.quests.length}`, q.name, q.open ? 'Open to everyone' : `${esc(q.stage)} · opens later`) + `<div class="insp-body">
+    <p>${esc(q.goal)}</p>
+    ${film ? filmBlock() : ''}
+    ${mine && window.__MV_MEMBERS ? `<div class="ticks">${q.steps.map((s2, i) => { const dn = !!(mine.steps || [])[i]; return `<button class="tick ${dn ? 'on' : ''}" data-act="step:${q.id}:${i}"><span class="bx">${dn ? icon('check') : ''}</span>${esc(s2)}</button>`; }).join('')}</div>`
+      : `<ol class="steps-ol">${q.steps.map(s2 => `<li>${esc(s2)}</li>`).join('')}</ol>`}
+    ${q.open ? '' : `<div class="lockrow">${icon('cal')}<span><b>Opens with the season of building</b><small>Start with the film for now: it is open to everyone.</small></span><button class="btn" data-sel="Q-07">Quest 1</button></div>`}
+    ${M ? `<details class="q-more"><summary>${icon('down')}Why it matters, and how to do it well</summary>
+      <dl class="q-dl"><div><dt>Why it matters</dt><dd>${esc(M.why)}</dd></div><div><dt>What it helps achieve</dt><dd>${M.achieve()}</dd></div>
+      <div><dt>What helps</dt><dd><div class="actions">${M.help()}</div></dd></div><div><dt>Best timing</dt><dd>${esc(M.when())}</dd></div></dl></details>` : ''}
+    <div class="chips">${chip(q.stage, tone)}${q.skills && q.skills !== 'None needed' ? chip('Skills: ' + q.skills, 'wait') : chip('No skills needed', 'open')}</div>
+    <div class="actions">${mine || !q.open ? '' : `<button class="btn primary" data-act="take:${q.id}">${icon('check')}Take this quest</button>`}<button class="btn" data-sel="${q.where}">${icon('pin')}Go to ${esc(REG[q.where].title.replace(/^The /, 'the '))}</button></div></div>`;
+}
+{ const _rtQ = renderTabs; renderTabs = function () {
+  _rtQ(); if (tab !== 'quests') return; const P = $('#panel');
+  P.innerHTML = DATA.quests.map((q, i) => `<button class="row" data-sel="${q.id}"><span class="lead ${q.tone}">${i + 1}</span><span><b>${esc(q.name)}</b><small>${q.open ? 'Open to everyone' : esc(q.stage) + ' · opens later'}</small></span>${ME.quests[q.id] ? chip('Yours', 'done') : q.open ? chip('Open to all', 'open') : chip('Later', 'wait')}${icon('right')}</button>`).join('');
+  $('#panelNote').textContent = 'Send the film first: it is the easiest way to help. The other quests open with the season of building.';
+  $$('.row', P).forEach(b => b.classList.toggle('sel', b.dataset.sel === current));
+}; }
+
+/* ---------- music from the camp: the tracks already on the site, the sound journeys and the main tent (F-009, F-020) ---------- */
+const TRACKS = [['arrive', 'Downtempo', 'As you arrive: the book, the portal and Blissfull Drift'], ['mahal', 'Acoustic Intro', 'At the Lotus Mahal, and inside it'],
+  ['camp', 'Flower of Life', 'Through the camp and its main tent'], ['seed', 'A track for The Seed', 'At The Seed and inside it. Its title is still to come']];
+reg('MUSIC', { kind: 'music', title: 'Music from the camp', chip: 'Camp · music', obj: null, anchor: 'CAMP', focus: () => REG.CAMP_TENT.focus() });
+INDEX.push({ id: 'MUSIC', label: 'Music from the camp', sub: 'Camp · tracks and sound journeys', key: '' });
+GLYPH.music = 'sound'; WAY_OF.MUSIC = 'camp';
+const musicCard = () => head('music', 'Mahala camp · music', 'Music from the camp', 'Original Mahala productions, and the sound journeys') + `<div class="insp-body">
+  <p>Music is at the heart of the camp. These tracks are original Mahala productions: with Sound on, each plays in its own part of the way. Listen to them here.</p>
+  <div class="mv-tracks">${TRACKS.map(([k, t, w]) => `<div class="mv-track"><div><b>${esc(t)}</b><small>${esc(w)}</small></div><audio controls preload="none" src="${esc(MUSIC.src[k])}" aria-label="${esc(t)}"></audio></div>`).join('')}</div>
+  <p class="note">Sound: original Mahala productions.</p>
+  <div class="sect"><h4>Sound journeys</h4><p>Sound journeys gather in the Lotus Mahal, the camp's temple tent. Three fundraising sound journeys in Cape Town are coming; dates are announced once they are set.</p>
+    <div class="actions"><button class="btn" data-sel="CAMP_LOTUS">${icon('petal')}The Lotus Mahal</button><button class="btn" data-sel="E-02">${icon('cal')}The sound journeys</button></div>
+    <div class="snd"><a href="${esc(CONFIG.album)}" target="_blank" rel="noopener noreferrer"><span class="snd-ic">${icon('sound')}</span><span class="snd-t"><b>Sunrise at the Mahal</b><small>By Gustav Loubser, a camp mate · spotify.com</small></span>${icon('right')}</a></div></div>
+  <div class="sect"><h4>The main tent</h4><p>Playlists, DJ sets and recordings shared by camp mates, in the shade of the main tent.</p>
+    <div class="actions"><button class="btn" data-sel="CAMP_TENT">${icon('sound')}The main tent: music and sets</button></div></div></div>`;
+// one track at a time: the camp's music steps back while you listen here
+INS.addEventListener('play', e => { if (!e.target.matches || !e.target.matches('.mv-track audio')) return; $$('.mv-track audio', INS).forEach(a => { if (a !== e.target) a.pause(); }); MUSIC.level = 0.08; if (SND.on) musicMix(false); }, true);
+INS.addEventListener('pause', e => { if (!e.target.matches || !e.target.matches('.mv-track audio')) return; if (!$$('.mv-track audio', INS).some(a => !a.paused)) { MUSIC.level = 0.6; if (SND.on) musicMix(false); } }, true);
+WAY[WAY_BY.mahal].acts.push(['music', 'sound', 'Music and sound journeys']);
+{ const c = WAY[WAY_BY.camp].acts, j = c.findIndex(x => x[0] === 'tent'); c.splice(j < 0 ? c.length : j + 1, 0, ['music', 'sound', 'Music from the camp']); }
+// the build yard's stop opens its card, where the yard says what you can do there
+WAY[WAY_BY.yard].acts = [['yardcard', 'tools', 'Go to the build yard'], ['buildfilm', 'film', 'Watch the build'], ['bigcoil', 'torus', 'See the big coil']];
+{ const _wa2 = wayAct; wayAct = function (k, el) { if (k === 'music') { select('MUSIC'); return; } if (k === 'yardcard') { select('YARD'); return; } return _wa2(k, el); }; }
+
+/* ---------- the cards: these come first ---------- */
+HOOK7.cardIn.unshift(it => {
+  const k = it.kind;
+  if (k === 'crew' || k === 'role' || k === 'crews') return crewsLater();
+  if (k === 'quest') return questCard(it.q);
+  if (k === 'music') return musicCard();
+  if ((k === 'shifts' || k === 'guide') && !campMember()) return walledCard(k, k === 'shifts' ? 'Build shifts and build days' : 'The build guide');
+  return null;
+});
+// the camp card: a door to the music
+{ const _ciM = v4CardIn; v4CardIn = function (it, h) { const o = _ciM(it, h);
+  return it.kind === 'camp' ? o.replace(`${icon('sound')}The main tent: music and sets</button>`, `${icon('sound')}The main tent: music and sets</button><button class="btn" data-sel="MUSIC">${icon('sound')}Music from the camp</button>`) : o; }; }
+HOOK7.act.unshift((act, a) => {
+  const [k, x] = act.split(':');
+  if (k === 'qshare') { shareFilm(x); return true; }
+  if (k === 'qgates') { openExplore('gates'); return true; }
+  return false;
+});
+
+/* ---------- the first walk: the card stays open; afterwards it folds to its first line, with More ---------- */
+{ const _rw = renderWay; renderWay = function () { if (!ME.walked) WY.more = true; _rw(); }; }
+renderWay();
+/* ---------- "Close to keep going" beside the X of every card ---------- */
+new MutationObserver(() => {
+  const x = INS.querySelector('.insp-head .x'); if (!x || (x.previousElementSibling && x.previousElementSibling.classList.contains('keepgoing'))) return;
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'keepgoing'; b.textContent = 'Close to keep going';
+  b.addEventListener('click', () => x.click()); x.insertAdjacentElement('beforebegin', b);
+}).observe(INS, { childList: true });
+
+/* ---------- styles for this section (kept here, so index.html stays as it is) ---------- */
+{ const st = document.createElement('style'); st.id = 'mvReview0811'; st.textContent = `
+body:not(.mv-test) .testbtn { display: none !important; }
+body.mv-test .testbtn { display: inline-flex !important; }
+.insp-head .keepgoing { align-self: center; margin-left: auto; flex: none; }
+.insp-head .keepgoing + .x { margin-left: 0; }
+body.walking .way-more { display: none !important; }
+body.walked .way:not(.more) .way-lines p + p, body.walked .way:not(.more) .way-tiles { display: none; }
+body.walked .way-more { display: inline-flex; align-self: start; align-items: center; margin: -6px 0; padding: 0; border: 0; background: none; font: inherit; font-size: 13px; color: var(--ink-2); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.fi-hint { display: flex; align-items: center; gap: 8px; margin: 2px 0 6px; padding: 8px 12px; border-radius: 12px; background: rgba(255, 170, 70, .16); color: var(--ink); font-size: 15px; font-weight: 500; }
+.fi-hint svg.i { width: 18px; height: 18px; color: #ff9a4a; flex: none; }
+.q-film { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 8px 12px; align-items: center; padding: 10px; border: 1px solid var(--card-line); border-radius: 14px; background: var(--hover); }
+.q-thumb { position: relative; padding: 0; border: 0; border-radius: 10px; overflow: hidden; cursor: pointer; aspect-ratio: 16 / 9; background: #000; }
+.q-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.q-thumb .play { position: absolute; inset: 0; display: grid; place-items: center; color: #fff; }
+.q-thumb .play svg.i { width: 26px; height: 26px; filter: drop-shadow(0 1px 4px rgba(0,0,0,.6)); }
+.q-film-t b { display: block; font-size: 14.5px; } .q-film-t small { color: var(--ink-3); font-size: 12.5px; }
+.q-share { grid-column: 1 / -1; margin: 0; }
+.q-share .btn { height: 36px; font-size: 13.5px; }
+.q-more { border: 1px solid var(--card-line); border-radius: 14px; padding: 0 12px; }
+.q-more summary { display: flex; align-items: center; gap: 8px; min-height: 44px; cursor: pointer; font-weight: 500; list-style: none; }
+.q-more summary::-webkit-details-marker { display: none; }
+.q-more summary svg.i { width: 16px; height: 16px; transition: transform .2s; }
+.q-more[open] summary svg.i { transform: rotate(180deg); }
+.q-dl { display: grid; gap: 10px; margin: 0 0 12px; }
+.q-dl dt { font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 2px; }
+.q-dl dd { margin: 0; line-height: 1.5; }
+.q-dl .actions { margin: 4px 0 0; } .q-dl .btn { height: 34px; font-size: 13px; }
+.yard-do h4 { margin-bottom: 6px; }
+.mv-tracks { display: grid; gap: 10px; }
+.mv-track { display: grid; gap: 6px; padding: 10px 12px; border: 1px solid var(--card-line); border-radius: 12px; background: var(--hover); }
+.mv-track b { display: block; font-size: 14.5px; } .mv-track small { color: var(--ink-3); font-size: 12.5px; }
+.mv-track audio { width: 100%; height: 36px; }
+@media (max-width: 760px) { .insp-head .keepgoing { font-size: 12px; padding: 4px; } .q-film { grid-template-columns: 96px minmax(0, 1fr); } }
+`; document.head.appendChild(st); }
 
 import('./assets/together.js').then(m => m.start(window.__mahala)).catch(e => console.warn('The together layer did not start:', e));
 import('./assets/v7/index.js').then(m => m.start(window.__mahala)).catch(e => console.warn('The v7 plugins did not start:', e));
