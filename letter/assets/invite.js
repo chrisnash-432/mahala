@@ -84,7 +84,7 @@
     scene.classList.add('in'); intro.classList.add('on');
     const w = envBig.offsetWidth, h = envBig.offsetHeight, x = (innerWidth - w) / 2, y = (innerHeight - h) / 2 - h * 0.04;
     envBig.style.opacity = '1';
-    anim(envBig, [{ transform: `translate(${x}px, ${innerHeight + 40}px) scale(.82) rotate(-6deg)` }, { transform: `translate(${x}px, ${y}px) scale(1) rotate(0deg)` }], { duration: 1500, delay: 500 }).then(() => {
+    anim(envBig, [{ transform: `translate(${x}px, ${innerHeight + 40}px) scale(.82) rotate(-6deg)` }, { transform: `translate(${x}px, ${y}px) scale(1) rotate(0deg)` }], { duration: 1500, delay: 500, fill: 'both' }).then(() => {   // 'both': hold the first frame (below the screen) during the delay, so the envelope never flashes in the corner
       stage = 2; envBig.classList.add('ready'); sealBtn.classList.add('on'); sealBtn.focus({ preventScroll: true });
     });
   }
