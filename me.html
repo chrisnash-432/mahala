@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400&family=Jost:wght@300;400;500&family=Marcellus&display=swap">
 <script src="site.js?v=9"></script>
-<script src="assets/shim/claude-shim.js?v=16"></script>
+<script src="assets/shim/claude-shim.js?v=17"></script>
 <style>
 /* Your Mahala, prototype 2 (4 Nov 2026). One page about you, the same on the site and in the Mahalaverse.
    The people here are made up; nothing is read from or saved to the member database.
@@ -44,7 +44,7 @@ section, details, .chapter, .ticket { scroll-margin-top: 80px; }
 .mark { font: 400 18px/1 var(--name); letter-spacing: .18em; text-decoration: none; }
 .sp { flex: 1; }
 .fbwrap { position: relative; display: inline-flex; }
-@media (max-width: 460px) { .top-in { gap: 6px; } .tellbtn { padding: 8px 11px; } .chipname { padding: 4px; gap: 0; } .chipname > span:not(.vh) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .mark { letter-spacing: .12em; } }
+@media (max-width: 460px) { .top-in { gap: 6px; } .tellbtn { padding: 8px 11px; } .chipname { padding: 4px; gap: 0; } .chipname > span:not(.vh):not(.say) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); } .chipname > .say { padding: 0 10px; } .mark { letter-spacing: .12em; } }
 .fbcard { position: absolute; right: 0; top: calc(100% + 10px); width: min(300px, 82vw); padding: 14px 16px; border-radius: 16px; background: var(--ink); color: var(--warm); font-size: 13.5px; line-height: 1.45;
   box-shadow: 0 20px 40px -20px rgba(42, 34, 28, .8); opacity: 0; transform: translateY(-4px); pointer-events: none; transition: opacity .2s ease, transform .2s ease; z-index: 20; }
 .fbcard::before { content: ""; position: absolute; right: 26px; top: -6px; width: 12px; height: 12px; background: var(--ink); transform: rotate(45deg); }
@@ -792,7 +792,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
 
   function signedOut() {
     P = null; $('tellBtn').hidden = true; $('proto').hidden = true;
-    $('chip').innerHTML = '<span>Sign in</span>';
+    $('chip').innerHTML = '<span class="say">Sign in</span>';   // kept in words on a phone, where a signed-in chip shows only its picture
     var emb = M() && M().emblem ? M().emblem('mahala-' + Math.floor(Date.now() / 864e5)) : IMG('back');
     $('page').innerHTML = '<section class="door-out" aria-labelledby="youH">'
       + '<div class="emb" aria-hidden="true"><img src="' + emb + '" alt=""></div>'
@@ -1116,7 +1116,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       if ($('pic')) $('pic').src = x.src; if ($('chipPic')) $('chipPic').src = x.src; if ($('knownPic')) $('knownPic').src = x.src;
       var say = $('picsay'); if (!say) return;
       say.innerHTML = x.from === 'own' ? 'Your picture. Only you see it here. <button type="button" class="link" id="picDel">Remove it</button>'
-        : x.from === 'map' ? 'Your picture from the community map. ' + pick + 'Choose another</label> or <button type="button" class="link" id="picEmblem">use my emblem</button>'
+        : x.from === 'map' ? 'Your picture from the Community Map. ' + pick + 'Choose another</label> or <button type="button" class="link" id="picEmblem">use my emblem</button>'
         : x.from === 'google' ? 'Your picture from Google. ' + pick + 'Choose another</label>'
         : x.from === 'chosen-emblem' ? 'Your emblem, as you chose. ' + pick + 'Add a picture</label> or <button type="button" class="link" id="picBack">show my picture again</button>'
         : 'Your emblem, drawn from your thread. ' + pick + 'Add a picture</label>';
@@ -1180,7 +1180,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     // the door to correct the record sits at the very end: under your profile when there is one, else here
     return '<div class="soul" id="soul">' + h + '<p class="sig">MAHALA</p>' + soulYears() + (P.known ? '' : FIXIT) + '</div>';
   }
-  var FIXIT = '<details class="fixit"><summary>Something missing or not quite right?</summary><textarea id="fixText" rows="2" maxlength="1000" placeholder="A year you camped, a hat you wore, a name, a word that is not yours"></textarea><div class="row" style="margin-top:6px"><button type="button" class="btn small ghost" id="fixSend">Send to the stewards</button></div><p class="said" id="fixSaid" aria-live="polite"></p></details>';
+  var FIXIT = '<details class="fixit"><summary>Something missing or not quite right?</summary><textarea id="fixText" aria-label="What is missing or not quite right" rows="2" maxlength="1000" placeholder="A year you camped, a hat you wore, a name, a word that is not yours"></textarea><div class="row" style="margin-top:6px"><button type="button" class="btn small ghost" id="fixSend">Send to the stewards</button></div><p class="said" id="fixSaid" aria-live="polite"></p></details>';
 
   // ------------------------------------------------------------------ you, as Mahala knows you (Chris, 8 Nov 2026, F-044)
   // The same care and detail as the stewards' community map card, said to you, about you, and shown only to you
@@ -1231,7 +1231,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + (path ? '<ol class="pathsteps">' + W.steps.map(function (x) { return '<li class="' + esc(x.state) + '">' + esc(x.label) + (x.state === 'now' ? ' <small>Next</small>' : '') + '</li>'; }).join('') + '</ol>' : '')
       + '<div class="row">' + (n.href ? '<a class="btn" href="' + esc(n.href) + '">' + esc(n.cta) + '</a>' : '')
       + (W.basecamp ? '<a class="btn ghost" href="' + esc(W.basecamp) + '" target="_blank" rel="noopener">Open Basecamp</a>' : '')
-      + (P.J && P.J.community ? '<a class="btn ghost" href="community.html">The community map</a>' : '') + '</div></div>';
+      + (P.J && P.J.community ? '<a class="btn ghost" href="community.html">Community Map</a>' : '') + '</div></div>';
   }
 
   function letter() {
@@ -1247,7 +1247,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   }
 
   // The community map, for whoever the database lets in (core, camp leads, crew leads): next to Basecamp in each door.
-  function mapBtn() { return P.J && P.J.community ? '<a class="btn small ghost" href="community.html">The community map</a>' : ''; }
+  function mapBtn() { return P.J && P.J.community ? '<a class="btn small ghost" href="community.html">Community Map</a>' : ''; }
 
   function roleDoor() {
     if (P.live && P.door === 'lead') return '<details class="door" id="door"><summary><b>The people you called in</b><span>For camp leads</span></summary><div class="doorin">'

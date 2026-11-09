@@ -2,7 +2,7 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Community · Mahala</title>
+<title>Community Map · Mahala</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&family=Marcellus&display=swap">
 <style>
@@ -307,13 +307,13 @@ button.gbar:hover, .gbar[aria-pressed="true"] { background: color-mix(in srgb, v
 </style>
 <meta name="robots" content="noindex">
 <script src="site.js?v=9"></script>
-<script src="assets/shim/claude-shim.js?v=16"></script>
+<script src="assets/shim/claude-shim.js?v=17"></script>
 
 <header class="top">
   <div class="toprow">
-    <a class="brand" href="#" aria-label="Community map home">
-      <h1><span class="wm">Mahala</span><span class="bc">Community</span></h1>
-      <div class="sub" id="asof">The community map</div>
+    <a class="brand" href="#" aria-label="Community Map home">
+      <h1><span class="wm">Mahala</span><span class="bc">Community Map</span></h1>
+      <div class="sub" id="asof">From the camp’s records</div>
     </a>
     <nav class="tools" aria-label="Elsewhere on Mahala">
       <a class="btn" href="basecamp.html" id="toBasecamp" hidden>Basecamp</a>
@@ -484,7 +484,7 @@ function heroCore(d) {
   const c = d.counts || {}, rings = c.rings || {};
   const stat = (r) => `<button type="button" class="stat" data-ring="${r}" aria-pressed="${S.ring === r}"><span class="v num">${rings[r] || 0}</span><span class="k"><i class="dot" style="background:${RING_COLOR[r]}"></i>${RINGS[r]}</span></button>`;
   const camps = Object.keys(c.camps || {});
-  return `<section class="hero" aria-label="The community in numbers"><div class="night"><span class="eyebrow">The community map</span><span class="big num">${M.nodes.length}</span>
+  return `<section class="hero" aria-label="The community in numbers"><div class="night"><span class="eyebrow">The Community Map</span><span class="big num">${M.nodes.length}</span>
     <span class="verse">people across ${plural(M.camps.length, 'camp')}${camps.length ? ', from ' + esc(andList(camps)) : ''}, and ${plural(M.edges.length, 'thread')} between them.</span></div>
     <div class="stats">${M.rings.map(stat).join('')}<div class="stat"><span class="v num">${M.nodes.filter(n => n.roles.length).length}</span><span class="k">With a role for 2027</span></div></div></section>`;
 }
@@ -1140,10 +1140,10 @@ function gate(kind, detail) {
   const back = '<a class="btn" href="./">Back to wearemahala.com</a>';
   const orb = '<div class="orb" aria-hidden="true"><i></i><i></i><i></i></div>';
   const body = {
-    signin: `${orb}<p class="hello">For the people who hold the community</p><h2>The community map</h2><p>Everyone who has camped, built and dreamed with Mahala over the years, and the threads between them. It opens for the core team and camp leads.</p><button class="btn primary" type="button" data-signin>Sign in</button>${back}`,
-    none: `${orb}<h2>The community map</h2><p>The community map opens for the core team and camp leads, and for crew leads with their crew. Your own thread with Mahala lives on Your Mahala.</p><a class="btn primary" href="me.html">Your Mahala</a>${back}`,
-    later: `${orb}<h2>The community map</h2><p>The map is on its way from the camp's records. Check back in a little while.</p>${back}`,
-    error: `${orb}<h2>The community map</h2><p>${esc(detail || 'The map could not be reached.')} Check your connection and reload.</p>${back}`,
+    signin: `${orb}<p class="hello">For the people who hold the community</p><h2>The Community Map</h2><p>Everyone who has camped, built and dreamed with Mahala over the years, and the threads between them. It opens for the core team and camp leads.</p><button class="btn primary" type="button" data-signin>Sign in</button>${back}`,
+    none: `${orb}<h2>The Community Map</h2><p>The Community Map opens for the core team and camp leads, and for crew leads with their crew. Your own thread with Mahala lives on Your Mahala.</p><a class="btn primary" href="me.html">Your Mahala</a>${back}`,
+    later: `${orb}<h2>The Community Map</h2><p>The map is on its way from the camp's records. Check back in a little while.</p>${back}`,
+    error: `${orb}<h2>The Community Map</h2><p>${esc(detail || 'The map could not be reached.')} Check your connection and reload.</p>${back}`,
   }[kind];
   $('#view').innerHTML = `<div class="gate">${body}</div>`;
 }
@@ -1170,7 +1170,7 @@ async function load() {
   }
   WHO = r.who; DATA = r.data;
   model(WHO, DATA);
-  $('#asof').textContent = 'The community map' + (r.built ? ' · from the camp’s records, ' + day(r.built) : '');
+  $('#asof').textContent = 'From the camp’s records' + (r.built ? ', ' + day(r.built) : '');   // the header already says Community Map (Chris, 9 Nov 2026)
   $('#roleline').textContent = ROLE_LINE[WHO.role] || ''; $('#roleline').hidden = !ROLE_LINE[WHO.role];
   $('#toBasecamp').hidden = false;
   render();

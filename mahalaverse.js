@@ -44,7 +44,7 @@ const YL = (x, y, z) => V3(x, y, z).applyMatrix4(YARD_M);
 /* ---------- the one data object (the portal's lists will fill this later) ---------- */
 const DATA = {
   quests: [
-    { id: 'Q-07', name: 'Share the film', crew: 'Story crew', stage: 'Fund', where: 'PETAL_A01', tone: 'y', pin: V3(10, 6.5, -9),
+    { id: 'Q-07', name: 'Send the film', crew: 'Story crew', stage: 'Fund', where: 'PETAL_A01', tone: 'y', pin: V3(10, 6.5, -9),
       goal: 'The first quest, and the easiest: send the film to the people who would love to build or back the temple.',
       steps: ['Watch the film', 'Send it to three people who would love it', 'Share it on Instagram or in a WhatsApp group'], skills: 'None needed', open: true },
     { id: 'Q-01', name: 'Fund a ring of glass', crew: 'Glass crew', stage: 'Fund', where: 'RING_E', tone: 'm', pin: V3(-7, 9, -5),
@@ -1504,7 +1504,7 @@ function renderInspector(it) {
     const way = it.id === 'PETAL_A01', beside = it.id === 'PETAL_B01' || it.id === 'PETAL_B06';
     if (way) h = head(k, 'Petal A01 · east', 'The way in', 'And the door to the online talks') + `<div class="insp-body"><div class="chips">${chip('East door', 'done')}</div>
       <div class="tiles">${tile('img:K4m', 'assets/K4m.jpg', 'At the arch')}${tile('inside', 'assets/K5b.jpg', 'Step inside')}${tile('floorfilm', 'assets/K1b.jpg', 'A day on the floor', true)}</div>
-      ${links([['Q-07', 'Q-07', 'Share the film']])}</div>`;
+      ${links([['Q-07', 'Q-07', 'Send the film']])}</div>`;
     else h = head(k, `Petal ${it.row}0${it.num} · ${it.row === 'A' ? 'inner' : 'outer'} row`, `Petal ${it.row}0${it.num}`, beside ? 'Beside the way in, shaped around the arch' : `One of six in the ${it.row === 'A' ? 'inner' : 'outer'} row`) + `<div class="insp-body"><div class="chips">${chip('Fixed half open', 'done')}</div>
       <p>Petals of plywood fretwork wrap the base of the dome like the bracts of a king protea.</p>${links([['CR-3', 'Crew', 'Petal crew'], ['PETAL_A01', 'East', 'The way in']])}</div>`;
   }
@@ -4420,7 +4420,7 @@ function campDoors() {
     N.textContent = 'Each gate opens a space online and a gift of thanks, never a privilege on the playa. Working amounts, not final. No payment is taken here yet.';
   }
   if (tab === 'events') N.textContent = 'Tickets for Road to Mecca are open. More dates are announced once the stewards set them.';
-  if (tab === 'quests') N.textContent = 'Share the film first: it is the easiest way to help. Crew quests open when the crews form.';
+  if (tab === 'quests') N.textContent = 'Send the film first: it is the easiest way to help. Crew quests open when the crews form.';
   if (tab === 'tech') N.textContent = 'Temple Tech, an art and research practice, works with light, coils and sacred geometry, in copper, wood and craft.';
   $$('.row', P).forEach(b => b.classList.toggle('sel', b.dataset.sel === current));
 }; }
