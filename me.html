@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400&family=Jost:wght@300;400;500&family=Marcellus&display=swap">
 <script src="site.js?v=9"></script>
-<script src="assets/shim/claude-shim.js?v=16"></script>
+<script src="assets/shim/claude-shim.js?v=17"></script>
 <style>
 /* Your Mahala, prototype 2 (4 Nov 2026). One page about you, the same on the site and in the Mahalaverse.
    The people here are made up; nothing is read from or saved to the member database.
@@ -1116,7 +1116,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       if ($('pic')) $('pic').src = x.src; if ($('chipPic')) $('chipPic').src = x.src; if ($('knownPic')) $('knownPic').src = x.src;
       var say = $('picsay'); if (!say) return;
       say.innerHTML = x.from === 'own' ? 'Your picture. Only you see it here. <button type="button" class="link" id="picDel">Remove it</button>'
-        : x.from === 'map' ? 'Your picture from the community map. ' + pick + 'Choose another</label> or <button type="button" class="link" id="picEmblem">use my emblem</button>'
+        : x.from === 'map' ? 'Your picture from the Community Map. ' + pick + 'Choose another</label> or <button type="button" class="link" id="picEmblem">use my emblem</button>'
         : x.from === 'google' ? 'Your picture from Google. ' + pick + 'Choose another</label>'
         : x.from === 'chosen-emblem' ? 'Your emblem, as you chose. ' + pick + 'Add a picture</label> or <button type="button" class="link" id="picBack">show my picture again</button>'
         : 'Your emblem, drawn from your thread. ' + pick + 'Add a picture</label>';
@@ -1231,7 +1231,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + (path ? '<ol class="pathsteps">' + W.steps.map(function (x) { return '<li class="' + esc(x.state) + '">' + esc(x.label) + (x.state === 'now' ? ' <small>Next</small>' : '') + '</li>'; }).join('') + '</ol>' : '')
       + '<div class="row">' + (n.href ? '<a class="btn" href="' + esc(n.href) + '">' + esc(n.cta) + '</a>' : '')
       + (W.basecamp ? '<a class="btn ghost" href="' + esc(W.basecamp) + '" target="_blank" rel="noopener">Open Basecamp</a>' : '')
-      + (P.J && P.J.community ? '<a class="btn ghost" href="community.html">The community map</a>' : '') + '</div></div>';
+      + (P.J && P.J.community ? '<a class="btn ghost" href="community.html">Community Map</a>' : '') + '</div></div>';
   }
 
   function letter() {
@@ -1247,7 +1247,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   }
 
   // The community map, for whoever the database lets in (core, camp leads, crew leads): next to Basecamp in each door.
-  function mapBtn() { return P.J && P.J.community ? '<a class="btn small ghost" href="community.html">The community map</a>' : ''; }
+  function mapBtn() { return P.J && P.J.community ? '<a class="btn small ghost" href="community.html">Community Map</a>' : ''; }
 
   function roleDoor() {
     if (P.live && P.door === 'lead') return '<details class="door" id="door"><summary><b>The people you called in</b><span>For camp leads</span></summary><div class="doorin">'

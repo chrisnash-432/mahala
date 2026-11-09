@@ -530,8 +530,7 @@ footer:empty { display: none; }
     </a>
     <div class="tools">
       <div class="vas"><label for="role">Viewing as</label><select id="role"></select></div>
-      <a class="btn" id="toCommunity" href="community.html" hidden>Community</a>
-      <a class="btn" id="toContent" href="content.html" hidden>Content</a>
+      <a class="btn" id="toCommunity" href="community.html" hidden>Community Map</a>
       <button class="btn" id="acct" type="button" data-mahala-picture hidden>Sign in</button>
       <button class="btn primary icon" id="gen" type="button" hidden aria-label="Generate an update"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12v8H6l-4 3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="lbl">Update</span></button>
     </div>
@@ -548,7 +547,7 @@ footer:empty { display: none; }
 <meta name="robots" content="noindex">
 <script>window.BASECAMP_SITE = true;</script>
 <script src="site.js?v=9"></script>
-<script src="assets/shim/claude-shim.js?v=16"></script>
+<script src="assets/shim/claude-shim.js?v=17"></script>
 <script>
 const ROLES = {
   core:      { label: 'Core team', me: '', who: 'the core team', sees: 'everything: every hub, node, task, budget line and partner, and anyone’s list. Can update any task.', projects: 'all', tasks: 'all', edit: 'all', budget: 'lines', partners: 'full', team: true, pick: true, audiences: ['core', 'leads', 'members'] },
@@ -627,7 +626,13 @@ function scopedDecisions() { return DATA.decisions.filter(d => !isPublic() && (c
 function tabsFor() { return TABS.filter(([k]) => (!isPublic() || PUBLIC_TABS.includes(k)) && (k !== 'decisions' || scopedDecisions().some(d => !d.done) || fbItems().length)); }
 function ownerRank(o) { const i = [...INDIV, ...GROUPS_ORDER].indexOf(o); return i < 0 ? 99 : i; }
 function groupsOf(who) { return Object.entries(DATA.groups || {}).filter(([, ms]) => ms.includes(who)).map(([g]) => g); }
-function ownsTask(t, who, shared) { return t.owner === who || (shared && groupsOf(who).includes(t.owner)); }
+// On the site the database says which names and groups are the viewer's own (WHO.mine: a camp lead's "Leads" among
+// them), which register.yaml's groups do not know. A task with two owners ("one / another") belongs to both. (9 Nov 2026)
+function viewerMine(who) { return SITE && WHO && role === WHO.role && (!who || who === cfg().me) ? (WHO.mine || []) : []; }
+function ownsTask(t, who, shared) {
+  const os = ownersOf(t);
+  return (!!who && os.includes(who)) || (shared && os.some(o => groupsOf(who).includes(o) || viewerMine(who).includes(o)));
+}
 function ownsPhase(ph, who, shared) { return ph.owners.includes(who) || (shared && ph.owners.some(o => groupsOf(who).includes(o))); }
 function crumb(pid) { const hb = H[P[pid]?.hub]; return `${hb ? esc(hb.name) + ' › ' : ''}${esc(P[pid]?.name || '')}`; }
 function bucketOf(t) { if (t.done) return 'done'; if (!t.due) return 'nodate'; const n = daysFrom(t.due); return n < 0 ? 'over' : n <= 7 ? 'week' : n <= 30 ? 'month' : 'later'; }
@@ -646,9 +651,12 @@ function myTasks() {
   const c = cfg();
   if (c.me === 'crew') return scopedTasks().filter(t => isOwn(t.project));
   if (c.me === 'money') return scopedTasks();
-  const w = meOf(); return w ? scopedTasks().filter(t => ownsTask(t, w, true)) : [];
+  const w = meOf();
+  const mine = w || viewerMine('').length ? scopedTasks().filter(t => ownsTask(t, w, true)) : [];
+  if (!(c.own || []).length) return mine;                               // with a crew: your own steps first, then the crew's
+  return [...mine, ...scopedTasks().filter(t => isOwn(t.project) && !mine.includes(t))];
 }
-function myScope(t) { const c = cfg(); if (isCore()) return true; if (c.me === 'crew' || c.me === 'money') return canSeeTasksOf(t.project); return isOwn(t.project) || ownsTask(t, c.me, true); }
+function myScope(t) { const c = cfg(); if (isCore()) return true; if (c.me === 'crew' || c.me === 'money') return canSeeTasksOf(t.project); return isOwn(t.project) || ownsTask(t, meOf(), true); }
 
 // task text: links named, repo jargon kept behind "More"
 function richText(text) {
@@ -880,7 +888,7 @@ function viewList() {
 function crewList() {
   const c = cfg(), ts = myTasks(), open = ts.filter(t => !t.done);
   let h = `<section class="block"><div class="head"><h2>${c.me === 'crew' ? 'Your crew’s list' : 'The money tasks'}</h2><span class="muted small">${plural(open.length, 'open task')}</span></div>
-    <p class="muted small">${c.me === 'crew' ? 'In the platform this shows your own tasks first, then your crew’s.' : 'Tasks in the nodes that hold money: organisation, operations, crowdfunding, the workshop and the vehicle.'}</p>`;
+    <p class="muted small">${c.me === 'crew' ? 'Everything your crew is holding, soonest first.' : 'Tasks in the nodes that hold money: organisation, operations, crowdfunding, the workshop and the vehicle.'}</p>`;
   h += BUCKETS.filter(([k]) => k !== 'done').map(([k, l]) => { const bt = open.filter(t => bucketOf(t) === k); return bt.length ? fold('lb-' + k, l, bt.length, `<div class="list">${bt.map(t => taskRow(t, { crumb: c.me === 'money' })).join('')}</div>`, ['over', 'week', 'month'].includes(k)) : ''; }).join('');
   return h + `</section>`;
 }
@@ -1578,7 +1586,7 @@ async function siteFeed() {
   } catch (e) { if (store.dbState !== 'ready') { store.dbState = 'late'; render(); } }
 }
 function gate(kind, detail) {
-  $('#tabs').innerHTML = ''; $('#roleline').hidden = true; $('#gen').hidden = true; $('.vas').hidden = true; $('#toContent').hidden = true;
+  $('#tabs').innerHTML = ''; $('#roleline').hidden = true; $('#gen').hidden = true; $('.vas').hidden = true;
   const back = '<a class="btn" href="./">Back to wearemahala.com</a>';
   const body = {
     signin: `<p class="hello">For the people building The Seed</p><h2>Basecamp</h2><p>The camp's plan for 2027: every node, task and date on the way to The Seed, with updates from the people doing them. It is for the core team, camp leads and crews.</p><button class="btn primary" type="button" data-signin>Sign in</button>${back}`,
@@ -1617,7 +1625,6 @@ async function siteLoad() {
   await init(r.data);
   $('.vas').hidden = WHO.view !== 'core';                 // only the core team previews other roles
   $('#toCommunity').hidden = !(WHO.view === 'core' || ['camplead', 'crewlead'].includes(WHO.role));   // the community map opens for them too
-  $('#toContent').hidden = WHO.view !== 'core';            // the content desk is for the core team
   store.dbState = 'waiting';
   if (WHO.view === 'core') { try { store.quests = await M.rpc('basecamp_quests'); } catch (e) { store.quests = null; } }
   await siteFeed();
@@ -1671,8 +1678,8 @@ async function init(data) {
     role = 'camplead';
     try { const user = window.claude?.use ? await Promise.race([window.claude.use('user'), new Promise(r => setTimeout(() => r(null), 2500))]) : null; if (user?.isOwner?.()) role = 'core'; } catch (e) {}
   }
-  $('#role').innerHTML = Object.entries(ROLES).map(([k, r]) => `<option value="${k}">${r.label}</option>`).join('');
-  $('#asof').textContent = `${daysFrom(DATA.burn)} days to AfrikaBurn · built ${day(DATA.as_of)}`;
+  $('#role').innerHTML = Object.entries(ROLES).filter(([k]) => !SITE || !['tribe', 'visitor'].includes(k)).map(([k, r]) => `<option value="${k}">${r.label}</option>`).join('');   // tribe and visitors meet the door on the site
+  $('#asof').textContent = `${daysFrom(DATA.burn)} days to AfrikaBurn` + (DATA.sent ? ` · updated ${day(String(DATA.sent).slice(0, 10))}` : SITE ? '' : ` · built ${day(DATA.as_of)}`);
   render();
   connect();
 }

@@ -17,7 +17,7 @@
   var DUE = { 1: 'One payment, as soon as you can.', 2: 'Due in November and January.', 4: 'Due in November, December, January and February.' };
   var SPOTS = 50;
   var CALL_URL = 'https://calendar.app.google/MCznbwH6nnkgvK4H6';
-  var CAMP_CALL = 'Sunday 16 November at 6pm';                      // the first camp wide call (Chris, 8 Nov 2026)
+  var CAMP_CALL = 'Sunday 15 November at 6pm';                      // the first camp wide call (Chris, 9 Nov 2026: Sunday the 15th)
   var LAST_DAY = '2027-02-28';                                      // everyone has paid in full by February
   var AGREE = [
     ['Leave no trace.', 'We take everything home, down to the last screw.'],

@@ -618,7 +618,7 @@
       return myPicture().then(go, function () { });
     });
   }
-  // Basecamp and the Tribe Map & CRM in the top bar, beside the account chip, on every page (Chris, 8 Nov 2026,
+  // Basecamp and the Community Map in the top bar, beside the account chip, on every page (Chris, 8 Nov 2026,
   // F-059): only for the people the database opens them to (journey_of: basecamp, community). A page marks the
   // place with data-mahala-doors, else they sit just before its account chip. A page's own way there is not repeated.
   var DOORS_CSS = '.mvm-doors{display:inline-flex;align-items:center;gap:6px;margin:0 6px;vertical-align:middle}' +
@@ -637,7 +637,7 @@
       var anchor = document.querySelector('[data-mahala-doors]') || document.querySelector('[data-mahala-account], [data-mahala-picture]');
       var here = (location.pathname.split('/').pop() || 'index.html'), links = [];
       if (j.basecamp && here !== 'basecamp.html' && !document.getElementById('toBasecamp')) links.push(['basecamp.html', 'Basecamp', 'basecamp']);
-      if (j.community && here !== 'community.html' && !document.getElementById('toCommunity')) links.push(['community.html', 'Tribe Map &amp; CRM', 'community']);
+      if (j.community && here !== 'community.html' && !document.getElementById('toCommunity')) links.push(['community.html', 'Community Map', 'community']);
       if (!anchor || !links.length) return;
       if (!document.getElementById('mvm-doors-css')) { var st = document.createElement('style'); st.id = 'mvm-doors-css'; st.textContent = DOORS_CSS; document.head.appendChild(st); }
       var sp = document.createElement('span'); sp.id = 'mvm-doors'; sp.className = 'mvm-doors';
@@ -1451,12 +1451,22 @@
       el.querySelector('[name="confirm"]').addEventListener('input', function (e) { go.disabled = e.target.value.trim().toLowerCase() !== 'delete'; });
       go.addEventListener('click', function () {
         go.disabled = true; msg(el, 'Removing your uploads...');
+        // Every folder that is yours, not only the current one (T-267, 9 Nov 2026): after two records of one person are
+        // joined, older uploads stay under the old game id, and my_folders() names it. Without the function (before the
+        // back-end review migration), the current folder as before. The database counts what is left either way.
         clientP.then(function (c) {
-          var dir = info.uid;
-          return (dir ? c.storage.from(BUCKET).list(dir, { limit: 1000 }).then(function (r) {
-            var names = (r.data || []).map(function (f) { return dir + '/' + f.name; });
-            return names.length ? c.storage.from(BUCKET).remove(names) : null;
-          }) : Promise.resolve()).catch(function () { });
+          var own = info.uid ? [info.uid] : [];
+          return Promise.resolve(rpc('my_folders')).then(function (d) { return Array.isArray(d) && d.length ? d : own; }, function () { return own; })
+            .then(function (dirs) {
+              return dirs.reduce(function (p, dir) {
+                return p.then(function () {
+                  return c.storage.from(BUCKET).list(dir, { limit: 1000 }).then(function (r) {
+                    var names = (r.data || []).map(function (f) { return dir + '/' + f.name; });
+                    return names.length ? c.storage.from(BUCKET).remove(names) : null;
+                  }).catch(function () { });
+                });
+              }, Promise.resolve());
+            }).catch(function () { });
         }).then(function () { msg(el, 'Deleting your account...'); ending = true; return rpc('delete_my_account'); })
           // Forget the sign-in on this device whatever the server says (8 Nov 2026, F-030: the page reloaded still
           // holding it, and the account came straight back). Then a fresh page, signed out, with no old return address.
