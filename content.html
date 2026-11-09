@@ -182,6 +182,7 @@ details.more[open] summary { margin-bottom: 8px; }
       <div class="sub" id="asof">Every post waits for a yes</div>
     </a>
     <nav class="tools" aria-label="Elsewhere on Mahala">
+      <a class="btn" href="https://claude.ai/artifact/XD8b5cq7g9rEN2k46wpyR2" id="toFootage" target="_blank" rel="noopener" title="Mahala Footage: the camp's clips, to star the moments worth posting" hidden>Footage</a>
       <a class="btn" href="basecamp.html" id="toBasecamp" hidden>Basecamp</a>
       <button class="btn" id="acct" type="button" data-mahala-picture hidden>Sign in</button>
     </nav>
@@ -492,7 +493,7 @@ async function setPause(on, note, btn) {
 
 // ------------------------------------------------------------------ signing in, and the door
 function gate(kind, detail) {
-  $('#toBasecamp').hidden = true;
+  $('#toBasecamp').hidden = true; $('#toFootage').hidden = true;
   const back = '<a class="btn" href="./">Back to wearemahala.com</a>';
   const body = {
     signin: `<p class="hello">For the core team</p><h2>Content desk</h2><p>Every post Mahala shares waits here for a yes from the core team before it goes out.</p><button class="btn primary" type="button" data-signin>Sign in</button>${back}`,
@@ -519,7 +520,7 @@ async function load(quiet) {
   }
   DESK = r; ME = r.who;
   $('#asof').textContent = 'Every post waits for a yes' + (ME?.name ? ' · ' + ME.name : '');
-  $('#toBasecamp').hidden = false;
+  $('#toBasecamp').hidden = false; $('#toFootage').hidden = false;
   render();
 }
 function busyTyping() { const a = document.activeElement; return (a && /^(TEXTAREA|INPUT|SELECT)$/.test(a.tagName)) || Object.keys(S.draft).length || Object.values(S.ask).some(Boolean) || S.pauseAsk || S.busy.size; }
