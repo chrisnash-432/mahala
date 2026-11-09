@@ -1,0 +1,431 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Footage · Mahala</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&family=Marcellus&display=swap">
+<style>
+/* The footage wears the content desk's clothes (warm paper, deep ink, the wine-red wax) with the clips laid out like
+   prints on a light table: a frame of night around each loop, the team's stars in the prism's yellow. Phone first:
+   two prints a row, one tap opens a clip close up, a vote in two taps. The page holds no footage and no names: the
+   catalogue and the previews' signed links come from the member database (footage_desk), for the core team, the camp
+   and crew leads and the content team only. The originals stay in Mahala's Drive. */
+:root {
+  color-scheme: light;
+  --paper: #F4EFE6; --sheet: #FBF8F3; --ink: #2A221C; --muted: #5B5047; --faint: #6F6357;
+  --line: #DCD2C3; --line2: #E8E0D3; --rule2: #C9BCA9;
+  --accent: #8E1B45; --accent-soft: #F4E4E9;
+  --cyan: #0B6E95; --cyan-soft: #DDEFF7;
+  --good: #2E6B4F; --good-soft: #E1EDE5;
+  --warn: #6E5600; --warn-soft: #FBEEB6;
+  --bad: #A62B22; --bad-soft: #F6E0DC;
+  --yellow: #FFD81F; --magenta: #D8197F; --sky: #14A8E0;
+  --star: #B8860B;
+  --prism: linear-gradient(90deg, var(--yellow), var(--magenta) 52%, var(--sky));
+  --night: #15110E; --warm: #F4EFE6;
+  --display: "Marcellus", "Cormorant Garamond", Georgia, serif;
+  --body: "Jost", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --verse: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --ease: cubic-bezier(.2, .7, .1, 1);
+  --r: 14px; --r-s: 10px;
+}
+* { box-sizing: border-box; }
+html { background: var(--paper); -webkit-text-size-adjust: 100%; }
+body { margin: 0; overflow-x: clip; background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 15.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1240px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; text-wrap: balance; margin: 0; letter-spacing: .05em; line-height: 1.15; }
+p { margin: 0; }
+.muted { color: var(--muted); } .small { font-size: .85rem; } .num { font-variant-numeric: tabular-nums; }
+a { color: var(--accent); text-underline-offset: 3px; text-decoration-thickness: 1px; }
+button, select, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+[hidden] { display: none !important; }
+
+header.top { position: sticky; top: 0; z-index: 6; background: color-mix(in srgb, var(--paper) 92%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line); margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: calc(12px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px)); }
+.toprow { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; max-width: 1240px; margin: 0 auto; }
+.brand { flex: 1 1 220px; min-width: 0; color: inherit; text-decoration: none; }
+.brand h1 { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; line-height: 1.1; }
+.brand .wm { font: 400 18px/1 var(--display); letter-spacing: .18em; text-transform: uppercase; }
+.brand .bc { font: italic 400 1.4rem/1 var(--verse); color: var(--accent); }
+.brand .sub { font-size: .78rem; color: var(--muted); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.btn { border: 1px solid var(--rule2); background: transparent; border-radius: 999px; padding: 8px 17px 7px; min-height: 40px; cursor: pointer; font-size: .9rem; white-space: nowrap; color: var(--ink); text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 7px; transition: border-color .2s, background .2s, transform .15s; }
+.btn:hover { border-color: var(--ink); }
+.btn:active { transform: scale(.98); }
+.btn.primary { background: var(--ink); border-color: var(--ink); color: var(--warm); }
+.btn.primary:hover { background: #3A2F27; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; transform: none; }
+.btn.link { border: 0; background: none; padding: 0; min-height: 0; color: var(--accent); text-decoration: underline; font-size: inherit; }
+#acct { max-width: 16ch; overflow: hidden; text-overflow: ellipsis; }
+
+main { padding-block: 16px 64px; display: grid; gap: 16px; min-width: 0; }
+.rules { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .84rem; color: var(--muted); }
+.rules span::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; vertical-align: 1px; background: var(--rule2); }
+.rules .r1::before { background: var(--magenta); } .rules .r2::before { background: var(--sky); } .rules .r3::before { background: var(--yellow); }
+
+/* the filters */
+.bar { display: grid; gap: 8px; padding: 12px 14px; background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); }
+.frow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-width: 0; }
+.frow .lab { font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); font-weight: 500; min-width: 84px; }
+.fchip { font: 500 .8rem/1 var(--body); background: transparent; border: 1px solid var(--rule2); border-radius: 999px; padding: 7px 11px 6px; cursor: pointer; color: var(--ink); min-height: 32px; }
+.fchip[aria-pressed="true"] { background: var(--ink); color: var(--warm); border-color: var(--ink); }
+.fchip .n { opacity: .6; margin-left: 4px; font-variant-numeric: tabular-nums; }
+input[type=search] { border: 1px solid var(--rule2); border-radius: 999px; padding: 9px 15px; background: #fff; color: var(--ink); min-width: 0; flex: 1 1 240px; }
+.morefilters summary { cursor: pointer; color: var(--accent); font-size: .88rem; list-style: none; }
+.morefilters summary::-webkit-details-marker { display: none; }
+.morefilters[open] summary { margin-bottom: 8px; }
+.morefilters .rows { display: grid; gap: 8px; }
+.count { font-size: .86rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* the prints */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.print { background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; cursor: pointer; display: flex; flex-direction: column; text-align: left; color: inherit; font: inherit; padding: 0; min-width: 0; transition: border-color .2s, transform .2s var(--ease); }
+.print:hover { border-color: var(--rule2); transform: translateY(-1px); }
+.print.voted { box-shadow: inset 0 -3px 0 var(--yellow); }
+.frame { position: relative; aspect-ratio: 16 / 10; max-width: 100%; background: var(--night); }
+.frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.frame.v img { object-fit: contain; }
+.frame .dur, .frame .tally { position: absolute; background: rgba(21, 17, 14, .78); color: var(--warm); font-size: .74rem; padding: 2px 7px; border-radius: 999px; font-variant-numeric: tabular-nums; }
+.frame .dur { right: 7px; bottom: 7px; }
+.frame .tally { left: 7px; top: 7px; color: var(--yellow); letter-spacing: .04em; }
+.frame .nolink { position: absolute; inset: 0; display: grid; place-items: center; color: rgba(244, 239, 230, .75); font: italic 400 .95rem/1.3 var(--verse); text-align: center; padding: 10px; }
+.meta { padding: 10px 12px 12px; display: grid; gap: 7px; min-width: 0; }
+.what { font-size: .9rem; line-height: 1.38; min-height: 2.76em; overflow-wrap: anywhere; }
+.tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag { font-size: .7rem; letter-spacing: .03em; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px 0; white-space: nowrap; }
+.tag.money { color: #7A5A00; border-color: color-mix(in srgb, var(--yellow) 70%, var(--line)); background: #FFF6C9; }
+.tag.faces { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); }
+.tag.safe { color: var(--good); border-color: color-mix(in srgb, var(--good) 35%, var(--line)); }
+.tag.care { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 35%, var(--line)); background: var(--warn-soft); }
+.tag.mine { color: var(--ink); background: #FFF1A6; border-color: #E8CF4A; }
+.empty { padding: 26px 18px; color: var(--muted); font: italic 400 1.1rem/1.4 var(--verse); background: var(--sheet); border: 1px dashed var(--rule2); border-radius: var(--r); text-align: center; }
+
+/* one clip close up */
+.scrim { position: fixed; inset: 0; background: rgba(21, 17, 14, .45); z-index: 15; }
+.panel { position: fixed; inset: 0 0 0 auto; width: min(580px, 100%); background: var(--paper); border-left: 1px solid var(--line); z-index: 20; overflow-y: auto; overscroll-behavior: contain;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) max(18px, env(safe-area-inset-right, 0px)) calc(28px + env(safe-area-inset-bottom, 0px)) 18px; display: grid; gap: 14px; align-content: start; }
+.panel .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.panel h2 { font-size: 1.35rem; line-height: 1.25; overflow-wrap: anywhere; }
+.big { border-radius: var(--r-s); overflow: hidden; background: var(--night); }
+.big img { display: block; width: 100%; max-height: 56vh; object-fit: contain; }
+.sheet { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+.cell { position: relative; aspect-ratio: 16 / 10; background-repeat: no-repeat; background-color: var(--night); border: 2px solid transparent; border-radius: 6px; cursor: pointer; padding: 0; max-width: 100%; }
+.cell.v { aspect-ratio: 9 / 14; }
+.cell[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--yellow); }
+.cell span { position: absolute; left: 3px; bottom: 3px; background: rgba(21, 17, 14, .8); font-size: .68rem; padding: 0 5px; border-radius: 4px; color: var(--warm); font-variant-numeric: tabular-nums; }
+.hint { font-size: .84rem; color: var(--muted); }
+.lede { color: var(--muted); font: italic 400 1.08rem/1.4 var(--verse); }
+.fld { display: grid; gap: 7px; }
+.fld > .lab { font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.pickrow { display: flex; gap: 6px; flex-wrap: wrap; }
+.pickrow button { font: 500 .86rem/1 var(--body); background: var(--sheet); color: var(--ink); border: 1px solid var(--rule2); border-radius: 999px; padding: 9px 13px 8px; cursor: pointer; min-height: 40px; }
+.pickrow button[aria-pressed="true"] { background: var(--ink); color: var(--warm); border-color: var(--ink); }
+#stars button[aria-pressed="true"] { background: var(--yellow); color: var(--ink); border-color: #D9B400; }
+textarea { width: 100%; border: 1px solid var(--rule2); border-radius: var(--r-s); padding: 10px 12px; background: #fff; color: var(--ink); min-height: 74px; resize: vertical; line-height: 1.45; }
+.saverow { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.saverow .btn.primary { min-height: 46px; padding: 10px 22px; }
+.status { font-size: .88rem; color: var(--good); min-height: 1.3em; }
+.status.bad { color: var(--bad); }
+.teamline { font-size: .9rem; padding: 10px 12px; border-radius: var(--r-s); background: var(--sheet); border: 1px solid var(--line2); }
+.orig { font-size: .78rem; color: var(--muted); overflow-wrap: anywhere; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.orig code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .76rem; background: var(--sheet); padding: 2px 6px; border-radius: 4px; }
+.mini { min-height: 30px; padding: 3px 11px 2px; font-size: .78rem; }
+
+.teambox { display: grid; gap: 10px; padding: 14px 16px; background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); }
+.teambox h2 { font-size: 1.1rem; }
+.teambox ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.teambox li { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--rule2); border-radius: 999px; padding: 3px 4px 3px 12px; font-size: .86rem; }
+.teambox li code { font-size: .74rem; color: var(--muted); }
+.teambox .addrow { display: flex; gap: 8px; flex-wrap: wrap; }
+.teambox input { flex: 1 1 200px; min-width: 0; border: 1px solid var(--rule2); border-radius: 999px; padding: 8px 14px; background: #fff; }
+.gate { max-width: 560px; margin: 11vh auto 0; text-align: center; display: grid; gap: 14px; justify-items: center; padding: 0 16px; }
+.gate .hello { font: italic 400 1.35rem/1.2 var(--verse); color: var(--muted); margin-bottom: -6px; }
+.gate h2 { font: 400 clamp(2.3rem, 7vw, 3.4rem)/1.04 var(--display); letter-spacing: .04em; }
+.gate h2::after { content: ""; display: block; width: 160px; height: 1px; margin: 18px auto 2px; background: var(--prism); }
+.gate p { font-size: 1.05rem; line-height: 1.6; max-width: 30em; }
+.gate .btn { min-height: 46px; padding: 11px 22px 10px; font-size: 1rem; }
+.loading { display: grid; place-items: center; min-height: 50vh; gap: 12px; text-align: center; }
+.breathe { animation: breathe 2.4s var(--ease) infinite; }
+@keyframes breathe { 50% { transform: scale(.9); opacity: .6; } }
+@media (prefers-reduced-motion: reduce) { .breathe { animation: none; } .btn, .print { transition: none; } }
+@media (max-width: 560px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .what { font-size: .84rem; }
+  .meta { padding: 8px 9px 10px; }
+  .frow .lab { min-width: 100%; }
+  .brand .bc { font-size: 1.25rem; }
+  .tools .btn { padding: 7px 13px 6px; min-height: 38px; font-size: .84rem; }
+}
+</style>
+<meta name="robots" content="noindex">
+<script src="site.js?v=9"></script>
+<script src="assets/shim/claude-shim.js?v=17"></script>
+
+<header class="top">
+  <div class="toprow">
+    <a class="brand" href="#" aria-label="Footage, top">
+      <h1><span class="wm">Mahala</span><span class="bc">Footage</span></h1>
+      <div class="sub" id="asof">The camp's own clips, to star the moments worth sharing</div>
+    </a>
+    <nav class="tools" aria-label="Elsewhere on Mahala">
+      <a class="btn" href="content.html" id="toDesk" hidden>Content desk</a>
+      <a class="btn" href="basecamp.html" id="toBasecamp" hidden>Basecamp</a>
+      <button class="btn" id="acct" type="button" data-mahala-picture hidden>Sign in</button>
+    </nav>
+  </div>
+</header>
+<div class="wrap">
+  <main id="view"><div class="loading"><svg class="breathe" width="44" height="62" viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z" fill="#8E1B45"/></svg><div class="lede">Laying out the clips…</div></div></main>
+</div>
+<div class="scrim" id="scrim" hidden></div>
+<aside class="panel" id="panel" hidden aria-label="Clip close up" role="dialog" aria-modal="true"></aside>
+
+<script>
+'use strict';
+// Words live here; the clips come from footage_desk() (the footage migration in Mahala OS). Votes go back through
+// footage_pick(). Nobody else's name is ever shown: the tally says how many people starred a clip, never who.
+const TIERS = [['money', 'Money shots'], ['good', 'Good'], ['context', 'Context'], ['third', 'Third choice'], ['faces', 'Faces'], ['grainy', 'Grainy']];
+const USES = [['raising', 'Raising The Seed'], ['why', 'Why I build'], ['chapters', 'From a tent to a temple'], ['words', 'In their words'],
+  ['moment', 'A Mahala moment'], ['ten-years', 'Ten years of Mahala']];
+const STARS = [[1, 'Could use'], [2, 'Good one'], [3, 'Hero shot']];
+const CARE = { nudity: 'nudity', substances: 'drinks or smoke', 'other-art': 'another camp\'s art', branding: 'branding', shaky: 'shaky',
+  dark: 'dark', blurry: 'blurry', kids: 'under 18?' };
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const safeUrl = u => (typeof u === 'string' && /^https:\/\//.test(u)) ? u : '';
+const mmss = t => { const s = Math.max(0, Math.round(+t || 0)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+const plural = (n, a, b) => `${n} ${n === 1 ? a : (b || a + 's')}`;
+const hasFaces = c => c.tier === 'faces' || (c.tags && c.tags.faces && c.tags.faces !== 'none');
+const careOf = c => ((c.tags && c.tags.care) || []).filter(k => CARE[k]);
+const voters = c => (c.tally && c.tally.voters) || 0;
+const starsOf = c => (c.tally && c.tally.stars) || 0;
+
+let DATA = null, current = null, draft = null, saving = false;
+const F = { q: '', tier: new Set(), theme: new Set(), more: new Set() };
+try { const s = JSON.parse(localStorage.getItem('mahala-footage-filters') || 'null');
+  if (s) { F.tier = new Set(s.tier || []); F.theme = new Set(s.theme || []); F.more = new Set(s.more || []); } } catch (e) {}
+const remember = () => { try { localStorage.setItem('mahala-footage-filters', JSON.stringify({ tier: [...F.tier], theme: [...F.theme], more: [...F.more] })); } catch (e) {} };
+
+function errText(err) {
+  const m = String(err?.message || '');
+  if (/a lot for one hour/.test(m)) return 'That is a lot for one hour. Try again a little later.';
+  if (err?.code === 'not_granted' && !/footage is for/.test(m)) return 'Your sign-in has ended. Sign in again, then try once more.';
+  if (err?.code === 'unavailable' || !m) return 'That did not go through. Check your connection and try again.';
+  return m.charAt(0).toUpperCase() + m.slice(1) + (/[.!?]$/.test(m) ? '' : '.');
+}
+
+// ------------------------------------------------------------------ the door
+function gate(kind, detail) {
+  $('#toDesk').hidden = true; $('#toBasecamp').hidden = true;
+  const back = '<a class="btn" href="./">Back to wearemahala.com</a>';
+  const body = {
+    signin: `<p class="hello">For the people who choose what Mahala shares</p><h2>Footage</h2><p>The camp's own clips, laid out to browse. Star the moments worth posting and say what they are good for.</p><button class="btn primary" type="button" data-signin>Sign in</button>${back}`,
+    none: `<h2>Footage</h2><p>The footage is for the core team, the camp leads and the content team. Your own thread with Mahala lives on Your Mahala.</p><a class="btn primary" href="me.html">Your Mahala</a>${back}`,
+    error: `<h2>Footage</h2><p>${esc(detail || 'The footage could not be reached.')} Check your connection and reload.</p>${back}`,
+  }[kind];
+  $('#view').innerHTML = `<div class="gate">${body}</div>`;
+}
+
+// ------------------------------------------------------------------ the light table
+function counts(list, key) {
+  const m = {};
+  for (const c of list) for (const v of (key === 'tier' ? [c.tier] : (c.tags?.themes || []))) if (v) m[v] = (m[v] || 0) + 1;
+  return m;
+}
+function chips(group, items) {
+  return items.map(([v, label, n]) => `<button class="fchip" type="button" data-f="${group}" data-v="${esc(v)}" aria-pressed="${F[group].has(v)}">${esc(label)}${n != null ? `<span class="n">${n}</span>` : ''}</button>`).join('');
+}
+function visible() {
+  const q = F.q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  const rank = t => { const i = TIERS.findIndex(x => x[0] === t); return i < 0 ? 9 : i; };
+  return DATA.clips.filter(c => {
+    if (F.tier.size && !F.tier.has(c.tier)) return false;
+    if (F.theme.size && !(c.tags?.themes || []).some(t => F.theme.has(t))) return false;
+    if (F.more.has('noface') && hasFaces(c)) return false;
+    if (F.more.has('clean') && careOf(c).length) return false;
+    if (F.more.has('picked') && !voters(c)) return false;
+    if (F.more.has('mine') && !c.mine) return false;
+    if (F.more.has('unvoted') && c.mine) return false;
+    if (F.more.has('vertical') && c.shape !== 'vertical') return false;
+    if (q.length) {
+      const hay = [c.tags?.what, (c.tags?.themes || []).join(' '), c.tags?.best, c.tags?.shot, c.tags?.light, c.camera, c.tier, c.year].join(' ').toLowerCase();
+      if (!q.every(w => hay.includes(w))) return false;
+    }
+    return true;
+  }).sort((a, b) => (voters(b) - voters(a)) || (starsOf(b) - starsOf(a)) || (rank(a.tier) - rank(b.tier)) || ((b.tags?.score || 0) - (a.tags?.score || 0)));
+}
+function print(c) {
+  const v = voters(c), tierLabel = (TIERS.find(t => t[0] === c.tier) || [0, c.tier])[1], loop = safeUrl(c.loop);
+  return `<button class="print${c.mine ? ' voted' : ''}" type="button" data-clip="${esc(c.id)}">
+    <div class="frame${c.shape === 'vertical' ? ' v' : ''}">${loop ? `<img loading="lazy" decoding="async" src="${esc(loop)}" alt="${esc(c.tags?.what || 'A clip from camp')}">` : '<span class="nolink">The preview is being refreshed</span>'}
+      ${v ? `<span class="tally" title="${esc(plural(v, 'person', 'people'))} starred this">★ ${v}</span>` : ''}<span class="dur">${mmss(c.seconds)}</span></div>
+    <div class="meta"><div class="what">${esc(c.tags?.what || 'Not described yet')}</div>
+      <div class="tags"><span class="tag${c.tier === 'money' ? ' money' : ''}">${esc(tierLabel)}</span>${c.year ? `<span class="tag">${c.year}</span>` : ''}
+        ${hasFaces(c) ? '<span class="tag faces">faces</span>' : '<span class="tag safe">no faces</span>'}
+        ${careOf(c).map(k => `<span class="tag care">${esc(CARE[k])}</span>`).join('')}
+        ${c.mine ? `<span class="tag mine">yours ${'★'.repeat(c.mine.stars || 0) || '·'}</span>` : ''}</div></div></button>`;
+}
+function render() {
+  const all = DATA.clips, list = visible();
+  const tc = counts(all, 'tier'), th = counts(all, 'theme');
+  const themes = Object.entries(th).sort((a, b) => b[1] - a[1]).slice(0, 20).map(([v, n]) => [v, v, n]);
+  const picked = all.filter(voters).length, mine = all.filter(c => c.mine).length;
+  const mins = Math.round(all.reduce((n, c) => n + (+c.seconds || 0), 0) / 60);
+  $('#asof').textContent = `${plural(all.length, 'clip')} · ${mins} minutes · ${picked} starred by the team · ${mine} by you` + (DATA.who?.name ? ' · ' + DATA.who.name : '');
+  $('#view').innerHTML = `
+    <div class="rules"><span class="r1">A face needs that person's yes before a post goes out</span>
+      <span class="r2">Playa footage stays out of fundraising posts until AfrikaBurn says yes</span>
+      <span class="r3">Star the moments worth sharing; the engine cuts them from the originals</span></div>
+    <div class="bar">
+      <div class="frow"><input type="search" id="q" value="${esc(F.q)}" placeholder="Search what happens: fire, dome, lantern, sunrise…" aria-label="Search the clips"></div>
+      <div class="frow"><span class="lab">Show</span>${chips('more', [['unvoted', 'Not voted yet'], ['picked', 'Starred by the team'], ['mine', 'My votes'], ['noface', 'No faces'], ['clean', 'Nothing to check'], ['vertical', 'Vertical']])}</div>
+      <details class="morefilters"${F.tier.size || F.theme.size ? ' open' : ''}><summary>The editor's sort and what is in them</summary>
+        <div class="rows"><div class="frow"><span class="lab">Editor's sort</span>${chips('tier', TIERS.filter(([v]) => tc[v]).map(([v, l]) => [v, l, tc[v]]))}</div>
+          <div class="frow"><span class="lab">What</span>${chips('theme', themes)}</div></div></details>
+      <div class="count" id="count" role="status"></div>
+    </div>
+    <div id="prints"></div>
+    ${DATA.who?.steward ? teamBox() : ''}`;
+  grid(list);
+}
+function grid(list = visible()) {
+  const all = DATA.clips;
+  $('#count').innerHTML = `Showing ${list.length} of ${all.length}${F.tier.size || F.theme.size || F.more.size || F.q ? ' · <button class="btn link" type="button" data-clear>Clear the filters</button>' : ''}`;
+  $('#prints').innerHTML = list.length ? `<div class="grid">${list.map(print).join('')}</div>` : '<div class="empty">No clips match. Clear a filter to see more.</div>';
+}
+
+// The content team: the comms people a steward adds by hand, beside the core team and the camp and crew leads.
+function teamBox() {
+  const team = DATA.team || [];
+  return `<section class="teambox" aria-labelledby="teamh"><h2 id="teamh">The content team</h2>
+    <p class="small muted">The core team and the 2027 camp and crew leads vote here already. Add the comms people by their Mahala OS id (their person page, for example p-firstname-lastname). Only stewards see this.</p>
+    ${team.length ? `<ul>${team.map(t => `<li>${esc(t.name || 'Someone')} <code>${esc(t.personId)}</code><button class="btn mini" type="button" data-team-off="${esc(t.personId)}">Take off</button></li>`).join('')}</ul>` : '<p class="small muted">Nobody added yet.</p>'}
+    <div class="addrow"><input id="teamid" placeholder="p-firstname-lastname" aria-label="Their Mahala OS id" autocomplete="off" spellcheck="false"><button class="btn" type="button" data-team-on>Add to the content team</button></div>
+    <div class="status" id="teammsg" role="status"></div></section>`;
+}
+async function teamSet(id, on) {
+  const msg = $('#teammsg');
+  if (!/^[a-z0-9][a-z0-9-]{2,80}$/.test(id || '')) { msg.className = 'status bad'; msg.textContent = 'That does not look like a Mahala OS id.'; return; }
+  try { DATA.team = await window.MahalaMembers.rpc('content_team_set', { p_person: id, p_on: on }); render(); $('#teammsg').textContent = on ? 'Added.' : 'Taken off.'; }
+  catch (err) { msg.className = 'status bad'; msg.textContent = errText(err); }
+}
+
+// ------------------------------------------------------------------ one clip close up
+function open(id) {
+  const c = DATA.clips.find(x => x.id === id); if (!c) return;
+  current = c;
+  draft = { stars: c.mine?.stars || 0, uses: [...(c.mine?.uses || [])], note: c.mine?.note || '', moment: c.mine?.moment ?? null };
+  const v = c.shape === 'vertical', sheet = safeUrl(c.sheet), loop = safeUrl(c.loop);
+  const cells = sheet ? (c.sheet_times || []).slice(0, 8).map((t, i) => {
+    const x = (i % 4) * 100 / 3, y = i < 4 ? 0 : 100;
+    return `<button type="button" class="cell${v ? ' v' : ''}" data-t="${+t}" aria-pressed="${draft.moment != null && Math.abs(draft.moment - t) < .05}" aria-label="The still at ${mmss(t)}"
+      style="background-image:url('${esc(sheet)}');background-size:400% 200%;background-position:${x}% ${y}%"><span>${mmss(t)}</span></button>`;
+  }).join('') : '';
+  const t = c.tally || {}, uses = Object.entries(t.uses || {}).sort((a, b) => b[1] - a[1]);
+  const others = Math.max(0, (t.voters || 0) - (c.mine ? 1 : 0));
+  const path = `${c.source || ''}\\${String(c.rel || '').replace(/\//g, '\\')}`;
+  const P = $('#panel');
+  P.innerHTML = `<div class="top"><span class="small muted">${esc(c.year || '')} · ${esc(c.camera || '')} · ${mmss(c.seconds)} · ${esc(c.w)}×${esc(c.h)}</span><button class="btn mini" type="button" data-close>Close</button></div>
+    <h2>${esc(c.tags?.what || 'A clip from camp')}</h2>
+    <div class="big">${loop ? `<img src="${esc(loop)}" alt="">` : '<div class="empty">The preview is being refreshed. Try again tomorrow.</div>'}</div>
+    <div class="tags">${hasFaces(c) ? '<span class="tag faces">faces: everyone shown needs a yes</span>' : '<span class="tag safe">no faces</span>'}
+      ${careOf(c).map(k => `<span class="tag care">check: ${esc(CARE[k])}</span>`).join('')}
+      ${(c.tags?.themes || []).map(x => `<span class="tag">${esc(x)}</span>`).join('')}</div>
+    ${c.tags?.best ? `<p class="lede">The best moment, from the stills: ${esc(c.tags.best)}</p>` : ''}
+    ${cells ? `<div class="fld"><span class="lab">The moment</span><div class="sheet">${cells}</div>
+      <p class="hint">Tap the still closest to the moment you want. The engine cuts it from the original, a few seconds either side.</p></div>` : ''}
+    <div class="fld"><span class="lab">How good</span><div class="pickrow" id="stars">${STARS.map(([n, l]) => `<button type="button" data-n="${n}" aria-pressed="${draft.stars === n}">${'★'.repeat(n)} ${l}</button>`).join('')}</div></div>
+    <div class="fld"><span class="lab">Good for</span><div class="pickrow" id="uses">${USES.map(([k, l]) => `<button type="button" data-k="${k}" aria-pressed="${draft.uses.includes(k)}">${esc(l)}</button>`).join('')}</div></div>
+    <div class="fld"><label class="lab" for="note">A note for the edit</label><textarea id="note" maxlength="300" placeholder="What was happening, what the cut should keep, a line it could carry">${esc(draft.note)}</textarea></div>
+    <div class="saverow"><button class="btn primary" type="button" id="save">${c.mine ? 'Save my vote' : 'Star this clip'}</button>
+      ${c.mine ? '<button class="btn link" type="button" id="unvote">Take my vote away</button>' : ''}</div>
+    <div class="status" id="status" role="status"></div>
+    <div class="teamline">${others ? `${esc(plural(others, 'other person', 'other people'))} starred this${uses.length ? ', for ' + uses.map(([k, n]) => `${esc((USES.find(u => u[0] === k) || [0, k])[1])} (${n})`).join(', ') : ''}.` : 'Nobody else has starred this one yet.'}</div>
+    <div class="orig">Original <code>${esc(path)}</code><button class="btn mini" type="button" id="copy">Copy</button></div>`;
+  $('#scrim').hidden = false; P.hidden = false; P.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+  P.querySelector('[data-close]').focus();
+}
+function close() {
+  $('#panel').hidden = true; $('#scrim').hidden = true; document.body.style.overflow = '';
+  const id = current?.id; current = null;
+  if (id) document.querySelector(`[data-clip="${CSS.escape(id)}"]`)?.focus();
+}
+async function save(remove) {
+  if (!current || saving) return;
+  const st = $('#status');
+  if (!remove && !draft.stars && !draft.uses.length && !draft.note.trim()) { st.className = 'status bad'; st.textContent = 'Choose how good it is, or what it is good for, first.'; return; }
+  saving = true; $('#save').disabled = true;
+  try {
+    const r = await window.MahalaMembers.rpc('footage_pick', remove ? { p_clip: current.id, p_stars: 0, p_uses: [], p_note: '', p_moment: null }
+      : { p_clip: current.id, p_stars: draft.stars, p_uses: draft.uses, p_note: draft.note.trim(), p_moment: draft.moment });
+    const was = !!current.mine;
+    current.mine = r && r.mine ? r.mine : null;
+    const t = current.tally || (current.tally = { voters: 0, stars: 0, uses: {} });
+    t.voters = Math.max(0, (t.voters || 0) + (current.mine ? 1 : 0) - (was ? 1 : 0));
+    st.className = 'status'; st.textContent = remove ? 'Your vote is taken away.' : 'Saved. Thank you.';
+    render();
+    setTimeout(() => { if (current) close(); }, remove ? 600 : 900);
+  } catch (err) {
+    st.className = 'status bad'; st.textContent = errText(err);
+  } finally { saving = false; const b = $('#save'); if (b) b.disabled = false; }
+}
+
+// ------------------------------------------------------------------ events
+document.addEventListener('click', e => {
+  const t = e.target;
+  if (t.closest('#acct') || t.closest('[data-signin]')) { e.preventDefault(); const MM = window.MahalaMembers; if (MM) Promise.resolve(MM.info()).then(i => (i && i.signedIn ? MM.account() : MM.signIn('Sign in to open the footage'))); return; }
+  if (t.closest('.brand')) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+  const f = t.closest('[data-f]'); if (f) { const s = F[f.dataset.f], v = f.dataset.v; s.has(v) ? s.delete(v) : s.add(v); remember(); render(); return; }
+  if (t.closest('[data-clear]')) { F.q = ''; F.tier.clear(); F.theme.clear(); F.more.clear(); remember(); render(); return; }
+  if (t.closest('[data-team-on]')) { teamSet(($('#teamid')?.value || '').trim(), true); return; }
+  const off = t.closest('[data-team-off]'); if (off) { teamSet(off.dataset.teamOff, false); return; }
+  const p = t.closest('[data-clip]'); if (p) { open(p.dataset.clip); return; }
+  if (t.closest('[data-close]') || t.id === 'scrim') { close(); return; }
+  if (!current) return;
+  const cell = t.closest('.cell'); if (cell) { const m = +cell.dataset.t; draft.moment = draft.moment === m ? null : m;
+    document.querySelectorAll('#panel .cell').forEach(x => x.setAttribute('aria-pressed', draft.moment != null && Math.abs(draft.moment - +x.dataset.t) < .05)); return; }
+  const sb = t.closest('#stars button'); if (sb) { const n = +sb.dataset.n; draft.stars = draft.stars === n ? 0 : n;
+    document.querySelectorAll('#stars button').forEach(x => x.setAttribute('aria-pressed', +x.dataset.n === draft.stars)); return; }
+  const ub = t.closest('#uses button'); if (ub) { const k = ub.dataset.k, i = draft.uses.indexOf(k); i >= 0 ? draft.uses.splice(i, 1) : draft.uses.push(k);
+    ub.setAttribute('aria-pressed', draft.uses.includes(k)); return; }
+  if (t.closest('#save')) { save(false); return; }
+  if (t.closest('#unvote')) { save(true); return; }
+  if (t.closest('#copy')) {
+    const code = $('#panel .orig code'), btn = t.closest('#copy');
+    const done = () => { btn.textContent = 'Copied'; setTimeout(() => { btn.textContent = 'Copy'; }, 1600); };
+    const pick = () => { const r = document.createRange(); r.selectNodeContents(code); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
+    try { navigator.clipboard.writeText(code.textContent).then(done, pick); } catch (err) { pick(); }
+  }
+});
+document.addEventListener('input', e => {
+  if (e.target.id === 'q') { F.q = e.target.value; grid(); }
+  if (e.target.id === 'note' && draft) draft.note = e.target.value.slice(0, 300);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && current) close(); });
+
+// ------------------------------------------------------------------ signing in
+async function load() {
+  const MM = window.MahalaMembers;
+  if (!MM) { gate('error', 'Sign-in is not set up on this page.'); return; }
+  let info = null;
+  try { await MM.ready; info = await MM.info(); } catch (e) {}
+  const acct = $('#acct'); acct.hidden = false; acct.textContent = info?.signedIn ? (info.name || 'Your account') : 'Sign in';
+  if (!info?.signedIn) { DATA = null; gate('signin'); return; }
+  try { DATA = await MM.rpc('footage_desk'); }
+  catch (err) {
+    const m = String(err?.message || '');
+    if (/footage is for the core team|claimed a thread/.test(m)) gate('none');
+    else if (err?.code === 'not_granted') gate('signin'); else gate('error');
+    return;
+  }
+  $('#toDesk').hidden = !DATA.who?.desk; $('#toBasecamp').hidden = false;
+  render();
+}
+let last = null;
+window.MahalaMembers?.onChange(st => { const now = !!(st && st.signedIn); if (now !== last) { last = now; load(); } });
+load().then(() => Promise.resolve(window.MahalaMembers?.info())).then(i => { last = !!(i && i.signedIn); });
+</script>
