@@ -618,9 +618,10 @@
       return myPicture().then(go, function () { });
     });
   }
-  // Basecamp and the Community Map in the top bar, beside the account chip, on every page (Chris, 8 Nov 2026,
-  // F-059): only for the people the database opens them to (journey_of: basecamp, community). A page marks the
-  // place with data-mahala-doors, else they sit just before its account chip. A page's own way there is not repeated.
+  // Basecamp and the Community Map in the top bar (Chris, 8 Nov 2026, F-059): only for the people the database opens
+  // them to (journey_of: basecamp, community), and only on a page that marks the place with data-mahala-doors, which
+  // today is Your Mahala alone. Not on the front page or the other public pages (Chris, 9 Nov 2026). A page's own way
+  // there is not repeated.
   var DOORS_CSS = '.mvm-doors{display:inline-flex;align-items:center;gap:6px;margin:0 6px;vertical-align:middle}' +
     '.mvm-door{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border-radius:999px;border:1px solid currentColor;color:inherit;' +
     'font:500 12.5px/1 Jost,system-ui,sans-serif;letter-spacing:.04em;text-decoration:none;white-space:nowrap;opacity:.9}' +
@@ -634,7 +635,7 @@
     return infoP.then(function (w) {
       var j = w && w.signedIn && w.claimed ? w.journey || {} : {}, old = document.getElementById('mvm-doors');
       if (old) old.remove();
-      var anchor = document.querySelector('[data-mahala-doors]') || document.querySelector('[data-mahala-account], [data-mahala-picture]');
+      var anchor = document.querySelector('[data-mahala-doors]');
       var here = (location.pathname.split('/').pop() || 'index.html'), links = [];
       if (j.basecamp && here !== 'basecamp.html' && !document.getElementById('toBasecamp')) links.push(['basecamp.html', 'Basecamp', 'basecamp']);
       if (j.community && here !== 'community.html' && !document.getElementById('toCommunity')) links.push(['community.html', 'Community Map', 'community']);
@@ -642,7 +643,7 @@
       if (!document.getElementById('mvm-doors-css')) { var st = document.createElement('style'); st.id = 'mvm-doors-css'; st.textContent = DOORS_CSS; document.head.appendChild(st); }
       var sp = document.createElement('span'); sp.id = 'mvm-doors'; sp.className = 'mvm-doors';
       sp.innerHTML = links.map(function (a) { var label = a[1].replace(/<[^>]+>/g, ''); return '<a class="mvm-door" data-door="' + a[2] + '" href="' + a[0] + '" title="' + label + '" aria-label="' + label + '">' + DOOR_ICONS[a[2]] + '<span class="mvm-dl">' + a[1] + '</span></a>'; }).join('');
-      if (anchor.hasAttribute('data-mahala-doors')) anchor.appendChild(sp); else anchor.parentNode.insertBefore(sp, anchor);
+      anchor.appendChild(sp);
     });
   }
 
