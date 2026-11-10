@@ -468,6 +468,15 @@ main { gap: 26px; padding-block: 16px 40px; }
 .item details summary::before { content: "▸ "; }
 .item details[open] summary::before { content: "▾ "; }
 .item details p { margin-top: 4px; max-width: 70ch; }
+/* why it matters (10 Nov 2026): tap a step's title, or the fold, for what it is part of and what it moves */
+.item .ttl[data-ctx] { cursor: pointer; }
+.item .ttl[data-ctx]:hover { text-decoration: underline; text-decoration-color: var(--rule2); text-underline-offset: 3px; }
+dl.why { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px; margin: 8px 0 2px; font-size: 0.84rem; color: var(--ink2, var(--ink)); max-width: 72ch; }
+dl.why dt { color: var(--faint); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; padding-top: 2px; }
+dl.why dd { margin: 0; }
+dl.why dd span { color: var(--muted); }
+@media (max-width: 519px) { dl.why { grid-template-columns: 1fr; gap: 2px; } dl.why dd { margin-bottom: 6px; } }
+.dec details.ctx summary { cursor: pointer; color: var(--accent); font-size: 0.84rem; width: max-content; }
 .item .tid { color: var(--faint); font-weight: 500; font-size: 0.8rem; margin-right: 4px; }
 
 /* sections that fold */
@@ -643,7 +652,7 @@ const ARCH = 'M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 5
 const PHONE = () => window.innerWidth < 720;
 
 let DATA = null, P = {}, PH = {}, H = {}, NOW = null;
-const store = { db: null, user: null, uid: null, updates: [], comments: [], names: {}, openThread: null, cdraft: {}, voices: null, vpick: {}, vdraft: {}, feedSig: '', dbState: 'waiting', openForm: null, draft: {},
+const store = { db: null, user: null, uid: null, updates: [], comments: [], names: {}, openThread: null, cdraft: {}, ctx: new Set(), voices: null, vpick: {}, vdraft: {}, feedSig: '', dbState: 'waiting', openForm: null, draft: {},
   zoom: 'season', sel: null, selTask: null, who: '', hubF: '', shared: true, depth: 'phases', flip: new Set(), person: '', personHub: '',
   plan: 'nodes', gen: null, filter: null, roleWhy: false, allAttn: false, evf: 'all', evPast: false };
 let role = null;
@@ -787,6 +796,27 @@ function helpLine(t) {
   if (ownsTask(t, meOf(), true) || effDone(t)) return said;
   return said + (mine ? `<span class="helpers">You offered to help</span>` : `<button class="btn link" type="button" data-help="${esc(t.id)}">I'll help</button>`);
 }
+// Why it matters (10 Nov 2026): every step and decision opens to what it is part of and what it moves, read from
+// the plan itself: the node and its hub's purpose, where the node stands and what is next for it, the phase, the
+// decision it settles, what waits on it and what it waits on. A `why:` line in register.yaml (keyed by task) comes first.
+function firstSentence(x) { const m = String(x || '').match(/^[\s\S]*?[.!?](?=\s|$)/); return (m ? m[0] : String(x || '')).trim(); }
+function whyItMatters(t, o = {}) {
+  const p = P[t.project], hub = p && (DATA.hubs || []).find(h => h.id === p.hub), seen = new Set(scopedTasks().map(x => x.id));
+  const titleOf = id => { const x = DATA.tasks.find(y => y.id === id); return x && seen.has(id) ? x.title : null; };
+  const list = ids => { const ts = ids.map(titleOf).filter(Boolean); return ts.length ? esc(ts.slice(0, 3).join('; ')) + (ts.length > 3 ? ` <span>and ${ts.length - 3} more</span>` : '') : ''; };
+  const rows = [];
+  if (t.why) rows.push(['Why', esc(t.why)]);
+  if (p) rows.push(['Part of', `<strong>${esc(p.name)}</strong>${hub ? `, in ${esc(hub.name)}${hub.purpose ? `: <span>${esc(hub.purpose)}</span>` : ''}` : ''}`]);
+  if (p && p.summary) rows.push(['Where it stands', esc(firstSentence(p.summary))]);
+  if (p && p.next && p.next.label) rows.push(['Next for the node', `${esc(p.next.label)}${p.next.date ? `, ${day(p.next.date)}` : ''}`]);
+  const ph = t.phase && (DATA.phases || []).find(x => x.id === t.phase);
+  if (ph) rows.push(['Phase', `${esc(ph.name)}${ph.start && ph.end ? ` <span>(${day(ph.start)} to ${day(ph.end)})</span>` : ''}`]);
+  if (!o.noDecision) { const d = (DATA.decisions || []).find(x => x.task === t.id); if (d) rows.push(['Settles', esc(d.q)]); }
+  const unlocks = DATA.tasks.filter(x => !x.done && (x.waits_on || []).includes(t.id)).map(x => x.id);
+  if (unlocks.length && list(unlocks)) rows.push(['Unlocks', list(unlocks)]);
+  if ((t.open_blockers || []).length && list(t.open_blockers)) rows.push(['Waiting on', list(t.open_blockers)]);
+  return rows.length ? `<dl class="why">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>` : '';
+}
 function taskRow(t, o = {}) {
   const u = latestUpdate(t.id);
   const editable = mayUpdate(t) && !effDone(t);
@@ -797,11 +827,11 @@ function taskRow(t, o = {}) {
   const raw = isCore() && t.text.length > t.title.length + 12;
   let h = `<div class="item${effDone(t) ? ' is-done' : ''}${t.blocked && !t.done ? ' is-blocked' : ''}${tickable ? ' has-tick' : ''}">
     ${tickable ? `<button class="tick" type="button" data-tick="${esc(t.id)}" aria-pressed="${effDone(t)}" aria-label="${effDone(t) ? 'Done. Tap to mark it under way again' : 'Mark done'}: ${esc(t.title)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ''}
-    <div class="t">${isCore() ? `<span class="tid">${t.id}</span>` : ''}<span class="ttl">${esc(t.title)}</span></div>
+    <div class="t">${isCore() ? `<span class="tid">${t.id}</span>` : ''}<span class="ttl" data-ctx="t:${esc(t.id)}">${esc(t.title)}</span></div>
     <div class="meta">${o.crumb ? `<span class="tag">${crumb(t.project)}</span>` : ''}${o.owner === false ? '' : `<span class="who">${esc(pname(t.owner))}</span>`}${dueLabel(t)}${blockedChip(t)}
       ${editable ? `<button class="btn link" type="button" data-upd="${esc(key)}">${formOpen ? 'Close' : 'Send an update'}</button>` : ''}
       ${SITE && WHO ? `<button class="btn link" type="button" data-thread="${esc(t.id)}" aria-expanded="${threadOpen}">${threadOpen ? 'Hide comments' : nc ? `Comments (${nc})` : 'Comment'}</button>` : ''}${o.help === false ? '' : helpLine(t)}</div>
-    ${plain || raw ? `<details><summary>More</summary>${plain ? `<p>${esc(plain)}</p>` : ''}${raw ? `<p class="tiny">${plain ? '<span class="eyebrow">In the task list</span> ' : ''}${richText(t.text)}</p>` : ''}</details>` : ''}`;
+    <details data-ctxk="t:${esc(t.id)}"${store.ctx.has('t:' + t.id) ? ' open' : ''}><summary>Why it matters</summary>${plain ? `<p>${esc(plain)}</p>` : ''}${whyItMatters(t)}${raw ? `<p class="tiny">${plain ? '<span class="eyebrow">In the task list</span> ' : ''}${richText(t.text)}</p>` : ''}</details>`;
   if (u) h += `<div class="note">Latest: ${esc(u.status)}${u.note ? ', ' + esc(u.note) : ''} <span class="muted">(${esc(nameOf(u))}, ${esc(u.when || '')}${SITE && u.status === 'Done' && !t.done ? '; ticks in the task list at the next sync' : ''})</span></div>`;
   if (formOpen) h += updateForm(t);
   if (threadOpen) h += threadBox(t);
@@ -1286,6 +1316,7 @@ function decCard(d) { const t = DATA.tasks.find(x => x.id === d.task); const n =
     return `<article class="dec${d.done ? ' done' : ''}"><div class="by"><span class="tag">${esc(P[d.project]?.name)}</span>${d.done ? '<span class="chip s-done">Decided</span>' : n == null ? '<span class="muted">No date yet</span>' : `<span class="chip ${n < 0 ? 's-late' : n <= 7 ? 's-at-risk' : 's-upcoming'}">${n < 0 ? 'Was due ' + day(d.by) : 'By ' + day(d.by)}</span>`}</div>
       <h3>${esc(d.q)}</h3>${voiceBlock(d)}
       <p class="small"><span class="muted">Why it matters:</span> ${esc(d.why)}</p>
+      ${t ? `<details class="ctx" data-ctxk="d:${esc(d.task)}"${store.ctx.has('d:' + d.task) ? ' open' : ''}><summary>What it moves</summary>${whyItMatters(t, { noDecision: true })}</details>` : ''}
       <div class="by"><span>Decides: <span class="who">${esc(pname(d.who))}</span></span>${d.doc ? `<a href="${esc(d.doc)}" target="_blank" rel="noopener">Read the proposal</a>` : ''}</div>
       ${u ? `<div class="note">Latest: ${esc(u.status)}${u.note ? ', ' + esc(u.note) : ''}</div>` : ''}${ed ? `<div><button class="btn" type="button" data-upd="${esc(key)}">${store.openForm === key ? 'Close' : 'Record where it stands'}</button></div>` : ''}${store.openForm === key ? updateForm(t) : ''}</article>`; }
 function viewDecisions() {
@@ -1617,6 +1648,7 @@ document.addEventListener('click', e => {
   if (t.closest('[data-allattn]')) { store.allAttn = !store.allAttn; render(); return; }
   if (t.closest('[data-allnext]')) { store.allNext = !store.allNext; render(); return; }
   const pl = t.closest('[data-plan]'); if (pl) { location.hash = pl.dataset.plan === 'nodes' ? 'camp' : 'camp-' + pl.dataset.plan; return; }
+  const cx = t.closest('.ttl[data-ctx]'); if (cx) { const dd = cx.closest('.item')?.querySelector(`details[data-ctxk="${cx.dataset.ctx}"]`); if (dd) dd.open = !dd.open; return; }
   if (t.closest('[data-allhands]')) { store.allHands = !store.allHands; render(); return; }
   const tk1 = t.closest('[data-tick]'); if (tk1) { siteTick(tk1); return; }
   const hp = t.closest('[data-help]'); if (hp) { siteHelp(hp); return; }
@@ -1668,6 +1700,7 @@ document.addEventListener('change', e => {
   const map = { 'f-status': 'status', 'f-owner': 'owner' };
   if (map[id]) { store.filter[map[id]] = e.target.value; render(); }
 });
+document.addEventListener('toggle', e => { const k = e.target.dataset && e.target.dataset.ctxk; if (k) { if (e.target.open) store.ctx.add(k); else store.ctx.delete(k); } }, true);
 document.addEventListener('submit', async e => {
   const vf = e.target.closest('form[data-vform]');
   if (vf) {
