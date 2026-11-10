@@ -76,6 +76,38 @@ nav.tabs a[aria-current="page"] { color: var(--ink); }
 nav.tabs a[aria-current="page"]::after { transform: scaleX(1); }
 nav.tabs a .n { display: inline-block; min-width: 18px; padding: 0 5px; margin-left: 4px; border-radius: 999px; background: var(--bad-soft); color: var(--bad); font-size: 0.72rem; text-align: center; }
 
+/* Four places (10 Nov 2026, the Basecamp review of 9 Nov): Today, Camp, Gather, Library. On a phone they sit in a bar at
+   the bottom of the screen, where a thumb reaches; on a laptop they stay as the tabs under the header. */
+.bottombar { display: none; }
+@media (max-width: 719px) {
+  nav.tabs { display: none; }
+  .bottombar { display: grid; grid-template-columns: repeat(var(--n, 4), 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 7;
+    background: color-mix(in srgb, var(--paper) 94%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    border-top: 1px solid var(--line); padding: 6px max(8px, env(safe-area-inset-left, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)); }
+  .bottombar a { position: relative; display: grid; justify-items: center; gap: 3px; padding: 6px 4px 8px; min-height: 52px; color: var(--muted); text-decoration: none;
+    font-size: 0.64rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 500; }
+  .bottombar a svg { width: 22px; height: 22px; }
+  .bottombar a[aria-current="page"] { color: var(--ink); }
+  .bottombar a[aria-current="page"]::after { content: ""; position: absolute; bottom: 2px; width: 22px; height: 2px; border-radius: 2px; background: var(--prism); }
+  body { padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
+}
+/* Today: a morning page, not a dashboard */
+.today .hello { font: italic 400 clamp(1.7rem, 5vw, 2.4rem)/1.1 var(--verse); }
+.today .days { font-size: 0.92rem; color: var(--muted); }
+.today .days::before { content: ""; display: inline-block; width: 44px; height: 2px; border-radius: 2px; background: var(--prism); vertical-align: 0.3em; margin-right: 10px; }
+/* the one-tap tick: an empty circle to finish a step */
+.item.has-tick { grid-template-columns: auto minmax(0, 1fr); column-gap: 12px; }
+.item.has-tick > :not(.tick) { grid-column: 2; }
+.tick { grid-row: 1 / span 2; align-self: start; width: 30px; height: 30px; margin-top: -3px; border-radius: 50%; border: 1.5px solid var(--rule2); background: transparent; cursor: pointer; padding: 0; display: grid; place-items: center; color: transparent; transition: border-color .2s, background .2s; }
+.tick:hover { border-color: var(--ink); }
+.tick[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--warm); }
+.tick svg { width: 14px; height: 14px; }
+.waiting { color: var(--accent); }
+.helpers { font-size: 0.8rem; color: var(--cyan); }
+/* the hill: where a node stands, placed by judgment, not by a percentage (37signals' Hill Charts) */
+.hill { display: inline-flex; align-items: center; gap: 8px; font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+.hill svg { width: 46px; height: 18px; flex: none; }
+.hill b { font-weight: 500; color: var(--ink); }
 .rolebar { margin: 14px auto 0; padding: 9px 14px; border-radius: var(--r); background: var(--accent-soft); font-size: 0.86rem; }
 main { padding-block: 20px 40px; display: grid; gap: 30px; overflow-wrap: break-word; }
 section.block { display: grid; gap: 14px; min-width: 0; }
@@ -436,6 +468,15 @@ main { gap: 26px; padding-block: 16px 40px; }
 .item details summary::before { content: "▸ "; }
 .item details[open] summary::before { content: "▾ "; }
 .item details p { margin-top: 4px; max-width: 70ch; }
+/* why it matters (10 Nov 2026): tap a step's title, or the fold, for what it is part of and what it moves */
+.item .ttl[data-ctx] { cursor: pointer; }
+.item .ttl[data-ctx]:hover { text-decoration: underline; text-decoration-color: var(--rule2); text-underline-offset: 3px; }
+dl.why { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px; margin: 8px 0 2px; font-size: 0.84rem; color: var(--ink2, var(--ink)); max-width: 72ch; }
+dl.why dt { color: var(--faint); font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; padding-top: 2px; }
+dl.why dd { margin: 0; }
+dl.why dd span { color: var(--muted); }
+@media (max-width: 519px) { dl.why { grid-template-columns: 1fr; gap: 2px; } dl.why dd { margin-bottom: 6px; } }
+.dec details.ctx summary { cursor: pointer; color: var(--accent); font-size: 0.84rem; width: max-content; }
 .item .tid { color: var(--faint); font-weight: 500; font-size: 0.8rem; margin-right: 4px; }
 
 /* sections that fold */
@@ -532,7 +573,7 @@ footer:empty { display: none; }
 
 <header class="top">
   <div class="toprow">
-    <a class="brand" href="#home" aria-label="Basecamp home">
+    <a class="brand" href="#today" aria-label="Basecamp, Today">
       <div>
         <h1><span class="wm">Mahala</span><span class="bc">Basecamp</span></h1>
         <div class="sub" id="asof">The Seed, AfrikaBurn 2027</div>
@@ -541,13 +582,13 @@ footer:empty { display: none; }
     <div class="tools">
       <div class="vas"><label for="role">Viewing as</label><select id="role"></select></div>
       <a class="btn" id="toCommunity" href="community.html" hidden>Community Map</a>
-      <a class="btn" id="toFootage" href="footage.html" hidden>Footage</a>
       <button class="btn" id="acct" type="button" data-mahala-picture hidden>Sign in</button>
       <button class="btn primary icon" id="gen" type="button" hidden aria-label="Generate an update"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12v8H6l-4 3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="lbl">Update</span></button>
     </div>
   </div>
-  <nav class="tabs" id="tabs" aria-label="Basecamp views"></nav>
+  <nav class="tabs" id="tabs" aria-label="Basecamp places"></nav>
 </header>
+<nav class="bottombar" id="bottombar" aria-label="Basecamp places"></nav>
 
 <div class="wrap">
   <div class="roleline" id="roleline" hidden></div>
@@ -562,16 +603,37 @@ footer:empty { display: none; }
 <script>
 const ROLES = {
   core:      { label: 'Core team', me: '', who: 'the core team', sees: 'everything: every hub, node, task, budget line and partner, and anyone’s list. Can update any task.', projects: 'all', tasks: 'all', edit: 'all', budget: 'lines', partners: 'full', team: true, pick: true, audiences: ['core', 'leads', 'members'] },
-  camplead:  { label: 'Camp lead', me: '', own: ['vehicle'], who: 'a camp lead who runs one node (shown here: the vehicle)', sees: 'every hub, node and task, anyone’s list and a budget summary. Updates only their own node.', projects: 'all', tasks: 'all', edit: ['vehicle'], budget: 'summary+own', partners: 'full', team: true, pick: true, audiences: ['leads', 'members'] },
+  camplead:  { label: 'Camp lead', me: '', own: ['vehicle'], who: 'a camp lead who runs one node (shown here: the vehicle)', sees: 'every hub, node and task, anyone’s list and a budget summary. Updates only their own node.', projects: 'all', tasks: 'all', edit: ['vehicle'], budget: 'summary+own', partners: 'full', team: false, pick: true, audiences: ['leads', 'members'] },
   crewlead:  { label: 'Crew lead', me: 'crew', own: ['seed'], who: 'the lead of one crew (shown here: The Seed build crew)', sees: 'a summary of every node, and their crew’s tasks and budget lines. Updates their crew’s tasks.', projects: 'summary', tasks: ['seed', 'workshop'], edit: ['seed'], budget: 'own', partners: 'status', audiences: ['members'] },
-  treasurer: { label: 'Treasurer', me: 'money', who: 'the treasurer named in the constitution reform', sees: 'every budget line and partner, and the money tasks. Keeps the lines in the full system.', projects: 'summary', tasks: ['org', 'ops', 'fund', 'events', 'workshop', 'vehicle'], edit: [], budget: 'lines', partners: 'full', team: true, pick: true, audiences: ['leads', 'members'] },
+  treasurer: { label: 'Treasurer', me: 'money', who: 'the treasurer named in the constitution reform', sees: 'every budget line and partner, and the money tasks. Keeps the lines in the full system.', projects: 'summary', tasks: ['org', 'ops', 'fund', 'events', 'workshop', 'vehicle'], edit: [], budget: 'lines', partners: 'full', team: false, pick: true, audiences: ['leads', 'members'] },
   member:    { label: 'Camp member', me: 'crew', own: ['seed'], who: 'a camp member on the build crew', sees: 'a summary of every node, their crew’s tasks and a budget summary.', projects: 'summary', tasks: ['seed'], edit: [], budget: 'summary', partners: 'status', audiences: ['members'] },
   tribe:     { label: 'Tribe member', who: 'anyone who has joined the tribe', sees: 'the roadmap, the funding total and where help is needed.', projects: 'public', tasks: 'none', edit: [], budget: 'total', partners: 'none', audiences: [] },
   visitor:   { label: 'Visitor', who: 'anyone on the website', sees: 'the roadmap and the funding total.', projects: 'public', tasks: 'none', edit: [], budget: 'total', partners: 'none', audiences: [] },
 };
-const TABS = [['home', 'Home'], ['list', 'My list'], ['plan', 'Plan'], ['events', 'Events'], ['decisions', 'Decisions'], ['money', 'Money'], ['library', 'Library']];
-const PUBLIC_TABS = ['home', 'plan', 'events', 'money', 'library'];
-const ALIAS = { overview: 'home', week: 'list', people: 'list', nodes: 'plan', projects: 'plan', crews: 'plan', timeline: 'plan-timeline', tasks: 'plan-tasks', budget: 'money', access: 'library' };
+// Four places (10 Nov 2026): Today (was Home and My list), Camp (was Plan and Decisions), Gather (was Events) and Library
+// (was Library and Money). Every old link still lands: #home, #plan-timeline, #decisions, #money and the rest. A person's
+// whole list (#list) stays one tap from Today.
+const TABS = [['today', 'Today'], ['camp', 'Camp'], ['gather', 'Gather'], ['library', 'Library']];
+const PUBLIC_TABS = ['today', 'camp', 'gather', 'library'];
+const ALIAS = { home: 'today', overview: 'today', week: 'list', people: 'list', plan: 'camp', nodes: 'camp', projects: 'camp', crews: 'camp', timeline: 'camp-timeline', tasks: 'camp-tasks', decisions: 'camp-decisions', events: 'gather', money: 'library', budget: 'library', access: 'library' };
+const PLACE_ICON = {
+  today: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg>',
+  camp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>',
+  gather: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><path d="M15.5 3.5a8.5 8.5 0 1 0 5 13.4A7 7 0 0 1 15.5 3.5z"/></svg>',
+  library: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5c2.5-1 5.5-1 8 .8 2.5-1.8 5.5-1.8 8-.8V19c-2.5-1-5.5-1-8 .8-2.5-1.8-5.5-1.8-8-.8z"/><path d="M12 6.3v13.5"/></svg>' };
+// The hill replaces on track and at risk (10 Nov 2026): uphill while the way is still being figured out, downhill once
+// it is being made (37signals' Hill Charts). A node's keeper sets it with `hill:` in register.yaml; until then it is read
+// from the old state, and "blocked" shows as figuring it out, waiting on something.
+const HILL = { 'not-begun': 'Not begun', figuring: 'Figuring it out', making: 'Making it happen', done: 'Done' };
+const HILL_X = { 'not-begun': 4, figuring: 15, making: 31, done: 42 };
+const FROM_STATE = { 'not-started': 'not-begun', 'at-risk': 'figuring', blocked: 'figuring', 'on-track': 'making' };
+function hillOf(p) { return HILL[p.hill] ? p.hill : FROM_STATE[p.state] || 'not-begun'; }
+function hillMark(p, words = true) {
+  const k = hillOf(p), x = HILL_X[k], y = k === 'not-begun' || k === 'done' ? 15 : k === 'figuring' ? 6.5 : 6.5;
+  const dot = k === 'not-begun' ? `<circle cx="${x}" cy="${y}" r="3" fill="var(--sheet)" stroke="var(--muted)" stroke-dasharray="1.6 1.4"/>`
+    : `<circle cx="${x}" cy="${y}" r="3.4" fill="${k === 'done' ? 'var(--good)' : k === 'making' ? 'var(--ink)' : 'var(--sheet)'}" stroke="var(--ink)" stroke-width="1.3"/>`;
+  return `<span class="hill" title="${esc(HILL[k])}${p.state === 'blocked' && !p.hill ? ', waiting on something' : ''}"><svg viewBox="0 0 46 18" aria-hidden="true"><path d="M1 15.5C10 15.5 14 2.5 23 2.5S36 15.5 45 15.5" fill="none" stroke="var(--rule2)" stroke-width="1.2"/>${dot}</svg>${words ? `<b>${esc(HILL[k])}</b>${p.state === 'blocked' && !p.hill ? '<span>, waiting on something</span>' : ''}` : ''}</span>`;
+}
 const STATE_LABEL = { 'on-track': 'On track', 'at-risk': 'At risk', 'blocked': 'Blocked', 'not-started': 'Not started' };
 const PH_LABEL = { done: 'Done', active: 'Under way', 'at-risk': 'Behind', late: 'Late', upcoming: 'Not started' };
 const STATUS_OPTS = ['Under way', 'Done', 'Blocked', 'Not started'];
@@ -590,7 +652,7 @@ const ARCH = 'M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 5
 const PHONE = () => window.innerWidth < 720;
 
 let DATA = null, P = {}, PH = {}, H = {}, NOW = null;
-const store = { db: null, user: null, uid: null, updates: [], comments: [], names: {}, openThread: null, cdraft: {}, voices: null, vpick: {}, vdraft: {}, feedSig: '', dbState: 'waiting', openForm: null, draft: {},
+const store = { db: null, user: null, uid: null, updates: [], comments: [], names: {}, openThread: null, cdraft: {}, ctx: new Set(), voices: null, vpick: {}, vdraft: {}, feedSig: '', dbState: 'waiting', openForm: null, draft: {},
   zoom: 'season', sel: null, selTask: null, who: '', hubF: '', shared: true, depth: 'phases', flip: new Set(), person: '', personHub: '',
   plan: 'nodes', gen: null, filter: null, roleWhy: false, allAttn: false, evf: 'all', evPast: false };
 let role = null;
@@ -634,7 +696,7 @@ function scopedTasks() { return DATA.tasks.filter(t => t.project && canSeeTasksO
 const PUBLIC_PROJECTS = ['seed', 'fund', 'events', 'invites', 'web', 'verse'];
 function scopedPhases() { return DATA.phases.filter(ph => isPublic() ? PUBLIC_PROJECTS.includes(ph.project) && ph.id !== 'seed-recon' : (cfg().projects !== 'summary' || canSeeTasksOf(ph.project) || ph.milestone)); }
 function scopedDecisions() { return DATA.decisions.filter(d => !isPublic() && (cfg().projects !== 'summary' || canSeeTasksOf(d.project))); }
-function tabsFor() { return TABS.filter(([k]) => (!isPublic() || PUBLIC_TABS.includes(k)) && (k !== 'decisions' || scopedDecisions().some(d => !d.done) || fbItems().length)); }
+function tabsFor() { return TABS.filter(([k]) => !isPublic() || PUBLIC_TABS.includes(k)); }
 function ownerRank(o) { const i = [...INDIV, ...GROUPS_ORDER].indexOf(o); return i < 0 ? 99 : i; }
 function groupsOf(who) { return Object.entries(DATA.groups || {}).filter(([, ms]) => ms.includes(who)).map(([g]) => g); }
 // On the site the database says which names and groups are the viewer's own (WHO.mine: a camp lead's "Leads" among
@@ -706,7 +768,7 @@ function phChip(st) { return `<span class="chip s-${st}">${PH_LABEL[st]}</span>`
 function dueLabel(t) {
   if (!t.due || t.done) return t.due ? `<span>${t.done ? 'done' : 'due'} ${day(t.due)}</span>` : '<span>no date</span>';
   const n = daysFrom(t.due);
-  if (n < 0) return `<span class="overdue">overdue, ${day(t.due)}</span>`;
+  if (n < 0) return `<span class="waiting">waiting since ${day(t.due)}</span>`;
   if (n <= 7) return `<span class="due-soon">due ${day(t.due)}, ${inDays(n)}</span>`;
   return `<span>due ${day(t.due)}</span>`;
 }
@@ -722,19 +784,54 @@ function blockedChip(t) {
   return `<span class="chip s-blocked" title="${esc(why)}">Blocked</span>`;
 }
 function titleOf(tid) { const t = DATA.tasks.find(x => x.id === tid); return t ? t.title : tid; }
+// One tap to finish a step (10 Nov 2026): the circle sends Done through the same update as the form, and taps back to
+// Under way. "I'll help" on a step that is not yours posts a comment, so the owner and the stewards see it at once and it
+// reaches the task list with the hourly sync; who has offered shows on the step.
+const HELP_TEXT = "I'll help with this.";
+function helpersOf(tid) { return store.comments.filter(c => c.task === tid && c.text === HELP_TEXT); }
+function helpLine(t) {
+  if (!SITE || !WHO) return '';
+  const hs = helpersOf(t.id), mine = hs.some(c => c.mine), others = [...new Set(hs.filter(c => !c.mine).map(c => c.name || 'Someone'))];
+  const said = others.length ? `<span class="helpers">${esc(others.join(', '))} offered to help</span>` : '';
+  if (ownsTask(t, meOf(), true) || effDone(t)) return said;
+  return said + (mine ? `<span class="helpers">You offered to help</span>` : `<button class="btn link" type="button" data-help="${esc(t.id)}">I'll help</button>`);
+}
+// Why it matters (10 Nov 2026): every step and decision opens to what it is part of and what it moves, read from
+// the plan itself: the node and its hub's purpose, where the node stands and what is next for it, the phase, the
+// decision it settles, what waits on it and what it waits on. A `why:` line in register.yaml (keyed by task) comes first.
+function firstSentence(x) { const m = String(x || '').match(/^[\s\S]*?[.!?](?=\s|$)/); return (m ? m[0] : String(x || '')).trim(); }
+function whyItMatters(t, o = {}) {
+  const p = P[t.project], hub = p && (DATA.hubs || []).find(h => h.id === p.hub), seen = new Set(scopedTasks().map(x => x.id));
+  const titleOf = id => { const x = DATA.tasks.find(y => y.id === id); return x && seen.has(id) ? x.title : null; };
+  const list = ids => { const ts = ids.map(titleOf).filter(Boolean); return ts.length ? esc(ts.slice(0, 3).join('; ')) + (ts.length > 3 ? ` <span>and ${ts.length - 3} more</span>` : '') : ''; };
+  const rows = [];
+  if (t.why) rows.push(['Why', esc(t.why)]);
+  if (p) rows.push(['Part of', `<strong>${esc(p.name)}</strong>${hub ? `, in ${esc(hub.name)}${hub.purpose ? `: <span>${esc(hub.purpose)}</span>` : ''}` : ''}`]);
+  if (p && p.summary) rows.push(['Where it stands', esc(firstSentence(p.summary))]);
+  if (p && p.next && p.next.label) rows.push(['Next for the node', `${esc(p.next.label)}${p.next.date ? `, ${day(p.next.date)}` : ''}`]);
+  const ph = t.phase && (DATA.phases || []).find(x => x.id === t.phase);
+  if (ph) rows.push(['Phase', `${esc(ph.name)}${ph.start && ph.end ? ` <span>(${day(ph.start)} to ${day(ph.end)})</span>` : ''}`]);
+  if (!o.noDecision) { const d = (DATA.decisions || []).find(x => x.task === t.id); if (d) rows.push(['Settles', esc(d.q)]); }
+  const unlocks = DATA.tasks.filter(x => !x.done && (x.waits_on || []).includes(t.id)).map(x => x.id);
+  if (unlocks.length && list(unlocks)) rows.push(['Unlocks', list(unlocks)]);
+  if ((t.open_blockers || []).length && list(t.open_blockers)) rows.push(['Waiting on', list(t.open_blockers)]);
+  return rows.length ? `<dl class="why">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('')}</dl>` : '';
+}
 function taskRow(t, o = {}) {
   const u = latestUpdate(t.id);
   const editable = mayUpdate(t) && !effDone(t);
+  const tickable = SITE && WHO && mayUpdate(t) && (!t.done || effDone(t));
   const nc = SITE ? store.comments.filter(c => c.task === t.id).length : 0, threadOpen = store.openThread === t.id;
   const key = t.id + '|' + t.owner, formOpen = store.openForm === key;
   const plain = t.detail || (isCore() ? '' : '');
   const raw = isCore() && t.text.length > t.title.length + 12;
-  let h = `<div class="item${effDone(t) ? ' is-done' : ''}${t.blocked && !t.done ? ' is-blocked' : ''}">
-    <div class="t">${isCore() ? `<span class="tid">${t.id}</span>` : ''}<span class="ttl">${esc(t.title)}</span></div>
+  let h = `<div class="item${effDone(t) ? ' is-done' : ''}${t.blocked && !t.done ? ' is-blocked' : ''}${tickable ? ' has-tick' : ''}">
+    ${tickable ? `<button class="tick" type="button" data-tick="${esc(t.id)}" aria-pressed="${effDone(t)}" aria-label="${effDone(t) ? 'Done. Tap to mark it under way again' : 'Mark done'}: ${esc(t.title)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ''}
+    <div class="t">${isCore() ? `<span class="tid">${t.id}</span>` : ''}<span class="ttl" data-ctx="t:${esc(t.id)}">${esc(t.title)}</span></div>
     <div class="meta">${o.crumb ? `<span class="tag">${crumb(t.project)}</span>` : ''}${o.owner === false ? '' : `<span class="who">${esc(pname(t.owner))}</span>`}${dueLabel(t)}${blockedChip(t)}
       ${editable ? `<button class="btn link" type="button" data-upd="${esc(key)}">${formOpen ? 'Close' : 'Send an update'}</button>` : ''}
-      ${SITE && WHO ? `<button class="btn link" type="button" data-thread="${esc(t.id)}" aria-expanded="${threadOpen}">${threadOpen ? 'Hide comments' : nc ? `Comments (${nc})` : 'Comment'}</button>` : ''}</div>
-    ${plain || raw ? `<details><summary>More</summary>${plain ? `<p>${esc(plain)}</p>` : ''}${raw ? `<p class="tiny">${plain ? '<span class="eyebrow">In the task list</span> ' : ''}${richText(t.text)}</p>` : ''}</details>` : ''}`;
+      ${SITE && WHO ? `<button class="btn link" type="button" data-thread="${esc(t.id)}" aria-expanded="${threadOpen}">${threadOpen ? 'Hide comments' : nc ? `Comments (${nc})` : 'Comment'}</button>` : ''}${o.help === false ? '' : helpLine(t)}</div>
+    <details data-ctxk="t:${esc(t.id)}"${store.ctx.has('t:' + t.id) ? ' open' : ''}><summary>Why it matters</summary>${plain ? `<p>${esc(plain)}</p>` : ''}${whyItMatters(t)}${raw ? `<p class="tiny">${plain ? '<span class="eyebrow">In the task list</span> ' : ''}${richText(t.text)}</p>` : ''}</details>`;
   if (u) h += `<div class="note">Latest: ${esc(u.status)}${u.note ? ', ' + esc(u.note) : ''} <span class="muted">(${esc(nameOf(u))}, ${esc(u.when || '')}${SITE && u.status === 'Done' && !t.done ? '; ticks in the task list at the next sync' : ''})</span></div>`;
   if (formOpen) h += updateForm(t);
   if (threadOpen) h += threadBox(t);
@@ -760,7 +857,38 @@ function updateForm(t) {
     <div data-msg class="muted" style="font-size:.85rem" aria-live="polite"></div></form>`;
 }
 
-// ---------------------------------------------------------------- Home
+// ---------------------------------------------------------------- Today
+// One calm page (10 Nov 2026): your next steps with a tick, decisions waiting for your voice, steps nobody holds yet,
+// and the week ahead. Counts stay small ("All 14", never "116"). Visitors and the tribe keep the public page.
+function greeting() { const h = new Date().getHours(); return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'; }
+// Steps held by a whole group (the core team, the camp leads) rather than one person: a way in for anyone else.
+// The stewards' own steps are theirs, so they are left out.
+const HANDS_GROUPS = ['Core', 'Leads'];
+function handsWanted() {
+  const me = meOf();
+  return scopedTasks().filter(t => !t.done && !effDone(t) && !t.internal && (!t.owner || HANDS_GROUPS.includes(t.owner)) && !ownsTask(t, me, true))
+    .sort((a, b) => (a.due || '9').localeCompare(b.due || '9'));
+}
+function viewToday() {
+  if (isPublic()) return viewHome();
+  const c = cfg(), me = meOf(), first = me && INDIV.includes(me) ? me : (WHO && WHO.name) || '';
+  let h = `<section class="welcome today"><div class="hello">${greeting()}${first ? `, ${esc(first)}` : ''}.</div><div class="days">${daysFrom(DATA.burn)} days until we raise The Seed</div></section>`;
+  const open = myTasks().filter(t => !t.done).sort((a, b) => (a.due || '9').localeCompare(b.due || '9'));
+  const steps = open.slice(0, 3);
+  const title = c.me === 'crew' ? 'Next for your crew' : c.me === 'money' ? 'Next with money in it' : 'Your next steps';
+  h += `<section class="block"><div class="head"><h2>${title}</h2>${open.length > 3 ? `<a href="#list" >All ${open.length}</a>` : ''}</div>${steps.length
+    ? `<div class="list">${steps.map(t => taskRow(t, { crumb: true, owner: c.me === 'crew' || c.me === 'money' || t.owner !== me })).join('')}</div>`
+    : `<div class="empty">Nothing waiting for you. Hands wanted, below, is a good way in.</div>`}</section>`;
+  const vs = store.voices, decs = scopedDecisions().filter(d => !d.done && (!vs || (vs[d.task] && !vs[d.task].mine))).sort((a, b) => (a.by || '9').localeCompare(b.by || '9'));
+  if (decs.length) h += `<section class="block"><div class="head"><h2>Your voice is asked</h2><a href="#camp-decisions">${decs.length > 2 ? `All ${decs.length}` : 'All decisions'}</a></div><div class="decs">${decs.slice(0, 2).map(decCard).join('')}</div></section>`;
+  const hw = handsWanted();
+  if (hw.length) h += `<section class="block"><div class="head"><h2>Hands wanted</h2>${hw.length > 3 ? `<button class="btn link" type="button" data-allhands>${store.allHands ? 'Fewer' : `All ${hw.length}`}</button>` : ''}</div>
+    <p class="muted small">Steps the core team or the camp leads hold together, with nobody's name on them yet. Offer a hand and they see it straight away.</p>
+    <div class="list">${(store.allHands ? hw : hw.slice(0, 3)).map(t => taskRow(t, { crumb: true })).join('')}</div></section>`;
+  h += `<section class="block"><div class="head"><h2>This week at camp</h2><a href="#gather">Gather</a></div>${nextDays(myScope)}</section>`;
+  if (isCore()) { h += attention(); if (SITE) h += questBlock(); if (store.updates.length) h += feedBlock(); }
+  return h;
+}
 function viewHome() {
   const c = cfg(), burnIn = daysFrom(DATA.burn);
   let h = `<section class="welcome"><div class="verse"><b>${burnIn}</b> days until we raise The Seed</div>`;
@@ -929,11 +1057,12 @@ function whoWhere() {
     ${rows.map(w => `<tr><td><a href="#list-${slug(w)}" data-phub="">${esc(pname(w))}</a></td>${DATA.hubs.map(x => cell(w, x.id)).join('')}${cell(w, '')}</tr>`).join('')}</tbody></table></div></section>`;
 }
 
-// ---------------------------------------------------------------- Plan
+// ---------------------------------------------------------------- Camp
 function viewPlan() {
   const v = store.plan, pub = isPublic();
-  const seg = `<div class="seg" role="group" aria-label="Plan view">${[['nodes', 'Hubs and nodes'], ['timeline', 'Timeline'], ...(pub ? [] : [['tasks', 'All tasks']])].map(([k, l]) => `<button type="button" data-plan="${k}" aria-pressed="${v === k}">${l}</button>`).join('')}</div>`;
-  const body = v === 'timeline' ? viewTimeline() : v === 'tasks' && !pub ? viewTasks() : viewNodes();
+  const hasDec = !pub && (scopedDecisions().some(d => !d.done) || fbItems().length);
+  const seg = `<div class="seg" role="group" aria-label="Camp view">${[['nodes', 'Hubs and nodes'], ['timeline', 'Season'], ...(pub ? [] : [['tasks', 'Every step']]), ...(hasDec ? [['decisions', 'Decisions']] : [])].map(([k, l]) => `<button type="button" data-plan="${k}" aria-pressed="${v === k}">${l}</button>`).join('')}</div>`;
+  const body = v === 'timeline' ? viewTimeline() : v === 'tasks' && !pub ? viewTasks() : v === 'decisions' && hasDec ? viewDecisions() : viewNodes();
   return `<section class="sub-nav">${seg}</section>${body}`;
 }
 function viewNodes() {
@@ -946,7 +1075,7 @@ function viewNodes() {
     const ho = folded('hb-' + hb.id, hb.nodes.some(isOwn) || (!PHONE() && (isCore() || pub)));
     const states = nodes.map(p => p.state);
     h += `<section class="block hub${ho ? '' : ' shut'}" id="hub-${hb.id}"><button class="hubhead" type="button" data-flip="hb-${hb.id}" aria-expanded="${ho}"><span class="hubt"><span class="eyebrow">Hub · ${plural(nodes.length, 'node')}</span><h2><span class="chev">${ho ? '▾' : '▸'}</span> ${esc(hb.name)}</h2>${ho ? `<span class="muted small">${esc(hb.purpose)}</span>` : ''}</span>
-      ${pub ? '' : `<span class="hubf small">${ho ? `<span>Lead: <span class="who">${esc(hb.lead)}</span></span>` : ''}<span>${['blocked', 'at-risk', 'on-track', 'not-started'].filter(st => states.includes(st)).map(st => `<i class="dot s-${st}"></i>${states.filter(x => x === st).length} ${STATE_LABEL[st].toLowerCase()}`).join(' ')}</span>${r ? `<span class="mini" title="${r.p}% of the schedule"><span style="width:${r.p}%"></span></span>` : ''}</span>`}</button>
+      ${pub ? '' : `<span class="hubf small">${ho ? `<span>Lead: <span class="who">${esc(hb.lead)}</span></span>` : ''}<span>${Object.keys(HILL).filter(k => nodes.some(p => hillOf(p) === k)).map(k => `${nodes.filter(p => hillOf(p) === k).length} ${HILL[k].toLowerCase()}`).join(' · ')}</span>${r ? `<span class="mini" title="${r.p}% of the schedule"><span style="width:${r.p}%"></span></span>` : ''}</span>`}</button>
       ${ho ? `<div class="nodes">${nodes.map(nodeCard).join('')}</div>
       ${!pub && hb.dormant.length ? `<div class="dormant"><span class="eyebrow">2026 nodes with no 2027 plan yet</span><div class="links">${hb.dormant.map(d => `<span class="tag">${esc(d)}</span>`).join('')}</div></div>` : ''}` : ''}</section>`;
   });
@@ -963,7 +1092,7 @@ function nodeCard(p) {
   return `<article class="proj node${open ? ' open' : ''}" id="p-${p.id}">
     <button class="nodehead" type="button" data-flip="nc-${p.id}" aria-expanded="${open}"><span class="chev">${open ? '▾' : '▸'}</span>
       <span class="nh"><span class="nm">${esc(p.name)}</span><span class="muted small">${pub ? '' : esc(p.lead) + ' · '}${p.next?.date ? `${day(p.next.date)}: ` : ''}${esc(trim(p.next?.label || '', 60))}</span></span>
-      <span class="nchips">${pub ? '' : chip(p.state)}${cnt ? `<span class="cnt">${cnt}</span>` : ''}</span>
+      <span class="nchips">${pub ? '' : hillMark(p)}${cnt ? `<span class="cnt">${cnt}</span>` : ''}</span>
       ${r ? `<span class="mini" title="${r.p}% of the scheduled work"><span style="width:${r.p}%"></span></span>` : ''}</button>
     ${open ? nodeBody(p) : ''}</article>`;
 }
@@ -1182,17 +1311,19 @@ function voiceBlock(d) {
   return `${v.ask === 'choose' ? '' : plain}<div class="voice"><p class="muted small">${esc(ASK_LABEL[v.ask])}</p>${btns}${form}${yours}
     <p class="small">${tally}${v.decider ? '' : ' <span class="muted">Names go only to whoever decides.</span>'}</p>${who}</div>`;
 }
-function viewDecisions() {
-  const ds = scopedDecisions();
-  const open = ds.filter(d => !d.done).sort((a, b) => (a.by || '9').localeCompare(b.by || '9'));
-  const done = ds.filter(d => d.done);
-  const card = d => { const t = DATA.tasks.find(x => x.id === d.task); const n = d.by ? daysFrom(d.by) : null;
+function decCard(d) { const t = DATA.tasks.find(x => x.id === d.task); const n = d.by ? daysFrom(d.by) : null;
     const key = t ? t.id + '|' + t.owner : '', ed = t && canEdit(t.project) && !t.done, u = t && latestUpdate(t.id);
     return `<article class="dec${d.done ? ' done' : ''}"><div class="by"><span class="tag">${esc(P[d.project]?.name)}</span>${d.done ? '<span class="chip s-done">Decided</span>' : n == null ? '<span class="muted">No date yet</span>' : `<span class="chip ${n < 0 ? 's-late' : n <= 7 ? 's-at-risk' : 's-upcoming'}">${n < 0 ? 'Was due ' + day(d.by) : 'By ' + day(d.by)}</span>`}</div>
       <h3>${esc(d.q)}</h3>${voiceBlock(d)}
       <p class="small"><span class="muted">Why it matters:</span> ${esc(d.why)}</p>
+      ${t ? `<details class="ctx" data-ctxk="d:${esc(d.task)}"${store.ctx.has('d:' + d.task) ? ' open' : ''}><summary>What it moves</summary>${whyItMatters(t, { noDecision: true })}</details>` : ''}
       <div class="by"><span>Decides: <span class="who">${esc(pname(d.who))}</span></span>${d.doc ? `<a href="${esc(d.doc)}" target="_blank" rel="noopener">Read the proposal</a>` : ''}</div>
-      ${u ? `<div class="note">Latest: ${esc(u.status)}${u.note ? ', ' + esc(u.note) : ''}</div>` : ''}${ed ? `<div><button class="btn" type="button" data-upd="${esc(key)}">${store.openForm === key ? 'Close' : 'Record where it stands'}</button></div>` : ''}${store.openForm === key ? updateForm(t) : ''}</article>`; };
+      ${u ? `<div class="note">Latest: ${esc(u.status)}${u.note ? ', ' + esc(u.note) : ''}</div>` : ''}${ed ? `<div><button class="btn" type="button" data-upd="${esc(key)}">${store.openForm === key ? 'Close' : 'Record where it stands'}</button></div>` : ''}${store.openForm === key ? updateForm(t) : ''}</article>`; }
+function viewDecisions() {
+  const ds = scopedDecisions();
+  const open = ds.filter(d => !d.done).sort((a, b) => (a.by || '9').localeCompare(b.by || '9'));
+  const done = ds.filter(d => d.done);
+  const card = decCard;
   const rul = DATA.rulings;
   const rcard = r => `<div class="ruling ${r.status}"><strong>${esc(r.topic)}</strong><span>${esc(r.ruling)}</span><span class="src">${esc(r.by)}, ${day(r.when)}</span></div>`;
   return `<section class="block"><div class="head"><h2>Decisions waiting</h2><span class="muted small">${plural(open.length, 'open question')}, soonest first</span></div>
@@ -1446,29 +1577,34 @@ function viewEvents() {
 }
 
 // ---------------------------------------------------------------- render
-const VIEWS = { home: viewHome, list: viewList, plan: viewPlan, events: viewEvents, decisions: viewDecisions, money: viewMoney, library: viewLibrary };
+const VIEWS = { today: viewToday, list: viewList, camp: viewPlan, gather: viewEvents, library: () => viewLibrary() + viewMoney() };
 function current() {
   let h = location.hash.slice(1);
-  if (h.startsWith('as-') && ROLES[h.slice(3)]) { role = h.slice(3); try { localStorage.setItem('basecamp.role', role); } catch (e) {} history.replaceState(null, '', '#home'); h = 'home'; }
+  if (h.startsWith('as-') && ROLES[h.slice(3)]) { role = h.slice(3); try { localStorage.setItem('basecamp.role', role); } catch (e) {} history.replaceState(null, '', '#today'); h = 'today'; }
   h = ALIAS[h] || h;
   if (h.startsWith('people-')) h = 'list-' + h.slice(7);
   if (h.startsWith('list-')) { const w = [...INDIV, ...GROUPS_ORDER].find(x => slug(x) === h.slice(5)); store.person = w && w !== cfg().me ? w : ''; h = 'list'; }
-  if (h === 'feedback') { store.jump = 'feedback'; h = 'decisions'; }
-  if (h === 'plan') store.plan = 'nodes';
-  if (h.startsWith('plan-')) { store.plan = h.slice(5); h = 'plan'; }
-  return tabsFor().some(([k]) => k === h) ? h : 'home';
+  if (h === 'feedback') { store.jump = 'feedback'; h = 'camp-decisions'; }
+  if (h.startsWith('plan-')) h = 'camp-' + h.slice(5);
+  if (h === 'camp') store.plan = 'nodes';
+  if (h.startsWith('camp-')) { store.plan = h.slice(5); h = 'camp'; }
+  if (h === 'list' && !isPublic()) return 'list';
+  return tabsFor().some(([k]) => k === h) ? h : 'today';
 }
-function badge(k) { if (k !== 'decisions') return ''; const n = scopedDecisions().filter(d => !d.done).length; return n ? `<span class="n">${n}</span>` : ''; }
+function badge() { return ''; }   // no red counts on the places (the review of 9 Nov); Today asks for your voice instead
 function render() {
   const c = cfg(), tab = current();
-  $('#tabs').innerHTML = tabsFor().map(([k, l]) => `<a href="#${k}" ${k === tab ? 'aria-current="page"' : ''}>${l}${badge(k)}</a>`).join('');
+  const place = tab === 'list' ? 'today' : tab;
+  $('#tabs').innerHTML = tabsFor().map(([k, l]) => `<a href="#${k}" ${k === place ? 'aria-current="page"' : ''}>${l}${badge(k)}</a>`).join('');
+  $('#bottombar').hidden = false;
+  $('#bottombar').innerHTML = tabsFor().map(([k, l]) => `<a href="#${k}" ${k === place ? 'aria-current="page"' : ''}>${PLACE_ICON[k]}<span>${l}</span></a>`).join('');
   $('#roleline').hidden = false;
   $('#roleline').innerHTML = `<span>Viewing as <strong>${esc(c.label)}</strong></span><button class="btn link" type="button" data-rolewhy>${store.roleWhy ? 'Hide' : 'What this role sees'}</button>${store.roleWhy ? `<span class="why">${esc(c.label)}: ${esc(c.who)}. Sees ${esc(c.sees)} <a href="#library" data-flipopen="ab-access">Who sees what</a></span>` : ''}`;
   $('#gen').hidden = !c.audiences.length;
   $('#role').value = role;
   const scrollX = $('#gantt')?.scrollLeft;
   $('#view').innerHTML = VIEWS[tab]();
-  const where = tab + (tab === 'plan' ? ':' + store.plan : '');           // a new tab opens at its top, as a new page would
+  const where = tab + (tab === 'camp' ? ':' + store.plan : '');           // a new tab opens at its top, as a new page would
   if (store.lastView && store.lastView !== where && !store.jump) window.scrollTo(0, 0);
   store.lastView = where;
   const g = $('#gantt');
@@ -1511,7 +1647,11 @@ document.addEventListener('click', e => {
   const fo = t.closest('[data-flipopen]'); if (fo) { store.flip.add(fo.dataset.flipopen); store.roleWhy = false; }
   if (t.closest('[data-allattn]')) { store.allAttn = !store.allAttn; render(); return; }
   if (t.closest('[data-allnext]')) { store.allNext = !store.allNext; render(); return; }
-  const pl = t.closest('[data-plan]'); if (pl) { location.hash = pl.dataset.plan === 'nodes' ? 'plan' : 'plan-' + pl.dataset.plan; return; }
+  const pl = t.closest('[data-plan]'); if (pl) { location.hash = pl.dataset.plan === 'nodes' ? 'camp' : 'camp-' + pl.dataset.plan; return; }
+  const cx = t.closest('.ttl[data-ctx]'); if (cx) { const dd = cx.closest('.item')?.querySelector(`details[data-ctxk="${cx.dataset.ctx}"]`); if (dd) dd.open = !dd.open; return; }
+  if (t.closest('[data-allhands]')) { store.allHands = !store.allHands; render(); return; }
+  const tk1 = t.closest('[data-tick]'); if (tk1) { siteTick(tk1); return; }
+  const hp = t.closest('[data-help]'); if (hp) { siteHelp(hp); return; }
   const fl = t.closest('[data-flip]');
   if (fl) { const id = fl.dataset.flip; if (store.flip.has(id)) store.flip.delete(id); else store.flip.add(id); render(); return; }
   const lab = t.closest('.g-group .g-label, .g-sub .g-label');
@@ -1520,11 +1660,11 @@ document.addEventListener('click', e => {
   const tk = t.closest('[data-task]');
   if (tk) { const id = tk.dataset.task; store.selTask = id && store.selTask !== id ? id : null; store.sel = null; const tt = DATA.tasks.find(x => x.id === id); if (tt && store.selTask) revealTask(tt); render(); return; }
   const ph2 = t.closest('[data-phub]'); if (ph2) { store.personHub = ph2.dataset.phub || ''; if (location.hash === ph2.getAttribute('href')) { e.preventDefault(); render(); } return; }
-  const j = t.closest('[data-jump]'); if (j) { store.jump = 'p-' + j.dataset.jump; store.plan = 'nodes'; if (!nodeOpen(j.dataset.jump)) store.flip.add('nc-' + j.dataset.jump); { const hid = P[j.dataset.jump]?.hub; const k = 'hb-' + hid; if (!folded(k, (H[hid]?.nodes || []).some(isOwn) || (!PHONE() && (isCore() || isPublic())))) { if (store.flip.has(k)) store.flip.delete(k); else store.flip.add(k); } } if (location.hash === '#plan') { e.preventDefault(); render(); } return; }
+  const j = t.closest('[data-jump]'); if (j) { store.jump = 'p-' + j.dataset.jump; store.plan = 'nodes'; if (!nodeOpen(j.dataset.jump)) store.flip.add('nc-' + j.dataset.jump); { const hid = P[j.dataset.jump]?.hub; const k = 'hb-' + hid; if (!folded(k, (H[hid]?.nodes || []).some(isOwn) || (!PHONE() && (isCore() || isPublic())))) { if (store.flip.has(k)) store.flip.delete(k); else store.flip.add(k); } } if (location.hash === '#camp') { e.preventDefault(); render(); } return; }
   const pt = t.closest('[data-partner]'); if (pt) { store.partner = pt.dataset.partner; store.jump = 'pt-' + pt.dataset.partner; }
   const sh = t.closest('[data-show]');
   if (sh) { const id = sh.dataset.show; store.sel = id || null; store.selTask = null; store.who = id && store.who && !ownsPhase(PH[id], store.who, store.shared) ? '' : store.who; store.scrollTo = id || null; if (id) reveal(id);
-    if (id && location.hash !== '#plan-timeline') location.hash = 'plan-timeline'; else render(); return; }
+    if (id && location.hash !== '#camp-timeline') location.hash = 'camp-timeline'; else render(); return; }
   const ph = t.closest('[data-ph]'); if (ph) { store.sel = store.sel === ph.dataset.ph ? null : ph.dataset.ph; store.selTask = null; render(); return; }
   const z = t.closest('[data-zoom]'); if (z) { store.zoom = z.dataset.zoom; try { localStorage.setItem('basecamp.zoom', store.zoom); } catch (er) {} const g = $('#gantt'); if (g) g.scrollLeft = 0; render(); if ($('#gantt') && store.zoom === 'near') $('#gantt').scrollLeft = 0; return; }
   const u = t.closest('[data-upd]');
@@ -1548,7 +1688,7 @@ document.addEventListener('input', e => {
 document.addEventListener('change', e => {
   const id = e.target.id;
   if (id === 'role') { role = e.target.value; try { localStorage.setItem('basecamp.role', role); } catch (er) {} store.openForm = null; store.filter = null; store.sel = null; store.selTask = null; store.who = ''; store.person = ''; store.roleWhy = false;
-    const hh = location.hash.slice(1); const base = (ALIAS[hh] || hh).replace(/-.*$/, ''); if (!tabsFor().some(([k]) => k === base)) location.hash = 'home'; render(); return; }
+    const hh = location.hash.slice(1); const base = (ALIAS[hh] || hh).replace(/-.*$/, ''); if (!tabsFor().some(([k]) => k === base) && base !== 'list') location.hash = 'today'; render(); return; }
   if (id === 'f-person') { location.hash = 'list-' + slug(e.target.value); return; }
   if (id === 'f-who') { store.who = e.target.value; store.sel = null; store.selTask = null; if (store.who) { store.depth = 'tasks'; store.flip = new Set([...store.flip].filter(x => !/^[hnpo]-/.test(x))); } render(); return; }
   if (id === 'f-hub') { store.hubF = e.target.value; render(); return; }
@@ -1560,6 +1700,7 @@ document.addEventListener('change', e => {
   const map = { 'f-status': 'status', 'f-owner': 'owner' };
   if (map[id]) { store.filter[map[id]] = e.target.value; render(); }
 });
+document.addEventListener('toggle', e => { const k = e.target.dataset && e.target.dataset.ctxk; if (k) { if (e.target.open) store.ctx.add(k); else store.ctx.delete(k); } }, true);
 document.addEventListener('submit', async e => {
   const vf = e.target.closest('form[data-vform]');
   if (vf) {
@@ -1618,7 +1759,7 @@ document.addEventListener('submit', async e => {
 });
 // a link or a resize can land before the plan has loaded (the sign-in door, a phone settling its width): draw only once it has
 window.addEventListener('hashchange', () => { if (DATA && role) render(); });
-window.addEventListener('resize', () => { if (DATA && role && current() === 'plan' && store.plan === 'timeline') render(); });
+window.addEventListener('resize', () => { if (DATA && role && current() === 'camp' && store.plan === 'timeline') render(); });
 
 function siteError(err, fallback) {
   const m = String(err?.message || '');
@@ -1629,6 +1770,26 @@ function siteError(err, fallback) {
   if (/say why/.test(m)) return 'Say why, in a line or two.';
   if (err?.code === 'not_granted') return 'Your sign-in has ended. Sign in again, then send it.';
   return fallback;
+}
+async function siteTick(btn) {
+  const t = DATA.tasks.find(x => x.id === btn.dataset.tick); if (!t || !WHO) return;
+  const was = effDone(t), status = was ? 'Under way' : 'Done';
+  btn.disabled = true; btn.setAttribute('aria-pressed', String(!was));
+  try {
+    const u = await window.MahalaMembers.rpc('basecamp_update', { p_task: t.id, p_status: status, p_note: was ? 'Ticked by mistake; back to under way' : '' });
+    store.updates.push(siteUpdate(u)); render();
+  } catch (err) {
+    btn.disabled = false; btn.setAttribute('aria-pressed', String(was));
+    const row = btn.closest('.item'); let m = row.querySelector('[data-tickmsg]');
+    if (!m) { m = document.createElement('div'); m.className = 'muted small'; m.dataset.tickmsg = ''; m.setAttribute('role', 'status'); row.appendChild(m); }
+    m.textContent = siteError(err, 'That did not go through. Check your connection and tap again.');
+  }
+}
+async function siteHelp(btn) {
+  if (!WHO) return;
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try { const c = await window.MahalaMembers.rpc('basecamp_comment', { p_task: btn.dataset.help, p_text: HELP_TEXT }); store.comments.push(c); render(); }
+  catch (err) { btn.disabled = false; btn.textContent = "I'll help"; btn.title = siteError(err, 'That did not go through. Try again.'); }
 }
 function siteUpdate(u) { const d = new Date(u.at); return { ...u, when: `${d.getDate()} ${MON[d.getMonth()]}` }; }
 // The views on open decisions, read alongside the feed; an older database without them leaves the cards as they were.
@@ -1650,7 +1811,7 @@ async function siteFeed() {
   } catch (e) { if (store.dbState !== 'ready') { store.dbState = 'late'; render(); } }
 }
 function gate(kind, detail) {
-  $('#tabs').innerHTML = ''; $('#roleline').hidden = true; $('#gen').hidden = true; $('.vas').hidden = true;
+  $('#tabs').innerHTML = ''; $('#bottombar').hidden = true; $('#roleline').hidden = true; $('#gen').hidden = true; $('.vas').hidden = true;
   const back = '<a class="btn" href="./">Back to wearemahala.com</a>';
   const body = {
     signin: `<p class="hello">For the people building The Seed</p><h2>Basecamp</h2><p>The camp's plan for 2027: every node, task and date on the way to The Seed, with updates from the people doing them. It is for the core team, camp leads and crews.</p><button class="btn primary" type="button" data-signin>Sign in</button>${back}`,
@@ -1689,7 +1850,6 @@ async function siteLoad() {
   await init(r.data);
   $('.vas').hidden = WHO.view !== 'core';                 // only the core team previews other roles
   $('#toCommunity').hidden = !(WHO.view === 'core' || ['camplead', 'crewlead'].includes(WHO.role));   // the community map opens for them too
-  $('#toFootage').hidden = !(WHO.view === 'core' || ['camplead', 'crewlead'].includes(WHO.role));     // and the footage, to vote on
   store.dbState = 'waiting';
   if (WHO.view === 'core') { try { store.quests = await M.rpc('basecamp_quests'); } catch (e) { store.quests = null; } }
   await siteFeed();
