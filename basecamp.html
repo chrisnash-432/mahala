@@ -261,6 +261,16 @@ td.r, th.r { text-align: right; font-variant-numeric: tabular-nums; white-space:
 .dec .opts { display: flex; gap: 6px; flex-wrap: wrap; }
 .dec .opts span { font-size: 0.84rem; padding: 4px 12px 3px; border-radius: 999px; background: var(--paper); border: 1px solid var(--line); }
 .dec.done { opacity: 0.65; }
+/* voices on decisions (10 Nov 2026): tap an option, consent or advice; counts for all, names for whoever decides */
+.dec .voice { display: grid; gap: 8px; border-top: 1px dashed var(--line); padding-top: 10px; }
+.dec .voice p { margin: 0; }
+.dec .opts .opt { font: inherit; font-size: 0.86rem; padding: 7px 14px 6px; min-height: 36px; border-radius: 999px; background: #fff; border: 1px solid var(--rule2); color: var(--ink); cursor: pointer; text-align: left; }
+.dec .opts .opt:hover { border-color: var(--ink); }
+.dec .opts .opt[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--warm); }
+.dec .vform { display: grid; gap: 6px; }
+.dec .vform .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.dec .voices { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 6px; font-size: 0.86rem; }
+.dec .voices span { display: block; color: var(--muted); }
 .dec .by { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 0.82rem; color: var(--muted); align-items: center; }
 .fbl { display: grid; gap: 10px; margin-top: 10px; }
 .fb { background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; display: grid; gap: 6px; min-width: 0; }
@@ -579,7 +589,7 @@ const ARCH = 'M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 5
 const PHONE = () => window.innerWidth < 720;
 
 let DATA = null, P = {}, PH = {}, H = {}, NOW = null;
-const store = { db: null, user: null, uid: null, updates: [], comments: [], names: {}, openThread: null, cdraft: {}, feedSig: '', dbState: 'waiting', openForm: null, draft: {},
+const store = { db: null, user: null, uid: null, updates: [], comments: [], names: {}, openThread: null, cdraft: {}, voices: null, vpick: {}, vdraft: {}, feedSig: '', dbState: 'waiting', openForm: null, draft: {},
   zoom: 'season', sel: null, selTask: null, who: '', hubF: '', shared: true, depth: 'phases', flip: new Set(), person: '', personHub: '',
   plan: 'nodes', gen: null, filter: null, roleWhy: false, allAttn: false, evf: 'all', evPast: false };
 let role = null;
@@ -1146,6 +1156,31 @@ function viewTasks() {
 }
 
 // ---------------------------------------------------------------- Decisions
+// Voices on decisions (10 Nov 2026): anyone who sees an open decision taps an option (or consents, raises a concern
+// or objects, or writes advice, when register.yaml says `ask:`), with a reason. Everyone sees the counts and their own
+// view; the core team and whoever decides see names and reasons. The database keeps one view each and enforces it all.
+const ASK_LABEL = { choose: 'Which way do you lean? Tap one.', consent: 'Can you live with it? Consent, a concern, or an objection.', advice: 'Your advice to whoever decides.' };
+const ASK_HINT = { Consent: 'I can live with this', Concern: 'Yes, with a worry worth noting', Object: 'It would harm the camp, and here is why' };
+function voiceBlock(d) {
+  const plain = d.options.length ? `<div class="opts">${d.options.map(o => `<span>${esc(o)}</span>`).join('')}</div>` : '';
+  const v = SITE && !d.done && store.voices ? store.voices[d.task] : null;
+  if (!v) return plain;
+  const mine = v.mine, pick = store.vpick[d.task] || null, chosen = pick || mine?.choice;
+  const advice = v.ask === 'advice', writing = !!pick || (advice && !mine);
+  const btns = advice ? '' : `<div class="opts" role="group" aria-label="${esc(ASK_LABEL[v.ask])}">${v.choices.map(c =>
+    `<button type="button" class="opt" data-vote="${esc(d.task)}" data-choice="${esc(c)}" aria-pressed="${c === chosen}"${ASK_HINT[c] && v.ask === 'consent' ? ` title="${esc(ASK_HINT[c])}"` : ''}>${esc(c)}</button>`).join('')}</div>`;
+  const need = pick === 'Object' || advice;
+  const form = writing ? `<form class="vform" data-vform="${esc(d.task)}" data-choice="${esc(advice ? 'Advice' : pick)}">
+      <textarea data-vreason rows="2" maxlength="600" aria-label="${need ? 'Why' : 'Why (optional)'}" placeholder="${need ? 'Say why, in a line or two' : 'Why, if you like'}">${esc(store.vdraft[d.task] ?? mine?.reason ?? '')}</textarea>
+      <div class="row"><button class="btn primary" type="submit">${advice ? (mine ? 'Change my advice' : 'Send my advice') : (mine ? 'Change my view' : 'Give my view')}</button>${pick ? `<button class="btn" type="button" data-vcancel="${esc(d.task)}">Cancel</button>` : ''}<span class="muted small" data-msg role="status"></span></div></form>` : '';
+  const yours = mine && !writing ? `<p class="small">Your ${advice ? 'advice' : 'view'}: <strong>${esc(mine.choice)}</strong>${mine.reason ? ` (${esc(mine.reason)})` : ''}.${advice ? ` <button class="btn" type="button" data-vote="${esc(d.task)}" data-choice="Advice">Change it</button>` : ' Tap another to change it.'}</p>` : '';
+  const tally = !v.total ? 'No views yet.' : advice ? `${plural(v.total, 'person', 'people')} gave advice.`
+    : `${plural(v.total, 'view')}: ${Object.entries(v.counts).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${esc(k)} ${n}`).join(' · ')}.`;
+  const who = v.decider && v.voices && v.voices.length ? fold('v-' + d.task, 'Who said what', v.voices.length,
+    `<ul class="voices">${v.voices.map(x => `<li><strong>${esc(x.name)}</strong>: ${esc(x.choice)}${x.reason ? `<span>${esc(x.reason)}</span>` : ''}</li>`).join('')}</ul>`, false) : '';
+  return `${v.ask === 'choose' ? '' : plain}<div class="voice"><p class="muted small">${esc(ASK_LABEL[v.ask])}</p>${btns}${form}${yours}
+    <p class="small">${tally}${v.decider ? '' : ' <span class="muted">Names go only to whoever decides.</span>'}</p>${who}</div>`;
+}
 function viewDecisions() {
   const ds = scopedDecisions();
   const open = ds.filter(d => !d.done).sort((a, b) => (a.by || '9').localeCompare(b.by || '9'));
@@ -1153,7 +1188,7 @@ function viewDecisions() {
   const card = d => { const t = DATA.tasks.find(x => x.id === d.task); const n = d.by ? daysFrom(d.by) : null;
     const key = t ? t.id + '|' + t.owner : '', ed = t && canEdit(t.project) && !t.done, u = t && latestUpdate(t.id);
     return `<article class="dec${d.done ? ' done' : ''}"><div class="by"><span class="tag">${esc(P[d.project]?.name)}</span>${d.done ? '<span class="chip s-done">Decided</span>' : n == null ? '<span class="muted">No date yet</span>' : `<span class="chip ${n < 0 ? 's-late' : n <= 7 ? 's-at-risk' : 's-upcoming'}">${n < 0 ? 'Was due ' + day(d.by) : 'By ' + day(d.by)}</span>`}</div>
-      <h3>${esc(d.q)}</h3><div class="opts">${d.options.map(o => `<span>${esc(o)}</span>`).join('')}</div>
+      <h3>${esc(d.q)}</h3>${voiceBlock(d)}
       <p class="small"><span class="muted">Why it matters:</span> ${esc(d.why)}</p>
       <div class="by"><span>Decides: <span class="who">${esc(pname(d.who))}</span></span>${d.doc ? `<a href="${esc(d.doc)}" target="_blank" rel="noopener">Read the proposal</a>` : ''}</div>
       ${u ? `<div class="note">Latest: ${esc(u.status)}${u.note ? ', ' + esc(u.note) : ''}</div>` : ''}${ed ? `<div><button class="btn" type="button" data-upd="${esc(key)}">${store.openForm === key ? 'Close' : 'Record where it stands'}</button></div>` : ''}${store.openForm === key ? updateForm(t) : ''}</article>`; };
@@ -1448,6 +1483,11 @@ document.addEventListener('click', e => {
   const t = e.target;
   if (t.closest('#acct') || t.closest('[data-signin]')) { e.preventDefault(); const M = window.MahalaMembers; if (M) Promise.resolve(M.info()).then(i => (i && i.signedIn ? M.account() : M.signIn('Sign in to open Basecamp'))); return; }
   const th = t.closest('[data-thread]'); if (th) { store.openThread = store.openThread === th.dataset.thread ? null : th.dataset.thread; render(); if (store.openThread) setTimeout(() => document.getElementById('c-' + store.openThread)?.focus(), 0); return; }
+  const vo = t.closest('[data-vote]'); if (vo) {
+    const tid = vo.dataset.vote; store.vpick[tid] = vo.dataset.choice; render();
+    setTimeout(() => document.querySelector(`form[data-vform="${tid}"] textarea`)?.focus(), 0); return;
+  }
+  const vc = t.closest('[data-vcancel]'); if (vc) { delete store.vpick[vc.dataset.vcancel]; delete store.vdraft[vc.dataset.vcancel]; render(); return; }
   const un = t.closest('[data-uncomment]'); if (un) {
     un.disabled = true;
     window.MahalaMembers.rpc('basecamp_uncomment', { p_id: Number(un.dataset.uncomment) })
@@ -1500,6 +1540,7 @@ document.addEventListener('keydown', e => {
 });
 document.addEventListener('input', e => {
   if (e.target.matches('[data-ctext]')) store.cdraft[e.target.closest('form').dataset.cform] = e.target.value;
+  if (e.target.matches('[data-vreason]')) store.vdraft[e.target.closest('form').dataset.vform] = e.target.value;
   if (e.target.matches('[data-note]')) { const key = e.target.closest('form').dataset.form; const d = store.draft[key] || { status: 'Under way', note: '' }; d.note = e.target.value; store.draft[key] = d; }
   if (e.target.id === 'f-q') { store.filter.q = e.target.value; const pos = e.target.selectionStart; render(); const q = $('#f-q'); if (q) { q.focus(); q.setSelectionRange(pos, pos); } }
 });
@@ -1519,6 +1560,20 @@ document.addEventListener('change', e => {
   if (map[id]) { store.filter[map[id]] = e.target.value; render(); }
 });
 document.addEventListener('submit', async e => {
+  const vf = e.target.closest('form[data-vform]');
+  if (vf) {
+    e.preventDefault();
+    const tid = vf.dataset.vform, choice = vf.dataset.choice, msg = vf.querySelector('[data-msg]'), btn = vf.querySelector('button[type=submit]');
+    const reason = vf.querySelector('[data-vreason]').value.trim();
+    if (!reason && (choice === 'Object' || choice === 'Advice')) { msg.textContent = 'Say why, in a line or two.'; return; }
+    btn.disabled = true; msg.textContent = 'Sending…';
+    try {
+      await window.MahalaMembers.rpc('basecamp_voice', { p_task: tid, p_choice: choice, p_reason: reason });
+      delete store.vpick[tid]; delete store.vdraft[tid];
+      await siteVoices(); render();
+    } catch (err) { btn.disabled = false; msg.textContent = siteError(err, 'Your view was not sent. Check your connection and send it again.'); }
+    return;
+  }
   const cf = e.target.closest('form[data-cform]');
   if (cf) {
     e.preventDefault();
@@ -1569,14 +1624,22 @@ function siteError(err, fallback) {
   if (/not yours/.test(m)) return 'This task is not yours to update. Ask its owner or a core team member.';
   if (/not in your Basecamp/.test(m)) return 'This task is not in your Basecamp.';
   if (/a lot for one hour/.test(m)) return 'That is a lot for one hour. Try again a little later.';
+  if (/not open in your Basecamp/.test(m)) return 'This decision has closed, or is not in your Basecamp.';
+  if (/say why/.test(m)) return 'Say why, in a line or two.';
   if (err?.code === 'not_granted') return 'Your sign-in has ended. Sign in again, then send it.';
   return fallback;
 }
 function siteUpdate(u) { const d = new Date(u.at); return { ...u, when: `${d.getDate()} ${MON[d.getMonth()]}` }; }
+// The views on open decisions, read alongside the feed; an older database without them leaves the cards as they were.
+async function siteVoices() {
+  if (!DATA || !DATA.decisions.some(d => !d.done)) { store.voices = null; return; }
+  try { store.voices = Object.fromEntries((await window.MahalaMembers.rpc('basecamp_voices')).map(v => [v.task, v])); }
+  catch (e) { /* keep what was there */ }
+}
 async function siteFeed() {
   try {
-    const f = await window.MahalaMembers.rpc('basecamp_feed');
-    const sig = JSON.stringify([f.updates.map(u => u.id), f.comments.map(c => c.id)]);
+    const [f] = await Promise.all([window.MahalaMembers.rpc('basecamp_feed'), siteVoices()]);
+    const sig = JSON.stringify([f.updates.map(u => u.id), f.comments.map(c => c.id), store.voices]);
     store.updates = f.updates.map(siteUpdate); store.comments = f.comments;
     const first = store.dbState !== 'ready'; store.dbState = 'ready';
     if (sig === store.feedSig && !first) return;
