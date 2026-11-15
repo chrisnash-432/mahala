@@ -545,7 +545,7 @@ footer:empty { display: none; }
 .evrow .when b { font: 400 1.15rem/1.1 var(--display); letter-spacing: 0.03em; }
 .evrow .when span { font-size: 0.76rem; color: var(--muted); }
 .evrow .what { display: grid; gap: 5px; min-width: 0; }
-.evrow .ttl { font-weight: 500; overflow-wrap: anywhere; }
+.evrow .what > .ttl { font-weight: 500; overflow-wrap: anywhere; }
 .evrow .chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .evrow .sub { font-size: 0.84rem; color: var(--muted); }
 .evrow .evtasks { display: grid; gap: 3px; margin: 2px 0 0; padding: 0; list-style: none; font-size: 0.84rem; }
@@ -553,8 +553,8 @@ footer:empty { display: none; }
 .evrow .evtasks li.done .tt { text-decoration: line-through; color: var(--faint); }
 .evrow .evtasks .tid { font-size: 0.72rem; color: var(--faint); font-variant-numeric: tabular-nums; }
 .evrow.k-meeting, .evrow.k-pause { opacity: 0.72; }
-.evrow.k-meeting .ttl, .evrow.k-pause .ttl { font-weight: 400; }
-.evrow.k-deadline .ttl::before { content: "Deadline · "; color: var(--bad); font-weight: 500; }
+.evrow.k-meeting .what > .ttl, .evrow.k-pause .what > .ttl { font-weight: 400; }
+.evrow.k-deadline .what > .ttl::before { content: "Deadline · "; color: var(--bad); font-weight: 500; }
 .evrow.past { opacity: 0.55; }
 .evkind { display: inline-flex; align-items: center; gap: 6px; font-size: 0.74rem; color: var(--muted); }
 .evkind i { width: 8px; height: 8px; border-radius: 50%; }
@@ -569,6 +569,50 @@ footer:empty { display: none; }
 }
 /* seven tabs on a phone: tighter, so Library stays in view */
 @media (max-width: 440px) { nav.tabs a { padding: 9px 5px 8px; letter-spacing: 0.04em; font-size: 0.63rem; } }
+
+/* 15 Nov 2026 (the Mics call, F-071 to F-077): a colour for each hub, a green tick for done, the board, steps in Gather */
+.hubdot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--hub, var(--rule2)); margin-right: 7px; vertical-align: 1px; flex: none; }
+.item .t .hubdot { margin-right: 6px; }
+.hub > .hubhead h2 .hubdot { width: 12px; height: 12px; margin: 0 8px 0 2px; vertical-align: 2px; }
+.block.hub { box-shadow: inset 4px 0 0 var(--hub, transparent); }
+.huekey { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.78rem; color: var(--muted); margin: 2px 0 6px; }
+.huekey span { display: inline-flex; align-items: center; }
+.tick[aria-pressed="true"] { background: var(--good); border-color: var(--good); color: #fff; }
+.donemark { grid-row: 1 / span 2; align-self: start; width: 30px; height: 30px; margin-top: -3px; border-radius: 50%; background: var(--good); color: #fff; display: grid; place-items: center; }
+.donemark svg { width: 14px; height: 14px; }
+.item.has-tick > :not(.tick):not(.donemark) { grid-column: 2; }
+.item.has-tick > .donemark { grid-column: 1; }
+.item.has-tick { grid-template-columns: 30px minmax(0, 1fr); column-gap: 12px; }
+.item.is-done .t { color: var(--muted); text-decoration: none; }
+.item.is-done .t .ttl::after { content: " · done"; color: var(--good); font-weight: 500; font-size: 0.8rem; }
+.evrow .evlist { margin-top: 6px; border: 1px solid var(--line2); border-radius: var(--r-s); background: var(--sheet); }
+.evrow .evlist .item { padding: 8px 12px; }
+.evrow .evlist .item .t { font-size: 0.9rem; }
+.boardsum { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 0.86rem; }
+.boardsum a, .boardsum span.n { display: inline-flex; gap: 6px; align-items: baseline; padding: 4px 10px; border-radius: 999px; background: var(--sheet); border: 1px solid var(--line2); color: var(--ink); text-decoration: none; }
+.boardsum b { font-variant-numeric: tabular-nums; font-weight: 600; }
+.boardsum .c-stuck b { color: var(--bad); } .boardsum .c-doing b { color: var(--cyan); } .boardsum .c-done b { color: var(--good); } .boardsum .c-late b { color: var(--warn); }
+.board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.bcol { background: color-mix(in srgb, var(--paper) 60%, var(--sheet)); border: 1px solid var(--line2); border-radius: var(--r); min-width: 0; }
+.bcol > h3 { margin: 0; padding: 10px 14px 8px; font: 500 0.95rem/1.2 var(--body); display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--line2); }
+.bcol > h3 .tag { font-variant-numeric: tabular-nums; }
+.bcol.c-stuck > h3 { box-shadow: inset 0 3px 0 var(--bad); border-radius: var(--r) var(--r) 0 0; }
+.bcol.c-doing > h3 { box-shadow: inset 0 3px 0 var(--cyan); border-radius: var(--r) var(--r) 0 0; }
+.bcol.c-done > h3 { box-shadow: inset 0 3px 0 var(--good); border-radius: var(--r) var(--r) 0 0; }
+.bcol.c-todo > h3 { box-shadow: inset 0 3px 0 var(--rule2); border-radius: var(--r) var(--r) 0 0; }
+.bcol .bhint { padding: 6px 14px 0; font-size: 0.78rem; color: var(--muted); }
+.bcol .list { background: transparent; }
+.bcol .item { box-shadow: inset 3px 0 0 var(--hub, transparent); background: var(--sheet); margin: 8px; border: 1px solid var(--line2); border-radius: var(--r-s); }
+.bcol .item:first-child { border-top: 1px solid var(--line2); }
+.bcol .more { padding: 4px 14px 12px; }
+.bcol .empty { padding: 12px 14px; }
+.lane { margin-top: 10px; }
+.lane .board { margin-top: 8px; }
+@media (max-width: 900px) {
+  .board { grid-template-columns: repeat(4, minmax(250px, 82vw)); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; -webkit-overflow-scrolling: touch; }
+  .bcol { scroll-snap-align: start; }
+}
+.libtop { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; margin: -4px 0 10px; font-size: 0.86rem; }
 </style>
 
 <header class="top">
@@ -615,7 +659,7 @@ const ROLES = {
 // whole list (#list) stays one tap from Today.
 const TABS = [['today', 'Today'], ['camp', 'Camp'], ['gather', 'Gather'], ['library', 'Library']];
 const PUBLIC_TABS = ['today', 'camp', 'gather', 'library'];
-const ALIAS = { home: 'today', overview: 'today', week: 'list', people: 'list', plan: 'camp', nodes: 'camp', projects: 'camp', crews: 'camp', timeline: 'camp-timeline', tasks: 'camp-tasks', decisions: 'camp-decisions', events: 'gather', money: 'library', budget: 'library', access: 'library' };
+const ALIAS = { home: 'today', overview: 'today', week: 'list', people: 'list', plan: 'camp', nodes: 'camp', projects: 'camp', crews: 'camp', timeline: 'camp-timeline', tasks: 'camp-tasks', board: 'camp-board', kanban: 'camp-board', decisions: 'camp-decisions', events: 'gather', money: 'library', budget: 'library', access: 'library' };
 const PLACE_ICON = {
   today: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg>',
   camp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>',
@@ -637,6 +681,18 @@ function hillMark(p, words = true) {
 const STATE_LABEL = { 'on-track': 'On track', 'at-risk': 'At risk', 'blocked': 'Blocked', 'not-started': 'Not started' };
 const PH_LABEL = { done: 'Done', active: 'Under way', 'at-risk': 'Behind', late: 'Late', upcoming: 'Not started' };
 const STATUS_OPTS = ['Under way', 'Done', 'Blocked', 'Not started'];
+// What people see for a status (15 Nov 2026): the camp says "stuck" (the core call of 15 Nov); the record keeps Blocked.
+const STATUS_SAY = { Blocked: 'Stuck' };
+function sayStatus(s) { return STATUS_SAY[s] || s; }
+// A colour for each hub (15 Nov 2026, the core call, F-073): on the hub's heading and a small mark beside every
+// step, wherever it shows, so people can skim to the right place. Kept clear of the wax, the cyan of under way, the
+// yellow of behind and the green of done. `colour:` on a hub in register.yaml overrides these.
+const HUB_COLOUR = { communitas: '#6E46A8', art: '#8A5D06', operations: '#A8481F', finance: '#2F4FA8', stewardship: '#56662A' };
+function hubColour(hid) { const hb = (DATA?.hubs || []).find(h => h.id === hid); return (hb && hb.colour) || HUB_COLOUR[hid] || 'var(--rule2)'; }
+function hubOfTask(t) { return P[t.project]?.hub || ''; }
+function hubStyle(hid) { return hid ? ` style="--hub:${hubColour(hid)}"` : ''; }
+function hubDot(hid, label) { if (!hid) return ''; const hb = H[hid]; return `<i class="hubdot" style="--hub:${hubColour(hid)}" title="${esc(label || (hb ? hb.name : ''))}" aria-hidden="true"></i>`; }
+function hueKey(hids) { return `<div class="huekey" aria-hidden="true">${hids.map(id => `<span>${hubDot(id)}${esc(H[id]?.name || id)}</span>`).join('')}</div>`; }
 let INDIV = [];   // the core team's names, from the data (never in page code: the site's copy is public)
 const GROUPS_ORDER = ['Stewards', 'Core', 'Leads'];
 const LEVELS = ['hubs', 'nodes', 'phases', 'tasks'];
@@ -652,7 +708,7 @@ const ARCH = 'M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 5
 const PHONE = () => window.innerWidth < 720;
 
 let DATA = null, P = {}, PH = {}, H = {}, NOW = null;
-const store = { db: null, user: null, uid: null, updates: [], comments: [], names: {}, openThread: null, cdraft: {}, ctx: new Set(), voices: null, vpick: {}, vdraft: {}, feedSig: '', dbState: 'waiting', openForm: null, draft: {},
+const store = { bAll: new Set(), board: null, db: null, user: null, uid: null, updates: [], comments: [], names: {}, openThread: null, cdraft: {}, ctx: new Set(), voices: null, vpick: {}, vdraft: {}, feedSig: '', dbState: 'waiting', openForm: null, draft: {},
   zoom: 'season', sel: null, selTask: null, who: '', hubF: '', shared: true, depth: 'phases', flip: new Set(), person: '', personHub: '',
   plan: 'nodes', gen: null, filter: null, roleWhy: false, allAttn: false, evf: 'all', evPast: false };
 let role = null;
@@ -716,7 +772,7 @@ function reveal(phId) { const ph = PH[phId]; if (!ph) return; const hid = P[ph.p
 function revealTask(t) { const hid = P[t.project]?.hub; if (hid) setOpen('h-' + hid, 'hubs', true); setOpen('n-' + t.project, 'nodes', true); if (t.phase) setOpen('p-' + t.phase, 'phases', true); else setOpen('o-' + t.project, 'phases', true); }
 function folded(id, dflt) { return dflt !== store.flip.has(id); }
 function fold(id, title, n, body, dflt, cls = '') { const o = folded(id, dflt);
-  return `<div class="fold ${cls}" data-open="${o ? 1 : 0}"><button class="grp" type="button" data-flip="${id}" aria-expanded="${o}"><span class="chev">${o ? '▾' : '▸'}</span><span class="gt">${title}</span>${n !== '' && n != null ? `<span class="tag">${n}</span>` : ''}</button>${o ? body : ''}</div>`; }
+  return `<div class="fold ${cls}" id="fold-${esc(id)}" data-open="${o ? 1 : 0}"><button class="grp" type="button" data-flip="${id}" aria-expanded="${o}"><span class="chev">${o ? '▾' : '▸'}</span><span class="gt">${title}</span>${n !== '' && n != null ? `<span class="tag">${n}</span>` : ''}</button>${o ? body : ''}</div>`; }
 
 // who "me" is for the role being previewed
 function meOf() { const c = cfg(); return store.person || (INDIV.includes(c.me) ? c.me : ''); }
@@ -825,14 +881,16 @@ function taskRow(t, o = {}) {
   const key = t.id + '|' + t.owner, formOpen = store.openForm === key;
   const plain = t.detail || (isCore() ? '' : '');
   const raw = isCore() && t.text.length > t.title.length + 12;
-  let h = `<div class="item${effDone(t) ? ' is-done' : ''}${t.blocked && !t.done ? ' is-blocked' : ''}${tickable ? ' has-tick' : ''}">
+  const doneMark = !tickable && effDone(t);
+  let h = `<div class="item${effDone(t) ? ' is-done' : ''}${t.blocked && !t.done ? ' is-blocked' : ''}${tickable || doneMark ? ' has-tick' : ''}"${hubStyle(hubOfTask(t))}>
+    ${doneMark ? `<span class="donemark" role="img" aria-label="Done"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>` : ''}
     ${tickable ? `<button class="tick" type="button" data-tick="${esc(t.id)}" aria-pressed="${effDone(t)}" aria-label="${effDone(t) ? 'Done. Tap to mark it under way again' : 'Mark done'}: ${esc(t.title)}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>` : ''}
-    <div class="t">${isCore() ? `<span class="tid">${t.id}</span>` : ''}<span class="ttl" data-ctx="t:${esc(t.id)}">${esc(t.title)}</span></div>
+    <div class="t">${hubDot(hubOfTask(t))}${isCore() ? `<span class="tid">${t.id}</span>` : ''}<span class="ttl" data-ctx="t:${esc(t.id)}">${esc(t.title)}</span></div>
     <div class="meta">${o.crumb ? `<span class="tag">${crumb(t.project)}</span>` : ''}${o.owner === false ? '' : `<span class="who">${esc(pname(t.owner))}</span>`}${dueLabel(t)}${blockedChip(t)}
-      ${editable ? `<button class="btn link" type="button" data-upd="${esc(key)}">${formOpen ? 'Close' : 'Send an update'}</button>` : ''}
+      ${editable ? `<button class="btn link" type="button" data-upd="${esc(key)}">${formOpen ? 'Close' : o.board ? 'Move or update' : 'Send an update'}</button>` : ''}
       ${SITE && WHO ? `<button class="btn link" type="button" data-thread="${esc(t.id)}" aria-expanded="${threadOpen}">${threadOpen ? 'Hide comments' : nc ? `Comments (${nc})` : 'Comment'}</button>` : ''}${o.help === false ? '' : helpLine(t)}</div>
     <details data-ctxk="t:${esc(t.id)}"${store.ctx.has('t:' + t.id) ? ' open' : ''}><summary>Why it matters</summary>${plain ? `<p>${esc(plain)}</p>` : ''}${whyItMatters(t)}${raw ? `<p class="tiny">${plain ? '<span class="eyebrow">In the task list</span> ' : ''}${richText(t.text)}</p>` : ''}</details>`;
-  if (u) h += `<div class="note">Latest: ${esc(u.status)}${u.note ? ', ' + esc(u.note) : ''} <span class="muted">(${esc(nameOf(u))}, ${esc(u.when || '')}${SITE && u.status === 'Done' && !t.done ? '; ticks in the task list at the next sync' : ''})</span></div>`;
+  if (u) h += `<div class="note">Latest: ${esc(sayStatus(u.status))}${u.note ? ', ' + esc(u.note) : ''} <span class="muted">(${esc(nameOf(u))}, ${esc(u.when || '')}${SITE && u.status === 'Done' && !t.done ? '; ticks in the task list at the next sync' : ''})</span></div>`;
   if (formOpen) h += updateForm(t);
   if (threadOpen) h += threadBox(t);
   return h + `</div>`;
@@ -849,8 +907,8 @@ function updateForm(t) {
   const key = t.id + '|' + t.owner, d = store.draft[key] || { status: 'Under way', note: '' };
   const noDb = !canSend();
   return `<form class="upd" data-form="${esc(key)}">
-    <div class="seg" role="group" aria-label="Status">${STATUS_OPTS.map(s => `<button type="button" data-status="${s}" aria-pressed="${d.status === s}">${s}</button>`).join('')}</div>
-    <label class="muted" for="note-${t.id}" style="font-size:.82rem">Note (what changed, what is next)</label>
+    <div class="seg" role="group" aria-label="Status">${STATUS_OPTS.map(s => `<button type="button" data-status="${s}" aria-pressed="${d.status === s}">${sayStatus(s)}</button>`).join('')}</div>
+    <label class="muted" for="note-${t.id}" style="font-size:.82rem">Note (what changed, what is next; if it is stuck, say what would unstick it)</label>
     <textarea id="note-${t.id}" data-note>${esc(d.note)}</textarea>
     <div class="filters"><button class="btn primary" type="submit" ${noDb ? 'disabled' : ''}>Send update</button>
       <span class="muted" style="font-size:.8rem">${noDb ? (SITE ? 'Sign in to send updates.' : 'Sign in to claude.ai to send updates from this page.') : SITE ? 'Everyone with Basecamp sees it now. It goes into the camp\'s task list within the hour; Done ticks the task.' : 'Goes to the stewards, who write it into the task list.'}</span></div>
@@ -873,6 +931,7 @@ function viewToday() {
   if (isPublic()) return viewHome();
   const c = cfg(), me = meOf(), first = me && INDIV.includes(me) ? me : (WHO && WHO.name) || '';
   let h = `<section class="welcome today"><div class="hello">${greeting()}${first ? `, ${esc(first)}` : ''}.</div><div class="days">${daysFrom(DATA.burn)} days until we raise The Seed</div></section>`;
+  if (boardable()) h += `<section class="block"><div class="head"><h2>The board at a glance</h2><a href="#camp-board">Open the board</a></div>${boardSummary(boardCounts(boardTasks()), true)}</section>`;
   const open = myTasks().filter(t => !t.done).sort((a, b) => (a.due || '9').localeCompare(b.due || '9'));
   const steps = open.slice(0, 3);
   const title = c.me === 'crew' ? 'Next for your crew' : c.me === 'money' ? 'Next with money in it' : 'Your next steps';
@@ -1061,8 +1120,8 @@ function whoWhere() {
 function viewPlan() {
   const v = store.plan, pub = isPublic();
   const hasDec = !pub && (scopedDecisions().some(d => !d.done) || fbItems().length);
-  const seg = `<div class="seg" role="group" aria-label="Camp view">${[['nodes', 'Hubs and nodes'], ['timeline', 'Season'], ...(pub ? [] : [['tasks', 'Every step']]), ...(hasDec ? [['decisions', 'Decisions']] : [])].map(([k, l]) => `<button type="button" data-plan="${k}" aria-pressed="${v === k}">${l}</button>`).join('')}</div>`;
-  const body = v === 'timeline' ? viewTimeline() : v === 'tasks' && !pub ? viewTasks() : v === 'decisions' && hasDec ? viewDecisions() : viewNodes();
+  const seg = `<div class="seg" role="group" aria-label="Camp view">${[['nodes', 'Hubs and nodes'], ...(boardable() ? [['board', 'Board']] : []), ['timeline', 'Season'], ...(pub ? [] : [['tasks', 'Every step']]), ...(hasDec ? [['decisions', 'Decisions']] : [])].map(([k, l]) => `<button type="button" data-plan="${k}" aria-pressed="${v === k}">${l}</button>`).join('')}</div>`;
+  const body = v === 'board' && boardable() ? viewBoard() : v === 'timeline' ? viewTimeline() : v === 'tasks' && !pub ? viewTasks() : v === 'decisions' && hasDec ? viewDecisions() : viewNodes();
   return `<section class="sub-nav">${seg}</section>${body}`;
 }
 function viewNodes() {
@@ -1074,7 +1133,7 @@ function viewNodes() {
     const r = rollupOf(DATA.phases.filter(ph => hb.nodes.includes(ph.project)));
     const ho = folded('hb-' + hb.id, hb.nodes.some(isOwn) || (!PHONE() && (isCore() || pub)));
     const states = nodes.map(p => p.state);
-    h += `<section class="block hub${ho ? '' : ' shut'}" id="hub-${hb.id}"><button class="hubhead" type="button" data-flip="hb-${hb.id}" aria-expanded="${ho}"><span class="hubt"><span class="eyebrow">Hub · ${plural(nodes.length, 'node')}</span><h2><span class="chev">${ho ? '▾' : '▸'}</span> ${esc(hb.name)}</h2>${ho ? `<span class="muted small">${esc(hb.purpose)}</span>` : ''}</span>
+    h += `<section class="block hub${ho ? '' : ' shut'}" id="hub-${hb.id}"${hubStyle(hb.id)}><button class="hubhead" type="button" data-flip="hb-${hb.id}" aria-expanded="${ho}"><span class="hubt"><span class="eyebrow">Hub · ${plural(nodes.length, 'node')}</span><h2><span class="chev">${ho ? '▾' : '▸'}</span> ${hubDot(hb.id)}${esc(hb.name)}</h2>${ho ? `<span class="muted small">${esc(hb.purpose)}</span>` : ''}</span>
       ${pub ? '' : `<span class="hubf small">${ho ? `<span>Lead: <span class="who">${esc(hb.lead)}</span></span>` : ''}<span>${Object.keys(HILL).filter(k => nodes.some(p => hillOf(p) === k)).map(k => `${nodes.filter(p => hillOf(p) === k).length} ${HILL[k].toLowerCase()}`).join(' · ')}</span>${r ? `<span class="mini" title="${r.p}% of the schedule"><span style="width:${r.p}%"></span></span>` : ''}</span>`}</button>
       ${ho ? `<div class="nodes">${nodes.map(nodeCard).join('')}</div>
       ${!pub && hb.dormant.length ? `<div class="dormant"><span class="eyebrow">2026 nodes with no 2027 plan yet</span><div class="links">${hb.dormant.map(d => `<span class="tag">${esc(d)}</span>`).join('')}</div></div>` : ''}` : ''}</section>`;
@@ -1174,7 +1233,7 @@ function viewTimeline() {
     const hid = 'h-' + hb.id, ho = isOpen(hid, 'hubs');
     const hr = rollupOf(allPh.filter(ph => hb.nodes.includes(ph.project)));
     const hTasks = tasks.filter(t => hb.nodes.includes(t.project));
-    rows += row('g-group g-hub', 0, flipBtn(hid, ho, hb.name), esc(hb.name), `${pub ? '' : esc(hb.lead) + ' · '}${plural(nodes.length, 'node')}${hr ? ` · ${hr.p}%` : ''}`, span(hr, hb.name) + (ho ? '' : dots(hTasks)));
+    rows += row('g-group g-hub', 0, flipBtn(hid, ho, hb.name), hubDot(hb.id) + esc(hb.name), `${pub ? '' : esc(hb.lead) + ' · '}${plural(nodes.length, 'node')}${hr ? ` · ${hr.p}%` : ''}`, span(hr, hb.name) + (ho ? '' : dots(hTasks)));
     nRows++;
     if (!ho) return;
     nodes.forEach(p => {
@@ -1271,7 +1330,7 @@ function viewTasks() {
   if (!shown.length) body = '<div class="empty">No task matches.</div>';
   else if (f.group === 'hub') body = hubs.map(hb => { const ts = shown.filter(t => P[t.project]?.hub === hb.id); if (!ts.length) return '';
       const mineHub = hb.nodes.some(isOwn);
-      return fold('th-' + hb.id, esc(hb.name), ts.length, hb.nodes.map(nid => { const nts = ts.filter(t => t.project === nid); return nts.length ? `<div class="eyebrow" style="margin-top:4px">${esc(P[nid].name)}</div>${list(nts)}` : ''; }).join(''), mineHub || !!f.q || !!f.owner || f.status !== 'open'); }).join('');
+      return fold('th-' + hb.id, hubDot(hb.id) + esc(hb.name), ts.length, hb.nodes.map(nid => { const nts = ts.filter(t => t.project === nid); return nts.length ? `<div class="eyebrow" style="margin-top:4px">${esc(P[nid].name)}</div>${list(nts)}` : ''; }).join(''), mineHub || !!f.q || !!f.owner || f.status !== 'open'); }).join('');
   else if (f.group === 'person') body = owners.map(o => { const ts = shown.filter(t => t.owner === o); return ts.length ? fold('tp-' + o, esc(pname(o)), ts.length, list(ts), false) : ''; }).join('');
   else if (f.group === 'due') body = BUCKETS.map(([k, l]) => { const ts = shown.filter(t => bucketOf(t) === k); return ts.length ? fold('td-' + k, l, ts.length, list(ts), ['over', 'week'].includes(k)) : ''; }).join('');
   else body = list(shown);
@@ -1283,6 +1342,81 @@ function viewTasks() {
       <select id="f-hub2" aria-label="Hub"><option value="">Every hub</option>${hubs.map(x => `<option value="${x.id}" ${f.hub === x.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select>
       <input id="f-q" type="search" placeholder="Search" value="${esc(f.q)}" aria-label="Search tasks">
     </div>${body}</section>`;
+}
+
+
+// ---------------------------------------------------------------- the Board
+// The board (15 Nov 2026, the core call, F-071, F-072, F-076): the commitments the core team and camp leads take on
+// between meetings, in four columns: To do, Under way, Stuck, Done. It is the weekly call's agenda: what is done moves
+// without discussion, and the call talks about what is stuck. A step's column comes from its latest update (Not started
+// or none: To do; Under way; Blocked, said Stuck; Done), so moving a card is the same update as everywhere else and reaches
+// the task list with the hourly sync. Stuck asks for a line on what it is stuck on. By person lays the same cards out in a
+// lane for each person, so the core team and camp leads see who holds what. The counts on top are the summary asked for on the call
+// for: stuck and waiting rather than red, as the review of 9 Nov asked. Only the core team, camp leads and the treasurer
+// see the board; the stewards' record-keeping stays off it.
+const BOARD_ROLES = ['core', 'camplead', 'treasurer'];
+const BOARD_COLS = [['todo', 'To do', 'Not started yet'], ['doing', 'Under way', 'Someone is on it'], ['stuck', 'Stuck', 'Talk about these at the next call'], ['done', 'Done', 'In the last 14 days']];
+const BOARD_CAP = 8;
+function boardable() { return !isPublic() && BOARD_ROLES.includes(role); }
+function boardGroupOwners() { return ['Core', 'Leads', 'Stewards']; }
+function doneOn(t) {
+  const u = latestUpdate(t.id);
+  if (u && u.status === 'Done' && u.at) { const ms = new Date(u.at).getTime(); if (!isNaN(ms)) return ms; }
+  const m = String(t.text || '').match(/\bDone (\d{1,2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b/);
+  if (!m) return null;
+  const y = new Date(NOW).getUTCFullYear(), ms = Date.UTC(y, MON.indexOf(m[2]), Number(m[1]));
+  return ms - NOW > 7 * DAY ? Date.UTC(y - 1, MON.indexOf(m[2]), Number(m[1])) : ms;     // NOW is a UTC day in ms
+}
+function boardCol(t) {
+  if (effDone(t)) return 'done';
+  const u = latestUpdate(t.id), s = u && u.status;
+  return s === 'Blocked' ? 'stuck' : s === 'Under way' ? 'doing' : 'todo';
+}
+function boardTasks() {
+  const names = [...INDIV, ...boardGroupOwners()];
+  return scopedTasks().filter(t => !t.internal && ownersOf(t).some(o => names.includes(o)))
+    .filter(t => { if (!effDone(t)) return true; const d = doneOn(t); return d && (NOW - d) <= 14 * DAY; });
+}
+function boardSort(a, b) { return (a.due || '9').localeCompare(b.due || '9') || a.id.localeCompare(b.id); }
+function boardCounts(ts) {
+  const n = { todo: 0, doing: 0, stuck: 0, done: 0, late: 0 };
+  ts.forEach(t => { n[boardCol(t)]++; if (!effDone(t) && t.due && daysFrom(t.due) < 0) n.late++; });
+  return n;
+}
+function boardSummary(n, link) {
+  const a = (cls, num, label, key) => link ? `<a class="c-${cls}" href="#camp-board"${key ? `` : ''}><b>${num}</b> ${label}</a>` : `<span class="n c-${cls}"><b>${num}</b> ${label}</span>`;
+  return `<div class="boardsum">${a('todo', n.todo, 'to do')}${a('doing', n.doing, 'under way')}${a('stuck', n.stuck, 'stuck')}${a('done', n.done, 'done lately')}${n.late ? a('late', n.late, 'waiting past their date') : ''}</div>`;
+}
+function boardColumns(ts, laneKey) {
+  return `<div class="board">${BOARD_COLS.map(([k, l, hint]) => {
+    const cs = ts.filter(t => boardCol(t) === k).sort(k === 'done' ? (a, b) => (doneOn(b) || 0) - (doneOn(a) || 0) : boardSort);
+    const key = (laneKey || 'all') + ':' + k, all = store.bAll.has(key), shown = all ? cs : cs.slice(0, BOARD_CAP);
+    return `<section class="bcol c-${k}" aria-label="${l}"><h3>${l}<span class="tag">${cs.length}</span></h3>${laneKey ? '' : `<div class="bhint">${hint}</div>`}
+      ${cs.length ? `<div class="list">${shown.map(t => taskRow(t, { board: true, help: false, owner: !laneKey })).join('')}</div>` : '<div class="empty muted small">Nothing here.</div>'}
+      ${cs.length > BOARD_CAP ? `<div class="more"><button class="btn link" type="button" data-ball="${esc(key)}">${all ? 'Show fewer' : `Show all ${cs.length}`}</button></div>` : ''}</section>`;
+  }).join('')}</div>`;
+}
+function viewBoard() {
+  const b = store.board || (store.board = { by: 'column', who: '' });
+  const all = boardTasks();
+  const owners = [...INDIV, ...boardGroupOwners()].filter(o => all.some(t => ownersOf(t).includes(o)));
+  const ts = b.who ? all.filter(t => ownersOf(t).includes(b.who)) : all;
+  const hubs = [...new Set(ts.map(hubOfTask).filter(Boolean))];
+  let h = `<section class="block"><div class="head"><h2>Board</h2><span class="muted small">What the core team and camp leads have taken on</span></div>
+    ${boardSummary(boardCounts(ts))}
+    <div class="filters" style="margin-top:10px">
+      <div class="seg" role="group" aria-label="Lay out">${[['column', 'By column'], ['person', 'By person']].map(([k, l]) => `<button type="button" data-bby="${k}" aria-pressed="${b.by === k}">${l}</button>`).join('')}</div>
+      <select id="f-bwho" aria-label="Whose"><option value="">Everyone</option>${owners.map(o => `<option value="${esc(o)}" ${b.who === o ? 'selected' : ''}>${esc(o === 'Core' ? 'The core team, together' : o === 'Leads' ? 'The camp leads, together' : o === 'Stewards' ? 'The stewards, together' : pname(o))}</option>`).join('')}</select>
+    </div>${hubs.length ? hueKey(hubs) : ''}
+    <p class="muted small" style="max-width:70ch;margin:4px 0 0">Tick a step when it is done. Move or update puts it under way, back to to do, or stuck with a line on what would unstick it. Everyone with Basecamp sees the change at once, and it reaches the task list within the hour.</p></section>`;
+  if (!ts.length) return h + '<section class="block"><div class="empty">Nothing on the board for this choice.</div></section>';
+  if (b.by === 'person' && !b.who) {
+    h += owners.map(o => { const lane = all.filter(t => ownersOf(t).includes(o)); if (!lane.length) return '';
+      const n = boardCounts(lane), mine = o === meOf();
+      const label = `${esc(o === 'Core' ? 'The core team, together' : o === 'Leads' ? 'The camp leads, together' : o === 'Stewards' ? 'The stewards, together' : pname(o))} <span class="muted small">${n.todo} to do · ${n.doing} under way · ${n.stuck ? `<b style="color:var(--bad)">${n.stuck} stuck</b>` : '0 stuck'} · ${n.done} done</span>`;
+      return `<section class="block lane">${fold('bl-' + o, label, '', boardColumns(lane, o), mine || n.stuck > 0)}</section>`; }).join('');
+  } else h += `<section class="block">${boardColumns(ts)}</section>`;
+  return h;
 }
 
 // ---------------------------------------------------------------- Decisions
@@ -1420,6 +1554,7 @@ function viewLibrary() {
   const ls = DATA.library.filter(linkVisible);
   const groups = [...new Set(ls.map(l => l.group))];
   let h = `<section class="block"><div class="head"><h2>Library</h2><span class="muted small">${plural(ls.length, 'link')}</span></div>
+    ${isPublic() ? '' : `<p class="libtop"><span class="muted">Each link shows only to the roles it is meant for${isCore() ? '; links marked core team stay with the core team' : ''}.</span><button class="btn link" type="button" data-openaccess>Who sees what</button></p>`}
     <div class="libgrid">${groups.map(g => `<div class="libg"><div class="eyebrow">${esc(g)}</div><div class="liblist">${ls.filter(l => l.group === g).map(l => `<a href="${esc(l.u)}" target="_blank" rel="noopener"><span class="lt">${esc(l.t)}</span><span class="k">${KIND[l.kind] || 'Link'}</span>${l.note ? `<span class="muted tiny">${esc(l.note)}${l.core ? ' · core team' : ''}</span>` : ''}</a>`).join('')}</div></div>`).join('')}</div>
     ${isPublic() ? '' : '<p class="libhint">Some documents open only for people they have been shared with. Ask a steward if one will not open.</p>'}</section>`;
   const access = `<p class="small" style="max-width:68ch">What each person can open depends on how they are part of Mahala: visitor, tribe member, invited, camp member or steward. A role such as crew lead adds more, for their own crew or node, and renews each camp year. Here the View as switch only shows what each role would see; once the member platform is live, each person’s log-in decides.</p>
@@ -1520,7 +1655,8 @@ function evTasks(e) {
   if (isPublic() || !canSeeTasksOf('events')) return '';
   const ts = e.tasks.map(id => DATA.tasks.find(t => t.id === id)).filter(Boolean);
   if (!ts.length) return '';
-  return `<ul class="evtasks">${ts.map(t => `<li class="${t.done ? 'done' : ''}">${isCore() ? `<span class="tid">${t.id}</span>` : ''}<span class="tt">${esc(t.title)}</span><span class="muted">${esc(pname(t.owner))}</span>${t.done ? '' : dueLabel(t)}</li>`).join('')}</ul>`;
+  // the same step as on Camp and Today (15 Nov 2026, the core call, F-074): tick, status, comments and Why it matters here too
+  return `<div class="list evlist">${ts.map(t => taskRow(t, { help: false })).join('')}</div>`;
 }
 function evRow(e) {
   const pub = isPublic(), k = EVK[e.kind] || EVK.gathering, n = evDays(e), past = D(e.end || e.date) < NOW;
@@ -1645,8 +1781,11 @@ document.addEventListener('click', e => {
   const evf = t.closest('[data-evf]'); if (evf) { store.evf = evf.dataset.evf; render(); return; }
   if (t.closest('[data-evpast]')) { store.evPast = !store.evPast; render(); return; }
   const fo = t.closest('[data-flipopen]'); if (fo) { store.flip.add(fo.dataset.flipopen); store.roleWhy = false; }
+  if (t.closest('[data-openaccess]')) { store.flip.add('ab-access'); store.jump = 'fold-ab-access'; render(); return; }
   if (t.closest('[data-allattn]')) { store.allAttn = !store.allAttn; render(); return; }
   if (t.closest('[data-allnext]')) { store.allNext = !store.allNext; render(); return; }
+  const bb = t.closest('[data-bby]'); if (bb) { store.board = { ...(store.board || { who: '' }), by: bb.dataset.bby }; render(); return; }
+  const ba = t.closest('[data-ball]'); if (ba) { const k = ba.dataset.ball; if (store.bAll.has(k)) store.bAll.delete(k); else store.bAll.add(k); render(); return; }
   const pl = t.closest('[data-plan]'); if (pl) { location.hash = pl.dataset.plan === 'nodes' ? 'camp' : 'camp-' + pl.dataset.plan; return; }
   const cx = t.closest('.ttl[data-ctx]'); if (cx) { const dd = cx.closest('.item')?.querySelector(`details[data-ctxk="${cx.dataset.ctx}"]`); if (dd) dd.open = !dd.open; return; }
   if (t.closest('[data-allhands]')) { store.allHands = !store.allHands; render(); return; }
@@ -1692,6 +1831,7 @@ document.addEventListener('change', e => {
   if (id === 'f-person') { location.hash = 'list-' + slug(e.target.value); return; }
   if (id === 'f-who') { store.who = e.target.value; store.sel = null; store.selTask = null; if (store.who) { store.depth = 'tasks'; store.flip = new Set([...store.flip].filter(x => !/^[hnpo]-/.test(x))); } render(); return; }
   if (id === 'f-hub') { store.hubF = e.target.value; render(); return; }
+  if (id === 'f-bwho') { store.board = { ...(store.board || { by: 'column' }), who: e.target.value }; render(); return; }
   if (id === 'f-shared' || id === 'f-pshared') { store.shared = e.target.checked; render(); return; }
   if (id === 'f-phub') { store.personHub = e.target.value; render(); return; }
   if (id === 'f-hub2') { store.filter.hub = e.target.value; render(); return; }
@@ -1734,6 +1874,7 @@ document.addEventListener('submit', async e => {
   const d = store.draft[key] || { status: 'Under way', note: '' };
   d.note = form.querySelector('[data-note]').value.trim();
   const msg = form.querySelector('[data-msg]'), btn = form.querySelector('button[type=submit]');
+  if (d.status === 'Blocked' && !d.note) { msg.textContent = 'Say in a line what it is stuck on, so the next meeting can help.'; return; }
   if (SITE) {
     if (!WHO) { msg.textContent = 'Sign in to send updates.'; return; }
     btn.disabled = true; msg.textContent = 'Sending…';

@@ -15,6 +15,7 @@
   function day(iso) { if (!iso) return ''; var p = String(iso).slice(0, 10).split('-').map(Number); return p[2] + ' ' + MON[p[1] - 1]; }
   function overdue(iso) { return iso && new Date(iso + 'T23:59:59+02:00') < new Date(); }
 
+  function say(s) { return s === 'Blocked' ? 'Stuck' : s; }   // the camp says stuck; the record keeps Blocked (15 Nov 2026)
   function draw() {
     if (!tasks.length) { box.remove(); return; }
     var shown = tasks.slice(0, SHOW);
@@ -22,12 +23,14 @@
       + '<div class="foldin"><p>From Basecamp, in your name. Mark one done or say where it stands; it reaches the camp’s task list within the hour.</p>'
       + '<ul class="yt">' + shown.map(function (t) {
         var l = t.latest, sent = t.sent;
-        return '<li data-id="' + esc(t.id) + '"><div class="ytt"><b>' + esc(t.title || t.id) + '</b><small>'
+        // a done step shows a green tick (15 Nov 2026, the core call): a word alone is easy to miss
+        var tick = sent === 'Done' ? '<span role="img" aria-label="Done" style="display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#2E6B4F;color:#fff;margin-right:8px;vertical-align:-4px"><svg viewBox="0 0 16 16" width="11" height="11" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '';
+        return '<li data-id="' + esc(t.id) + '"><div class="ytt"><b>' + tick + esc(t.title || t.id) + '</b><small>'
           + (t.due ? '<span class="' + (overdue(t.due) ? 'late' : '') + '">' + (overdue(t.due) ? 'overdue, ' : 'due ') + day(t.due) + '</span>' : 'no date yet')
-          + (sent ? ' · <b>' + esc(sent) + '</b>, sent' : l ? ' · latest: ' + esc(l.status.toLowerCase()) + (l.note ? ', ' + esc(l.note) : '') + ' (' + esc(l.name) + ', ' + day(l.at) + ')' : '')
+          + (sent ? ' · <b>' + esc(say(sent)) + '</b>, sent' : l ? ' · latest: ' + esc(say(l.status).toLowerCase()) + (l.note ? ', ' + esc(l.note) : '') + ' (' + esc(l.name) + ', ' + day(l.at) + ')' : '')
           + '</small></div>'
           + (sent === 'Done' ? '' : '<button type="button" class="btn small ghost ytopen" data-open aria-expanded="' + (open === t.id) + '">' + (open === t.id ? 'Close' : 'Update') + '</button>'
-          + '<div class="ytc"' + (open === t.id ? '' : ' hidden') + '><div class="row"><button type="button" class="btn small" data-yt="Done">Done</button><button type="button" class="btn small ghost" data-yt="Under way">Under way</button><button type="button" class="btn small ghost" data-yt="Blocked">Blocked</button></div>'
+          + '<div class="ytc"' + (open === t.id ? '' : ' hidden') + '><div class="row"><button type="button" class="btn small" data-yt="Done">Done</button><button type="button" class="btn small ghost" data-yt="Under way">Under way</button><button type="button" class="btn small ghost" data-yt="Blocked">Stuck</button></div>'
           + '<input type="text" class="ytnote" maxlength="600" placeholder="A note for the team (optional)" aria-label="A note on ' + esc(t.title || t.id) + ' (optional)"></div>')
           + '</li>';
       }).join('') + '</ul>'
