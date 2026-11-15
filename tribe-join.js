@@ -98,7 +98,7 @@
         (A.whatsappCommunity ? field('tWa', 'Your WhatsApp number', '<input type="tel" id="tWa" maxlength="30" autocomplete="tel" placeholder="+27 …" value="' + esc(A.whatsapp) + '">', 'With the country code. Only the stewards see it.') : '') +
         tick('tShare', A.share, '<b>Let other tribe members see my answers</b> when the members\' pages open: my name, where I live (town and country), what matters to me, what I bring and love, and my dream. Never my email or number.') +
         '<div class="camp-wish">' + tick('tLove', A.loveToCome, '<b>I would love to come to the camp in 2027.</b>') +
-        '<p class="small">The camp is by invitation and holds about 50 to 60 of us. The camp leads read every introduction and invite in waves, so this puts you on their list, with no application.</p></div>' +
+        '<p class="small">The camp is by invitation and holds about 50 to 60 of us. The camp leads read every introduction and invite in waves, so this puts you on their list, with no application. Ticked or not, you are part of the tribe: it is bigger than the camp.</p></div>' +
         '<input type="text" id="tHp" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp">';
     },
   };

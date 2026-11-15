@@ -4392,15 +4392,15 @@ const ROLE = { known: false, core: false, lead: false, steward: false };
 if (window.MahalaMembers) window.MahalaMembers.ready.then(i => {
   if (!i || !i.signedIn) return;
   ROLE.signedIn = true;
-  return window.MahalaMembers.rpc('my_thread').then(t => {
-    const r = (t.roles || []).join(' ').toLowerCase();
-    ROLE.core = /core/.test(r); ROLE.lead = /lead/.test(r); ROLE.steward = /steward/.test(r); ROLE.known = true;
-  });
+  // the journey already says who opens Basecamp (person_roles, not the free-text roles), so no extra call (T-223)
+  const j = i.journey || {}, roles = (j.roles || []).map(r => (r && r.role) || r).join(' ').toLowerCase();
+  ROLE.core = /core/.test(roles); ROLE.lead = /lead/.test(roles); ROLE.steward = !!i.isSteward || /steward/.test(roles);
+  ROLE.basecamp = !!j.basecamp || ROLE.core || ROLE.lead || ROLE.steward; ROLE.known = true;
 }).catch(() => { });
 function campDoors() {
   if (!window.MahalaMembers || !ROLE.signedIn) return '';
   const mine = `<div class="sect"><h4>Your Mahala</h4><p class="note">Your own page: where you are on the Golden Seed of Life, the gatherings ahead, your card and your thread.</p><div class="actions"><a class="btn" href="me.html">${icon('star')}Open Your Mahala</a></div></div>`;
-  const plans = ROLE.core || ROLE.lead || ROLE.steward
+  const plans = ROLE.basecamp
     ? `<div class="sect"><h4>Basecamp</h4><p class="note">Where the core team, camp leads and crews plan The Seed: the tasks, the timeline, the events, the decisions and the money. Mark your tasks done and talk them through there.</p><div class="actions"><a class="btn primary" href="${BASECAMP_URL}">${icon('tools')}Open Basecamp</a></div></div>`
     : `<p class="note">The core team, camp leads and crews plan the build at Basecamp. Want to be part of it? Join a crew.</p>`;
   return mine + plans;
@@ -4497,7 +4497,7 @@ HOOK7.cardIn.push(it => {
     <p>${sp.what}</p>
     <div class="actions"><button class="btn primary" data-act="spot:CENTRE">${icon('spot')}Spotlight the centrepiece</button>${inside && insideAt === 'temple' ? `<button class="btn" data-act="leave">${icon('gate')}Leave the temple</button>` : `<button class="btn" data-act="enter">${icon('gate')}Step inside</button>`}</div></div>`; }
   if (k === 'temple') return head('temple', 'The art piece · AfrikaBurn 2027', 'The Seed', 'Quaggafontein, Tankwa Karoo') + `<div class="insp-body">
-    <div class="tiles">${tile('film', 'assets/film_poster.jpg', 'Watch the 30 s film', true)}${tile('inside', 'assets/K5b.jpg', 'Step inside', true)}${tile('night', 'assets/K8d.jpg', 'See it at night')}</div>
+    <div class="tiles">${tile('film', 'assets/film_poster.jpg', 'Watch the film', true)}${tile('inside', 'assets/K5b.jpg', 'Step inside', true)}${tile('night', 'assets/K8d.jpg', 'See it at night')}</div>
     <p>A zome: a dome of coloured glass panels spiralling up, inspired by the king protea. By day the sun paints the floor and the people inside in fields of colour. At night a lantern inside throws a wheel of coloured rays across the desert floor.</p>
     ${budgetBar()}
     <div class="actions"><button class="btn primary" data-act="seedpage">${icon('book')}Learn more about The Seed</button><button class="btn" data-sel="FORMS">${icon('forms')}The six copper forms</button><button class="btn" data-act="inside">${icon('gate')}Step inside</button><button class="btn" data-act="donate">${icon('gift')}Donate to The Seed</button></div></div>`;
