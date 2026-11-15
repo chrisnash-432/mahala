@@ -687,6 +687,7 @@ const STATUS_OPTS = ['Under way', 'Done', 'Blocked', 'Not started'];
 // What people see for a status (15 Nov 2026): the camp says "stuck" (the core call of 15 Nov); the record keeps Blocked.
 const STATUS_SAY = { Blocked: 'Stuck' };
 function sayStatus(s) { return STATUS_SAY[s] || s; }
+function updateWords(u) { return u.status === 'Handed' ? `handed to ${pname(u.to || '')}` : sayStatus(u.status); }
 // A colour for each hub (15 Nov 2026, the core call, F-073): on the hub's heading and a small mark beside every
 // step, wherever it shows, so people can skim to the right place. Kept clear of the wax, the cyan of under way, the
 // yellow of behind and the green of done. `colour:` on a hub in register.yaml overrides these.
@@ -711,7 +712,7 @@ const ARCH = 'M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 5
 const PHONE = () => window.innerWidth < 720;
 
 let DATA = null, P = {}, PH = {}, H = {}, NOW = null;
-const store = { bAll: new Set(), board: null, db: null, user: null, uid: null, updates: [], comments: [], names: {}, openThread: null, cdraft: {}, ctx: new Set(), voices: null, vpick: {}, vdraft: {}, feedSig: '', dbState: 'waiting', openForm: null, draft: {},
+const store = { openHand: null, bAll: new Set(), board: null, db: null, user: null, uid: null, updates: [], comments: [], names: {}, openThread: null, cdraft: {}, ctx: new Set(), voices: null, vpick: {}, vdraft: {}, feedSig: '', dbState: 'waiting', openForm: null, draft: {},
   zoom: 'season', sel: null, selTask: null, who: '', hubF: '', shared: true, depth: 'phases', flip: new Set(), person: '', personHub: '',
   plan: 'nodes', gen: null, filter: null, roleWhy: false, allAttn: false, evf: 'all', evPast: false };
 let role = null;
@@ -831,8 +832,27 @@ function dueLabel(t) {
   if (n <= 7) return `<span class="due-soon">due ${day(t.due)}, ${inDays(n)}</span>`;
   return `<span>due ${day(t.due)}</span>`;
 }
+// Hand to (15 Nov 2026, F-084, T-316): the core team hands a step to a person or a group. A handoff is an update with
+// the status Handed; until the sync has written the new owner into the task list, the newest one decides who holds the
+// step here, as the database does. The latest status never counts a handoff.
+const HAND_GROUPS = [['Core', 'The core team, together'], ['Leads', 'The camp leads, together'], ['Stewards', 'The stewards, together']];
+// a taken handoff still counts while this page's plan is older than it (the sync has run, the page not yet reloaded)
+function handoffOf(tid) { const hs = store.updates.filter(u => u.task === tid && u.status === 'Handed' && (!u.taken || (store.built && (u.at || '') > store.built))); return hs.length ? hs.sort((a, b) => (b.at || '').localeCompare(a.at || ''))[0] : null; }
+function applyHandoffs() {
+  if (!DATA) return;
+  DATA.tasks.forEach(t => { if (t._owner0 === undefined) t._owner0 = t.owner; const h = handoffOf(t.id); t.owner = h && h.to ? h.to : t._owner0; });
+}
+function mayHand(t) { return SITE && WHO && WHO.view === 'core' && role === WHO.role && !effDone(t); }
+function handForm(t) {
+  const opts = [...INDIV.map(n => [n, pname(n)]), ...HAND_GROUPS].filter(([v]) => v !== t.owner);
+  return `<form class="upd" data-hform="${esc(t.id)}"><label class="muted small" for="h-${t.id}">Hand this step to</label>
+    <select id="h-${t.id}" data-hto>${opts.map(([v, l]) => `<option value="${esc(v)}">${esc(l)}</option>`).join('')}</select>
+    <label class="muted small" for="hn-${t.id}">A note for them (optional)</label><textarea id="hn-${t.id}" data-hnote maxlength="600"></textarea>
+    <div class="filters"><button class="btn primary" type="submit">Hand it on</button><span class="muted small">They see it on their list now; the task list follows within the hour.</span></div>
+    <div data-msg class="muted small" aria-live="polite"></div></form>`;
+}
 function latestUpdate(tid) {
-  const mine = store.updates.filter(u => u.task === tid);
+  const mine = store.updates.filter(u => u.task === tid && u.status !== 'Handed');
   return mine.length ? mine.sort((a, b) => (b.at || '').localeCompare(a.at || ''))[0] : null;
 }
 
@@ -891,9 +911,13 @@ function taskRow(t, o = {}) {
     <div class="t">${hubDot(hubOfTask(t))}${isCore() ? `<span class="tid">${t.id}</span>` : ''}<span class="ttl" data-ctx="t:${esc(t.id)}">${esc(t.title)}</span></div>
     <div class="meta">${o.crumb ? `<span class="tag">${crumb(t.project)}</span>` : ''}${o.owner === false ? '' : `<span class="who">${esc(pname(t.owner))}</span>`}${dueLabel(t)}${blockedChip(t)}
       ${editable ? `<button class="btn link" type="button" data-upd="${esc(key)}">${formOpen ? 'Close' : o.board ? 'Move or update' : 'Send an update'}</button>` : ''}
+      ${mayHand(t) ? `<button class="btn link" type="button" data-hand="${esc(t.id)}" aria-expanded="${store.openHand === t.id}">${store.openHand === t.id ? 'Close' : 'Hand to'}</button>` : ''}
       ${SITE && WHO ? `<button class="btn link" type="button" data-thread="${esc(t.id)}" aria-expanded="${threadOpen}">${threadOpen ? 'Hide comments' : nc ? `Comments (${nc})` : 'Comment'}</button>` : ''}${o.help === false ? '' : helpLine(t)}</div>
     <details data-ctxk="t:${esc(t.id)}"${store.ctx.has('t:' + t.id) ? ' open' : ''}><summary>Why it matters</summary>${plain ? `<p>${esc(plain)}</p>` : ''}${whyItMatters(t)}${raw ? `<p class="tiny">${plain ? '<span class="eyebrow">In the task list</span> ' : ''}${richText(t.text)}</p>` : ''}</details>`;
   if (u) h += `<div class="note">Latest: ${esc(sayStatus(u.status))}${u.note ? ', ' + esc(u.note) : ''} <span class="muted">(${esc(nameOf(u))}, ${esc(u.when || '')}${SITE && u.status === 'Done' && !t.done ? '; ticks in the task list at the next sync' : ''})</span></div>`;
+  const ho = SITE ? handoffOf(t.id) : null;
+  if (ho) h += `<div class="note">Handed to ${esc(pname(ho.to))}${ho.note ? ': ' + esc(ho.note) : ''} <span class="muted">(${esc(nameOf(ho))}, ${esc(ho.when || '')}; the task list follows within the hour)</span></div>`;
+  if (store.openHand === t.id && mayHand(t)) h += handForm(t);
   if (formOpen) h += updateForm(t);
   if (threadOpen) h += threadBox(t);
   return h + `</div>`;
@@ -1053,7 +1077,7 @@ function feedBlock() {
   else if (store.dbState === 'late') body = `<div class="empty">Updates can't be reached yet. They will appear when the connection returns.</div>`;
   else if (!store.updates.length) body = `<div class="empty">No updates yet. Open a task and choose "Send an update"; ${SITE ? 'it goes into the task list within the hour' : 'the stewards write each one into the record'}.</div>`;
   else body = store.updates.slice().sort((a, b) => (b.at || '').localeCompare(a.at || '')).slice(0, 8).map(u =>
-    `<div class="item"><div class="t"><span class="tid">${esc(u.task)}</span> ${esc(u.status)}${u.note ? ': ' + esc(u.note) : ''}</div>
+    `<div class="item"><div class="t"><span class="tid">${esc(u.task)}</span> ${esc(updateWords(u))}${u.note ? ': ' + esc(u.note) : ''}</div>
      <div class="meta"><strong>${esc(nameOf(u))}</strong><span>${esc(u.when || '')}</span></div></div>`).join('');
   return `<section class="block feed"><div class="head"><h2>Updates from the team</h2><span class="muted small">sent from this page</span></div><div class="list">${body}</div></section>`;
 }
@@ -1614,7 +1638,7 @@ function composeUpdate(g) {
   const done = DATA.tasks.filter(t => t.done && t.project && inScope(t.project) && t.due && D(t.due) >= since);
   const ups = store.updates.filter(u => { const t = DATA.tasks.find(x => x.id === u.task); return t && t.project && inScope(t.project) && u.at && Date.parse(u.at) >= since; });
   block(`*Done since ${day(g.since)}*`, [...done.map(t => [t.due, T(t)]), ...ups.filter(u => u.status === 'Done').map(u => [u.at.slice(0, 10), `${titleOf(u.task)}${u.note ? ': ' + trim(u.note, 90) : ''}`])]);
-  if (core) block('*Updates from the team*', ups.filter(u => u.status !== 'Done').map(u => [u.at.slice(0, 10), `${titleOf(u.task)}: ${u.status.toLowerCase()}${u.note ? ', ' + trim(u.note, 100) : ''}`]));
+  if (core) block('*Updates from the team*', ups.filter(u => u.status !== 'Done').map(u => [u.at.slice(0, 10), `${titleOf(u.task)}: ${updateWords(u).toLowerCase()}${u.note ? ', ' + trim(u.note, 100) : ''}`]));
   const dates = [];
   DATA.milestones.filter(m => inScope(m.project) && D(m.date) >= NOW && D(m.date) <= soon && (core || !m.internal || aud === 'leads')).forEach(m => dates.push([m.date, `${day(m.date)}: ${m.label}`]));
   DATA.phases.filter(ph => inScope(ph.project) && ph.p < 100 && !ph.milestone && D(ph.start) > NOW && D(ph.start) <= soon).forEach(ph => dates.push([ph.start, `${day(ph.start)}: ${ph.name} (starts${core ? ', ' + pname(ph.owner) : ''})`]));
@@ -1793,6 +1817,7 @@ document.addEventListener('click', e => {
   const cx = t.closest('.ttl[data-ctx]'); if (cx) { const dd = cx.closest('.item')?.querySelector(`details[data-ctxk="${cx.dataset.ctx}"]`); if (dd) dd.open = !dd.open; return; }
   if (t.closest('[data-allhands]')) { store.allHands = !store.allHands; render(); return; }
   const tk1 = t.closest('[data-tick]'); if (tk1) { siteTick(tk1); return; }
+  const hd = t.closest('[data-hand]'); if (hd) { store.openHand = store.openHand === hd.dataset.hand ? null : hd.dataset.hand; render(); if (store.openHand) setTimeout(() => document.getElementById('h-' + store.openHand)?.focus(), 0); return; }
   const hp = t.closest('[data-help]'); if (hp) { siteHelp(hp); return; }
   const fl = t.closest('[data-flip]');
   if (fl) { const id = fl.dataset.flip; if (store.flip.has(id)) store.flip.delete(id); else store.flip.add(id); render(); return; }
@@ -1857,6 +1882,22 @@ document.addEventListener('submit', async e => {
       delete store.vpick[tid]; delete store.vdraft[tid];
       await siteVoices(); render();
     } catch (err) { btn.disabled = false; msg.textContent = siteError(err, 'Your view was not sent. Check your connection and send it again.'); }
+    return;
+  }
+  const hf = e.target.closest('form[data-hform]');
+  if (hf) {
+    e.preventDefault();
+    const tid = hf.dataset.hform, msg = hf.querySelector('[data-msg]'), btn = hf.querySelector('button[type=submit]');
+    btn.disabled = true; msg.textContent = 'Handing it on…';
+    try {
+      const r = await window.MahalaMembers.rpc('basecamp_handoff', { p_task: tid, p_to: hf.querySelector('[data-hto]').value, p_note: hf.querySelector('[data-hnote]').value.trim().slice(0, 600) });
+      store.updates.push(siteUpdate(r)); store.openHand = null; applyHandoffs(); render();
+    } catch (err) {
+      btn.disabled = false;
+      const m = String(err?.message || '');
+      msg.textContent = /only the core team/.test(m) ? 'Only the core team hands steps on.' : /someone Basecamp knows/.test(m) ? 'Choose someone from the list.' : /not open/.test(m) ? 'This step is closed or no longer in Basecamp.'
+        : /function .*basecamp_handoff|Could not find the function/.test(m) ? 'Handing on is not switched on yet. A steward runs one database change first.' : siteError(err, 'That did not go through. Check your connection and try again.');
+    }
     return;
   }
   const cf = e.target.closest('form[data-cform]');
@@ -1946,7 +1987,7 @@ async function siteFeed() {
   try {
     const [f] = await Promise.all([window.MahalaMembers.rpc('basecamp_feed'), siteVoices()]);
     const sig = JSON.stringify([f.updates.map(u => u.id), f.comments.map(c => c.id), store.voices]);
-    store.updates = f.updates.map(siteUpdate); store.comments = f.comments;
+    store.updates = f.updates.map(siteUpdate); store.comments = f.comments; applyHandoffs();
     const first = store.dbState !== 'ready'; store.dbState = 'ready';
     if (sig === store.feedSig && !first) return;
     store.feedSig = sig;
@@ -1981,7 +2022,7 @@ async function siteLoad() {
     else if (err?.code === 'not_granted') gate('signin'); else gate('error');
     return;
   }
-  WHO = r.who;
+  WHO = r.who; store.built = r.built || '';
   const c = ROLES[WHO.role];
   if (c) {                                               // the viewer's own role, as the database knows it
     const crews = WHO.crews || [];
