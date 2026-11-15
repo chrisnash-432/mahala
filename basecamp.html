@@ -426,6 +426,8 @@ header.top { padding-top: 10px; }
 .tools .vas { display: flex; align-items: center; gap: 6px; }
 .tools select { padding: 6px 30px 6px 12px; }
 .btn.icon { padding: 7px 11px 6px; }
+#toMe { display: inline-flex; align-items: center; gap: 7px; }
+#toMe[hidden] { display: none; }
 nav.tabs { margin-top: 6px; }
 nav.tabs a .n { background: var(--idle-soft); color: var(--muted); }
 .roleline { margin: 12px auto 0; font-size: 0.82rem; color: var(--muted); display: flex; gap: 6px 10px; flex-wrap: wrap; align-items: baseline; }
@@ -524,7 +526,7 @@ footer:empty { display: none; }
 @media (max-width: 720px) {
   .tools .vas label { display: none; }
   .tools select { max-width: 46vw; font-size: 0.85rem; }
-  #gen .lbl { display: none; }
+  #gen .lbl, #toMe .lbl { display: none; }
   .brand h1 .bc { font-size: 1.15rem; }
   .brand h1 .wm { font-size: 0.86rem; }
   .brand .sub { display: block; font-size: 0.72rem; }
@@ -625,6 +627,7 @@ footer:empty { display: none; }
     </a>
     <div class="tools">
       <div class="vas"><label for="role">Viewing as</label><select id="role"></select></div>
+      <a class="btn icon" id="toMe" href="me.html" hidden aria-label="Back to Your Mahala"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M7 3L2 8l5 5M2.5 8H14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">Your Mahala</span></a>
       <a class="btn" id="toCommunity" href="community.html" hidden>Community Map</a>
       <button class="btn" id="acct" type="button" data-mahala-picture hidden>Sign in</button>
       <button class="btn primary icon" id="gen" type="button" hidden aria-label="Generate an update"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3h12v8H6l-4 3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="lbl">Update</span></button>
@@ -1967,7 +1970,8 @@ async function siteLoad() {
   if (!M) { gate('error', 'Sign-in is not set up on this page.'); return; }
   let info = null;
   try { await M.ready; info = await M.info(); } catch (e) {}
-  const acct = $('#acct'); acct.hidden = false; acct.textContent = info?.signedIn ? (info.name || 'Your account') : 'Sign in';
+  const acct = $('#acct'); acct.hidden = false;
+  $('#toMe').hidden = false;   /* back to Your Mahala, always one tap away (15 Nov 2026) */ acct.textContent = info?.signedIn ? (info.name || 'Your account') : 'Sign in';
   if (!info?.signedIn) { WHO = null; gate('signin'); return; }
   let r;
   try { r = await M.rpc('basecamp_plan'); }
