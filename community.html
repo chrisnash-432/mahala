@@ -304,10 +304,49 @@ button.gbar:hover, .gbar[aria-pressed="true"] { background: color-mix(in srgb, v
   .brand .bc { font-size: 1.25rem; }
   .tools .btn { padding: 7px 13px 6px; min-height: 38px; font-size: .84rem; }
 }
+
+/* The 2027 path (15 Nov 2026, F-079, T-303): who is where on the way to camp 2027, as a board of stages */
+.pages { margin: 14px 0 4px; }
+.pstrip { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.pstrip button { background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px; text-align: left; cursor: pointer; display: grid; gap: 2px; color: inherit; }
+.pstrip button[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.pstrip .v { font: 400 1.9rem/1.05 var(--display); font-variant-numeric: tabular-nums; }
+.pstrip .k { font-size: .8rem; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.pboard { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; align-items: start; margin-top: 12px; }
+.pcol { background: color-mix(in srgb, var(--paper) 55%, var(--sheet)); border: 1px solid var(--line2); border-radius: var(--r); min-width: 0; padding: 6px; }
+.pcol > h3 { font: 500 .86rem/1.2 var(--body); letter-spacing: 0; margin: 4px 6px 8px; display: flex; justify-content: space-between; gap: 6px; }
+.pcol > p { font-size: .76rem; color: var(--muted); margin: -4px 6px 8px; }
+.pcard { display: block; width: 100%; text-align: left; background: var(--sheet); border: 1px solid var(--line2); border-radius: var(--r-s); padding: 8px 10px; margin-bottom: 6px; cursor: pointer; color: inherit; font-size: .82rem; line-height: 1.35; }
+.pcard b { display: block; font: 500 .92rem/1.25 var(--body); }
+.pcard .nx { color: var(--accent); }
+.pcard .dd { color: var(--muted); }
+.pcard.late { box-shadow: inset 3px 0 0 var(--warn); background: color-mix(in srgb, var(--warn-soft) 35%, var(--sheet)); }
+.pcard.late .dd { color: var(--warn); font-weight: 500; }
+.pcard[aria-expanded="true"] { border-color: var(--ink); }
+.ptl { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 6px 0 2px; font-size: .78rem; }
+.ptl dt { color: var(--muted); } .ptl dd { margin: 0; }
+.plane { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+.plane > div { background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px; font-size: .84rem; color: var(--muted); }
+.plane b { color: var(--ink); font-weight: 500; }
+.plane .names { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.plane .names button { border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 2px 9px; font-size: .78rem; cursor: pointer; color: var(--ink); }
+.prow { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, .9fr) minmax(0, .8fr) minmax(0, 1fr) minmax(0, 1.3fr); gap: 4px 12px; padding: 9px 14px; border-top: 1px solid var(--line); font-size: .86rem; align-items: baseline; width: 100%; background: none; border-left: 0; border-right: 0; border-bottom: 0; text-align: left; cursor: pointer; color: inherit; }
+.prow.hd { font-size: .72rem; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); cursor: default; }
+.prow.late .dd { color: var(--warn); font-weight: 500; }
+.plist { background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); margin-top: 12px; overflow: hidden; }
+.pchip { display: inline-flex; align-items: center; gap: 6px; }
+.pdot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+@media (max-width: 900px) {
+  .pstrip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pboard { grid-template-columns: repeat(6, minmax(230px, 78vw)); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 6px; }
+  .pcol { scroll-snap-align: start; }
+  .plane { grid-template-columns: 1fr; }
+  .prow { grid-template-columns: minmax(0, 1fr) auto; } .prow > :nth-child(n+3) { grid-column: 1 / -1; } .prow.hd { display: none; }
+}
 </style>
 <meta name="robots" content="noindex">
 <script src="site.js?v=9"></script>
-<script src="assets/shim/claude-shim.js?v=18"></script>
+<script src="assets/shim/claude-shim.js?v=17"></script>
 
 <header class="top">
   <div class="toprow">
@@ -378,7 +417,7 @@ const andList = a => a.length <= 1 ? (a[0] || '') : a.slice(0, -1).join(', ') + 
 const roleLabel = r => { const [k, crew] = String(r).split(':'); return (ROLE[k] || k) + (crew ? ' · ' + crew : ''); };
 
 let WHO = null, DATA = null, M = { nodes: [], byKey: {}, rings: [], edges: [], years: [], camps: [] };
-const S = { q: '', year: '', camp: '', ring: '', role: '', consent: '', view: 'sky', shown: PAGE, sel: null, hover: null,
+const S = { page: location.hash === '#path' ? 'path' : 'map', q: '', year: '', camp: '', ring: '', role: '', consent: '', view: 'sky', shown: PAGE, sel: null, hover: null,
   tag: null, set: null, bring: 's', place: null };
 let INS = null;   // the weave: weavers, bridges, circles and loose threads, by key
 try { const v = localStorage.getItem('community.view'); if (v === 'list' || v === 'sky') S.view = v; } catch (e) {}
@@ -458,6 +497,9 @@ function render() {
   const d = DATA, core = WHO.view === 'core';
   const f = filtered();
   let h = '';
+  const paths = core || WHO.view === 'lead';
+  if (paths) h += pagesHtml();
+  if (paths && S.page === 'path') { $('#view').innerHTML = h + pathHtml(); if (!PATH && !PATH_ERR) loadPath(); return; }
   if (core) h += heroCore(d);
   else if (WHO.view === 'lead') h += heroLead(d);
   else h += heroCrew(d);
@@ -1095,14 +1137,26 @@ function refresh() {
 }
 document.addEventListener('input', e => {
   if (e.target.id === 'search') { S.q = e.target.value.trim().toLowerCase(); S.shown = PAGE; refresh(); }
+  if (e.target.id === 'p-q') { PS.q = e.target.value; const pos = e.target.selectionStart; render(); const q = $('#p-q'); if (q) { q.focus(); q.setSelectionRange(pos, pos); } }
 });
 document.addEventListener('change', e => {
   const k = { 'f-year': 'year', 'f-camp': 'camp', 'f-ring': 'ring', 'f-role': 'role', 'f-consent': 'consent' }[e.target.id];
   if (k) { S[k] = e.target.value; S.shown = PAGE; refresh(); }
+  if (e.target.id === 'p-by') { PS.by = e.target.value; render(); }
 });
 document.addEventListener('click', e => {
   const t = e.target;
   if (t.closest('#acct') || t.closest('[data-signin]')) { e.preventDefault(); const MM = window.MahalaMembers; if (MM) Promise.resolve(MM.info()).then(i => (i && i.signedIn ? MM.account() : MM.signIn('Sign in to open the community map'))); return; }
+  const pg = t.closest('[data-page]'); if (pg) { S.page = pg.dataset.page; history.replaceState(null, '', S.page === 'path' ? '#path' : location.pathname + location.search); if (S.page === 'path') loadPath(true); render(); return; }
+  const pst = t.closest('[data-pstage]'); if (pst) { PS.stage = PS.stage === pst.dataset.pstage ? '' : pst.dataset.pstage; render(); return; }
+  const pl = t.closest('[data-play]'); if (pl) { PS.lay = pl.dataset.play; render(); return; }
+  if (t.closest('[data-plate]')) { PS.late = !PS.late; render(); return; }
+  if (t.closest('[data-pclear]')) { Object.assign(PS, { stage: '', by: '', late: false, q: '' }); render(); return; }
+  if (t.closest('[data-pnames]')) { PS.names = true; render(); return; }
+  if (t.closest('[data-preload]')) { PATH_ERR = ''; loadPath(true); render(); return; }
+  const pa = t.closest('[data-pall]'); if (pa) { const k = pa.dataset.pall; if (PS.all.has(k)) PS.all.delete(k); else PS.all.add(k); render(); return; }
+  const pk = t.closest('[data-key]'); if (pk && pk.closest('[data-pcard]')) { openPerson(pk.dataset.key); return; }
+  const pc = t.closest('[data-pcard]'); if (pc) { PS.open = PS.open === pc.dataset.pcard ? null : pc.dataset.pcard; render(); return; }
   const v = t.closest('[data-view]'); if (v) { S.view = v.dataset.view; try { localStorage.setItem('community.view', S.view); } catch (x) {} render(); return; }
   const st = t.closest('button.stat[data-ring]'); if (st) { S.ring = S.ring === st.dataset.ring ? '' : st.dataset.ring; const sel = $('#f-ring'); if (sel) sel.value = S.ring; refresh(); return; }
   if (t.closest('[data-clear]')) { Object.assign(S, { q: '', year: '', camp: '', ring: '', role: '', consent: '', tag: null, set: null, place: null, shown: PAGE }); render(); return; }
@@ -1132,7 +1186,112 @@ document.addEventListener('click', e => {
   const p = t.closest('[data-key]'); if (p) { openPerson(p.dataset.key); return; }
   if (t.closest('.brand')) { e.preventDefault(); closePerson(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
 });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closePerson(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closePerson();
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('[data-pcard], [data-key][role="button"]')) { e.preventDefault(); e.target.click(); }
+});
+
+
+// ------------------------------------------------------------------ the 2027 path (15 Nov 2026, F-079, T-303)
+// Where each person stands on the way to camp 2027, worked out live in the member database (community_path()): a board
+// of six stages, each card moving left to right, with the days it has waited and the one thing that would move it on.
+// A card waiting longer than lateDays (7) turns amber. Three lanes sit off the path: the wait list, not this year, and the
+// tribe who follow along. The core team sees everyone; a camp lead sees their own nominees (stage only where the nominee
+// said yes to being shown) and counts. Payments are a fact, never an amount.
+const PSTAGES = [['nominated', 'Nominated', 'No letter yet', '#6F6357'], ['invited', 'Invited', 'Letter sent', '#B8914A'], ['tribe', 'In the tribe', 'Made an account', '#0B6E95'],
+  ['applied', 'Applied', 'Application in', '#A3105E'], ['accepted', 'Accepted', 'A place offered', '#8E1B45'], ['paying', 'Paying', 'First payment noted', '#2E6B4F']];
+const PLANES = [['waitlist', 'Wait list', 'Asked to come without a nomination, or waiting for a place. Next: a short call.'],
+  ['not', 'Not this year', 'Declined or withdrew. Kindly, and maybe next year.'], ['tribe_only', 'Tribe only', 'Joined to follow along, not on the camp path.']];
+const PLATE = ['nominated', 'invited', 'tribe', 'applied', 'accepted'];
+const PS = { lay: 'board', stage: '', by: '', late: false, q: '', open: null, all: new Set(), names: false };
+let PATH = null, PATH_ERR = '';
+const pDays = p => p.since ? Math.max(0, Math.floor((Date.now() - Date.parse(p.since)) / 864e5)) : null;
+const pLate = p => PATH && PLATE.includes(p.stage) && pDays(p) != null && pDays(p) > (PATH.lateDays || 7);
+const pLabel = s => (PSTAGES.find(x => x[0] === s) || PLANES.find(x => x[0] === s) || [s, s])[1];
+const pColor = s => (PSTAGES.find(x => x[0] === s) || [0, 0, 0, 'var(--rule2)'])[3];
+function pNext(p) {
+  switch (p.stage) {
+    case 'nominated': return 'Make and send their letter';
+    case 'invited': return p.sub === 'opened' ? 'Opened it: a hello to help them join' : 'Not opened yet: a gentle nudge';
+    case 'tribe': return 'In the tribe: invite them to apply';
+    case 'applied': return 'A short welcome call';
+    case 'accepted': return 'Their first payment';
+    case 'paying': return p.sub === 'later' ? 'Paying later' + (p.dates && p.dates.payLater ? ', ' + day(p.dates.payLater) : '') : 'First payment noted';
+    case 'waitlist': return 'A short call';
+    case 'not': return 'Not this year';
+    default: return 'Following along';
+  }
+}
+function pWaited(p) { const n = pDays(p); if (n == null) return ''; const w = n === 0 ? 'today' : n === 1 ? '1 day' : n + ' days'; return p.stage === 'nominated' ? `on the list ${n === 0 ? 'since today' : w}` : (n === 0 ? 'since today' : w + ' here'); }
+async function loadPath(force) {
+  if (PATH && !force) return;
+  try { PATH = await window.MahalaMembers.rpc('community_path'); PATH_ERR = ''; }
+  catch (err) { PATH = null; PATH_ERR = /for the core team and camp leads/.test(String(err?.message || '')) ? 'The 2027 path is for the core team and camp leads.'
+    : /function .*community_path|Could not find the function/.test(String(err?.message || '')) ? 'The 2027 path is not switched on yet. A steward runs one database change first.' : 'The path could not be reached. Check your connection and try again.'; }
+  if (S.page === 'path') render();
+}
+function pagesHtml() {
+  return `<div class="pages"><div class="seg" role="group" aria-label="What to show"><button type="button" data-page="map" aria-pressed="${S.page !== 'path'}">The map</button><button type="button" data-page="path" aria-pressed="${S.page === 'path'}">The 2027 path</button></div></div>`;
+}
+function pathPeople() {
+  const q = PS.q.toLowerCase();
+  return (PATH.people || []).filter(p => (!PS.by || p.by === PS.by) && (!PS.late || pLate(p)) && (!q || [p.n, p.p, p.by].join(' ').toLowerCase().includes(q)));
+}
+function pStrip(counts, shown) {
+  return `<div class="pstrip">${PSTAGES.map(([k, l]) => `<button type="button" data-pstage="${k}" aria-pressed="${PS.stage === k}"><span class="v">${shown ? shown.filter(p => p.stage === k).length : (counts[k] || 0)}</span><span class="k"><i class="pdot" style="background:${pColor(k)}"></i>${l}</span></button>`).join('')}</div>`;
+}
+function pTimeline(p) {
+  const d = p.dates || {}, rows = [['On the list', d.listed], ['Letter made', d.letter], ['Letter opened', d.opened], ['Joined the tribe', d.joined], ['Applied', d.applied], ['Decided', d.decided], ['First payment noted', d.paid]].filter(r => r[1]);
+  if (d.payLater) rows.push(['Paying later', d.payLater]);
+  return `<dl class="ptl">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${esc(day(v))}</dd>`).join('') || '<dt>No dates yet</dt><dd></dd>'}</dl>${M.byKey[p.id] ? `<span class="btn" role="button" tabindex="0" data-key="${esc(p.id)}" style="min-height:32px;padding:4px 12px;font-size:.8rem">Open their card</span>` : ''}`;
+}
+function pCard(p) {
+  const open = PS.open === p.id;
+  return `<div class="pcard${pLate(p) ? ' late' : ''}" role="button" tabindex="0" data-pcard="${esc(p.id)}" aria-expanded="${open}"><b>${esc(p.n || p.c)}</b>${p.by ? `<span>by ${esc(p.by)}</span><br>` : ''}<span class="nx">${esc(pNext(p))}</span><br><span class="dd">${esc(pWaited(p))}</span>${open ? pTimeline(p) : ''}</div>`;
+}
+function pathCore() {
+  const ps = pathPeople(), lateN = (PATH.people || []).filter(pLate).length;
+  const bys = [...new Set((PATH.people || []).map(p => p.by).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  let h = `<section class="block" aria-labelledby="pathH"><div class="head"><h2 id="pathH">The 2027 path</h2><span class="muted small">Live from the member database. A card turns amber after ${PATH.lateDays || 7} days in one place.</span></div>
+    ${pStrip(PATH.counts || {}, ps)}
+    <div class="filters" style="margin-top:12px"><div class="seg" role="group" aria-label="Lay out"><button type="button" data-play="board" aria-pressed="${PS.lay === 'board'}">Board</button><button type="button" data-play="list" aria-pressed="${PS.lay === 'list'}">List</button></div>
+      <select id="p-by" aria-label="Nominated by"><option value="">Nominated by anyone</option>${bys.map(b => `<option ${PS.by === b ? 'selected' : ''}>${esc(b)}</option>`).join('')}</select>
+      <button type="button" class="btn" data-plate aria-pressed="${PS.late}" style="${PS.late ? 'background:var(--warn-soft);border-color:var(--warn)' : ''}">Waiting over ${PATH.lateDays || 7} days · ${lateN}</button>
+      <input id="p-q" type="search" placeholder="Search a name" value="${esc(PS.q)}" aria-label="Search the path">
+      ${PS.stage || PS.by || PS.late || PS.q ? '<button type="button" class="clear" data-pclear>Clear</button>' : ''}</div>`;
+  const onPath = ps.filter(p => PSTAGES.some(s => s[0] === p.stage) && (!PS.stage || p.stage === PS.stage));
+  if (PS.lay === 'list') {
+    const order = s => PSTAGES.findIndex(x => x[0] === s);
+    const rows = onPath.slice().sort((a, b) => order(a.stage) - order(b.stage) || (pDays(b) || 0) - (pDays(a) || 0));
+    h += `<div class="plist"><div class="prow hd"><span>Name</span><span>Stage</span><span>Waiting</span><span>Nominated by</span><span>Next</span></div>${rows.map(p => `<div class="prow${pLate(p) ? ' late' : ''}" role="button" tabindex="0" data-pcard="${esc(p.id)}"><span><b style="font-weight:500">${esc(p.n)}</b></span><span class="pchip"><i class="pdot" style="background:${pColor(p.stage)}"></i>${esc(pLabel(p.stage))}</span><span class="dd">${esc(pWaited(p))}</span><span>${esc(p.by || '')}</span><span class="muted">${esc(pNext(p))}</span>${PS.open === p.id ? `<span style="grid-column:1/-1">${pTimeline(p)}</span>` : ''}</div>`).join('') || '<div class="prow">Nobody here for this choice.</div>'}</div>`;
+  } else {
+    h += `<div class="pboard">${PSTAGES.filter(([k]) => !PS.stage || PS.stage === k).map(([k, l, hint]) => {
+      const cs = onPath.filter(p => p.stage === k).sort((a, b) => (pDays(b) || 0) - (pDays(a) || 0)), all = PS.all.has(k), shown = all ? cs : cs.slice(0, 12);
+      return `<section class="pcol" aria-label="${l}"><h3><span class="pchip"><i class="pdot" style="background:${pColor(k)}"></i>${l}</span><span class="muted num">${cs.length}</span></h3><p>${hint}</p>${shown.map(pCard).join('') || '<p>Nobody here.</p>'}${cs.length > 12 ? `<button type="button" class="clear" data-pall="${k}">${all ? 'Show fewer' : 'Show all ' + cs.length}</button>` : ''}</section>`;
+    }).join('')}</div>`;
+  }
+  const lane = k => ps.filter(p => p.stage === k);
+  h += `<div class="plane">${PLANES.map(([k, l, note]) => { const ls = lane(k);
+      const names = k !== 'tribe_only' || PS.names ? `<div class="names">${ls.slice(0, 200).map(p => `<button type="button" data-pcard="${esc(p.id)}">${esc(p.n)}</button>`).join('')}</div>` : (ls.length ? '<button type="button" class="clear" data-pnames>Show names</button>' : '');
+      const open = ls.find(p => p.id === PS.open);
+      return `<div><b>${l} · ${ls.length}</b><br>${note}${ls.length ? names : ''}${open ? `<div style="margin-top:8px"><b>${esc(open.n)}</b>${pTimeline(open)}</div>` : ''}</div>`; }).join('')}</div></section>`;
+  return h;
+}
+function pathLead() {
+  const mine = PATH.mine || [], c = PATH.counts || {};
+  return `<section class="block" aria-labelledby="pathH"><div class="head"><h2 id="pathH">The 2027 path</h2><span class="muted small">How the whole camp is moving, and where the people you called in stand.</span></div>
+    ${pStrip(c)}
+    <div class="plane" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))">${PLANES.map(([k, l]) => `<div><b>${l} · ${c[k] || 0}</b></div>`).join('')}</div>
+    <h3 style="margin-top:18px">The people you called in · ${mine.length}</h3>
+    <div class="pboard" style="grid-template-columns:repeat(auto-fill,minmax(220px,1fr))">${mine.map(p => p.quiet
+      ? `<div class="pcard"><b>${esc(p.c)}</b><span class="dd">Their stage shows once they say yes to being named to members.</span></div>`
+      : `<div class="pcard${pLate(p) ? ' late' : ''}"><b>${esc(p.c)}</b><span class="pchip"><i class="pdot" style="background:${pColor(p.stage)}"></i>${esc(pLabel(p.stage))}</span><br><span class="nx">${esc(pNext(p))}</span><br><span class="dd">${esc(pWaited(p))}</span></div>`).join('') || '<p class="muted">When you nominate someone for 2027, they appear here.</p>'}</div></section>`;
+}
+function pathHtml() {
+  if (PATH_ERR) return `<section class="block"><p class="muted">${esc(PATH_ERR)}</p><button type="button" class="btn" data-preload>Try again</button></section>`;
+  if (!PATH) return '<section class="block"><p class="muted">Reading the path…</p></section>';
+  return WHO.view === 'core' ? pathCore() : pathLead();
+}
 
 // ------------------------------------------------------------------ signing in, and the door
 function gate(kind, detail) {
@@ -1168,7 +1327,7 @@ async function load() {
     else if (err?.code === 'not_granted') gate('signin'); else gate('error');
     return;
   }
-  WHO = r.who; DATA = r.data;
+  WHO = r.who; DATA = r.data; PATH = null; PATH_ERR = '';
   model(WHO, DATA);
   $('#asof').textContent = 'From the camp’s records' + (r.built ? ', ' + day(r.built) : '');   // the header already says Community Map (Chris, 9 Nov 2026)
   $('#roleline').textContent = ROLE_LINE[WHO.role] || ''; $('#roleline').hidden = !ROLE_LINE[WHO.role];
