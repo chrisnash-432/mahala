@@ -4,7 +4,7 @@ window.MAHALA_SITE = {
   // The Donate buttons in index.html and seed.html also carry this link directly, so change it there too if it moves.
   donateUrl: 'https://www.backabuddy.co.za/campaign/the-seed',
   target: 718875,                 // what we are raising to build The Seed, in rand (the BackaBuddy goal)
-  buildWeek: [2027, 3, 22],       // the first day of build week: year, month counted from 0 (3 is April), day
+  buildWeek: [2027, 3, 19],       // the first day of build week: year, month counted from 0 (3 is April), day
   // The Mahala Temple Builder Nominations & Applications sheet, through the "Mahala applications backend" web app
   // (an Apps Script project in Chris's BioHarmonic account; its code is apps-script-standalone.gs). Camp applications go
   // to its Applications tab, and sign-ups for news to its Email list tab.
