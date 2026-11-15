@@ -498,6 +498,7 @@
   function showApplied() {
     APPLIED = true;
     document.querySelectorAll('[data-join]').forEach(function (b) { b.hidden = true; });
+    document.querySelectorAll('[data-invited-note]').forEach(function (a) { a.hidden = true; });
     document.querySelectorAll('[data-open-tribe]').forEach(function (a) { a.hidden = true; });
     var bi = $('byInvite'); if (bi) bi.hidden = true;
     var M = window.MahalaMembers;
@@ -514,6 +515,7 @@
     if (APPLIED) return;
     document.querySelectorAll('[data-join]').forEach(function (b) { b.hidden = false; });
     document.querySelectorAll('[data-open-tribe]').forEach(function (a) { a.hidden = true; });
+    document.querySelectorAll('[data-invited-note]').forEach(function (a) { a.hidden = false; });
     var bi = $('byInvite'); if (bi) bi.hidden = true;
   }
   if (applied()) showApplied();
