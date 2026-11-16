@@ -131,7 +131,7 @@
       return '<h2 class="h-sub">Your welcome call</h2>' +
         '<p class="small centre">Twenty minutes to welcome you properly, answer your questions and find the crew where your hands are needed.</p>' +
         '<div class="call-book"><a class="primary" id="jBook" href="' + CALL_URL + '" target="_blank" rel="noopener" data-count="Book the welcome call" data-count-where="camp application">Book your welcome call</a>' +
-        '<p class="small centre">The call is with Chris for now.</p></div>' +
+        '<p class="small centre">The call is with Chris for now.' + (A.nominatedBy ? ' Want ' + esc(A.nominatedBy) + ' there too? Book a time, then <a class="linkish" href="mailto:love@wearemahala.com?subject=' + encodeURIComponent('Welcome call: please add ' + A.nominatedBy) + '">tell us</a> and we add them to the call.' : '') + '</p></div>' +
         field('jMsg', 'Anything else you would like us to know <small>(optional)</small>', '<textarea id="jMsg" maxlength="1500">' + esc(A.message) + '</textarea>') +
         '<input type="text" id="jHp" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp">';
     },
