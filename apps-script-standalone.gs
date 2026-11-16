@@ -39,7 +39,8 @@ var APP_HEADERS = [
   'Currency', 'Place (working figure)', 'Big coil', 'Extra gift', 'Pay in', 'Total (working)', 'Coupon code',
   'Agreements signed', 'Welcome call: best times', 'Anything else',
   'Nominated by', 'From page',
-  'Status', 'Lead notes'
+  'Status', 'Lead notes',
+  'Letter ref'                        // added 16 Nov 2026 (Mahala OS T-203): last, so the columns before it never move
 ];
 var APP_STATUS = ['New', 'Call booked', 'Payment link sent', 'Paid', 'Hold', 'Not this year'];
 var LIST_SHEET = 'Email list';
@@ -64,7 +65,8 @@ function submitApplication_(p) {
       clean_(p.currency), clean_(p.place), p.bigCoil ? 'Yes' : 'No', clean_(p.gift), clean_(p.payIn), clean_(p.total), clean_(p.coupon),
       join(p.agreements), join(p.callTimes), clean_(p.message),
       clean_(p.nominatedBy), clean_(p.page),
-      'New', ''
+      'New', '',
+      clean_(p.ref)
     ]);
     if (NOTIFY_EMAIL) notifyApplication_(p);
     return { ok: true, tab: APP_SHEET };
@@ -165,6 +167,14 @@ function sheetFor_(name, headers, wide, statuses) {
     }
   }
   return sheet;
+}
+
+/** Run once from the editor after pasting the 16 Nov 2026 version: names the new last column of the camp tab. */
+function addLetterRefColumn() {
+  var sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(APP_SHEET);
+  if (!sheet) return;
+  var col = APP_HEADERS.length, cell = sheet.getRange(1, col);
+  if (!cell.getValue()) cell.setValue('Letter ref').setFontWeight('bold').setBackground('#3b2f26').setFontColor('#f3e6cf');
 }
 
 /** Run once from the editor to make the tabs with their headers. */
