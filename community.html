@@ -345,8 +345,8 @@ button.gbar:hover, .gbar[aria-pressed="true"] { background: color-mix(in srgb, v
 }
 </style>
 <meta name="robots" content="noindex">
-<script src="site.js?v=10"></script>
-<script src="assets/shim/claude-shim.js?v=18"></script>
+<script src="site.js?v=9"></script>
+<script src="assets/shim/claude-shim.js?v=17"></script>
 
 <header class="top">
   <div class="toprow">
@@ -1198,7 +1198,7 @@ document.addEventListener('keydown', e => {
 // A card waiting longer than lateDays (7) turns amber. Three lanes sit off the path: the wait list, not this year, and the
 // tribe who follow along. The core team sees everyone; a camp lead sees their own nominees (stage only where the nominee
 // said yes to being shown) and counts. Payments are a fact, never an amount.
-const PSTAGES = [['nominated', 'Nominated', 'No letter yet', '#6F6357'], ['invited', 'Invited', 'Letter sent', '#B8914A'], ['tribe', 'In the tribe', 'Made an account', '#0B6E95'],
+const PSTAGES = [['nominated', 'Nominated', 'No invitation yet', '#6F6357'], ['invited', 'Invited', 'Invitation held for them', '#B8914A'], ['tribe', 'In the tribe', 'Made an account', '#0B6E95'],
   ['applied', 'Applied', 'Application in', '#A3105E'], ['accepted', 'Accepted', 'A place offered', '#8E1B45'], ['paying', 'Paying', 'First payment noted', '#2E6B4F']];
 const PLANES = [['waitlist', 'Wait list', 'Asked to come without a nomination, or waiting for a place. Next: a short call.'],
   ['not', 'Not this year', 'Declined or withdrew. Kindly, and maybe next year.'], ['tribe_only', 'Tribe only', 'Joined to follow along, not on the camp path.']];
@@ -1212,7 +1212,7 @@ const pColor = s => (PSTAGES.find(x => x[0] === s) || [0, 0, 0, 'var(--rule2)'])
 function pNext(p) {
   switch (p.stage) {
     case 'nominated': return 'Make and send their letter';
-    case 'invited': return p.sub === 'opened' ? 'Opened it: a hello to help them join' : 'Not opened yet: a gentle nudge';
+    case 'invited': return p.sub === 'opened' ? 'Came by their letter: a hello to help them join' : 'Not here from their letter yet: a gentle nudge';
     case 'tribe': return 'In the tribe: invite them to apply';
     case 'applied': return 'A short welcome call';
     case 'accepted': return 'Their first payment';
@@ -1222,7 +1222,7 @@ function pNext(p) {
     default: return 'Following along';
   }
 }
-function pWaited(p) { const n = pDays(p); if (n == null) return ''; const w = n === 0 ? 'today' : n === 1 ? '1 day' : n + ' days'; return p.stage === 'nominated' ? `on the list ${n === 0 ? 'since today' : w}` : (n === 0 ? 'since today' : w + ' here'); }
+function pWaited(p) { const n = pDays(p); if (n == null) return p.stage === 'invited' ? 'letter date not in the record yet' : ''; const w = n === 0 ? 'today' : n === 1 ? '1 day' : n + ' days'; return p.stage === 'nominated' ? `on the list ${n === 0 ? 'since today' : w}` : (n === 0 ? 'since today' : w + ' here'); }
 async function loadPath(force) {
   if (PATH && !force) return;
   try { PATH = await window.MahalaMembers.rpc('community_path'); PATH_ERR = ''; }
@@ -1252,7 +1252,7 @@ function pCard(p) {
 function pathCore() {
   const ps = pathPeople(), lateN = (PATH.people || []).filter(pLate).length;
   const bys = [...new Set((PATH.people || []).map(p => p.by).filter(Boolean))].sort((a, b) => a.localeCompare(b));
-  let h = `<section class="block" aria-labelledby="pathH"><div class="head"><h2 id="pathH">The 2027 path</h2><span class="muted small">Live from the member database. A card turns amber after ${PATH.lateDays || 7} days in one place.</span></div>
+  let h = `<section class="block" aria-labelledby="pathH"><div class="head"><h2 id="pathH">The 2027 path</h2><span class="muted small">Live from the member database. A card turns amber after ${PATH.lateDays || 7} days in one place. Letter dates are still to come in, so invited cards show none yet.</span></div>
     ${pStrip(PATH.counts || {}, ps)}
     <div class="filters" style="margin-top:12px"><div class="seg" role="group" aria-label="Lay out"><button type="button" data-play="board" aria-pressed="${PS.lay === 'board'}">Board</button><button type="button" data-play="list" aria-pressed="${PS.lay === 'list'}">List</button></div>
       <select id="p-by" aria-label="Nominated by"><option value="">Nominated by anyone</option>${bys.map(b => `<option ${PS.by === b ? 'selected' : ''}>${esc(b)}</option>`).join('')}</select>
