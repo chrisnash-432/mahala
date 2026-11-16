@@ -1198,7 +1198,7 @@ document.addEventListener('keydown', e => {
 // A card waiting longer than lateDays (7) turns amber. Three lanes sit off the path: the wait list, not this year, and the
 // tribe who follow along. The core team sees everyone; a camp lead sees their own nominees (stage only where the nominee
 // said yes to being shown) and counts. Payments are a fact, never an amount.
-const PSTAGES = [['nominated', 'Nominated', 'No invitation yet', '#6F6357'], ['invited', 'Invited', 'Invitation held for them', '#B8914A'], ['tribe', 'In the tribe', 'Made an account', '#0B6E95'],
+const PSTAGES = [['nominated', 'Nominated', 'No letter sent yet', '#6F6357'], ['invited', 'Invited', 'Letter sent', '#B8914A'], ['tribe', 'In the tribe', 'Made an account', '#0B6E95'],
   ['applied', 'Applied', 'Application in', '#A3105E'], ['accepted', 'Accepted', 'A place offered', '#8E1B45'], ['paying', 'Paying', 'First payment noted', '#2E6B4F']];
 const PLANES = [['waitlist', 'Wait list', 'Asked to come without a nomination, or waiting for a place. Next: a short call.'],
   ['not', 'Not this year', 'Declined or withdrew. Kindly, and maybe next year.'], ['tribe_only', 'Tribe only', 'Joined to follow along, not on the camp path.']];
@@ -1206,13 +1206,16 @@ const PLATE = ['nominated', 'invited', 'tribe', 'applied', 'accepted'];
 const PS = { lay: 'board', stage: '', by: '', late: false, q: '', open: null, all: new Set(), names: false };
 let PATH = null, PATH_ERR = '';
 const pDays = p => p.since ? Math.max(0, Math.floor((Date.now() - Date.parse(p.since)) / 864e5)) : null;
-const pLate = p => PATH && PLATE.includes(p.stage) && pDays(p) != null && pDays(p) > (PATH.lateDays || 7);
+// a letter that has been answered, opened through its link, or bounced is not waiting on a nudge
+const pLate = p => PATH && PLATE.includes(p.stage) && pDays(p) != null && pDays(p) > (PATH.lateDays || 7)
+  && !(p.stage === 'invited' && (p.sub === 'opened' || /^Replied/.test(p.reply || ''))) || (p.stage === 'invited' && /^Bounced/.test(p.reply || ''));
 const pLabel = s => (PSTAGES.find(x => x[0] === s) || PLANES.find(x => x[0] === s) || [s, s])[1];
 const pColor = s => (PSTAGES.find(x => x[0] === s) || [0, 0, 0, 'var(--rule2)'])[3];
 function pNext(p) {
   switch (p.stage) {
     case 'nominated': return 'Make and send their letter';
-    case 'invited': return p.sub === 'opened' ? 'Came by their letter: a hello to help them join' : 'Not here from their letter yet: a gentle nudge';
+    case 'invited': return /^Bounced/.test(p.reply || '') ? 'The email bounced: check the address' : p.sub === 'opened' ? 'Came by their letter: a hello to help them join'
+      : /^Replied/.test(p.reply || '') ? p.reply + ': answer them, and help them join' : 'Not here from their letter yet: a gentle nudge';
     case 'tribe': return 'In the tribe: invite them to apply';
     case 'applied': return 'A short welcome call';
     case 'accepted': return 'Their first payment';
@@ -1222,7 +1225,8 @@ function pNext(p) {
     default: return 'Following along';
   }
 }
-function pWaited(p) { const n = pDays(p); if (n == null) return p.stage === 'invited' ? 'letter date not in the record yet' : ''; const w = n === 0 ? 'today' : n === 1 ? '1 day' : n + ' days'; return p.stage === 'nominated' ? `on the list ${n === 0 ? 'since today' : w}` : (n === 0 ? 'since today' : w + ' here'); }
+function pWaited(p) { const n = pDays(p); if (n == null) return p.stage === 'invited' ? 'letter date not known yet' : '';
+  if (p.stage === 'invited') return n === 0 ? 'letter sent today' : `letter sent ${n === 1 ? '1 day' : n + ' days'} ago`; const w = n === 0 ? 'today' : n === 1 ? '1 day' : n + ' days'; return p.stage === 'nominated' ? `on the list ${n === 0 ? 'since today' : w}` : (n === 0 ? 'since today' : w + ' here'); }
 async function loadPath(force) {
   if (PATH && !force) return;
   try { PATH = await window.MahalaMembers.rpc('community_path'); PATH_ERR = ''; }
@@ -1241,9 +1245,10 @@ function pStrip(counts, shown) {
   return `<div class="pstrip">${PSTAGES.map(([k, l]) => `<button type="button" data-pstage="${k}" aria-pressed="${PS.stage === k}"><span class="v">${shown ? shown.filter(p => p.stage === k).length : (counts[k] || 0)}</span><span class="k"><i class="pdot" style="background:${pColor(k)}"></i>${l}</span></button>`).join('')}</div>`;
 }
 function pTimeline(p) {
-  const d = p.dates || {}, rows = [['On the list', d.listed], ['Letter made', d.letter], ['Letter opened', d.opened], ['Joined the tribe', d.joined], ['Applied', d.applied], ['Decided', d.decided], ['First payment noted', d.paid]].filter(r => r[1]);
+  const d = p.dates || {}, rows = [['On the list', d.listed], ['Letter sent', d.sent], ['Letter token made', d.letter], ['Came by the letter', d.opened], ['Joined the tribe', d.joined], ['Applied', d.applied], ['Decided', d.decided], ['First payment noted', d.paid]].filter(r => r[1]);
   if (d.payLater) rows.push(['Paying later', d.payLater]);
-  return `<dl class="ptl">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${esc(day(v))}</dd>`).join('') || '<dt>No dates yet</dt><dd></dd>'}</dl>${M.byKey[p.id] ? `<span class="btn" role="button" tabindex="0" data-key="${esc(p.id)}" style="min-height:32px;padding:4px 12px;font-size:.8rem">Open their card</span>` : ''}`;
+  if (p.reply) rows.splice(2, 0, ['Their reply', /^Replied (.+)$/.test(p.reply) ? 'Replied ' + p.reply.slice(8) : p.reply]);
+  return `<dl class="ptl">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${esc(/^\d{4}-\d\d-\d\d/.test(v) ? day(v) : v)}</dd>`).join('') || '<dt>No dates yet</dt><dd></dd>'}</dl>${M.byKey[p.id] ? `<span class="btn" role="button" tabindex="0" data-key="${esc(p.id)}" style="min-height:32px;padding:4px 12px;font-size:.8rem">Open their card</span>` : ''}`;
 }
 function pCard(p) {
   const open = PS.open === p.id;
@@ -1252,7 +1257,7 @@ function pCard(p) {
 function pathCore() {
   const ps = pathPeople(), lateN = (PATH.people || []).filter(pLate).length;
   const bys = [...new Set((PATH.people || []).map(p => p.by).filter(Boolean))].sort((a, b) => a.localeCompare(b));
-  let h = `<section class="block" aria-labelledby="pathH"><div class="head"><h2 id="pathH">The 2027 path</h2><span class="muted small">Live from the member database. A card turns amber after ${PATH.lateDays || 7} days in one place. Letter dates are still to come in, so invited cards show none yet.</span></div>
+  let h = `<section class="block" aria-labelledby="pathH"><div class="head"><h2 id="pathH">The 2027 path</h2><span class="muted small">Live from the member database. A card turns amber after ${PATH.lateDays || 7} days in one place. Letter dates come from love@'s Sent folder each hour.</span></div>
     ${pStrip(PATH.counts || {}, ps)}
     <div class="filters" style="margin-top:12px"><div class="seg" role="group" aria-label="Lay out"><button type="button" data-play="board" aria-pressed="${PS.lay === 'board'}">Board</button><button type="button" data-play="list" aria-pressed="${PS.lay === 'list'}">List</button></div>
       <select id="p-by" aria-label="Nominated by"><option value="">Nominated by anyone</option>${bys.map(b => `<option ${PS.by === b ? 'selected' : ''}>${esc(b)}</option>`).join('')}</select>
