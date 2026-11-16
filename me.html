@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400&family=Jost:wght@300;400;500&family=Marcellus&display=swap">
 <script src="site.js?v=10"></script>
-<script src="assets/shim/claude-shim.js?v=18"></script>
+<script src="assets/shim/claude-shim.js?v=19"></script>
 <style>
 /* Your Mahala, prototype 2 (4 Nov 2026). One page about you, the same on the site and in the Mahalaverse.
    The people here are made up; nothing is read from or saved to the member database.
@@ -703,7 +703,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   function kindWord(e) { return { gathering: 'In person', talk: 'Online talk', build: 'Build day', burn: 'The burn' }[e.kind] || e.kind; }
   function clocks(e) {
     if (!e.time || !/^\d\d:\d\d$/.test(e.time)) return e.time === 'morning' ? 'A morning, start time to come' : '';
-    var t = e.time + ' in Cape Town', tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    var t = e.time + (e.until ? ' to ' + e.until : '') + ' in Cape Town', tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     if (tz && tz !== 'Africa/Johannesburg') {
       var at = new Date(e.date + 'T' + e.time + ':00+02:00');
       try { t += ' · ' + at.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: tz }) + ' where you are'; } catch (x) { /* one clock is enough */ }
@@ -711,6 +711,8 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     return t;
   }
   function askFor(e) {
+    // events.yaml `ask` (T-192): the event's own one-minute question, in the hosts' words, replaces the default for its kind
+    if (e.ask) return '<label for="ask-' + e.id + '">' + esc(e.ask) + '</label><textarea id="ask-' + e.id + '" rows="2"></textarea>';
     if (e.kind === 'build') return '<fieldset><legend>Which crew pulls you this morning?</legend><div class="choice">' + ['Planting', 'Digging', 'Composting', 'The Seed'].map(function (c, i) { return '<input type="radio" name="ask-' + e.id + '" id="ask-' + e.id + i + '"><label for="ask-' + e.id + i + '">' + c + '</label>'; }).join('') + '</div></fieldset>';
     if (e.end && e.kind === 'gathering') return '<fieldset><legend>Which night will you come for?</legend><div class="choice">' + nights(e).map(function (c, i) { return '<input type="radio" name="ask-' + e.id + '" id="ask-' + e.id + i + '"><label for="ask-' + e.id + i + '">' + c + '</label>'; }).join('') + '</div></fieldset><div class="choice"><input type="checkbox" id="poem-' + e.id + '"><label for="poem-' + e.id + '">I would read a poem at the fire</label></div>';
     if (e.kind === 'talk') return '<label for="ask-' + e.id + '">A question for the guest (optional)</label><textarea id="ask-' + e.id + '" rows="2"></textarea>';
@@ -726,7 +728,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       : e.tickets ? '<a class="btn small" href="' + esc(e.tickets) + '" target="_blank" rel="noopener">Get a ticket</a>'
       : '<button type="button" class="btn small" data-yes="' + e.id + '" aria-pressed="' + (st ? 'true' : 'false') + '" aria-label="' + (e.set ? 'Yes, I\u2019ll come: ' : 'Hold it for me: ') + esc(e.title) + '">' + (st === 'yes' ? 'Going' : st === 'hold' ? 'Held for you' : e.set ? 'Yes, I\u2019ll come' : 'Hold it for me') + '</button>';
     var cal = e.set && !burn ? '<button type="button" class="btn small ghost" data-ics="' + e.id + '">Add to calendar</button>' : '';
-    var placeNote = /announced|ticket holders/.test(e.where) ? '<small>The exact place opens here for those coming, two days before.</small>' : e.kind === 'talk' ? '<small>The room link opens here for those coming, an hour before.</small>' : '';
+    var placeNote = e.placeShared ? '<small>' + esc(e.placeShared) + '</small>' : /announced|ticket holders/.test(e.where) ? '<small>The exact place opens here for those coming, two days before.</small>' : e.kind === 'talk' ? '<small>The room link opens here for those coming, an hour before.</small>' : '';
     return '<div class="ticket' + (st ? ' open' : '') + '" id="t-' + e.id + '"><button type="button" class="head" aria-expanded="' + (st ? 'true' : 'false') + '" aria-controls="tb-' + e.id + '" data-t="' + e.id + '">'
       + '<span class="tdate"><b>' + x.getUTCDate() + '</b><span>' + MON[x.getUTCMonth()] + '</span></span>'
       + '<span class="ttitle"><b>' + esc(e.title) + '</b><span>' + kindWord(e) + ' · ' + esc(e.where) + '</span></span>' + stamp + '</button>'
@@ -735,7 +737,8 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + '<dl><dt>When</dt><dd>' + when(e) + (clocks(e) ? '<small>' + clocks(e) + '</small>' : '') + '</dd>'
       + '<dt>Where</dt><dd>' + esc(e.where) + placeNote + '</dd>'
       + '<dt>What happens</dt><dd>' + esc(e.blurb || '') + '</dd>'
-      + (e.bring ? '<dt>Bring</dt><dd>' + esc(e.bring) + '</dd>' : '') + '</dl>'
+      + (e.bring ? '<dt>Bring</dt><dd>' + esc(e.bring) + '</dd>' : '')
+      + (e.forWho ? '<dt>Who it is for</dt><dd>' + esc(e.forWho) + '</dd>' : '') + '</dl>'
       + '<div class="row">' + yesBtn + cal + '</div>'
       + (burn ? '' : '<p class="only">Only the hosts see how many are coming, never your name.</p>')
       + '<p class="said" data-said></p></div></div></div></div>';
