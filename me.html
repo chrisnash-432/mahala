@@ -50,7 +50,9 @@ section, details, .chapter, .ticket { scroll-margin-top: 80px; }
 .fbcard::before { content: ""; position: absolute; right: 26px; top: -6px; width: 12px; height: 12px; background: var(--ink); transform: rotate(45deg); }
 .fbcard b { display: block; font: 400 16px/1.2 var(--name); letter-spacing: .04em; margin-bottom: 4px; color: #fff; }
 .fbwrap:hover .fbcard, .fbwrap:focus-within .fbcard { opacity: 1; transform: none; }
-.shotrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.shotrow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+.tellbox .shotrow label.shotbtn { display: inline-flex; margin: 0; font-size: 14px; color: var(--ink); }
+.tellbox.dropping .sheetin { outline: 2px dashed var(--ink-3); outline-offset: -8px; }
 .shotsay { font-size: 13px; color: var(--ink-3); }
 .shotprev { display: block; max-width: 100%; max-height: 220px; margin-top: 10px; border-radius: 10px; border: 1px solid var(--rule); }
 .tellbtn { border: 0; background: var(--magenta); color: #fff; border-radius: 999px; padding: 8px 14px; font-size: 14px; cursor: pointer; min-height: 40px; }
@@ -326,6 +328,9 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
 .invite li.done::before { content: "\2713"; background: var(--warm); color: var(--ink); border-color: var(--warm); }
 .invite li.now { background: rgba(244, 239, 230, .14); border-color: var(--yellow); }
 .invite li b { display: block; font: 400 18px/1.25 var(--name); letter-spacing: .04em; color: var(--warm); margin-bottom: 4px; }
+.invite li .btn.book { display: flex; width: fit-content; margin-top: 12px; font-size: 14.5px; min-height: 42px; padding: 8px 18px; }
+.invite li .callby { display: block; margin-top: 8px; font-size: 13px; color: rgba(244, 239, 230, .72); }
+.invite li .callby a { color: var(--warm); }
 .invite .btn { background: var(--yellow); color: var(--ink); border-color: var(--yellow); font-size: 17px; min-height: 52px; padding: 12px 26px; }
 .invite .btn.ghost { background: transparent; color: var(--warm); border-color: rgba(244, 239, 230, .45); font-size: 15px; min-height: 44px; }
 .invite .fine { font-size: 13.5px; color: rgba(244, 239, 230, .7); margin: 14px 0 0; max-width: 60ch; }
@@ -379,6 +384,10 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
 .foldin > .lede { margin: 0 0 16px; color: var(--ink-2); max-width: 60ch; }
 .fold .soul { margin-top: 4px; }
 .shareseed { margin-top: 14px; }
+.callin { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--rule); }
+.callin .row { margin-top: 10px; }
+.callsay { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+.callsay b { display: block; font: 400 17px/1.3 var(--name); letter-spacing: .04em; color: var(--ink); margin-bottom: 2px; }
 .btn .ico { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; margin: -2px 8px -3px 0; vertical-align: middle; }
 /* your years as beads (F-064) */
 .mala { margin: 28px 0 4px; }
@@ -550,10 +559,10 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   <div class="sheethead"><h2 id="tellH">Feedback</h2><button type="button" class="x" data-close>Close</button></div>
   <p class="sub">Help us test, tell us about glitches, share creative ideas, and co-create a better platform with us. Everything you send goes to the stewards with the part of the page filled in, and you will see what happened to it below, usually within a week.</p>
   <label for="tellWhere">Which part</label><select id="tellWhere"></select>
-  <label for="tellText">What you noticed</label><textarea id="tellText" rows="3"></textarea>
-  <label for="tellRank">Did anything here make you feel ranked or measured? (optional)</label><textarea id="tellRank" rows="2"></textarea>
-  <div class="shotrow"><label class="btn small ghost" for="tellShot">Add a screenshot</label><input type="file" id="tellShot" accept="image/*" class="vh"><span class="shotsay" id="shotSay">Only you and the stewards can open it.</span></div>
+  <label for="tellText">What you noticed</label><textarea id="tellText" rows="3" placeholder="A line or two. You can paste a screenshot straight in here too."></textarea>
+  <div class="shotrow"><label class="btn small ghost shotbtn" for="tellShot"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>Add a screenshot</label><input type="file" id="tellShot" accept="image/*" class="vh"><span class="shotsay" id="shotSay">Or paste or drop one in. Only you and the stewards can open it.</span></div>
   <img class="shotprev" id="shotPrev" alt="Your screenshot, ready to send" hidden>
+  <label for="tellRank">Did anything here make you feel ranked or measured? (optional)</label><textarea id="tellRank" rows="2"></textarea>
   <div class="row" style="margin-top:12px"><button type="button" class="btn" id="tellSend">Send</button></div>
   <p class="said" id="tellSaid" aria-live="polite"></p>
   <h3>What you have told us</h3><ul class="yours" id="yours"></ul>
@@ -578,6 +587,11 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   var WHEN = { 'Fund': 'Now, while we raise the money for The Seed.', 'Fabricate': 'In the workshop, before the build.', 'Build at Tankwa': 'In the desert, during build week.', 'Light it': 'At the burn, once the sun goes down.' };
   var ARTIFACT = false;      // true only in the review copy, which has no accounts
   var BASECAMP = 'basecamp.html', REVIEW = 'https://claude.ai/artifact/LWUKvvyjUZePV57zjn25tk#your-mahala-decisions';
+  // the welcome call: the same booking page as step four of the camp application (join.js CALL_URL). Leads call 16 Nov (F-070)
+  var CALL_URL = 'https://calendar.app.google/MCznbwH6nnkgvK4H6';
+  // the 2027 nomination form, "Calling in the temple builders" (leads call 16 Nov, F-073). Empty hides the Nominate button
+  var NOMINATE_URL = 'https://merbear89.github.io/mahala/';
+  var SITE_URL = 'https://wearemahala.com/';
   var IMG = function (k) { return 'assets/deck/sm/' + k + '.jpg'; };   // loaded only when a card is shown or drawn
   var SITE = window.MAHALA_SITE || {};
   var SEED = { raised: SITE.raisedTotal ? SITE.raisedTotal() : 70000, target: SITE.target || 718875, milestones: [['Frame', 293235], ['Shelter', 346913], ['Lantern', 497356], ['The full Seed', 581278], ['Copper and grid', 718875]] };
@@ -935,6 +949,21 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     });
   }
 
+  // ------------------------------------------------------------------ calling people in (leads call 16 Nov, F-073, F-074)
+  // Send Mahala to someone in one tap: WhatsApp, where people actually read their messages, or the phone's own share.
+  // Camp leads, the core team and people in the 2027 camp also get the nomination form, once NOMINATE_URL is set.
+  // A personal letter link for each nominee still comes from the stewards; this sends the front page.
+  var INVITE_TEXT = 'Mahala is raising The Seed, a temple for AfrikaBurn 2027, and I would love you to be part of it. Have a look and join the tribe:';
+  function canNominate() { return !!NOMINATE_URL && (P.door === 'lead' || P.door === 'core' || P.tier === 'applicant' || P.tier === 'camp'); }
+  function callIn() {
+    var nom = canNominate();
+    return '<div class="callin"><p class="callsay"><b>Know someone who belongs here?</b>Send them Mahala in one tap' + (nom ? ', and if they are made for the camp, nominate them for 2027' : '') + '.</p>'
+      + '<div class="row"><a class="btn small" href="https://wa.me/?text=' + encodeURIComponent(INVITE_TEXT + ' ' + SITE_URL) + '" target="_blank" rel="noopener" data-count="Invite on WhatsApp" data-count-where="Your Mahala">Send on WhatsApp</a>'
+      + '<button type="button" class="btn small ghost" id="shareInvite">' + SHARE_ICON + 'Share another way</button>'
+      + (nom ? '<a class="btn small ghost" href="' + esc(NOMINATE_URL) + '" target="_blank" rel="noopener" data-count="Nominate" data-count-where="Your Mahala">Nominate someone for 2027</a>' : '')
+      + '</div><p class="said" data-said aria-live="polite"></p></div>';
+  }
+
   // ------------------------------------------------------------------ your years as beads on a string (F-064)
   // One bead for each year you came. Open one: that year's camp and theme (Mahala OS community/camps/*.md) and your
   // own threads from it (from your profile, else from your thread).
@@ -1034,7 +1063,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     // 4. growing The Seed, with one click to share the crowdfund
     h += fold('seed', 'Growing The Seed', seedRing()
       + (P.gave ? '<p class="mine">You gave in ' + esc(P.gave.when) + ', towards the ' + esc(P.gave.towards) + '. Thank you.<small>Only you see this line, and never an amount.</small></p>' : '<p class="mine">When you give, a line appears here that only you can see.<small><a href="seed.html">The Seed and its milestones</a></small></p>')
-      + '<div class="row shareseed"><button type="button" class="btn" id="shareSeed">' + SHARE_ICON + 'Share the crowdfund</button><a class="btn ghost" href="' + esc(DONATE) + '" target="_blank" rel="noopener">Give to The Seed</a></div><p class="said" data-said aria-live="polite"></p>', { open: true });
+      + '<div class="row shareseed"><button type="button" class="btn" id="shareSeed">' + SHARE_ICON + 'Share the crowdfund</button><a class="btn ghost" href="' + esc(DONATE) + '" target="_blank" rel="noopener">Give to The Seed</a></div><p class="said" data-said aria-live="polite"></p>' + callIn(), { open: true });
 
     // 5. your path this season, with your quest made easy (F-065)
     var path = '<p class="lede">Where your thread runs this season, newest first. Something missing? <button type="button" class="link" data-tell="Your path this season">Tell the stewards</button>.</p><ol class="thread">';
@@ -1083,9 +1112,13 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     if (!P.live || !P.J || !P.tier || P.tier === 'tribe') return '';
     var J = P.J, by = P.rec.nominatedBy, st = {}; (J.steps || []).forEach(function (x) { st[x.key] = x.state; });
     var cls = function (k) { return st[k] === 'done' ? ' class="done"' : st[k] === 'now' ? ' class="now"' : ''; };
+    var booked = st.call === 'done', addBy = by ? 'mailto:love@wearemahala.com?subject=' + encodeURIComponent('Welcome call: please add ' + by)
+      + '&body=' + encodeURIComponent('Hi Mahala,\n\nI have booked my welcome call. Could you add ' + by + ' to it too?\n\n' + P.first) : '';
+    var book = booked ? '' : '<a class="btn small book" href="' + CALL_URL + '" target="_blank" rel="noopener" data-count="Book the welcome call" data-count-where="Your Mahala">Book your welcome call</a>'
+      + (by ? '<small class="callby">Want ' + esc(by) + ' there too? Book a time, then <a href="' + esc(addBy) + '">tell us</a> and we add them to the call.</small>' : '');
     var steps = '<ol>'
       + '<li' + cls('apply') + '><b>Your camp application</b>Four short steps, about ten minutes. What Mahala already knows of you is filled in for you.</li>'
-      + '<li' + cls('call') + '><b>A welcome call</b>Twenty minutes with a camp lead, by video or phone, to meet and find the crew where your hands are needed.</li>'
+      + '<li' + cls('call') + '><b>A welcome call</b>Twenty minutes with a camp lead, by video or phone, to meet and find the crew where your hands are needed.' + book + '</li>'
       + '<li' + cls('contribution') + '><b>Your camp fee</b>Once your place is confirmed, a secure payment link comes to you by email: one payment, or two or four instalments, with a receipt for each. Nothing is paid on this site.</li>'
       + '</ol>';
     if (P.tier === 'invited') return '<section class="invite" id="invite" aria-labelledby="inviteH"><p class="from">Your invitation' + (by ? ', from ' + esc(by) : '') + '</p>'
@@ -1095,7 +1128,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + '<p class="fine">Not this season? That is a perfectly good answer: write to love@wearemahala.com, and your place in the tribe stays just as it is.</p></section>';
     if (P.tier === 'applicant') return '<section class="invite quiet" id="invite" aria-labelledby="inviteH"><p class="from">Camp 2027</p>'
       + '<h2 id="inviteH">' + (J.stage === 'waitlist' ? 'You are on the waitlist' : 'Your application is in') + '</h2>'
-      + '<p class="lead">' + (J.stage === 'waitlist' ? 'Places are limited to 50, and we will tell you as soon as one opens.' : 'Thank you. The camp leads are reading it, and one of them will be in touch for your welcome call. Nothing to do until then.') + '</p>'
+      + '<p class="lead">' + (J.stage === 'waitlist' ? 'Places are limited to 50, and we will tell you as soon as one opens.' : (booked ? 'Thank you. The camp leads are reading it, and your welcome call is in the diary.' : 'Thank you. The camp leads are reading it. Your next step is the welcome call: choose a time that suits you below.')) + '</p>'
       + steps + '</section>';
     return '<section class="invite quiet" id="invite" aria-labelledby="inviteH"><p class="from">Camp 2027</p>'
       + '<h2 id="inviteH">Your place at camp is confirmed</h2>'
@@ -1129,13 +1162,26 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   // a screenshot for the feedback form (F-060): shown here first, sent with the words
   var SHOT = null;
   function clearShot() { SHOT = null; var pv = $('shotPrev'); if (pv) { if (pv.src) URL.revokeObjectURL(pv.src); pv.removeAttribute('src'); pv.hidden = true; } var sy = $('shotSay'); if (sy) sy.textContent = 'Only you and the stewards can open it.'; }
-  document.addEventListener('change', function (ev) {
-    if (ev.target.id !== 'tellShot' || !ev.target.files || !ev.target.files[0]) return;
-    var f = ev.target.files[0]; ev.target.value = '';
-    if (!/^image\//.test(f.type || '')) { $('shotSay').textContent = 'Choose a screenshot or an image file.'; return; }
+  function takeShot(f) {
+    if (!f) return false;
+    if (!/^image\//.test(f.type || '')) { $('shotSay').textContent = 'Choose a screenshot or an image file.'; return false; }
     clearShot(); SHOT = f; var pv = $('shotPrev'); pv.src = URL.createObjectURL(f); pv.hidden = false;
     $('shotSay').innerHTML = 'Ready to send with your words. <button type="button" class="link" id="shotDel">Remove it</button>';
+    return true;
+  }
+  document.addEventListener('change', function (ev) {
+    if (ev.target.id !== 'tellShot' || !ev.target.files || !ev.target.files[0]) return;
+    var f = ev.target.files[0]; ev.target.value = ''; takeShot(f);
   });
+  // paste a screenshot anywhere in the feedback sheet, or drop an image on it (leads call 16 Nov, F-071)
+  function imageIn(items) { for (var i = 0; items && i < items.length; i++) { var it = items[i]; if (it.kind === 'file' && /^image\//.test(it.type)) return it.getAsFile(); } return null; }
+  document.addEventListener('paste', function (ev) {
+    var box = $('tell'); if (!box || !box.open || !box.contains(ev.target)) return;
+    var f = imageIn(ev.clipboardData && ev.clipboardData.items); if (f && takeShot(f)) ev.preventDefault();
+  });
+  ['dragenter', 'dragover'].forEach(function (k) { document.addEventListener(k, function (ev) { var box = $('tell'); if (!box || !box.open || !box.contains(ev.target)) return; ev.preventDefault(); box.classList.add('dropping'); }); });
+  ['dragleave', 'drop'].forEach(function (k) { document.addEventListener(k, function (ev) { var box = $('tell'); if (!box || !box.open) return; if (k === 'dragleave' && box.contains(ev.relatedTarget)) return; box.classList.remove('dropping');
+    if (k === 'drop' && box.contains(ev.target)) { ev.preventDefault(); var fs = ev.dataTransfer && ev.dataTransfer.files; if (fs && fs[0]) takeShot(fs[0]); } }); });
   document.addEventListener('click', function (ev) { if (ev.target && ev.target.id === 'shotDel') clearShot(); });
   document.addEventListener('change', function (ev) {
     if (ev.target.id !== 'picIn' || !ev.target.files || !ev.target.files[0]) return;
@@ -1255,7 +1301,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   function roleDoor() {
     if (P.live && P.door === 'lead') return '<details class="door" id="door"><summary><b>The people you called in</b><span>For camp leads</span></summary><div class="doorin">'
       + '<p>When the invitations run through the member database, you will see here how many of the people you called in have replied, and the names of those who choose to share where they are with you. Never their words.</p>'
-      + '<div class="row"><a class="btn small" href="' + BASECAMP + '#list">Open Basecamp</a>' + mapBtn() + '</div><p class="said" data-said></p></div></details>';
+      + '<div class="row"><a class="btn small" href="' + BASECAMP + '#list">Open Basecamp</a>' + mapBtn() + (NOMINATE_URL ? '<a class="btn small ghost" href="' + esc(NOMINATE_URL) + '" target="_blank" rel="noopener" data-count="Nominate" data-count-where="Your Mahala lead door">Nominate someone</a>' : '') + '</div><p class="said" data-said></p></div></details>';
     if (P.live && P.door === 'core') return '<details class="door" id="door"><summary><b>Holding the whole</b><span>For the core team and stewards</span></summary><div class="doorin">'
       + '<p>Basecamp holds the plan, the tasks, the decisions and the numbers, with updates and comments from the people doing them.</p>'
       + (TODAY <= new Date('2026-11-14T23:59:00+02:00') ? '<ul>' + ['The Seed of Life\u2019s names', 'The roles for 2027', 'What a camp lead sees about the people they call in', 'Who can find other members', 'Where Basecamp lives'].map(function (x) { return '<li><span>' + x + '<small>On the review page, by 14 Nov</small></span><span class="pill">Waiting</span></li>'; }).join('') + '</ul>' : '')
@@ -1325,7 +1371,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   }
 
   // ------------------------------------------------------------------ what you can try
-  function say(el, t) { var s = el.closest('.qfilmtext, .letter, .tin, .doorin, .sheetin, section, .fold, .cardzone'); s = s && s.querySelector('[data-said], .said'); if (s) s.textContent = t; }
+  function say(el, t) { var s = el.closest('.qfilmtext, .letter, .tin, .doorin, .sheetin, .callin, section, .fold, .cardzone'); s = s && s.querySelector('[data-said], .said'); if (s) s.textContent = t; }
   function open(dlg) { try { dlg.showModal(); } catch (e) { dlg.setAttribute('open', ''); } var f = dlg.querySelector('[data-close], textarea'); if (f) f.focus(); }
 
   document.addEventListener('click', function (ev) {
@@ -1356,6 +1402,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     if (t.classList.contains('way')) { petal(t); return; }
     if (t.dataset.bead != null) { var b = P.beads[+t.dataset.bead]; document.querySelectorAll('.bead').forEach(function (x) { x.setAttribute('aria-expanded', String(x === t)); }); $('beadsay').textContent = b[1]; return; }
     if (t.id === 'turnOwn' || t.id === 'ownThumb') { myOpen = !myOpen; $('own').classList.toggle('turned', myOpen); var tb = $('turnOwn'); if (tb) { tb.setAttribute('aria-pressed', String(myOpen)); tb.textContent = myOpen ? 'Turn it back' : 'Turn it'; } return; }
+    if (t.id === 'shareInvite') { share(t, { title: 'Mahala', text: INVITE_TEXT, url: SITE_URL }, 'The link is copied. Paste it wherever your people are.'); return; }
     if (t.id === 'shareSeed') { share(t, { title: 'The Seed', text: 'Help us raise The Seed, the first temple of Mahala\u2019s four-year vision.', url: DONATE }, 'The crowdfund link is copied. Paste it wherever your people are.'); return; }
     if (t.id === 'shareFilm') { share(t, { title: 'The Seed, in 60 seconds', text: 'Watch the film of The Seed, the temple Mahala is raising. I think you would love it.', url: FILM_PAGE }, 'The film\u2019s link is copied. Send it to three people who would love it.'); return; }
     if (t.id === 'qFilm') { var v = document.createElement('video'); v.src = 'seed/media/film_wide.mp4'; v.controls = true; v.playsInline = true; v.autoplay = true; v.muted = !!(window.MAHALA_SITE && MAHALA_SITE.sound && !MAHALA_SITE.sound.on()); v.poster = 'seed/img/film_wide.jpg'; v.className = 'qvideo'; v.setAttribute('aria-label', 'The Seed, in 60 seconds. Concept visualisation.'); t.replaceWith(v); v.play().catch(function () { }); return; }

@@ -1577,6 +1577,15 @@ const MATRIX = [
   ['Contact details', 'No', 'No', 'No', 'Ask a steward', 'Ask a steward', 'Ask a steward', 'No'],
 ];
 const MCOLS = [['visitor', 'Visitor'], ['tribe', 'Tribe'], ['member', 'Camp member'], ['crewlead', 'Crew lead'], ['camplead', 'Camp lead'], ['core', 'Core team'], ['treasurer', 'Treasurer']];
+// The content engine (leads call 16 Nov, F-076): the footage for the core team and the camp and crew leads, who star the
+// moments worth posting; the content desk, where starred clips become posts, for the core team.
+function contentDoor() {
+  const r = SITE && WHO ? (WHO.view === 'core' ? 'core' : WHO.role) : role;
+  if (!['core', 'camplead', 'crewlead'].includes(r)) return '';
+  return `<section class="block"><div class="head"><h2>The content engine</h2><span class="muted small">For the campaign</span></div>
+    <p class="small" style="max-width:68ch">Clips from past camps, cut short and ready, beside the renders of The Seed. Star the moments worth posting, and the core team turns them into posts on the content desk. Anything with faces needs the person’s yes before it is shared, so start with the no faces filter.</p>
+    <p style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 0"><a class="btn primary" href="footage.html">Footage</a>${r === 'core' ? '<a class="btn" href="content.html">Content desk</a>' : ''}</p></section>`;
+}
 function viewLibrary() {
   const ls = DATA.library.filter(linkVisible);
   const groups = [...new Set(ls.map(l => l.group))];
@@ -1740,7 +1749,7 @@ function viewEvents() {
 }
 
 // ---------------------------------------------------------------- render
-const VIEWS = { today: viewToday, list: viewList, camp: viewPlan, gather: viewEvents, library: () => viewLibrary() + viewMoney() };
+const VIEWS = { today: viewToday, list: viewList, camp: viewPlan, gather: viewEvents, library: () => contentDoor() + viewLibrary() + viewMoney() };
 function current() {
   let h = location.hash.slice(1);
   if (h.startsWith('as-') && ROLES[h.slice(3)]) { role = h.slice(3); try { localStorage.setItem('basecamp.role', role); } catch (e) {} history.replaceState(null, '', '#today'); h = 'today'; }
