@@ -568,7 +568,7 @@ html.join-open, html.join-open body { overflow: hidden; }
     var sameDay = ymd(u) === e.date ? '' : ' ' + u.toLocaleDateString('en-GB', { weekday: 'short' });
     return '<span class="sep">·</span>' + esc(t + sameDay) + ' your time';
   };
-  var timeText = function (e) { return e.time === 'morning' ? 'Morning' : e.time ? e.time + ' Cape Town' : ''; };
+  var timeText = function (e) { return e.time === 'morning' ? 'Morning' : e.time ? e.time + (e.until ? ' to ' + e.until : '') + ' Cape Town' : ''; };
   var dateBlock = function (e) {
     var a = at(e.date), b = e.end ? at(e.end) : null;
     var d = b ? a.getDate() + '<small>to</small>' + b.getDate() : String(a.getDate());
@@ -676,7 +676,7 @@ html.join-open, html.join-open body { overflow: hidden; }
 })();
 </script>
 <script src="site.js?v=10"></script>
-<script src="assets/shim/claude-shim.js?v=18"></script>
+<script src="assets/shim/claude-shim.js?v=19"></script>
 <script src="tribe-join.js?v=3"></script>
 <script src="yourevents.js?v=2"></script>
 <script src="analytics.js?v=2"></script>

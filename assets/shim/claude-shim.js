@@ -921,11 +921,12 @@
   var NOTICE_VERSION = '2026-11-draft';
   var NOTICE = [
     ['Who we are', 'Mahala is a theme camp at AfrikaBurn and a community of temple builders. The camp\'s stewards look after this record. You can reach them at love@wearemahala.com.'],
-    ['What we hold', 'What Mahala already knows of your time with the camp (the years, your roles, who brought you in), what you add here (a playa name, your gifts, your choices), and what you do in the Mahalaverse (your path, your book, the cards you keep). We never ask for health details, ID numbers or bank details here, and other members never see your address.'],
+    ['What we hold', 'What Mahala already knows of your time with the camp (the years, your roles, who brought you in), what you add here (a playa name, your gifts, your choices), what you do in the Mahalaverse (your path, your book, the cards you keep), and what you write in Basecamp if you help run the camp (your updates, comments, handovers and views on decisions). We never ask for health details, ID numbers or bank details here, and other members never see your address.'],
     ['Why', 'To welcome you, to keep your thread with Mahala, and, only if you say yes below, to send you Mahala news.'],
     ['Where it lives', 'In a member database in Frankfurt (Supabase, in the EU, which protects it to the standard POPIA section 72 asks), and in Mahala\'s private record, kept by the stewards. Claude, an AI assistant, helps the stewards read that record; it never contacts anyone by itself.'],
     ['Who sees what', 'You choose, for each thing: only you, the stewards, other members, or everyone. Your book is only ever yours.'],
-    ['Your rights', 'See, correct, download or delete everything here at any time, in Account and privacy. If something is wrong, tell the stewards; you may also complain to the Information Regulator (inforegulator.org.za).'],
+    ['Visits to the site', 'We count visits to wearemahala.com without cookies and without anything that says who you are.'],
+    ['Your rights', 'See, correct, download (Basecamp included) or delete everything here at any time, in Account and privacy. If something is wrong, tell the stewards; you may also complain to the Information Regulator (inforegulator.org.za).'],
   ];
   var SCOPES = [
     ['news', 'Send me Mahala news by email, now and then. I can stop it any time.'],

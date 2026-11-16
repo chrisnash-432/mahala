@@ -114,7 +114,7 @@ const CONFIG = {
   form: null,    // a private sign-up form, for visitors who cannot write to the shared database
   // the camp's own pages from the Temple Builder Journey outline, filled in once each exists
   campPay: null,   // the camp fee checkout (local or abroad rate, 1, 2 or 4 instalments)
-  call: null,      // welcome call booking
+  call: 'https://calendar.app.google/MCznbwH6nnkgvK4H6',   // welcome call booking, the same page as the camp application (leads call 16 Nov)
   home: null,      // the member home: a personal link with the checklist, the documents and the dates
   donate: (window.MAHALA_SITE || {}).donateUrl || null,   // the crowdfunding page for The Seed (BackaBuddy), set in site.js
   principles: 'https://www.afrikaburn.org/about/our-guiding-principles/',

@@ -131,7 +131,7 @@
       return '<h2 class="h-sub">Your welcome call</h2>' +
         '<p class="small centre">Twenty minutes to welcome you properly, answer your questions and find the crew where your hands are needed.</p>' +
         '<div class="call-book"><a class="primary" id="jBook" href="' + CALL_URL + '" target="_blank" rel="noopener" data-count="Book the welcome call" data-count-where="camp application">Book your welcome call</a>' +
-        '<p class="small centre">The call is with Chris for now.</p></div>' +
+        '<p class="small centre">The call is with Chris for now.' + (A.nominatedBy ? ' Want ' + esc(A.nominatedBy) + ' there too? Book a time, then <a class="linkish" href="mailto:love@wearemahala.com?subject=' + encodeURIComponent('Welcome call: please add ' + A.nominatedBy) + '">tell us</a> and we add them to the call.' : '') + '</p></div>' +
         field('jMsg', 'Anything else you would like us to know <small>(optional)</small>', '<textarea id="jMsg" maxlength="1500">' + esc(A.message) + '</textarea>') +
         '<input type="text" id="jHp" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp">';
     },
@@ -327,7 +327,7 @@
       payIn: payLine(), total: money(total()), coupon: A.coupon,
       agreements: A.agreed.slice().sort().map(function (i) { return AGREE[i][0].replace(/\.$/, ''); }),
       callTimes: [A.booked ? 'Opened the booking link' : 'Not booked yet'], message: A.message,
-      nominatedBy: A.nominatedBy, hp: ($('jHp') && $('jHp').value) || ''
+      nominatedBy: A.nominatedBy, ref: letterRef(), hp: ($('jHp') && $('jHp').value) || ''
     };
     (SITE.post ? SITE.post(row) : Promise.reject(new Error('no sheet'))).then(function () {
       try { localStorage.setItem('mahala.applied', JSON.stringify({ at: Date.now(), based: A.based, bigCoil: A.bigCoil, gift: A.gift, payIn: A.payIn })); } catch (e) { /* storage blocked */ }
@@ -364,7 +364,7 @@
   // platform/docs/ARCHITECTURE.md), and never an amount.
   function toRecord(row) {
     var M = window.MahalaMembers; if (!M) return Promise.resolve(null);
-    var keep = ['id', 'name', 'livesIn', 'travelFrom', 'skills', 'crew', 'bigCoil', 'agreements', 'callTimes', 'message', 'nominatedBy'];
+    var keep = ['id', 'name', 'livesIn', 'travelFrom', 'skills', 'crew', 'bigCoil', 'agreements', 'callTimes', 'message', 'nominatedBy', 'ref'];
     return M.info().then(function (i) {
       if (!i.signedIn) return null;
       var a = {}; keep.forEach(function (k) { if (row[k] !== undefined && row[k] !== '' && row[k] !== null) a[k] = row[k]; });
@@ -521,6 +521,15 @@
   if (applied()) showApplied();
   // the camp is by invitation: the application opens only from an invitation letter's link (it carries ?ref=, ?inv= or ?by=)
   var INVITED = /[?&](ref|inv|by)=/.test(location.search);
+  // the letter's reference, saved with the application so the sheet matches the person exactly (T-203): from the
+  // address, or the invitation this device kept from the letter's link
+  function letterRef() {
+    var ok = function (r) { return /^[A-Za-z0-9_.~-]{8,200}$/.test(r || '') ? r : ''; };
+    try { var r = ok(new URLSearchParams(location.search).get('ref')); if (r) return r; } catch (e) { }
+    try { var k = window.MahalaMembers && window.MahalaMembers.invite && window.MahalaMembers.invite(); if (k && ok(k.ref)) return k.ref; } catch (e) { }
+    try { var o = JSON.parse(localStorage.getItem('mahala.invite') || 'null'); if (o && ok(o.ref)) return o.ref; } catch (e) { }
+    return '';
+  }
   if (INVITED) {
     showInvited();
     if (!APPLIED && /^#(join|apply)$/i.test(location.hash)) openJoin();
