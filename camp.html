@@ -725,14 +725,15 @@ html.join-open, html.join-open body { overflow: hidden; }
 
     <div class="by-invite" id="byInvite">
       <h2 class="h-sec">The camp is by invitation</h2>
-      <p class="small centre">Places in the camp are limited to 50, and it starts with the tribe. Join the tribe (it asks nothing of you, and you belong whether or not you camp), tell us you would love to come, and the camp leads read every introduction. Invitations go out in waves, each with a letter.</p>
+      <p class="small centre">Places in the camp are limited to 50, and it starts with the tribe. Join the waitlist and you join the tribe on the way in (it asks nothing of you, and you belong whether or not you camp). The camp leads read every introduction, and invitations go out in waves, each with a letter.</p>
     </div>
     <div class="page-acts">
       <p class="small centre" data-invited-note hidden>Not camping this year? The tribe is bigger than the camp: you can <a href="tribe.html#join">join the tribe</a> without camping, and stay close to The Seed.</p>
       <button class="primary" type="button" data-join hidden>Accept your invitation</button>
       <a class="primary" href="me.html" data-applied hidden>Open Your Mahala</a>
       <button class="secondary" type="button" data-pay-later hidden>Make your first payment</button>
-      <a class="primary" href="tribe.html#join" data-open-tribe>Join the tribe</a>
+      <a class="primary" href="tribe.html#waitlist" data-open-tribe data-hash="waitlist" data-count="Join the waitlist" data-count-where="The camp page">Join the waitlist</a>
+      <a class="secondary" href="tribe.html#join" data-open-tribe>Join the tribe</a>
       <button class="secondary" type="button" data-page-close>Close</button>
     </div>
   </div>
@@ -766,7 +767,7 @@ html.join-open, html.join-open body { overflow: hidden; }
     if (embed) { e.preventDefault(); parent.postMessage({ mahala: 'go', hash: 'mahalaverse' }, location.origin); }
   }); });
   if (EMBED) setTimeout(function () { var c = document.querySelector('.bar [data-page-close]'); if (c) c.focus({ preventScroll: true }); }, 80);
-  if (EMBED) document.querySelectorAll('[data-open-tribe]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); parent.postMessage({ mahala: 'open', pane: 'tribe', hash: 'join' }, location.origin); }); });
+  if (EMBED) document.querySelectorAll('[data-open-tribe]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); parent.postMessage({ mahala: 'open', pane: 'tribe', hash: a.dataset.hash || 'join' }, location.origin); }); });
   document.querySelectorAll('[data-fill="target"]').forEach(function (el) { if (SITE.money) el.textContent = SITE.money(SITE.target); });
   document.querySelectorAll('[data-fill="days"]').forEach(function (el) { if (SITE.daysToBuild) el.textContent = String(SITE.daysToBuild()); });
 

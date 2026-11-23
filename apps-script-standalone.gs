@@ -1,7 +1,7 @@
 /**
  * Mahala applications backend (standalone, owned by Chris).
  * The public site's Join the tribe form, its Join the camp form (for invited people) and its email sign-ups post here;
- * rows go into the "Mahala - Temple Builder Nominations & Applications" sheet, in its Tribe, Applications and Email list tabs.
+ * rows go into the "Mahala - Temple Builder Nominations & Applications" sheet, in its Tribe, Applications, Waitlist and Email list tabs.
  * Nominations are not touched: they keep their own backend inside the sheet.
  */
 var SHEET_ID = '1xbxEWSTKn0ULESNiuAWGSng4OMkqXHOx8yt8crQq6Q0';
@@ -17,7 +17,7 @@ function doGet() {
 function doPost(e) {
   var p = {};
   try { p = JSON.parse(e.postData.contents); } catch (err) { p = {}; }
-  var out = (p && p.type === 'tribe') ? submitTribe_(p) : (p && p.type === 'application') ? submitApplication_(p) : { ok: false };
+  var out = (p && p.type === 'tribe') ? submitTribe_(p) : (p && p.type === 'application') ? submitApplication_(p) : (p && p.type === 'waitlist') ? submitWaitlist_(p) : { ok: false };
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
 }
 
@@ -130,6 +130,8 @@ function submitTribe_(p) {
       clean_(p.ref), clean_(p.page),
       'New', ''
     ]);
+    // the camp page's Join the waitlist, or the "I would love to come" tick: the same person also goes on the Waitlist tab
+    if (p.waitlist || p.loveToCome) addToWaitlist_(p, email, p.waitlist ? 'Waitlist button' : 'Tribe form tick');
     if (TRIBE_NOTIFY) notifyTribe_(p, email);
     return { ok: true, tab: TRIBE_SHEET };
   } finally {
@@ -148,6 +150,81 @@ function notifyTribe_(p, email) {
   try {
     MailApp.sendEmail({ to: TRIBE_NOTIFY, subject: 'New in the tribe: ' + who, body: body, name: 'Mahala website' });
   } catch (err) { console.error('notify failed: ' + err); }   // a failed email never loses the row
+}
+
+/* ================================================================ The waitlist (added 23 Nov 2026)
+   The camp is by invitation. Anyone who wants a place joins the tribe first; then their name and contact details sit on
+   the "Waitlist" tab, one row per email, for the camp leads to invite from. Rows come from:
+     the camp page's Join the waitlist (the tribe form, posted with waitlist: true)
+     the tribe form's "I would love to come to the camp in 2027" tick
+     a signed-in tribe member's one-tap Join the waitlist (type "waitlist") */
+
+var WAIT_SHEET = 'Waitlist';
+var WAIT_HEADERS = [
+  'Timestamp', 'Member ID',
+  'Name', 'Email', 'WhatsApp', 'Town or city', 'Country',
+  'Came from', 'Letter ref', 'From page',
+  'Status', 'Lead notes'
+];
+var WAIT_STATUS = ['Waiting', 'Invited', 'Applied', 'Not this year'];
+
+function submitWaitlist_(p) {
+  if (!p || p.hp) return { ok: false };
+  var email = clean_(p.email).toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return { ok: false };
+  var lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    var added = addToWaitlist_(p, email, 'Member page');
+    if (added && TRIBE_NOTIFY) {
+      try {
+        MailApp.sendEmail({ to: TRIBE_NOTIFY, subject: 'On the waitlist: ' + (clean_(p.name) || email),
+          body: (clean_(p.name) || email) + ', already in the tribe, has joined the waitlist for camp 2027.\n\nThe row is in the Waitlist tab:\nhttps://docs.google.com/spreadsheets/d/' + SHEET_ID + '/edit\n',
+          name: 'Mahala website' });
+      } catch (err) { console.error('notify failed: ' + err); }
+    }
+    return { ok: true, tab: WAIT_SHEET };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/** One row per email: someone already waiting is not added twice (a new WhatsApp number fills an empty cell). */
+function addToWaitlist_(p, email, cameFrom) {
+  var sheet = sheetFor_(WAIT_SHEET, WAIT_HEADERS, ['Lead notes'], WAIT_STATUS);
+  var col = WAIT_HEADERS.indexOf('Email') + 1, last = sheet.getLastRow();
+  if (last > 1) {
+    var emails = sheet.getRange(2, col, last - 1, 1).getValues();
+    for (var i = 0; i < emails.length; i++) {
+      if (String(emails[i][0]).trim().toLowerCase() === email) {
+        var wa = sheet.getRange(i + 2, WAIT_HEADERS.indexOf('WhatsApp') + 1);
+        if (!wa.getValue() && clean_(p.whatsapp)) wa.setValue(clean_(p.whatsapp));
+        return false;
+      }
+    }
+  }
+  sheet.appendRow([
+    new Date(), clean_(p.id),
+    clean_(p.name), email, clean_(p.whatsapp), clean_(p.town), clean_(p.country),
+    cameFrom, clean_(p.ref), clean_(p.page),
+    'Waiting', ''
+  ]);
+  return true;
+}
+
+/** Run once from the editor after pasting the 23 Nov 2026 version: copies everyone on the Tribe tab who said they
+ *  would love to come in 2027 onto the new Waitlist tab (nobody is added twice). */
+function backfillWaitlist() {
+  var tribe = SpreadsheetApp.openById(SHEET_ID).getSheetByName(TRIBE_SHEET);
+  if (!tribe || tribe.getLastRow() < 2) return;
+  var rows = tribe.getRange(2, 1, tribe.getLastRow() - 1, TRIBE_HEADERS.length).getValues();
+  var at = function (h) { return TRIBE_HEADERS.indexOf(h); };
+  rows.forEach(function (r) {
+    if (String(r[at('Would love to come in 2027')]) !== 'Yes') return;
+    var email = String(r[at('Email')]).trim().toLowerCase(); if (!email) return;
+    addToWaitlist_({ id: r[at('Member ID')], name: r[at('Name they go by')], whatsapp: r[at('WhatsApp')], town: r[at('Town or city')],
+      country: r[at('Country')], ref: r[at('Letter ref')], page: r[at('From page')] }, email, 'Tribe form tick (earlier)');
+  });
 }
 
 /** The tab, made with its header row the first time it is used. */
@@ -182,4 +259,5 @@ function setupApplications() {
   sheetFor_(TRIBE_SHEET, TRIBE_HEADERS, ['What draws them', 'Creating, or longing to create', 'More of in their life (stewards only)', 'The world they dream of', 'Lead notes'], TRIBE_STATUS);
   sheetFor_(APP_SHEET, APP_HEADERS, ['Skills', 'Agreements signed', 'Anything else', 'Lead notes'], APP_STATUS);
   sheetFor_(LIST_SHEET, LIST_HEADERS, ['Notes'], null);
+  sheetFor_(WAIT_SHEET, WAIT_HEADERS, ['Lead notes'], WAIT_STATUS);
 }
