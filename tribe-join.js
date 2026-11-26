@@ -1,7 +1,9 @@
-// Follow and subscribe (Mik's review, 26 Nov 2026, F-104 to F-115): two clear journeys instead of one long form.
-// * Follow and subscribe (#join): a name, an email, how you found Mahala, Mahala news, and the Mahala Tribe
-//   Announcements group on WhatsApp (its QR code and link show as soon as you tick it). Nothing more is asked.
-// * Your tribe profile, the optional second step: where you live, what matters to you, why Mahala or The Seed, and a
+// Join the tribe (Mik's review, 26 Nov 2026, F-104 to F-115; the name chosen by the stewards the same day, F-171): two
+// clear journeys instead of one long form.
+// * Join the tribe (#join): a name, an email, how you found Mahala, Mahala news, and the Mahala Tribe
+//   Announcements group on WhatsApp (its QR code and link show as soon as you tick it). Stopping here ("Just keep me
+//   posted") is subscribing.
+// * Your tribe profile, the second step: where you live, what matters to you, why Mahala or The Seed, and a
 //   password. The password is asked here, on the form, so there is no second sheet; the address is proved with the
 //   six-digit code in the confirmation email, typed on this page, and you land on Your Mahala signed in.
 // * Apply to join the camp (#apply; the old #waitlist lands here too): the same two steps with the profile required,
@@ -63,15 +65,15 @@
   function waBox() {
     return '<div class="wa-join"><img src="assets/wa-tribe-qr.svg" width="148" height="148" alt="QR code for the Mahala Tribe Announcements group on WhatsApp">'
       + '<div><p><b>Scan the code with your phone, or tap to open the group.</b></p>'
-      + '<a class="act solid wa-link" href="' + WA_TRIBE + '" target="_blank" rel="noopener" data-count="WhatsApp tribe group" data-count-where="Follow and subscribe">Join the group on WhatsApp</a></div></div>';
+      + '<a class="act solid wa-link" href="' + WA_TRIBE + '" target="_blank" rel="noopener" data-count="WhatsApp tribe group" data-count-where="Join the tribe">Join the group on WhatsApp</a></div></div>';
   }
 
   var SCREENS = {
     1: function () {
       var apply = MODE === 'apply';
-      return '<h2 class="h-sub">' + (apply ? 'Apply to join the camp' : 'Follow and subscribe') + '</h2>'
-        + '<p class="small centre">' + (apply ? 'Every camp member is a tribe member, so it starts with your tribe profile: two short steps. Your camp application opens right after, from your own page.'
-          : 'News of the gatherings, the build and The Seed, by email and on WhatsApp. Nothing else is asked of you.') + '</p>'
+      return '<h2 class="h-sub">' + (apply ? 'First, join the tribe' : 'Join the tribe') + '</h2>'
+        + '<p class="small centre">' + (apply ? 'The camp is for tribe members, so applying starts here: two short steps to your tribe profile. Your camp application opens right after, from your own page.'
+          : 'Mahala\u2019s wider community, all over the world: news of the gatherings, the build and The Seed, by email and on WhatsApp.') + '</p>'
         + field('tName', 'What name do you go by?', '<input type="text" id="tName" maxlength="40" autocomplete="name" value="' + esc(A.name) + '">', 'Your playa name is welcome.')
         + field('tEmail', 'Your email', '<input type="email" id="tEmail" maxlength="80" autocomplete="email" inputmode="email" value="' + esc(A.email) + '">', 'Never shown to anyone.')
         + '<fieldset class="field"><legend class="flabel">How did you find Mahala?</legend>' + chips('found', FOUND, A.found, false) + '</fieldset>'
@@ -81,14 +83,14 @@
         + tick('tWaC', A.whatsappCommunity, '<b>Add me to the Mahala Tribe Announcements group on WhatsApp.</b>')
         + (A.whatsappCommunity ? waBox() + field('tWa', 'Your WhatsApp number <small>(optional)</small>', '<input type="tel" id="tWa" maxlength="30" autocomplete="tel" placeholder="+27 …" value="' + esc(A.whatsapp) + '">', 'With the country code, in case the link does not work for you. Only the stewards see it.') : '')
         + (apply ? '' : tick('tLove', A.loveToCome, '<b>I would love to apply to join the camp in 2027.</b>')
-          + '<p class="small">Places in the camp are limited to 50. Ticked or not, you follow Mahala: the tribe is bigger than the camp.</p>')
+          + '<p class="small">Places in the camp are limited to 50. Ticked or not, you are part of the tribe: it is bigger than the camp.</p>')
         + '</div><input type="text" id="tHp" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp">';
     },
     2: function () {
       var apply = MODE === 'apply';
       return '<h2 class="h-sub">Getting to know you</h2>'
-        + '<p class="small centre">' + (apply ? 'Your tribe profile. Then your page opens, with your camp application one tap away.'
-          : 'Make your tribe profile too? It lets you see who the tribe is and where we live around the world, step into the Mahalaverse, and apply to the camp whenever you are ready. Or just follow for now.') + '</p>'
+        + '<p class="small centre">' + (apply ? 'Your tribe profile, which every camp member has. Then your page opens, with your camp application one tap away.'
+          : 'Your tribe profile lets you see who the tribe is and where we live around the world, step into the Mahalaverse, and apply to the camp whenever you are ready. Or we can just keep you posted.') + '</p>'
         + '<fieldset class="field"><legend class="flabel">Where do you live?</legend>' + chips('based', [['sa', 'South Africa'], ['away', 'International']], A.based, false) + '</fieldset>'
         + (A.based === 'sa' ? field('tTown', 'Which town or city?', '<input type="text" id="tTown" maxlength="50" autocomplete="address-level2" value="' + esc(A.town) + '">') : '')
         + (A.based === 'away' ? '<div class="two">' + field('tTown', 'Which town or city?', '<input type="text" id="tTown" maxlength="50" autocomplete="address-level2" value="' + esc(A.town) + '">')
@@ -153,7 +155,7 @@
   function acts() {
     var go = step === 1 ? 'Continue' : step === 2 ? 'Make my tribe profile' : 'Finish';
     return '<div class="j-acts"><button class="act solid" type="button" id="tGo"' + (canGo() ? '' : ' aria-disabled="true"') + '>' + go + '</button>'
-      + (step === 2 && MODE !== 'apply' ? '<button class="act" type="button" id="tFollow">Just follow for now</button>' : '')
+      + (step === 2 && MODE !== 'apply' ? '<button class="act" type="button" id="tFollow">Just keep me posted</button>' : '')
       + (step === 3 ? '' : '<button class="act quiet" type="button" id="tBack">' + (step === 1 ? 'Close' : 'Back') + '</button>') + '</div>';
   }
   function draw(focus) {
@@ -217,7 +219,7 @@
     post(false).then(function () {
       BUSY = false; step = 'followed'; stepEl.textContent = '';
       var who = (A.name || '').split(/\s+/)[0];
-      body.innerHTML = '<div class="j-done" tabindex="-1"><p class="eyebrow">Thank you</p><h2 class="h-sub">You are following Mahala' + (who ? ', ' + esc(who) : '') + '.</h2>'
+      body.innerHTML = '<div class="j-done" tabindex="-1"><p class="eyebrow">Thank you</p><h2 class="h-sub">You are on the list' + (who ? ', ' + esc(who) : '') + '.</h2>'
         + '<ol class="next">' + (A.news ? '<li><span><b>Mahala news comes by email</b>, a few times a year. One click to stop.</span></li>' : '')
         + (A.whatsappCommunity ? '<li><span><b>The tribe announcements on WhatsApp:</b> scan the code or tap the button, if you have not yet.</span></li>' : '')
         + (A.loveToCome ? '<li><span><b>Thinking of the camp?</b> Make your tribe profile whenever you are ready; your camp application opens from it.</span></li>' : '')
@@ -277,7 +279,7 @@
     if (MODE === 'apply') A.loveToCome = true;
     if (step === 'followed' && MODE !== 'apply') step = 1;
     if (step === 'followed') step = 2;
-    if (titleEl) titleEl.textContent = MODE === 'apply' ? 'Apply to join the camp' : 'Follow and subscribe';
+    if (titleEl) titleEl.textContent = MODE === 'apply' ? 'Apply to join the camp' : 'Join the tribe';
     box.hidden = false; document.documentElement.classList.add('join-open');
     requestAnimationFrame(function () { box.classList.add('is-open'); });
     draw(true);
