@@ -293,6 +293,13 @@ html.js .rv:not(.on) { opacity: 0; transform: translateY(12px); }
 .cal-key { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 16px; margin: 14px 0 0; padding: 0; list-style: none; font: 400 14px/1.3 var(--text); color: var(--ink-2); }
 .cal-key li { display: inline-flex; align-items: center; gap: 7px; } .cal-key i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
 
+/* Mik's review, 26 Nov 2026: the leaving day, the lede over what is included, and one way on at the end */
+.day.leave { background: color-mix(in srgb, var(--ink) 10%, var(--paper)); }
+.cal { grid-template-columns: repeat(13, minmax(0, 1fr)); }
+.incl-lede { max-width: 640px; margin: -6px auto 26px; text-align: center; font: 300 clamp(17px, 1.8vw, 19px)/1.55 var(--text); color: #3d332b; }
+.page-acts .big-apply { font-size: 15px; padding: 18px 34px; }
+.page-acts .apply-follow { flex-basis: 100%; margin-top: 12px; }
+.page-acts .apply-follow a { color: inherit; text-underline-offset: 3px; }
 /* what's included: icon, name, a line; the two photos beside their rows */
 .incl { list-style: none; margin: 0 auto; padding: 0; display: grid; gap: clamp(16px, 2.4vw, 24px); width: min(100%, 860px); }
 .incl li { display: grid; grid-template-columns: clamp(52px, 7vw, 72px) minmax(0, 1fr); gap: clamp(14px, 2.4vw, 24px); align-items: center; }
@@ -477,7 +484,7 @@ details.six .sacred b { font-size: 22px; }
 .j-centre { text-align: center; }
 .j-centre .door-link { color: var(--ink); }
 @media (max-width: 600px) {
-  .cal { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 5px; }
+  .cal { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
   .day { padding: 9px 1px 8px; border-radius: 8px; }
   .day .wd { font-size: 12px; letter-spacing: .06em; }
   .day .ph { font-size: 12px; letter-spacing: .02em; text-transform: none; }
@@ -632,7 +639,7 @@ html.join-open, html.join-open body { overflow: hidden; }
     <span class="side"><button type="button" data-mahala-account hidden></button></span>
   </div>
   <div class="page">
-    <p class="intro">Mahala is a theme camp at AfrikaBurn, and almost a thousand people have passed through it.</p>
+    <p class="intro">AfrikaBurn is the blank canvas which allows us to revel in the collective act of reverential play.</p>
 
     <div class="narrow">
       <div class="reel" id="campReel">
@@ -643,8 +650,8 @@ html.join-open, html.join-open body { overflow: hidden; }
       <p class="reel-cap"><span>Sound: Flower of Life, an original Mahala production</span><span>53 s</span></p>
     </div>
 
-    <h2 class="h-sub" style="margin-top: clamp(40px, 6vw, 64px)">You are part of all of it.</h2>
-    <div class="cal" role="list" aria-label="The dates: arrive Thursday 22 or Friday 23 April 2027, to confirm; build Saturday 24 and Sunday 25 April; the burn from Monday 26 April to Saturday 1 May; strike Sunday 2 and Monday 3 May">
+    <h2 class="h-sub" style="margin-top: clamp(40px, 6vw, 64px)">The 2027 timeline</h2>
+    <div class="cal" role="list" aria-label="The dates: arrive Thursday 22 or Friday 23 April 2027, to confirm; build Saturday 24 and Sunday 25 April; the burn from Monday 26 April to Saturday 1 May; strike Sunday 2 and Monday 3 May; leave on Tuesday morning 4 May">
       <div class="day arrive" role="listitem"><span class="wd">Thu</span><span class="dt">22</span><span class="mo">Apr</span><span class="ph">Arrive</span></div>
       <div class="day arrive" role="listitem"><span class="wd">Fri</span><span class="dt">23</span><span class="mo">Apr</span><span class="ph">Arrive</span></div>
       <div class="day build" role="listitem"><span class="wd">Sat</span><span class="dt">24</span><span class="mo">Apr</span><span class="ph">Build</span></div>
@@ -657,18 +664,20 @@ html.join-open, html.join-open body { overflow: hidden; }
       <div class="day burn" role="listitem"><span class="wd">Sat</span><span class="dt">1</span><span class="mo">May</span><span class="ph">Burn</span></div>
       <div class="day strike" role="listitem"><span class="wd">Sun</span><span class="dt">2</span><span class="mo">May</span><span class="ph">Strike</span></div>
       <div class="day strike" role="listitem"><span class="wd">Mon</span><span class="dt">3</span><span class="mo">May</span><span class="ph">Strike</span></div>
+      <div class="day leave" role="listitem"><span class="wd">Tue</span><span class="dt">4</span><span class="mo">May</span><span class="ph">Leave</span></div>
     </div>
-    <p class="small cal-note">* Arrival on Thursday 22 or Friday 23 April 2027 is still to be confirmed.</p>
+    <p class="small cal-note">* Arrival on Thursday 22 or Friday 23 April 2027 is still to be confirmed. Every camp member helps pack up on Monday 3 May and leaves on Tuesday morning, 4 May, unless very special circumstances need it and it is arranged beforehand.</p>
 
     <h2 class="h-sec">What's included with our camp</h2>
+    <p class="incl-lede">We work together to provide for our needs. Ours is not a plug-and-play camp: every member is part of organising the build, running the camp and the strike.</p>
     <ul class="incl">
-      <li><img class="ic" src="camp-media/icons/wait-dinners.png" width="256" height="256" alt="" loading="lazy"><div><b>One main dinner a day</b><span>Eaten together, and water for the week (seven litres a day).</span></div></li>
-      <li><img class="ic" src="camp-media/icons/wait-tent.png" width="256" height="256" alt="" loading="lazy"><div><b>Camping supplies to rent</b><span>Canvas tents and camping mattresses when you need them, and stretchers. They cost extra and are not part of the camp fee, so builders coming from far away need not bring their own.</span></div></li>
-      <li><img class="ic" src="camp-media/icons/wait-coil.png" width="256" height="256" alt="" loading="lazy"><div><b>Your coil</b><span>Every member wears one: a copper coil wound on the same grooved ring as the temple's heart, a small piece of the temple that carries its pattern.</span></div></li>
-      <li><img class="ic" src="camp-media/icons/wait-communal.png" width="256" height="256" alt="" loading="lazy"><div><b>The communal space</b><span>The kitchen, a chill and cuddle-puddle zone, long dining tables, a piano.</span></div></li>
-      <li><img class="ic" src="camp-media/icons/wait-fire.png" width="256" height="256" alt="" loading="lazy"><div><b>Activations through the week</b><span>The fireside at the Blissful Drift (the camp's boat), the Lotus Mahal (our temple tent), sound journeys, the theatrical dinner, and whatever you bring to it.</span></div></li>
+      <li><img class="ic" src="camp-media/icons/wait-dinners.png" width="256" height="256" alt="" loading="lazy"><div><b>A fully kitted kitchen and group meals</b><span>A backpacker-style kitchen with everything in it, and group meals we take turns to cook. Water for showering and cooking is provided.</span></div></li>
+      <li><img class="ic" src="camp-media/icons/wait-communal.png" width="256" height="256" alt="" loading="lazy"><div><b>A sheltered common area</b><span>Tented and windproof, with a luxurious lounge to chill in: shade from the heat of the day, a place to eat and to be together. It is for living in, not for pitching tents under.</span></div></li>
+      <li><img class="ic" src="camp-media/icons/wait-fire.png" width="256" height="256" alt="" loading="lazy"><div><b>A cosy fireplace</b><span>To sit around together at night.</span></div></li>
+      <li><img class="ic" src="camp-media/icons/wait-circles.png" width="256" height="256" alt="" loading="lazy"><div><b>A space for your musical and artistic expression</b><span>And support to bring your wildest dreams to life.</span></div></li>
       <li><img class="ic" src="camp-media/icons/wait-seed.png" width="256" height="256" alt="" loading="lazy"><div><b>Building The Seed together</b><span>The camp's art piece.</span></div></li>
-      <li><img class="ic" src="camp-media/icons/wait-circles.png" width="256" height="256" alt="" loading="lazy"><div><b>Incredible people and epic vibes</b><span>Community calls through the year, build days in Cape Town, the camp circle on the playa, and the Great Unpack in Cape Town after the burn.</span></div></li>
+      <li><img class="ic" src="camp-media/icons/wait-coil.png" width="256" height="256" alt="" loading="lazy"><div><b>Your coil</b><span>Every member wears one: a copper coil wound on the same grooved ring as the temple's heart, a small piece of the temple that carries its pattern.</span></div></li>
+      <li><img class="ic" src="camp-media/icons/wait-tent.png" width="256" height="256" alt="" loading="lazy"><div><b>Basic camping gear, for those travelling from far</b><span>Can be made available to rent, at an extra cost; you put it up and take it down yourself. Many camps at AfrikaBurn pitch their tents under big stretch tents. We do not do that every year: it depends on the budget, and we would rather spend it on art and creativity.</span></div></li>
     </ul>
 
     <section class="car" id="campPhotos" aria-roledescription="carousel" aria-label="Photographs from the camp">
@@ -708,33 +717,28 @@ html.join-open, html.join-open body { overflow: hidden; }
 
     <h2 class="h-sec">What you bring</h2>
     <ul class="bring">
-      <li>Your own breakfast and snacks</li>
-      <li>More water, if seven litres a day is not enough</li>
-      <li>Camping gear and warm layers for the nights</li>
+      <li>Your own breakfast, lunch and snacks</li>
+      <li>All your drinking water</li>
+      <li>Your camping gear, warm layers for the nights, lights and all the essentials</li>
       <li>Your AfrikaBurn ticket</li>
     </ul>
-    <p class="fine"><b>Your AfrikaBurn ticket is bought separately, from AfrikaBurn, and is not part of the camp fee.</b> Setup arrival Thursday 22 or Friday 23 April (to confirm). The burn runs Monday 26 April to Sunday 2 May at Quaggafontein. Strike Sunday 2 and Monday 3 May; everything comes home. You see your camp fee in the application, in one, two or four instalments.</p>
+    <p class="small centre" data-survival hidden>Our friends at the Mad Hatters keep a very thorough <a href="#" data-survival-link target="_blank" rel="noopener">survival guide</a>.</p>
+    <p class="fine"><b>Your AfrikaBurn ticket is bought separately, from AfrikaBurn, and is not part of the camp fee.</b> Setup arrival Thursday 22 or Friday 23 April (to confirm). The burn runs Monday 26 April to Sunday 2 May at Quaggafontein. Strike Sunday 2 and Monday 3 May: every camp member helps pack up on the Monday and leaves on Tuesday morning, 4 May, and everything comes home. You see your camp fee in the application, in one, two or four instalments.</p>
 
-    <h2 class="h-sec">What skills do you bring</h2>
-    <ul class="chips" id="skillsShow"><li>Building and carpentry</li><li>Electrics, lighting and power</li><li>Sound, DJing and music production</li><li>Live instruments and voice</li><li>Art, painting and decor</li><li>Kitchen and feeding the tribe</li><li>Healing, bodywork and breathwork</li><li>Ceremony and space holding</li><li>Movement, dance and performance</li><li>Logistics and getting things done</li></ul>
-    <p class="small centre" style="margin-top: 14px">Tribe members choose theirs when they join.</p>
 
     <h2 class="h-sec">We live by six SACRED agreements</h2>
     <ol class="sacred" id="sacredShow"><li><b>S</b><span>Seeking understanding before interpretation</span></li><li><b>A</b><span>Assuming good intent</span></li><li><b>C</b><span>Choosing presence over reaction</span></li><li><b>R</b><span>Radical responsibility for what we feel</span></li><li><b>E</b><span>Empowered expression of our needs</span></li><li><b>D</b><span>Discernment of gossip as distortion</span></li></ol>
 
 
-    <div class="by-invite" id="byInvite">
-      <h2 class="h-sec">The camp is by invitation</h2>
-      <p class="small centre">Places in the camp are limited to 50, and it starts with the tribe. Join the waitlist and you join the tribe on the way in (it asks nothing of you, and you belong whether or not you camp). The camp leads read every introduction, and invitations go out in waves, each with a letter.</p>
+    <div class="by-invite" id="apply">
+      <h2 class="h-sec">Apply to join the camp</h2>
+      <p class="small centre" data-apply-how>Places are limited to 50. Make your tribe profile, send your application, have a short welcome call with a camp lead, and choose how you share in the common costs. Invited with a letter? Your place is already held for you.</p>
     </div>
     <div class="page-acts">
-      <p class="small centre" data-invited-note hidden>Not camping this year? The tribe is bigger than the camp: you can <a href="tribe.html#join">join the tribe</a> without camping, and stay close to The Seed.</p>
-      <button class="primary" type="button" data-join hidden>Accept your invitation</button>
-      <a class="primary" href="me.html" data-applied hidden>Open Your Mahala</a>
+      <button class="primary big-apply" type="button" data-apply data-count="Apply to join the camp" data-count-where="The camp page">Apply to join the camp</button>
+      <a class="primary" href="me.html#space" data-applied hidden>Access the member space</a>
       <button class="secondary" type="button" data-pay-later hidden>Make your first payment</button>
-      <a class="primary" href="tribe.html#waitlist" data-open-tribe data-hash="waitlist" data-count="Join the waitlist" data-count-where="The camp page">Join the waitlist</a>
-      <a class="secondary" href="tribe.html#join" data-open-tribe>Join the tribe</a>
-      <button class="secondary" type="button" data-page-close>Close</button>
+      <p class="small centre apply-follow">Not ready for the camp? <a href="tribe.html#join" data-open-tribe>Follow and subscribe</a> instead.</p>
     </div>
   </div>
 </div>
@@ -747,7 +751,7 @@ html.join-open, html.join-open body { overflow: hidden; }
   <div class="page join-page"><div id="joinBody"></div></div>
 </section>
 <script src="site.js?v=10"></script>
-<script src="assets/shim/claude-shim.js?v=19"></script>
+<script src="assets/shim/claude-shim.js?v=20"></script>
 <script>
 (function () {
   var SITE = window.MAHALA_SITE || {};
@@ -895,7 +899,7 @@ html.join-open, html.join-open body { overflow: hidden; }
   addEventListener('resize', show); show();
 })();
 </script>
-<script src="join.js?v=8"></script>
+<script src="join.js?v=9"></script>
 <script src="analytics.js?v=2"></script>
 </body>
 </html>

@@ -1,14 +1,13 @@
-// Join the tribe: open to anyone, on the tribe page. Five questions are needed, six more are there for whoever wants
-// them, then how we stay in touch. The answers go to the camp's Google Sheet (its Tribe tab) through site.js, until
-// member accounts open; then each row becomes an invitation to claim that account. The camp itself is by invitation:
-// here a person can only say they would love to come.
-// With accounts on (8 Nov 2026, F-025): the end of the form makes the account in one tap with the address just given
-// (Google, or a link to that address) and lands on Your Mahala. A copy of the answers waits on this device for a day,
-// so the first sign-in asks none of them again. Signed in already, Join the tribe goes straight to Your Mahala (the
-// shim does that, before this form opens).
-// The waitlist (23 Nov 2026): the camp page's Join the waitlist opens this form at #waitlist. It is the same form, with
-// "I would love to come" already settled and a WhatsApp number asked for, and the row also lands in the sheet's
-// Waitlist tab. Someone already signed in skips the form: one screen with their name, email and an optional number.
+// Follow and subscribe (Mik's review, 26 Nov 2026, F-104 to F-115): two clear journeys instead of one long form.
+// * Follow and subscribe (#join): a name, an email, how you found Mahala, Mahala news, and the Mahala Tribe
+//   Announcements group on WhatsApp (its QR code and link show as soon as you tick it). Nothing more is asked.
+// * Your tribe profile, the optional second step: where you live, what matters to you, why Mahala or The Seed, and a
+//   password. The password is asked here, on the form, so there is no second sheet; the address is proved with the
+//   six-digit code in the confirmation email, typed on this page, and you land on Your Mahala signed in.
+// * Apply to join the camp (#apply; the old #waitlist lands here too): the same two steps with the profile required,
+//   since every camp member is a tribe member. The camp application itself opens from Your Mahala.
+// What a camper brings and their dream belong to the camp application and Your Mahala, not here (F-107, F-109).
+// The answers go to the camp's Google Sheet (its Tribe tab) through site.js, one row per person, either way.
 (function () {
   var SITE = window.MAHALA_SITE || {};
   var $ = function (id) { return document.getElementById(id); };
@@ -16,23 +15,22 @@
   var box = $('tjoin'), body = $('tjoinBody'), stepEl = $('tjoinStep');
   if (!box || !body) return;
 
-  var FOUND = ['Someone in Mahala brought me', 'A friend', 'AfrikaBurn', 'Instagram or online', 'Somewhere else'];
+  // the Mahala Tribe Announcements group: open to anyone who follows (the camp members' group lives behind sign-in)
+  var WA_TRIBE = 'https://chat.whatsapp.com/FOKRiNUU6gH41G7vRKWvqt';
+  var BEFORE = 'I have camped with Mahala before', BROUGHT = 'Someone in Mahala brought me';
+  var FOUND = [BEFORE, BROUGHT, 'A friend', 'AfrikaBurn', 'Instagram or online', 'Somewhere else'];
   // the same 13 words the tribe page counts, so every answer adds to "What we come for"
   var VALUES = [['connection', 'Connection'], ['play', 'Play'], ['spirit', 'Spirit'], ['healing', 'Healing and growth'], ['creativity', 'Creativity'],
     ['nature', 'Nature'], ['service', 'Service'], ['freedom', 'Freedom'], ['presence', 'Presence'], ['learning', 'Learning'], ['beauty', 'Beauty'],
     ['inclusion', 'Inclusion'], ['legacy', 'Legacy']];
-  // the ten skills on the camp page, so an invited person's camp application never asks again
-  var SKILLS = ['Building and carpentry', 'Electrics, lighting and power', 'Sound, DJing and music production', 'Live instruments and voice',
-    'Art, painting and decor', 'Kitchen and feeding the tribe', 'Healing, bodywork and breathwork', 'Ceremony and space holding',
-    'Movement, dance and performance', 'Logistics and getting things done'];
-  var MAX_VALUES = 3, MAX_PASSIONS = 5, STEPS = 5;
+  var MAX_VALUES = 3, PW_MIN = 8;
 
-  var A = { name: '', email: '', based: '', town: '', country: '', found: '', broughtBy: '', adult: false, draws: '', values: [], skills: [], other: '',
-    passions: [], creating: '', more: '', world: '', news: false, whatsappCommunity: false, whatsapp: '', share: false, loveToCome: false, ref: '' };
+  var A = { name: '', email: '', based: '', town: '', country: '', found: '', broughtBy: '', adult: false, draws: '', values: [],
+    news: false, whatsappCommunity: false, whatsapp: '', share: false, loveToCome: false, password: '', code: '', ref: '' };
   try {
     var q = new URLSearchParams(location.search);
     if (q.get('name')) A.name = q.get('name').slice(0, 40);
-    if (q.get('by')) { A.found = FOUND[0]; A.broughtBy = q.get('by').slice(0, 60); }
+    if (q.get('by')) { A.found = BROUGHT; A.broughtBy = q.get('by').slice(0, 60); }
     A.ref = (q.get('ref') || q.get('inv') || '').slice(0, 60);
   } catch (e) { }
   // What this browser already sent (a camp application, an email sign-up) fills the same boxes here, so nobody types
@@ -47,8 +45,12 @@
     if (lv) { A.based = /south africa/i.test(lv) ? 'sa' : 'away'; if (A.based === 'sa') A.country = 'South Africa'; }
     if (tf) A.town = tf.slice(0, 50);
   } catch (e) { /* storage blocked */ }
-  var step = 1, WL = false;
-  var titleEl = $('tjoinH'), TITLE = titleEl ? titleEl.textContent : 'Join the tribe';
+
+  // screens: 1 follow, 2 your tribe profile, 3 the code from the email, 'followed' the end of following only
+  var step = 1, MODE = 'follow', SENT = false, BUSY = false;
+  var titleEl = $('tjoinH');
+  var MM = function () { return window.MahalaMembers || null; };
+  var accounts = function () { var m = MM(); return !!(m && m.signUp); };
 
   function field(id, label, input, hint) { return '<div class="field"><label for="' + id + '">' + label + '</label>' + (hint ? '<p class="hint" id="' + id + 'H">' + hint + '</p>' : '') + input + '</div>'; }
   function chips(name, items, chosen, multi) {
@@ -58,120 +60,118 @@
     }).join('') + '</div>';
   }
   function tick(id, on, words) { return '<label class="opt tick"><input type="checkbox" id="' + id + '"' + (on ? ' checked' : '') + '><span>' + words + '</span></label>'; }
-  var seen = function (who) { return '<span class="seen">' + who + '</span>'; };
+  function waBox() {
+    return '<div class="wa-join"><img src="assets/wa-tribe-qr.svg" width="148" height="148" alt="QR code for the Mahala Tribe Announcements group on WhatsApp">'
+      + '<div><p><b>Scan the code with your phone, or tap to open the group.</b></p>'
+      + '<a class="act solid wa-link" href="' + WA_TRIBE + '" target="_blank" rel="noopener" data-count="WhatsApp tribe group" data-count-where="Follow and subscribe">Join the group on WhatsApp</a></div></div>';
+  }
 
   var SCREENS = {
     1: function () {
-      return '<h2 class="h-sub">Who you are</h2>' +
-        field('tName', 'What name do you go by?', '<input type="text" id="tName" maxlength="40" autocomplete="name" value="' + esc(A.name) + '">', 'Your playa name is welcome.') +
-        field('tEmail', 'Your email', '<input type="email" id="tEmail" maxlength="80" autocomplete="email" inputmode="email" value="' + esc(A.email) + '">', 'So we can welcome you, and later open your own page in the tribe. Never shown to anyone.') +
-        // where you live, asked once here (F-046): the camp application reads it from your profile and never asks again
-        '<fieldset class="field"><legend class="flabel">Where do you live?</legend>' + chips('based', [['sa', 'South Africa'], ['away', 'International']], A.based, false) + '</fieldset>' +
-        (A.based === 'sa' ? field('tTown', 'Which town or city?', '<input type="text" id="tTown" maxlength="50" autocomplete="address-level2" value="' + esc(A.town) + '">') : '') +
-        (A.based === 'away' ? '<div class="two">' + field('tTown', 'Which town or city?', '<input type="text" id="tTown" maxlength="50" autocomplete="address-level2" value="' + esc(A.town) + '">') +
-          field('tCountry', 'Which country?', '<input type="text" id="tCountry" maxlength="40" autocomplete="country-name" value="' + esc(A.country) + '">') + '</div>' : '') +
-        '<fieldset class="field"><legend class="flabel">How did you find Mahala?</legend>' + chips('found', FOUND, A.found, false) + '</fieldset>' +
-        (A.found === FOUND[0] ? field('tBy', 'Who brought you?', '<input type="text" id="tBy" maxlength="60" value="' + esc(A.broughtBy) + '">', 'So we can thank them.') : '') +
-        tick('tAdult', A.adult, '<b>I am 18 or over.</b>');
+      var apply = MODE === 'apply';
+      return '<h2 class="h-sub">' + (apply ? 'Apply to join the camp' : 'Follow and subscribe') + '</h2>'
+        + '<p class="small centre">' + (apply ? 'Every camp member is a tribe member, so it starts with your tribe profile: two short steps. Your camp application opens right after, from your own page.'
+          : 'News of the gatherings, the build and The Seed, by email and on WhatsApp. Nothing else is asked of you.') + '</p>'
+        + field('tName', 'What name do you go by?', '<input type="text" id="tName" maxlength="40" autocomplete="name" value="' + esc(A.name) + '">', 'Your playa name is welcome.')
+        + field('tEmail', 'Your email', '<input type="email" id="tEmail" maxlength="80" autocomplete="email" inputmode="email" value="' + esc(A.email) + '">', 'Never shown to anyone.')
+        + '<fieldset class="field"><legend class="flabel">How did you find Mahala?</legend>' + chips('found', FOUND, A.found, false) + '</fieldset>'
+        + (A.found === BROUGHT ? field('tBy', 'Who brought you?', '<input type="text" id="tBy" maxlength="60" value="' + esc(A.broughtBy) + '">', 'So we can thank them.') : '')
+        + '<div class="camp-wish">'
+        + tick('tNews', A.news, '<b>Send me Mahala news by email.</b> A few times a year: gatherings, build days, The Seed. One click to stop.')
+        + tick('tWaC', A.whatsappCommunity, '<b>Add me to the Mahala Tribe Announcements group on WhatsApp.</b>')
+        + (A.whatsappCommunity ? waBox() + field('tWa', 'Your WhatsApp number <small>(optional)</small>', '<input type="tel" id="tWa" maxlength="30" autocomplete="tel" placeholder="+27 …" value="' + esc(A.whatsapp) + '">', 'With the country code, in case the link does not work for you. Only the stewards see it.') : '')
+        + (apply ? '' : tick('tLove', A.loveToCome, '<b>I would love to apply to join the camp in 2027.</b>')
+          + '<p class="small">Places in the camp are limited to 50. Ticked or not, you follow Mahala: the tribe is bigger than the camp.</p>')
+        + '</div><input type="text" id="tHp" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp">';
     },
     2: function () {
-      return '<h2 class="h-sub">Why Mahala</h2>' +
-        field('tDraws', 'What draws you to Mahala?', '<textarea id="tDraws" maxlength="1200" aria-describedby="tDrawsH">' + esc(A.draws) + '</textarea>', 'A few lines is plenty. The camp leads read every one.');
+      var apply = MODE === 'apply';
+      return '<h2 class="h-sub">Getting to know you</h2>'
+        + '<p class="small centre">' + (apply ? 'Your tribe profile. Then your page opens, with your camp application one tap away.'
+          : 'Make your tribe profile too? It lets you see who the tribe is and where we live around the world, step into the Mahalaverse, and apply to the camp whenever you are ready. Or just follow for now.') + '</p>'
+        + '<fieldset class="field"><legend class="flabel">Where do you live?</legend>' + chips('based', [['sa', 'South Africa'], ['away', 'International']], A.based, false) + '</fieldset>'
+        + (A.based === 'sa' ? field('tTown', 'Which town or city?', '<input type="text" id="tTown" maxlength="50" autocomplete="address-level2" value="' + esc(A.town) + '">') : '')
+        + (A.based === 'away' ? '<div class="two">' + field('tTown', 'Which town or city?', '<input type="text" id="tTown" maxlength="50" autocomplete="address-level2" value="' + esc(A.town) + '">')
+          + field('tCountry', 'Which country?', '<input type="text" id="tCountry" maxlength="40" autocomplete="country-name" value="' + esc(A.country) + '">') + '</div>' : '')
+        + field('tDraws', 'Why are you interested in Mahala or The Seed?' + (apply ? '' : ' <small>(optional)</small>'), '<textarea id="tDraws" maxlength="1200">' + esc(A.draws) + '</textarea>', 'A few lines is plenty. The camp leads read every one.')
+        + '<fieldset class="field"><legend class="flabel">What matters most to you? <small>Up to three, optional.</small></legend>' + chips('values', VALUES, A.values, true) + '</fieldset>'
+        + tick('tShare', A.share, '<b>Let other tribe members see my profile:</b> my name, my town and country, and what matters to me. Never my email or number.')
+        + tick('tAdult', A.adult, '<b>I am 18 or over.</b>')
+        + (accounts() ? field('tPw', 'Choose a password', '<input type="password" id="tPw" minlength="' + PW_MIN + '" maxlength="72" autocomplete="new-password" value="' + esc(A.password) + '">', 'At least ' + PW_MIN + ' characters. You sign in with your email and this password.') : '');
     },
     3: function () {
-      return '<h2 class="h-sub">What you bring and love</h2>' +
-        '<p class="small centre">All optional. Your answers join the tribe page\'s counts, never your name.</p>' +
-        '<fieldset class="field"><legend class="flabel">What matters most to you? <small>Up to three.</small></legend>' + chips('values', VALUES, A.values, true) + '</fieldset>' +
-        '<fieldset class="field"><legend class="flabel">What do you bring? <small>As many as you like.</small></legend>' + chips('skills', SKILLS, A.skills, true) + '</fieldset>' +
-        field('tOther', 'Something else you bring <small>(optional)</small>', '<input type="text" id="tOther" maxlength="120" value="' + esc(A.other) + '">') +
-        field('tPassion', 'What lights you up? <small>Up to five, press Enter after each.</small>',
-          '<div class="tags" id="tTags">' + A.passions.map(function (p, i) { return '<button type="button" class="tag" data-untag="' + i + '" aria-label="Remove ' + esc(p) + '">' + esc(p) + '<span aria-hidden="true">×</span></button>'; }).join('') +
-          (A.passions.length < MAX_PASSIONS ? '<input type="text" id="tPassion" maxlength="30" enterkeyhint="enter" placeholder="' + (A.passions.length ? 'And?' : 'Sound journeys, salsa, woodwork') + '">' : '') + '</div>');
-    },
-    4: function () {
-      return '<h2 class="h-sub">Your dream</h2>' +
-        '<p class="small centre">All optional, and only if you feel like it. You can add them later.</p>' +
-        field('tCreating', 'What are you creating, or longing to create?', '<textarea id="tCreating" maxlength="800">' + esc(A.creating) + '</textarea>', seen('Members can see this, if you choose to share below.')) +
-        field('tMore', 'What do you want more of in your life this year?', '<textarea id="tMore" maxlength="800">' + esc(A.more) + '</textarea>', seen('Only you and the camp\'s stewards. Please leave out health details.')) +
-        field('tWorld', 'What world are you dreaming into being?', '<textarea id="tWorld" maxlength="800">' + esc(A.world) + '</textarea>', seen('Members can see this, if you choose to share below.'));
-    },
-    5: function () {
-      return '<h2 class="h-sub">Staying in touch</h2>' +
-        tick('tNews', A.news, '<b>Send me Mahala news by email.</b> A few times a year: gatherings, build days, The Seed. One click to stop.') +
-        tick('tWaC', A.whatsappCommunity, '<b>Add me to the Mahala WhatsApp Community.</b>') +
-        (A.whatsappCommunity ? field('tWa', 'Your WhatsApp number', '<input type="tel" id="tWa" maxlength="30" autocomplete="tel" placeholder="+27 …" value="' + esc(A.whatsapp) + '">', 'With the country code. Only the stewards see it.') : '') +
-        tick('tShare', A.share, '<b>Let other tribe members see my answers</b> when the members\' pages open: my name, where I live (town and country), what matters to me, what I bring and love, and my dream. Never my email or number.') +
-        (WL ? '<div class="camp-wish"><p><b>You are joining the waitlist for camp 2027.</b></p>' +
-          (A.whatsappCommunity ? '' : field('tWlWa', 'Your WhatsApp number <small>(optional)</small>', '<input type="tel" id="tWlWa" maxlength="30" autocomplete="tel" placeholder="+27 …" value="' + esc(A.whatsapp) + '">', 'So a camp lead can reach you quickly when a place opens. With the country code. Only the stewards see it.')) +
-          '<p class="small">Places are limited to 50. The camp leads read every introduction and invite in waves, each with a letter.</p></div>'
-        : '<div class="camp-wish">' + tick('tLove', A.loveToCome, '<b>I would love to come to the camp in 2027.</b>') +
-        '<p class="small">The camp is by invitation, and places are limited to 50. The camp leads read every introduction and invite in waves, so this puts you on their list, with no application. Ticked or not, you are part of the tribe: it is bigger than the camp.</p></div>') +
-        '<input type="text" id="tHp" tabindex="-1" autocomplete="off" aria-hidden="true" class="hp">';
+      return '<h2 class="h-sub">Check your email</h2>'
+        + '<p class="small centre">We have sent a six-digit code to <b>' + esc(A.email) + '</b>. Type it here and your tribe profile is made. It can take a minute; look in Promotions or Spam too.</p>'
+        + field('tCode', 'The code from the email', '<input type="text" id="tCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10" value="' + esc(A.code) + '">')
+        + '<p class="small">The email has a link as well: opening it in this browser works too.</p>'
+        + '<p><button type="button" class="link" id="tResend">Send me a new code</button></p>';
     },
   };
 
   var okEmail = function () { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(A.email.trim()); };
+  function profileOk() {
+    return !!A.based && !!A.town.trim() && !!A.country.trim() && A.adult && (MODE !== 'apply' || A.draws.trim().length >= 3) && (!accounts() || A.password.length >= PW_MIN);
+  }
   function canGo() {
-    if (step === 1) return !!A.name.trim() && okEmail() && !!A.based && !!A.town.trim() && !!A.country.trim() && !!A.found && A.adult;
-    if (step === 2) return A.draws.trim().length >= 3;
-    if (step === 5) return !A.whatsappCommunity || A.whatsapp.replace(/\D/g, '').length >= 8;
+    if (step === 1) return !!A.name.trim() && okEmail() && !!A.found;
+    if (step === 2) return profileOk();
+    if (step === 3) return A.code.replace(/\D/g, '').length >= 6;
     return true;
   }
   function why() {
     if (step === 1) {
       if (!A.name.trim()) return 'Tell us the name you go by.';
-      if (!okEmail()) return 'Add your email address so we can welcome you.';
+      if (!okEmail()) return 'Add your email address.';
+      return 'Choose how you found Mahala.';
+    }
+    if (step === 2) {
       if (!A.based) return 'Tell us where you live: South Africa, or international.';
       if (!A.town.trim()) return 'Tell us your town or city.';
       if (!A.country.trim()) return 'Tell us which country you live in.';
-      if (!A.found) return 'Choose how you found Mahala.';
-      return 'Profiles are for adults: please confirm you are 18 or over.';
+      if (MODE === 'apply' && A.draws.trim().length < 3) return 'A line or two about why Mahala or The Seed.';
+      if (!A.adult) return 'Profiles are for adults: please confirm you are 18 or over.';
+      return 'Choose a password of at least ' + PW_MIN + ' characters.';
     }
-    if (step === 2) return 'A line or two about what draws you here.';
-    if (step === 5) return 'Add your WhatsApp number, or untick the WhatsApp Community.';
+    if (step === 3) return 'Type the six numbers from the email.';
     return '';
   }
   function read() {
     var v = function (id) { var e = $(id); return e ? e.value : null; }, c = function (id) { var e = $(id); return e ? e.checked : null; };
-    if (step === 1) { A.name = (v('tName') || '').trim(); A.email = (v('tEmail') || '').trim(); if ($('tTown')) A.town = v('tTown').trim(); if ($('tCountry')) A.country = v('tCountry').trim();
+    if (step === 1) {
+      A.name = (v('tName') || '').trim(); A.email = (v('tEmail') || '').trim();
+      if ($('tBy')) A.broughtBy = v('tBy').trim();
+      A.news = !!c('tNews'); A.whatsappCommunity = !!c('tWaC'); if ($('tWa')) A.whatsapp = v('tWa').trim();
+      A.loveToCome = MODE === 'apply' ? true : !!c('tLove');
+    }
+    if (step === 2) {
+      if ($('tTown')) A.town = v('tTown').trim(); if ($('tCountry')) A.country = v('tCountry').trim();
       if (A.based === 'sa') A.country = 'South Africa';
-      if ($('tBy')) A.broughtBy = v('tBy').trim(); A.adult = !!c('tAdult'); }
-    if (step === 2) A.draws = v('tDraws') || '';
-    if (step === 3) A.other = (v('tOther') || '').trim();
-    if (step === 4) { A.creating = v('tCreating') || ''; A.more = v('tMore') || ''; A.world = v('tWorld') || ''; }
-    if (step === 5) { A.news = !!c('tNews'); A.whatsappCommunity = !!c('tWaC'); if ($('tWa')) A.whatsapp = v('tWa').trim(); if ($('tWlWa')) A.whatsapp = v('tWlWa').trim(); A.share = !!c('tShare');
-      A.loveToCome = WL ? true : !!c('tLove'); }
+      A.draws = v('tDraws') || ''; A.share = !!c('tShare'); A.adult = !!c('tAdult'); if ($('tPw')) A.password = v('tPw');
+    }
+    if (step === 3) A.code = (v('tCode') || '').trim();
+  }
+  function acts() {
+    var go = step === 1 ? 'Continue' : step === 2 ? 'Make my tribe profile' : 'Finish';
+    return '<div class="j-acts"><button class="act solid" type="button" id="tGo"' + (canGo() ? '' : ' aria-disabled="true"') + '>' + go + '</button>'
+      + (step === 2 && MODE !== 'apply' ? '<button class="act" type="button" id="tFollow">Just follow for now</button>' : '')
+      + (step === 3 ? '' : '<button class="act quiet" type="button" id="tBack">' + (step === 1 ? 'Close' : 'Back') + '</button>') + '</div>';
   }
   function draw(focus) {
-    stepEl.textContent = step <= STEPS ? step + ' of ' + STEPS : '';
-    var optional = step === 3 || step === 4, last = step === STEPS;
-    body.innerHTML = SCREENS[step]() +
-      '<p class="err" id="tErr" role="alert"></p>' +
-      '<div class="j-acts">' +
-      '<button class="act solid" type="button" id="tGo"' + (canGo() ? '' : ' aria-disabled="true"') + '>' + (last ? (WL ? 'Join the waitlist' : 'Join the tribe') : 'Continue') + '</button>' +
-      (optional ? '<button class="act" type="button" id="tSkip">Skip for now</button>' : '') +
-      '<button class="act quiet" type="button" id="tBack">' + (step === 1 ? 'Close' : 'Back') + '</button></div>';
+    stepEl.textContent = step <= 2 ? step + ' of 2' : '';
+    body.innerHTML = SCREENS[step]() + '<p class="err" id="tErr" role="alert"></p>' + acts();
     box.scrollTop = 0;
     if (focus) { var h = body.querySelector('h2'); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); } }
   }
   function keep(fn) { var y = box.scrollTop; fn(); box.scrollTop = y; }
   function refreshGo() { var g = $('tGo'); if (!g) return; if (canGo()) { g.removeAttribute('aria-disabled'); $('tErr').textContent = ''; } else g.setAttribute('aria-disabled', 'true'); }
-  function addTag() {
-    var i = $('tPassion'); if (!i) return;
-    var t = i.value.replace(/[,;]+$/, '').trim().toLowerCase();
-    if (t && A.passions.indexOf(t) < 0 && A.passions.length < MAX_PASSIONS) A.passions.push(t);
-    read(); keep(function () { draw(false); }); var n = $('tPassion'); if (n) n.focus({ preventScroll: true });
-  }
+  function say(t) { var e = $('tErr'); if (e) e.textContent = t || ''; }
+  function busy(on, label) { BUSY = on; var g = $('tGo'); if (!g) return; if (on) { g.setAttribute('aria-disabled', 'true'); g.dataset.was = g.textContent; g.textContent = label || 'Sending'; } else { g.textContent = g.dataset.was || g.textContent; refreshGo(); } }
 
   body.addEventListener('input', function () { read(); refreshGo(); });
   body.addEventListener('change', function (e) {
-    if (e.target.id === 'tWaC') { read(); keep(function () { draw(false); }); var w = $('tWa'); if (w) w.focus({ preventScroll: true }); return; }
+    if (e.target.id === 'tWaC') { read(); keep(function () { draw(false); }); var t = $('tWaC'); if (t) t.focus({ preventScroll: true }); return; }
     read(); refreshGo();
   });
-  body.addEventListener('keydown', function (e) {
-    if (e.target.id === 'tPassion' && (e.key === 'Enter' || e.key === ',')) { e.preventDefault(); addTag(); }
-  });
-  body.addEventListener('focusout', function (e) { if (e.target.id === 'tPassion' && e.target.value.trim()) setTimeout(addTag, 0); });
   body.addEventListener('click', function (e) {
     var p = e.target.closest('[data-pick]');
     if (p) {
@@ -182,117 +182,105 @@
       else { var arr = A[k], at = arr.indexOf(v); if (at >= 0) arr.splice(at, 1); else if (k !== 'values' || arr.length < MAX_VALUES) arr.push(v); }
       keep(function () { draw(false); });
       var again = body.querySelector('[data-pick="' + k + '"][data-v="' + v.replace(/"/g, '\\"') + '"]'); if (again) again.focus({ preventScroll: true });
-      if (k === 'found' && v === FOUND[0] && $('tBy')) $('tBy').focus({ preventScroll: true });
+      if (k === 'found' && v === BROUGHT && $('tBy')) $('tBy').focus({ preventScroll: true });
       if (k === 'based' && $('tTown') && !A.town) $('tTown').focus({ preventScroll: true });
       return;
     }
-    var u = e.target.closest('[data-untag]');
-    if (u) { read(); A.passions.splice(+u.dataset.untag, 1); keep(function () { draw(false); }); var n = $('tPassion'); if (n) n.focus({ preventScroll: true }); return; }
+    if (BUSY) return;
     if (e.target.closest('#tBack')) { read(); if (step === 1) closeJoin(); else { step--; draw(true); } return; }
-    if (e.target.closest('#tSkip')) { read(); step++; draw(true); return; }
+    if (e.target.closest('#tFollow')) { read(); follow(); return; }
+    if (e.target.closest('#tResend')) { resend(); return; }
     if (e.target.closest('#tGo')) {
-      read(); if ($('tPassion') && $('tPassion').value.trim()) addTag();
-      if (!canGo()) { $('tErr').textContent = why(); return; }
-      if (step < STEPS) { step++; draw(true); return; }
-      send();
+      read();
+      if (!canGo()) { say(why()); return; }
+      if (step === 1) { step = 2; draw(true); return; }
+      if (step === 2) { profile(); return; }
+      if (step === 3) { verify(); }
     }
   });
 
-  function send() {
-    var g = $('tGo'); g.setAttribute('aria-disabled', 'true'); g.textContent = 'Sending';
+  // one row in the sheet, whichever way someone goes; a second tap never sends it twice
+  function post(withProfile) {
+    if (SENT) return Promise.resolve();
     var row = {
-      type: 'tribe', path: 'tribe', id: 'T' + Date.now().toString(36).toUpperCase(),
-      name: A.name, email: A.email, town: A.town, country: A.country, found: A.found, broughtBy: A.found === FOUND[0] ? A.broughtBy : '', adult: A.adult,
-      draws: A.draws.trim(), values: A.values, skills: A.skills, other: A.other, passions: A.passions,
-      creating: A.creating.trim(), more: A.more.trim(), world: A.world.trim(),
-      news: A.news, whatsappCommunity: A.whatsappCommunity, whatsapp: (A.whatsappCommunity || WL) ? A.whatsapp : '', share: A.share, loveToCome: A.loveToCome,
-      waitlist: WL, ref: A.ref, hp: ($('tHp') && $('tHp').value) || ''
+      type: 'tribe', path: MODE === 'apply' ? 'apply' : 'tribe', id: 'T' + Date.now().toString(36).toUpperCase(),
+      name: A.name, email: A.email, found: A.found, broughtBy: A.found === BROUGHT ? A.broughtBy : '',
+      news: A.news, whatsappCommunity: A.whatsappCommunity, whatsapp: A.whatsappCommunity ? A.whatsapp : '', loveToCome: A.loveToCome,
+      profile: !!withProfile, town: withProfile ? A.town : '', country: withProfile ? A.country : '', adult: withProfile ? A.adult : false,
+      draws: withProfile ? A.draws.trim() : '', values: withProfile ? A.values : [], share: withProfile ? A.share : false,
+      waitlist: MODE === 'apply', ref: A.ref, hp: ($('tHp') && $('tHp').value) || ''
     };
-    (SITE.post ? SITE.post(row) : Promise.reject(new Error('no sheet'))).then(function () {
-      step = STEPS + 1; stepEl.textContent = '';
-      var MM = window.MahalaMembers, accounts = !!(MM && MM.join);
-      if (accounts) {
-        // never the WhatsApp number or the private answer ("more"): those stay with the camp's sheet
-        try { localStorage.setItem('mahala.tribe', JSON.stringify({ name: A.name, based: A.based, town: A.town, country: A.country, skills: A.skills, other: A.other, passions: A.passions,
-          creating: A.creating.trim(), news: A.news, wa: A.whatsappCommunity, share: A.share, love: A.loveToCome, at: Date.now() })); } catch (e) { /* storage blocked */ }
-      }
+    return (SITE.post ? SITE.post(row) : Promise.reject(new Error('no sheet'))).then(function () { SENT = true; });
+  }
+  function follow() {
+    busy(true);
+    post(false).then(function () {
+      BUSY = false; step = 'followed'; stepEl.textContent = '';
       var who = (A.name || '').split(/\s+/)[0];
-      body.innerHTML = '<div class="j-done" tabindex="-1"><p class="eyebrow">Welcome</p><h2 class="h-sub">Welcome to the tribe' + (who ? ', ' + esc(who) : '') + '.</h2>' +
-        '<ol class="next">' +
-        '<li><span><b>We read every introduction.</b> Someone from Mahala will say hello by email.</span></li>' +
-        (A.loveToCome ? '<li><span><b>You are on the waitlist for camp 2027.</b> Invitations go out in waves; if yours comes, it comes with a letter.</span></li>' : '') +
-        (accounts ? '<li><span><b>Your own page is ready.</b> One tap opens Your Mahala, with your answers already in it.</span></li></ol>' +
-          '<div class="j-acts"><button class="act solid" type="button" id="tPage">Open my page</button><button class="act" type="button" id="tDone">Back to the tribe</button></div></div>'
-          : '<li><span><b>Your own page is coming.</b> When members\' pages open, you sign in with this email and your answers are waiting.</span></li></ol>' +
-          '<div class="j-acts"><a class="act solid" href="./#mahalaverse" id="tMv">Step into the Mahalaverse</a><button class="act" type="button" id="tDone">Back to the tribe</button></div></div>');
+      body.innerHTML = '<div class="j-done" tabindex="-1"><p class="eyebrow">Thank you</p><h2 class="h-sub">You are following Mahala' + (who ? ', ' + esc(who) : '') + '.</h2>'
+        + '<ol class="next">' + (A.news ? '<li><span><b>Mahala news comes by email</b>, a few times a year. One click to stop.</span></li>' : '')
+        + (A.whatsappCommunity ? '<li><span><b>The tribe announcements on WhatsApp:</b> scan the code or tap the button, if you have not yet.</span></li>' : '')
+        + (A.loveToCome ? '<li><span><b>Thinking of the camp?</b> Make your tribe profile whenever you are ready; your camp application opens from it.</span></li>' : '')
+        + '</ol>' + (A.whatsappCommunity ? waBox() : '')
+        + '<div class="j-acts">' + (accounts() ? '<button class="act solid" type="button" id="tMake">Make my tribe profile</button>' : '')
+        + '<button class="act" type="button" id="tDone">Back to the tribe</button></div></div>';
       body.querySelector('.j-done').focus({ preventScroll: true });
       $('tDone').addEventListener('click', closeJoin);
-      if (accounts) {
-        var openPage = function () { MM.join({ email: A.email, name: A.name }); };
-        $('tPage').addEventListener('click', openPage);
-        setTimeout(openPage, 700);
-        return;
-      }
-      $('tMv').addEventListener('click', function (e) {        // over the front page: close this pane and step in there
-        if (window.parent === window) return;
-        try { if (window.parent.location.origin !== location.origin) return; } catch (err) { return; }
-        e.preventDefault(); parent.postMessage({ mahala: 'go', hash: 'mahalaverse' }, location.origin);
+      if ($('tMake')) $('tMake').addEventListener('click', function () { step = 2; draw(true); });
+    }, function () { busy(false); say('That did not go through. Please check your connection and try again.'); });
+  }
+  function keepCopy() {
+    // never the WhatsApp number or the password: the first sign-in reads this copy so nothing is asked twice
+    try { localStorage.setItem('mahala.tribe', JSON.stringify({ name: A.name, based: A.based, town: A.town, country: A.country, skills: [], other: '', passions: [],
+      creating: '', news: A.news, wa: A.whatsappCommunity, share: A.share, love: A.loveToCome, at: Date.now() })); } catch (e) { /* storage blocked */ }
+  }
+  function profile() {
+    busy(true, 'Making your profile');
+    post(true).then(function () {
+      if (!accounts()) { BUSY = false; follow(); return; }
+      keepCopy();
+      return MM().signUp({ email: A.email, password: A.password, name: A.name }).then(function (r) {
+        busy(false);
+        if (r.state === 'code') { step = 3; draw(true); var c = $('tCode'); if (c) c.focus({ preventScroll: true }); return; }
+        if (r.state === 'in') { body.innerHTML = '<div class="j-done"><h2 class="h-sub">Welcome to the tribe.</h2><p class="small">Opening your page…</p></div>'; return; }
+        if (r.state === 'exists') {
+          body.innerHTML = '<div class="j-done" tabindex="-1"><h2 class="h-sub">You already have a tribe profile</h2>'
+            + '<p class="small">There is already an account with ' + esc(A.email) + '. Sign in with it, or choose a new password from the sign-in box.</p>'
+            + '<div class="j-acts"><button class="act solid" type="button" id="tSignIn">Sign in</button><button class="act" type="button" id="tDone">Close</button></div></div>';
+          $('tSignIn').addEventListener('click', function () { MM().signIn(); });
+          $('tDone').addEventListener('click', closeJoin);
+          return;
+        }
+        say(r.text || 'That did not work. Try again in a little while.');
       });
-    }).catch(function () {
-      $('tErr').textContent = 'That did not go through. Please check your connection and try again.';
-      g.removeAttribute('aria-disabled'); g.textContent = WL ? 'Join the waitlist' : 'Join the tribe';
+    }).catch(function () { busy(false); say('That did not go through. Please check your connection and try again.'); });
+  }
+  function verify() {
+    busy(true, 'Checking');
+    MM().verifyCode({ email: A.email, code: A.code }).then(function (r) {
+      if (r.state === 'in') { body.innerHTML = '<div class="j-done"><h2 class="h-sub">Welcome to the tribe.</h2><p class="small">Opening your page…</p></div>'; return; }
+      busy(false); say(r.text);
     });
   }
-
-  // Already in the tribe and signed in: one screen, no questions asked twice
-  var M = null;
-  function drawMember() {
-    stepEl.textContent = '';
-    var who = (M.name || '').split(/\s+/)[0];
-    body.innerHTML = '<h2 class="h-sub">Join the waitlist</h2>' +
-      '<p class="small">You are already in the tribe' + (who ? ', ' + esc(who) : '') + '. This puts you on the camp leads\' waitlist for 2027, as ' + esc(M.email) + '.</p>' +
-      field('tMWa', 'Your WhatsApp number <small>(optional)</small>', '<input type="tel" id="tMWa" maxlength="30" autocomplete="tel" placeholder="+27 …" value="' + esc(M.whatsapp || '') + '">', 'So a camp lead can reach you quickly when a place opens. With the country code. Only the stewards see it.') +
-      '<p class="small">Places are limited to 50. The camp leads invite in waves, each with a letter.</p>' +
-      '<p class="err" id="tErr" role="alert"></p>' +
-      '<div class="j-acts"><button class="act solid" type="button" id="tMGo">Add me to the waitlist</button><button class="act quiet" type="button" id="tMBack">Close</button></div>';
-    box.scrollTop = 0;
-    var h = body.querySelector('h2'); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); }
-    $('tMBack').addEventListener('click', closeJoin);
-    $('tMGo').addEventListener('click', function () {
-      var g = $('tMGo'); if (g.getAttribute('aria-disabled') === 'true') return;
-      g.setAttribute('aria-disabled', 'true'); g.textContent = 'Sending';
-      var row = { type: 'waitlist', path: 'waitlist', id: 'W' + Date.now().toString(36).toUpperCase(), name: M.name, email: M.email,
-        whatsapp: ($('tMWa').value || '').trim(), town: M.town || '', country: M.country || '', ref: A.ref };
-      (SITE.post ? SITE.post(row) : Promise.reject(new Error('no sheet'))).then(function () {
-        step = STEPS + 1;
-        body.innerHTML = '<div class="j-done" tabindex="-1"><p class="eyebrow">Noted</p><h2 class="h-sub">You are on the waitlist' + (who ? ', ' + esc(who) : '') + '.</h2>' +
-          '<ol class="next"><li><span><b>The camp leads have your name.</b> Invitations go out in waves; if yours comes, it comes with a letter.</span></li></ol>' +
-          '<div class="j-acts"><button class="act" type="button" id="tDone">Back to the tribe</button></div></div>';
-        body.querySelector('.j-done').focus({ preventScroll: true });
-        $('tDone').addEventListener('click', closeJoin);
-      }).catch(function () {
-        $('tErr').textContent = 'That did not go through. Please check your connection and try again.';
-        g.removeAttribute('aria-disabled'); g.textContent = 'Add me to the waitlist';
-      });
+  function resend() {
+    var b = $('tResend'); if (b) b.disabled = true;
+    MM().resendCode({ email: A.email }).then(function (r) {
+      if (b) b.disabled = false;
+      say(r.state === 'error' ? r.text : 'A new code is on its way to ' + A.email + '. Use the newest one: it replaces the last.');
     });
   }
 
   var opener = null;
   function openJoin(from, mode) {
     opener = from || document.activeElement;
-    if (step > STEPS) step = 1;
-    WL = mode === 'waitlist';
-    if (WL) A.loveToCome = true;
-    if (titleEl) titleEl.textContent = WL ? 'Join the waitlist' : TITLE;
+    MODE = mode === 'apply' ? 'apply' : 'follow';
+    if (MODE === 'apply') A.loveToCome = true;
+    if (step === 'followed' && MODE !== 'apply') step = 1;
+    if (step === 'followed') step = 2;
+    if (titleEl) titleEl.textContent = MODE === 'apply' ? 'Apply to join the camp' : 'Follow and subscribe';
     box.hidden = false; document.documentElement.classList.add('join-open');
     requestAnimationFrame(function () { box.classList.add('is-open'); });
     draw(true);
-    // signed in already: the short way
-    var MM = window.MahalaMembers;
-    if (WL && MM && MM.known) MM.known().then(function (k) {
-      if (!k || !k.signedIn || !k.email || box.hidden || !WL || step !== 1) return;
-      M = k; drawMember();
-    }).catch(function () { });
   }
   function closeJoin() {
     box.classList.remove('is-open'); document.documentElement.classList.remove('join-open');
@@ -301,8 +289,9 @@
   }
   $('tjoinClose').addEventListener('click', function () { read(); closeJoin(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) { e.stopImmediatePropagation(); read(); closeJoin(); } }, true);
-  document.querySelectorAll('[data-tribe-join]').forEach(function (b) { b.addEventListener('click', function (e) { e.preventDefault(); openJoin(b); }); });
+  document.querySelectorAll('[data-tribe-join]').forEach(function (b) { b.addEventListener('click', function (e) { e.preventDefault(); openJoin(b, b.getAttribute('data-tribe-join') === 'apply' ? 'apply' : 'follow'); }); });
   if (/^#join$/i.test(location.hash)) openJoin();
-  else if (/^#waitlist$/i.test(location.hash)) openJoin(null, 'waitlist');
-  window.__tribeJoin = { open: openJoin, state: function () { return { step: step, A: A }; } };
+  else if (/^#(apply|waitlist)$/i.test(location.hash)) openJoin(null, 'apply');
+  else if (/^#profile$/i.test(location.hash)) openJoin(null, 'follow');
+  window.__tribeJoin = { open: openJoin, state: function () { return { step: step, A: A, mode: MODE }; } };
 })();

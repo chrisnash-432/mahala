@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400&family=Jost:wght@300;400;500&family=Marcellus&display=swap">
 <script src="site.js?v=10"></script>
-<script src="assets/shim/claude-shim.js?v=19"></script>
+<script src="assets/shim/claude-shim.js?v=20"></script>
 <style>
 /* Your Mahala, prototype 2 (4 Nov 2026). One page about you, the same on the site and in the Mahalaverse.
    The people here are made up; nothing is read from or saved to the member database.
@@ -259,6 +259,24 @@ h3 { font: 400 19px/1.2 var(--name); letter-spacing: .05em; margin: 0 0 4px; }
 .mine { margin-top: 12px; font-size: 14.5px; padding: 10px 12px; border-radius: 12px; border: 1px dashed var(--rule-2); }
 .mine small { display: block; color: var(--ink-3); font-size: 13px; }
 
+/* Mik's review, 26 Nov 2026: Your profile and the member space, side by side at the top; your designation; the quest's
+   standard steps; Growing The Seed on its own white ground; Nominate; the members' WhatsApp group */
+.mesw { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin: 0 auto 26px; padding: 5px; width: fit-content; border: 1px solid var(--rule); border-radius: 999px; background: rgba(255,255,255,.6); }
+.mesw a { padding: 11px 20px; border-radius: 999px; font: 500 14px/1 var(--text); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); text-decoration: none; }
+.mesw a[aria-current="page"] { background: var(--ink); color: var(--warm); }
+.designation { margin: 0 auto 22px; text-align: center; font: 400 clamp(20px, 2.4vw, 26px)/1.3 var(--name); }
+.designation span { display: block; margin-bottom: 6px; font: 500 12px/1 var(--text); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-3); }
+.qsteps { list-style: none; margin: 0 0 18px; padding: 0; display: grid; gap: 8px; }
+.qsteps .qs { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--rule); border-radius: 14px; background: #fff; font-size: 16px; }
+.qsteps .qs .box { width: 22px; height: 22px; border: 1.5px solid var(--ink-3); border-radius: 6px; display: grid; place-items: center; flex: none; }
+.qsteps .qs.done .box { background: var(--ink); border-color: var(--ink); }
+.qsteps .qs.done .box svg { width: 14px; height: 14px; fill: none; stroke: var(--warm); stroke-width: 2; }
+.qsteps .qs.now { border-color: var(--ink); }
+.qsteps .qs small { margin-left: auto; font: 500 11px/1 var(--text); letter-spacing: .16em; text-transform: uppercase; color: var(--magenta, #b0306a); }
+.seedcard { padding: 20px; border-radius: 18px; background: #fff; box-shadow: 0 8px 28px rgba(40, 25, 12, .08); }
+.nominate, .wagroup { margin-top: 30px; padding: 22px; border: 1px solid var(--rule); border-radius: 22px; background: rgba(255,255,255,.55); text-align: center; }
+.nominate h2, .wagroup h2 { margin: 0 0 8px; font: 400 clamp(22px, 2.6vw, 28px)/1.2 var(--name); }
+.applycard { margin-top: 14px; }
 .portal { margin-top: 56px; display: flex; gap: 16px 24px; align-items: center; flex-wrap: wrap; padding: 22px; border-radius: 22px; background:
   radial-gradient(120% 160% at 100% 0%, color-mix(in srgb, var(--magenta) 14%, transparent), transparent 55%), radial-gradient(120% 160% at 0% 100%, color-mix(in srgb, var(--cyan) 14%, transparent), transparent 55%), var(--sheet); border: 1px solid var(--rule); }
 .portal p { margin: 0; flex: 1 1 280px; min-width: 0; color: var(--ink-2); }
@@ -768,7 +786,8 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   var CAMPS = { 2025: 'The Portal', 2026: 'Through the Prism', 2027: 'The Seed' };
   var HUES = [['#FFD81F', '#14A8E0'], ['#14A8E0', '#D8197F'], ['#D8197F', '#FFD81F']];
   var M = function () { return window.MahalaMembers; };
-  function hashKey() { return (location.hash || '').slice(1).replace(/^demo-/, ''); }
+  var DEMO_KEY = '';
+  function hashKey() { var k = (location.hash || '').slice(1).replace(/^demo-/, ''); if (/^(space|profile)$/i.test(k)) return DEMO_KEY || 'newcomer'; DEMO_KEY = k; return k; }
   function getDoc(path) { return LIVE.db ? LIVE.db.doc(path).get().then(function (d) { return d.exists ? d.data() : null; }, function () { return null; }) : Promise.resolve(null); }
   function save(patch) {
     if (!LIVE.on || !LIVE.db) return Promise.resolve();
@@ -816,7 +835,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + (LIVE.ended ? '<p class="hello">Your account is deleted. The door stays open.</p>' : '<p class="hello">A page that is only yours</p>')
       + '<h1 id="youH">Your Mahala</h1>'
       + '<p class="lede" style="margin:14px auto 22px;max-width:46ch">Your thread with Mahala over the years, the gatherings ahead, your card from the deck, and, if you are invited, your way into the camp. It opens when you sign in, and it is only ever yours.</p>'
-      + '<div class="row" style="justify-content:center"><button type="button" class="btn" id="signInBtn">Sign in</button><a class="btn ghost" href="tribe.html#join">New here? Join the tribe</a></div>'
+      + '<div class="row" style="justify-content:center"><button type="button" class="btn" id="signInBtn">Sign in</button><a class="btn ghost" href="tribe.html#profile">New here? Make your tribe profile</a></div>'
       + '<p class="sub" style="margin-top:16px">With Google, a password or an email link. Joining takes a few minutes, and nobody asks you anything twice.</p></section>';
     document.title = 'Your Mahala';
   }
@@ -953,7 +972,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   // Send Mahala to someone in one tap: WhatsApp, where people actually read their messages, or the phone's own share.
   // Camp leads, the core team and people in the 2027 camp also get the nomination form, once NOMINATE_URL is set.
   // A personal letter link for each nominee still comes from the stewards; this sends the front page.
-  var INVITE_TEXT = 'Mahala is raising The Seed, a temple for AfrikaBurn 2027, and I would love you to be part of it. Have a look and join the tribe:';
+  var INVITE_TEXT = 'Mahala is raising The Seed, a temple for AfrikaBurn 2027, and I would love you to be part of it. Have a look and follow along:';
   function canNominate() { return !!NOMINATE_URL && (P.door === 'lead' || P.door === 'core' || P.tier === 'applicant' || P.tier === 'camp'); }
   function callIn() {
     var nom = canNominate();
@@ -1027,6 +1046,35 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + (P.live ? '<p class="qsaid said" id="questSaid" aria-live="polite">Each step you tap is kept with your quest.</p>' : '') + '</div></li>';
   }
 
+  // ------------------------------------------------------------------ Mik's review, 26 Nov 2026
+  // Who the member space is for: invited to camp 2027 (an invitee needs no application), a place in the camp, or a
+  // designation (core team, camp lead, crew lead, steward). Applicants see their three steps on their profile until a
+  // camp lead has welcomed them. In the examples (accounts off) everyone sees it.
+  function canSpace() {
+    if (!P.live) return true;
+    return P.tier === 'invited' || P.tier === 'camp' || !!(P.journey && P.journey.roles && P.journey.roles.length) || P.door === 'lead' || P.door === 'core';
+  }
+  function stepsDone() { var st = {}; ((P.J && P.J.steps) || []).forEach(function (x) { st[x.key] = x.state; }); return st.apply === 'done' && st.call === 'done' && st.contribution === 'done'; }
+  // On your profile, for a tribe member with no application yet: the way to apply (F-141)
+  function applyCard() {
+    if ((P.live && P.tier && P.tier !== 'tribe') || (!P.live && P.door)) return '';
+    return '<div class="letter nextstep applycard"><span class="from">Camp 2027</span><p><b>Apply to join the camp in 2027.</b> Send your application, have a short welcome call with a camp lead, and choose how you share in the common costs. Places are limited to 50.</p>'
+      + '<div class="row"><a class="btn" href="camp.html#join" data-count="Apply to join the camp" data-count-where="Your profile">Apply to join the camp</a><a class="btn ghost" href="camp.html">About the camp</a></div></div>';
+  }
+  // The standard steps of camp 2027 at the top of the quest, with where each one stands (application, call, camp fee)
+  function questSteps() {
+    if (!P.live || !P.J || !P.J.steps) return '';
+    var st = {}; P.J.steps.forEach(function (x) { st[x.key] = x.state; });
+    var row = function (k, label) { var s2 = st[k] || 'ahead'; return '<li class="qs ' + esc(s2) + '"><span class="box">' + (s2 === 'done' ? TICK : '') + '</span>' + label + (s2 === 'now' ? ' <small>Next</small>' : '') + '</li>'; };
+    return '<ol class="qsteps">' + row('apply', P.tier === 'invited' && st.apply !== 'done' ? 'Accept your invitation' : 'Your camp application') + row('call', 'Your welcome call') + row('contribution', 'Your share in the common costs') + '</ol>';
+  }
+  function loadGroup() {
+    var box = $('waGroup'); if (!box || !P.live || !M() || !M().rpc) return;
+    M().rpc('camp_members_group').then(function (u) {
+      if (typeof u === 'string' && /^https:\/\/chat\.whatsapp\.com\//.test(u)) { $('waGroupLink').href = u; box.hidden = false; }
+    }, function () { });
+  }
+
   // ------------------------------------------------------------------ the page
   var P = null, who = null, steps = [], drawn = null, drawsLeft = 1, myOpen = false, DEMO = true;
   function render() {
@@ -1049,56 +1097,69 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + '<p class="sleeps">' + sleeps + ' sleeps until The Seed rises</p>'
       + (!P.live && P.hats.length ? '<div class="hats">' + P.hats.map(function (x) { return '<span class="hat">' + HAT + esc(x) + '</span>'; }).join('') + '</div>' : '')
       + '</div></section>';
-    h += hero() + '<div class="journey">' + (P.live && P.tier && P.tier !== 'tribe' ? '' : nextStep()) + roleDoor() + '</div><div id="tasksHost"></div>';
+    // Mik's review, 26 Nov 2026 (F-140, F-141, F-146 to F-156): two places on this page. Your profile (me.html) is about
+    // you: your details, your story, what you told us, and your camp application if there is one to send. The member
+    // space (me.html#space) is the same for every member of camp 2027: your designation at the top if you have one,
+    // your quest (the standard steps every member goes through), the gatherings, growing The Seed, nominating someone,
+    // the members' WhatsApp group, and the Mahalaverse. Lead tasks and the community map live in Basecamp only.
+    var space = canSpace() && /^#space$/i.test(location.hash);
+    h += '<nav class="mesw" aria-label="Your Mahala"><a href="#profile"' + (space ? '' : ' aria-current="page"') + '>Your profile</a>'
+      + (canSpace() ? '<a href="#space"' + (space ? ' aria-current="page"' : '') + '>Member space</a>' : '')
+      + (P.live && P.journey && P.journey.basecamp ? '<a href="' + esc(P.journey.basecamp) + '">Basecamp</a>' : '') + '</nav>';
+    if (!space) {
+      h += hero() + '<div class="journey">' + (P.live && P.tier && P.tier !== 'tribe' ? '' : nextStep()) + applyCard() + '</div>';
+      h += fold('story', 'Your story', (P.live ? soul() + known() : '') + mala(), { open: true, sub: P.live ? 'Only you see it' : '' });
+      h += fold('carry', 'What you told us here', '<p class="lede">Kept safe, so no door asks twice.</p><dl class="gifts">' + P.gifts.map(function (g) { return '<div><dt>' + esc(g[0]) + '</dt><dd>' + esc(g[1]) + ' <small>· from ' + esc(g[2]) + '</small></dd></div>'; }).join('') + '</dl>'
+        + '<p><button type="button" class="link" data-choices>Change these, or who sees each one</button></p>', { open: true });
+      if (canSpace()) h += '<div class="portal"><p><b>The member space</b>Your quest, the gatherings, The Seed and the camp members’ group, the same for every member.</p><a class="btn" href="#space">Access the member space</a></div>';
+      h += '<p style="margin-top:28px"><button type="button" class="link" data-choices>Your choices: who sees what, what we keep, and leaving</button></p>';
+    } else {
+      var hats = P.journey && P.journey.roles ? P.journey.roles.map(function (r) { return esc(r.label); }).join(', ') : '';
+      if (hats) h += '<p class="designation"><span>Your designation</span>' + hats + '</p>';
+      if (!stepsDone()) h += hero();
 
-    // 2. your story: the soul portrait, you as Mahala knows you, and your years as beads on a string (F-044, F-064)
-    h += fold('story', 'Your story', (P.live ? soul() + known() : '') + mala(), { open: true, sub: P.live ? 'Only you see it' : '' });
+      // your quest this season, the standard steps every member goes through (F-153)
+      var path = '<p class="lede">Where your thread runs this season, newest first. Something missing? <button type="button" class="link" data-tell="Your quest this season">Tell the stewards</button>.</p><ol class="thread">';
+      P.chapters.forEach(function (c, i) {
+        if (i > 0 && P.live) return;
+        path += '<li class="knot chapter"><b>' + esc(c[0]) + '</b><span>' + esc(c[1]) + '</span></li>';
+        if (i === 0) {
+          (c[2] || []).forEach(function (k) { path += '<li class="knot"><b>' + esc(k[0]) + '</b><span>' + esc(k[1]) + '</span></li>'; });
+          var g = Object.keys(P.yes).filter(function (k) { return P.yes[k] === 'yes'; }).map(function (k) { return EVENTS.events.filter(function (e) { return e.id === k; })[0]; }).filter(Boolean);
+          g.forEach(function (e) { path += '<li class="knot glow"><b>' + esc(e.title) + '</b><span>' + fmt(e.date) + '. You said yes; after the day it is tied in here.</span></li>'; });
+          if (c[3] === 'waiting' && !g.length) path += '<li class="knot waiting"><b>Your first gathering ties the next knot</b><span>We’ll tie it together.</span></li>';
+          path += questKnot();
+        }
+      });
+      h += fold('path', 'Your quest this season', questSteps() + path + '</ol>', { open: true, sub: 'Your quest: ' + esc(P.quest.name) });
 
-    // 3. the gatherings
-    var up = upcoming(), soon = up.filter(function (e) { return e.kind !== 'burn'; }).slice(0, 3);
-    h += fold('now', 'Gatherings ahead', '<p class="lede">Build days, talks and evenings together. Open one for the details; say yes and the rest comes closer to the day.</p>'
-      + letter() + '<div class="tickets">' + soon.map(ticket).join('') + '</div>'
-      + '<p class="season-link"><a class="link" href="tribe.html#events">The whole season, to the burn</a></p><div id="eventsHost"></div>', { open: true });
+      // the gatherings (F-150)
+      var up = upcoming(), soon = up.filter(function (e) { return e.kind !== 'burn'; }).slice(0, 3);
+      h += fold('now', 'Gatherings ahead', '<p class="lede">Build days, talks and evenings together. Open one for the details; say yes and the rest comes closer to the day.</p>'
+        + letter() + '<div class="tickets">' + soon.map(ticket).join('') + '</div>'
+        + '<p class="season-link"><a class="link" href="tribe.html#events">The whole season, to the burn</a></p><div id="eventsHost"></div>', { open: true });
 
-    // 4. growing The Seed, with one click to share the crowdfund
-    h += fold('seed', 'Growing The Seed', seedRing()
-      + (P.gave ? '<p class="mine">You gave in ' + esc(P.gave.when) + ', towards the ' + esc(P.gave.towards) + '. Thank you.<small>Only you see this line, and never an amount.</small></p>' : '<p class="mine">When you give, a line appears here that only you can see.<small><a href="seed.html">The Seed and its milestones</a></small></p>')
-      + '<div class="row shareseed"><button type="button" class="btn" id="shareSeed">' + SHARE_ICON + 'Share the crowdfund</button><a class="btn ghost" href="' + esc(DONATE) + '" target="_blank" rel="noopener">Give to The Seed</a></div><p class="said" data-said aria-live="polite"></p>' + callIn(), { open: true });
+      // growing The Seed, on its own white ground, there to share the fundraiser (F-151)
+      h += fold('seed', 'Growing The Seed', '<div class="seedcard">' + seedRing()
+        + '<p class="lede">The main thing you can do here: share the fundraiser with the people who would love to see The Seed rise.</p>'
+        + '<div class="row shareseed"><button type="button" class="btn" id="shareSeed">' + SHARE_ICON + 'Share the fundraiser</button><a class="btn ghost" href="' + esc(DONATE) + '" target="_blank" rel="noopener">Give to The Seed</a></div><p class="said" data-said aria-live="polite"></p>'
+        + (P.gave ? '<p class="mine">You gave in ' + esc(P.gave.when) + ', towards the ' + esc(P.gave.towards) + '. Thank you.<small>Only you see this line, and never an amount.</small></p>' : '') + '</div>', { open: true });
 
-    // 5. your path this season, with your quest made easy (F-065)
-    var path = '<p class="lede">Where your thread runs this season, newest first. Something missing? <button type="button" class="link" data-tell="Your path this season">Tell the stewards</button>.</p><ol class="thread">';
-    P.chapters.forEach(function (c, i) {
-      if (i > 0 && P.live) return;
-      path += '<li class="knot chapter"><b>' + esc(c[0]) + '</b><span>' + esc(c[1]) + '</span></li>';
-      if (i === 0) {
-        (c[2] || []).forEach(function (k) { path += '<li class="knot"><b>' + esc(k[0]) + '</b><span>' + esc(k[1]) + '</span></li>'; });
-        var g = Object.keys(P.yes).filter(function (k) { return P.yes[k] === 'yes'; }).map(function (k) { return EVENTS.events.filter(function (e) { return e.id === k; })[0]; }).filter(Boolean);
-        g.forEach(function (e) { path += '<li class="knot glow"><b>' + esc(e.title) + '</b><span>' + fmt(e.date) + '. You said yes; after the day it is tied in here.</span></li>'; });
-        if (c[3] === 'waiting' && !g.length) path += '<li class="knot waiting"><b>Your first gathering ties the next knot</b><span>We’ll tie it together.</span></li>';
-        path += questKnot();
-      }
-    });
-    if (P.before) path += '<li class="knot"><b>Before Mahala</b><span>The Grateful Heart, The State of Bliss, Nowhere’s End. Were you there? <button type="button" class="link" data-tell="Your path this season">Add your years</button></span></li>';
-    h += fold('path', 'Your path this season', path + '</ol>', { open: true, sub: 'Your quest: ' + esc(P.quest.name) });
+      // nominate a camp member for 2027: one link (F-152)
+      if (NOMINATE_URL) h += '<section class="nominate"><h2>Nominate a camp member for 2027</h2><p class="lede">Know someone who belongs in the camp? Tell us about them, and a camp lead takes it from there.</p>'
+        + '<a class="btn" href="' + esc(NOMINATE_URL) + '" target="_blank" rel="noopener" data-count="Nominate" data-count-where="Member space">Nominate someone</a></section>';
 
-    // 6. your card from the deck, smaller and turnable (F-063)
-    h += fold('cardz', 'Your card', cardMini(), { open: false, sub: P.card ? esc(deck(P.card).t) : 'Still face down', thumb: P.card ? IMG(P.card) : IMG('back') });
+      // the camp members' WhatsApp group (F-155): its link comes from the member database, for members only
+      h += '<section class="wagroup" id="waGroup" hidden><h2>The camp members’ WhatsApp group</h2><p class="lede">Mahala Camp Members 2027: the group for this year’s camp, separate from the tribe announcements.</p><a class="btn" id="waGroupLink" href="#" target="_blank" rel="noopener" data-count="WhatsApp members group" data-count-where="Member space">Join the group on WhatsApp</a></section>';
 
-    // 7. where you are now: the Golden Seed of Life
-    h += fold('circles', 'Where you are now', '<div class="seedlife">' + seedOfLife(P) + '<div><p class="season">' + esc(P.season) + '</p>'
-      + '<p class="petalsay" id="petalsay" aria-live="polite">Tap a circle. Each is a way of belonging, filled in any order. At the centre, where The Seed sits, everyone is a temple builder.</p>'
-      + (P.rings.length ? '<p class="rings">The rings around it are your years: ' + andList(P.rings) + '.</p>' : '') + '</div></div>', { open: false });
-
-    // 8. what you told us here
-    h += fold('carry', 'What you told us here', '<p class="lede">Kept safe, so no door asks twice.</p><dl class="gifts">' + P.gifts.map(function (g) { return '<div><dt>' + esc(g[0]) + '</dt><dd>' + esc(g[1]) + ' <small>· from ' + esc(g[2]) + '</small></dd></div>'; }).join('') + '</dl>'
-      + '<p><button type="button" class="link" data-choices>Change these, or who sees each one</button></p>', { open: false });
-
-    h += '<div class="portal"><p><b>Step through the portal</b>The same you waits in the Mahalaverse: your card, your beads, your quest.</p><a class="btn ghost" href="./#mahalaverse">Into the Mahalaverse</a></div>';
-    h += '<p style="margin-top:28px"><button type="button" class="link" data-choices>Your choices: who sees what, what we keep, and leaving</button></p>';
+      // Basecamp, a layer deeper, for designated people only (F-147, F-156)
+      h += '<div class="journey">' + roleDoor() + '</div>';
+      h += '<div class="portal"><p><b>Explore the Mahalaverse</b>The same you waits there: your card, your beads, your quest.</p><a class="btn ghost" href="./#mahalaverse">Into the Mahalaverse</a></div>';
+    }
 
     $('page').innerHTML = h;
-    renderChoices();
-    $('tellWhere').innerHTML = ['Your welcome and picture', 'The invitation', 'Your story', 'Gatherings ahead', 'Growing The Seed', 'Your path this season', 'Your card', 'Where you are now (the Seed of Life)', 'What you told us here', 'Your choices'].concat(P.door === 'lead' ? ['The people you called in'] : P.door === 'core' ? ['Holding the whole'] : []).concat(['Something else']).map(function (x) { return '<option>' + x + '</option>'; }).join('');
+    renderChoices(); loadGroup();
+    $('tellWhere').innerHTML = ['Your welcome and picture', 'The invitation', 'Your story', 'What you told us here', 'Your quest this season', 'Gatherings ahead', 'Growing The Seed', 'Nominate a camp member', 'The camp members\u2019 WhatsApp group', 'Your choices'].concat(P.door === 'lead' ? ['The people you called in'] : P.door === 'core' ? ['Holding the whole'] : []).concat(['Something else']).map(function (x) { return '<option>' + x + '</option>'; }).join('');
     $('yours').innerHTML = P.live ? (LIVE.tell.length ? LIVE.tell.slice().sort(function (a, b) { return (b.at || 0) - (a.at || 0); }).map(function (x) { return '<li>' + esc(x.text || '') + '<small>' + esc(x.reply || 'Heard. The stewards answer within a week.') + '</small></li>'; }).join('') : '<li>Nothing yet.<small>What you send shows here, with what happened to it.</small></li>')
       : '<li>The ladder felt like a ranking<small>Changed, 4 Nov: it became the Golden Seed of Life. Thank you.</small></li>';
     if (P.live && LIVE.store.last && nextNewMoon(new Date(LIVE.store.last.at)) > TODAY) draw(false, LIVE.store.last);
@@ -1280,7 +1341,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
       + (path ? '<ol class="pathsteps">' + W.steps.map(function (x) { return '<li class="' + esc(x.state) + '">' + esc(x.label) + (x.state === 'now' ? ' <small>Next</small>' : '') + '</li>'; }).join('') + '</ol>' : '')
       + '<div class="row">' + (n.href ? '<a class="btn" href="' + esc(n.href) + '">' + esc(n.cta) + '</a>' : '')
       + (W.basecamp ? '<a class="btn ghost" href="' + esc(W.basecamp) + '" target="_blank" rel="noopener">Open Basecamp</a>' : '')
-      + (P.J && P.J.community ? '<a class="btn ghost" href="community.html">Community Map</a>' : '') + '</div></div>';
+      + '</div></div>';
   }
 
   function letter() {
@@ -1296,7 +1357,7 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
   }
 
   // The community map, for whoever the database lets in (core, camp leads, crew leads): next to Basecamp in each door.
-  function mapBtn() { return P.J && P.J.community ? '<a class="btn small ghost" href="community.html">Community Map</a>' : ''; }
+  function mapBtn() { return ''; }   // the community map is reached from Basecamp only (Mik's review, 26 Nov 2026, F-156)
 
   function roleDoor() {
     if (P.live && P.door === 'lead') return '<details class="door" id="door"><summary><b>The people you called in</b><span>For camp leads</span></summary><div class="doorin">'
@@ -1479,13 +1540,12 @@ select { font: inherit; font-size: 14px; border: 1px solid var(--rule-2); border
     var c = $('dcard'); if (keep) c.classList.add('turned'); else setTimeout(function () { c.classList.add('turned'); }, REDUCE ? 0 : 450);
   }
 
-  addEventListener('hashchange', function () { if (ACCOUNTS) return; render(); scrollTo(0, 0); });
+  addEventListener('hashchange', function () { if (ACCOUNTS && !LIVE.on) return; render(); if (LIVE.on) picture(); scrollTo(0, 0); });
   // the welcome (or anything else in the account sheets) changed the record: draw the page again from it
   addEventListener('mahala:changed', function () { if (!ACCOUNTS || !LIVE.on) return; LIVE.on = false; boot(); });
   boot();
 })();
 </script>
-<script src="yourtasks.js?v=4" defer></script>
 <script src="yourevents.js?v=2" defer></script>
 <script src="analytics.js?v=2" defer></script>
 </body>

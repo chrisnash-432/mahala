@@ -204,6 +204,20 @@ html.join-open, html.join-open body { overflow: hidden; }
 .next-up { margin: 16px 0 0; font: 400 14.5px/1.4 var(--text); color: var(--ink-2); }
 .next-up a { text-decoration: none; border-bottom: 1px solid var(--pine); padding-bottom: 1px; }
 .next-up a:hover { border-color: var(--ink); }
+/* Mik's review, 26 Nov 2026: the next gathering as a heading of its own (F-123); the tribe page's end (F-125); the
+   WhatsApp group's QR code in Follow and subscribe (F-110) */
+.next-up { margin: 34px auto 0; padding: 22px 26px 20px; max-width: 560px; border: 1px solid var(--rule); border-radius: 22px; background: rgba(255,255,255,.55); text-align: center; }
+.next-up .nu-k { margin: 0 0 8px; font: 500 12px/1 var(--text); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-3); }
+.next-up .nu-t { display: inline-block; border: 0; font: 400 clamp(24px, 3.2vw, 34px)/1.15 var(--name); color: var(--ink); }
+.next-up .nu-d { margin: 8px 0 10px; font-size: 16px; color: var(--ink-2); }
+.next-up .nu-all { font-size: 14.5px; }
+.tribe-end { text-align: center; }
+.wa-join { display: flex; gap: 18px; align-items: center; margin: 4px 0 18px 34px; padding: 14px; border: 1px solid var(--rule); border-radius: 16px; background: #fff; }
+.wa-join img { flex: none; width: 148px; height: 148px; }
+.wa-join p { margin: 0 0 10px; font-size: 15px; }
+.wa-join .wa-link { display: inline-flex; }
+@media (max-width: 480px) { .wa-join { flex-direction: column; margin-left: 0; text-align: center; } }
+
 .next-up b { font-weight: 500; }
 .season { position: relative; margin: 4px 0 22px; }
 .season svg { display: block; width: 100%; height: auto; overflow: visible; }
@@ -266,8 +280,8 @@ html.join-open, html.join-open body { overflow: hidden; }
       <div class="prism" aria-hidden="true"></div>
       <p class="lede" id="lede"></p>
       <div class="tally" id="tally"></div>
-      <div class="acts top-acts"><button class="act solid" type="button" data-tribe-join>Join the tribe</button></div>
-      <p class="next-up" id="nextUp" hidden></p>
+      <div class="acts top-acts"><button class="act solid" type="button" data-tribe-join>Follow and subscribe</button></div>
+      <div class="next-up" id="nextUp" hidden></div>
     </header>
 
     <figure class="reelwrap" style="margin-inline:auto">
@@ -285,8 +299,8 @@ html.join-open, html.join-open body { overflow: hidden; }
         <div class="season" id="season" aria-hidden="true"></div>
         <div class="ev-filter" role="group" aria-label="Show"><button type="button" data-evf="all" aria-pressed="true">Everything</button><button type="button" data-evf="person" aria-pressed="false">In person</button><button type="button" data-evf="online" aria-pressed="false">Online talks</button><button type="button" data-evf="build" aria-pressed="false">Build days</button></div>
         <div id="evlist"></div>
-        <p class="ev-foot">Tickets open here as each date is set. Join the tribe and you hear first.</p>
-        <div class="acts"><button class="act solid" type="button" data-tribe-join>Join the tribe</button><a class="act" href="seed.html" data-open="seed">About The Seed</a></div>
+        <p class="ev-foot">Tickets open here as each date is set. Follow Mahala and you hear first.</p>
+        <div class="acts"><button class="act solid" type="button" data-tribe-join>Follow and subscribe</button><a class="act" href="seed.html" data-open="seed">About The Seed</a></div>
       </div>
     </section>
 
@@ -323,14 +337,9 @@ html.join-open, html.join-open body { overflow: hidden; }
       </div>
     </section>
 
-    <section aria-labelledby="hNeed">
-      <div class="head"><h2 id="hNeed"><button class="fold" type="button" aria-expanded="true" aria-controls="bNeed">What The Seed still needs<span class="chev" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M2.5 4.5l3.5 3.5 3.5-3.5"/></svg></span></button></h2><p class="sub">The Seed is a temple of light and coloured glass, built by this tribe for AfrikaBurn 2027. Some of what it needs, few of us bring yet.</p></div>
-      <div class="body" id="bNeed">
-        <ul class="needs" id="needs"></ul>
-        <p class="strong" id="strong"></p>
-        <div class="acts"><a class="act" href="seed.html" data-open="seed">About The Seed</a><button class="act solid" type="button" data-tribe-join>Join the tribe</button><a class="act" href="./#mahalaverse" data-go-verse data-count="Mahalaverse" data-count-where="The tribe page">Step into the Mahalaverse</a></div>
-        <p class="door-note">Anyone can join the tribe. The camp at AfrikaBurn is by invitation: join, tell us you would love to come, and the camp leads read every introduction.</p>
-      </div>
+    <section class="tribe-end" aria-label="Where next">
+      <div class="acts"><a class="act" href="seed.html" data-open="seed">About The Seed</a><button class="act solid" type="button" data-tribe-join>Subscribe</button><a class="act" href="./#mahalaverse" data-go-verse data-count="Mahalaverse" data-count-where="The tribe page">Step into the Mahalaverse</a></div>
+      <p class="door-note">Anyone can follow Mahala. Want to camp with us at AfrikaBurn? <a href="camp.html#apply" data-open="camp">Apply to join the camp</a>.</p>
     </section>
 
     <p class="how" id="how"></p>
@@ -339,7 +348,7 @@ html.join-open, html.join-open body { overflow: hidden; }
 <section class="tjoin" id="tjoin" role="dialog" aria-modal="true" aria-labelledby="tjoinH" hidden>
   <div class="bar">
     <button class="back" type="button" id="tjoinClose"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>Close</button>
-    <span class="ttl" id="tjoinH">Join the tribe</span>
+    <span class="ttl" id="tjoinH">Follow and subscribe</span>
     <span class="side"><span class="jstep" id="tjoinStep"></span></span>
   </div>
   <div class="tj-page"><div id="tjoinBody"></div></div>
@@ -363,7 +372,7 @@ html.join-open, html.join-open body { overflow: hidden; }
     if (embed) { e.preventDefault(); parent.postMessage({ mahala: 'go', hash: 'mahalaverse' }, location.origin); }
   }); });
   // over the front page, a link to another page asks the front page to open it there
-  if (EMBED) document.querySelectorAll('[data-open]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); parent.postMessage({ mahala: 'open', pane: a.dataset.open }, location.origin); }); });
+  if (EMBED) document.querySelectorAll('[data-open]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); parent.postMessage({ mahala: 'open', pane: a.dataset.open, hash: (a.getAttribute('href') || '').split('#')[1] || '' }, location.origin); }); });
 
 
   // the faces reel: poster at once, plays while on screen. Sound is on by default (F-049): with sound where the browser
@@ -422,8 +431,9 @@ html.join-open, html.join-open body { overflow: hidden; }
   var VA = {connection: 'connection', play: 'play', spirit: 'spirit', healing: 'healing and growth', creativity: 'creativity', nature: 'nature', service: 'service',
     freedom: 'freedom', presence: 'presence', learning: 'learning', beauty: 'beauty', inclusion: 'inclusion', legacy: 'legacy'};
 
-  $('lede').textContent = 'From the Jozi Burrio group to State of Bliss to Mahala, ' + fmt(D.people) + ' people have carried this camp across ' +
-    (D.years[1] - D.years[0]) + ' years. ' + fmt(D.read) + ' of us have told the camp what we bring. This is all of us at once.';
+  // Mik's words (review of 26 Nov 2026, F-122); the count follows the tribe data, rounded down to the hundred
+  $('lede').textContent = 'Mahala\u2019s journey started way back in 2013 with the Jozi Burrio and the construction of the Grateful Heart, and through many iterations, including Symbian Bliss and later State of Bliss, we have had over ' +
+    fmt(Math.floor(D.people / 100) * 100) + ' people join our voyage of self-discovery. On this page you can learn more about who this community is, where we are across the globe, and what opportunities there are to connect with one another.';
   $('tally').innerHTML = [[D.people, 'people since 2013'], [D.read, 'told us what they bring'], [D.countries.length + D.otherCountries, 'countries']]
     .map(function (t) { return '<div><b>' + fmt(t[0]) + '</b><span>' + t[1] + '</span></div>'; }).join('');
 
@@ -525,12 +535,12 @@ html.join-open, html.join-open body { overflow: hidden; }
     ['engineering', 'Structural engineering', 'Someone to check and sign off a timber zome nearly nine metres across.', 'var(--brass)'],
     ['fundraising', 'Raising the money', 'Partners, sponsors and campaigns for the full Seed.', 'var(--wax)']];
   var skillN = {}; D.skills.forEach(function (s) { skillN[s[0]] = s[1]; });
-  $('needs').innerHTML = needs.map(function (n) {
+  if ($('needs')) $('needs').innerHTML = needs.map(function (n) {
     var have = n[0] in SD ? SD[n[0]] : (skillN[n[0]] || 0);
     return '<li><h3><i style="background:' + n[3] + '"></i>' + esc(n[1]) + '</h3><p>' + esc(n[2]) + '</p><span class="have">' +
       (have ? have + ' of us bring this today' : 'Hardly any of us bring this yet') + '</span></li>'; }).join('');
   var st = D.seed.filter(function (s) { return ['sound', 'structure', 'logistics', 'story'].indexOf(s[0]) >= 0; });
-  $('strong').textContent = 'What we have in plenty: ' + st.map(function (s) {
+  if ($('strong')) $('strong').textContent = 'What we have in plenty: ' + st.map(function (s) {
     return ({sound: 'sound for the temple', structure: 'hands for the timber frame', logistics: 'people to move it all', story: 'people to tell its story'})[s[0]] + ' (' + s[1] + ')'; }).join(', ') +
     '. If you bring what is missing, or know someone who does, we would love to hear from you.';
   $('how').textContent = 'How this was counted: from what members wrote on their applications and forms since 2013, read on ' +
@@ -592,7 +602,7 @@ html.join-open, html.join-open body { overflow: hidden; }
   var filter = 'all';
   var draw = function () {
     var list = upcoming.filter(function (e) { return filter === 'all' || GROUP[filter].indexOf(e.kind) >= 0; });
-    if (!list.length) { $('evlist').innerHTML = '<p class="ev-empty">Nothing of this kind is on the calendar yet. Join the tribe and we will tell you when it is.</p>'; return; }
+    if (!list.length) { $('evlist').innerHTML = '<p class="ev-empty">Nothing of this kind is on the calendar yet. Follow Mahala and we will tell you when it is.</p>'; return; }
     var h = '', month = '';
     list.forEach(function (e) {
       var m = e.date.slice(0, 7);
@@ -632,7 +642,8 @@ html.join-open, html.join-open body { overflow: hidden; }
   // the next gathering, under the first Join button
   var next = upcoming.filter(function (e) { return e.kind !== 'burn'; })[0];
   if (next && $('nextUp')) { var a = at(next.date);
-    $('nextUp').innerHTML = 'Next: <a href="#events" data-ev-next><b>' + esc(next.title) + '</b>, ' + WD[a.getDay()] + ' ' + a.getDate() + ' ' + MO[a.getMonth()] + '</a>. <a href="#events" data-ev-next>The whole season</a>'; $('nextUp').hidden = false; }
+    $('nextUp').innerHTML = '<p class="nu-k">Our next upcoming event</p><a class="nu-t" href="#events" data-ev-next>' + esc(next.title) + '</a><p class="nu-d">' + WD[a.getDay()] + ' ' + a.getDate() + ' ' + MO[a.getMonth()] +
+      (next.time ? ', ' + esc(next.time) : '') + (next.where ? ' \u00b7 ' + esc(next.where) : '') + '</p><a class="nu-all" href="#events" data-ev-next>The whole season</a>'; $('nextUp').hidden = false; }
 
   // open the section when someone arrives for it (wearemahala.com/#events, a poster's QR code, the line above)
   var openEvents = function (scroll) {
@@ -676,8 +687,8 @@ html.join-open, html.join-open body { overflow: hidden; }
 })();
 </script>
 <script src="site.js?v=10"></script>
-<script src="assets/shim/claude-shim.js?v=19"></script>
-<script src="tribe-join.js?v=4"></script>
+<script src="assets/shim/claude-shim.js?v=20"></script>
+<script src="tribe-join.js?v=5"></script>
 <script src="yourevents.js?v=2"></script>
 <script src="analytics.js?v=2"></script>
 </body>

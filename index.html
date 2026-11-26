@@ -5,7 +5,7 @@
 /* the front page is wearemahala.com itself: an old link to /index.html shows as the plain address (F-033) */
 try { if (/\/index\.html$/.test(location.pathname)) history.replaceState(history.state, '', location.pathname.replace(/index\.html$/, '') + location.search + location.hash); } catch (e) { }</script>
 <script src="site.js?v=10"></script>
-<script src="assets/shim/claude-shim.js?v=19"></script>
+<script src="assets/shim/claude-shim.js?v=20"></script>
 <style>
 /* No letter on the website, for anyone (F-023): invitations go out as their own link by email, to a clean landing page. */
 #envRest, #envStage { display: none !important; }
@@ -497,6 +497,47 @@ a.act { color: inherit; text-decoration: none; }
   .menu .menu-door.menu-join, .menu .menu-door[data-give] { padding: 8px 9px; margin-left: 4px; } }
 @media (max-width: 345px) { .menu .menu-door .the { display: none; } .top .menu .menu-door { padding: 10px 3px; letter-spacing: .04em; font-size: 10px; } .top .menu .menu-door.menu-join, .top .menu .menu-door[data-give] { padding: 7px 7px; margin-left: 3px; } }
 @media (max-width: 360px) { .menu .menu-door { padding: 10px 5px; letter-spacing: .08em; } .menu .menu-door svg { display: none; } }
+/* ---------------------------------------------------------------------------------- Mik's review, 26 Nov 2026 */
+/* The top bar (F-116, F-117, F-121): Sign in top left (with Member space and Sign out once signed in), The tribe, The camp
+   and The Seed top right, then Join, Follow and Donate. About twice the size it was, so nobody misses the way in; on a
+   phone the doors fold into a menu button. The first screen (F-118) carries the same three ways, written out. */
+.menu .menu-door { font-size: clamp(13px, 1.15vw, 17px); padding: 12px 12px; letter-spacing: .18em; }
+.menu .menu-door.menu-join, .menu .menu-door.menu-follow, .menu .menu-door[data-give] { padding: 11px 20px; margin-left: 10px; border-radius: 999px; }
+.menu .menu-door.menu-follow { border: 1px solid currentColor; }
+.top .acct.mvm-chip, .top .acct-x { min-height: 40px; padding: 0 16px; font: 500 clamp(12px, 1vw, 14px)/1 var(--text); letter-spacing: .16em; text-transform: uppercase; }
+.top .acct-x { display: inline-flex; align-items: center; border: 1px solid currentColor; border-radius: 999px; background: none; color: inherit; text-decoration: none; text-shadow: inherit; cursor: pointer; opacity: .92; }
+.top .acct-x[hidden] { display: none; }
+.top .acct-x:hover { opacity: 1; }
+.top-left { gap: 10px; }
+.first-acts { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.first-acts .act { padding: 15px 26px 14px; font-size: clamp(12px, 1.05vw, 15px); letter-spacing: .14em; margin-top: 0; }
+.first-acts .act.lead { background: var(--warm); color: var(--ink); border-color: var(--warm); text-shadow: none; }
+.menu-open { display: none; pointer-events: auto; background: none; border: 1px solid currentColor; border-radius: 999px; width: 48px; height: 44px; color: inherit; cursor: pointer; place-items: center; }
+.menu-open .bars { display: grid; gap: 5px; } .menu-open .bars i { display: block; width: 20px; height: 1.5px; background: currentColor; transition: transform .25s, opacity .25s; }
+.menu-open[aria-expanded="true"] .bars i:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.menu-open[aria-expanded="true"] .bars i:nth-child(2) { opacity: 0; }
+.menu-open[aria-expanded="true"] .bars i:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+@media (max-width: 900px) {
+  .top { justify-content: space-between; padding-left: 14px; padding-right: 14px; }
+  .top .mark { display: inline-block; }
+  .menu-open { display: grid; }
+  .menu { display: none; position: fixed; top: calc(70px + env(safe-area-inset-top, 0px)); right: 12px; left: 12px; flex-direction: column; align-items: stretch; gap: 6px; padding: 14px;
+    background: rgba(250, 244, 235, .97); color: var(--ink); text-shadow: none; border-radius: 22px; box-shadow: 0 18px 50px rgba(18, 12, 8, .28); }
+  .menu.open { display: flex; }
+  .top .menu .menu-door { font-size: 16px; letter-spacing: .16em; padding: 14px 16px; justify-content: center; margin-left: 0; white-space: nowrap; }
+  .top .menu .menu-door .the { display: inline; }
+  .top .menu .menu-door.menu-join { background: var(--ink); border-color: var(--ink); color: var(--warm); }
+  .top .menu .menu-door.menu-follow, .top .menu .menu-door[data-give] { border: 1px solid var(--ink); }
+  .top .acct.mvm-chip { position: static; min-height: 38px; padding: 0 12px; font-size: 11px; }
+  .top .acct-x { min-height: 38px; padding: 0 12px; font-size: 11px; }
+}
+@media (max-width: 420px) { .top .mark { display: none; } .top .acct-x[data-mahala-signout] { display: none; } }
+@media (max-width: 640px) { .first-acts { display: grid; grid-template-columns: 1fr 1fr; width: min(86vw, 360px); margin-left: auto; margin-right: auto; }
+  .first-acts .act { justify-content: center; padding: 14px 10px 13px; font-size: 11.5px; letter-spacing: .1em; }
+  .first-acts .act.lead { grid-column: 1 / -1; font-size: 13px; } }
+/* the last frame: Join the camp in the middle and largest, Follow and subscribe, Donate and the Mahalaverse beside it */
+@media (min-width: 641px) { .end-acts { flex-wrap: wrap; } }
+@media (max-width: 640px) { .end-acts .act:not(.lead) { grid-row: auto; } }
 /* the sound: its own button, bottom right */
 .snd { justify-self: end; pointer-events: auto; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); background: rgba(20, 14, 10, .26); color: var(--warm); display: grid; place-items: center; cursor: pointer; padding: 0;
   backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: background .3s, color .3s, border-color .3s; }
@@ -1568,12 +1609,14 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
 <div id="grain" aria-hidden="true"></div>
 
 <header class="ui top">
-  <span class="top-left"><button class="mark" type="button" id="toTop" aria-label="Mahala, back to the start">MAHALA</button><button type="button" class="acct" data-mahala-account data-count="Sign in" data-count-where="top bar" hidden></button></span>
-  <nav class="menu" aria-label="Menu">
+  <span class="top-left"><button class="mark" type="button" id="toTop" aria-label="Mahala, back to the start">MAHALA</button><button type="button" class="acct" data-mahala-account data-count="Sign in" data-count-where="top bar" hidden></button><a class="acct-x" href="me.html#space" data-mahala-space data-count="Member space" data-count-where="top bar" hidden>Member space</a><button type="button" class="acct-x" data-mahala-signout data-count="Sign out" data-count-where="top bar" hidden>Sign out</button></span>
+  <button type="button" class="menu-open" id="menuOpen" aria-expanded="false" aria-controls="menu"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span><span class="vh">Menu</span></button>
+  <nav class="menu" id="menu" aria-label="Menu">
     <a class="menu-door" href="tribe.html" data-pane="tribe" data-count="The tribe" data-count-where="top bar"><span class="the">The </span>tribe</a>
     <a class="menu-door" href="camp.html" data-pane="camp" data-count="The camp" data-count-where="top bar"><span class="the">The </span>camp</a>
     <a class="menu-door" href="seed.html" data-pane="seed" data-count="The Seed" data-count-where="top bar"><span class="the">The </span>Seed</a>
-    <a class="menu-door menu-join" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Join" data-count-where="top bar">Join</a>
+    <a class="menu-door menu-join" href="camp.html#apply" data-pane="camp" data-hash="apply" data-count="Join the camp" data-count-where="top bar">Join</a>
+    <a class="menu-door menu-follow" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Follow" data-count-where="top bar">Follow</a>
     <a class="menu-door" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give data-count="Donate" data-count-where="top bar">Donate</a>
   </nav>
 </header>
@@ -1616,7 +1659,7 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
   <p class="kicker v">An invitation for you, dearest soul.</p>
   <h1 class="big" id="m0h" aria-label="MAHALA"><span aria-hidden="true" style="--i:-2.5">M</span><span aria-hidden="true" style="--i:-1.5">A</span><span aria-hidden="true" style="--i:-0.5">H</span><span aria-hidden="true" style="--i:0.5">A</span><span aria-hidden="true" style="--i:1.5">L</span><span aria-hidden="true" style="--i:2.5">A</span></h1>
   <p class="sub v">Reviving the art of temple building, through reverential play</p>
-  <div class="acts first-acts"><a class="act" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Join" data-count-where="first screen">Join the tribe</a><a class="act" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give data-count="Donate" data-count-where="first screen">Donate to The Seed</a></div>
+  <div class="acts first-acts"><a class="act lead" href="camp.html#apply" data-pane="camp" data-hash="apply" data-count="Join the camp" data-count-where="first screen">Join the camp</a><a class="act" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Follow" data-count-where="first screen">Follow and subscribe</a><a class="act" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give data-count="Donate" data-count-where="first screen">Donate to The Seed</a></div>
   <p class="vh">The Seed at first light: a dome of coloured panes on the open clay, the sun coming up behind it.</p>
 </div>
 <div class="moment low-band env-band arrive sunrise" data-m="0" inert>
@@ -1687,7 +1730,8 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
 <div class="moment low-band end-band" data-m="7" inert>
   <div class="end-acts">
     <a class="act step" id="stepIn" href="#mahalaverse" data-count="Mahalaverse" data-count-where="the end"><svg viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg>Step into the Mahalaverse</a>
-    <a class="act lead" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Join" data-count-where="the end">Join the tribe</a>
+    <a class="act lead" href="camp.html#apply" data-pane="camp" data-hash="apply" data-count="Join the camp" data-count-where="the end">Join the camp</a>
+    <a class="act" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Follow" data-count-where="the end">Follow and subscribe</a>
     <a class="act" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give data-count="Donate" data-count-where="the end">Donate to The Seed</a>
     <button class="act readall-open" type="button" data-count="Read the whole invitation" data-count-where="the end">Read the whole invitation</button>
   </div>
@@ -1798,7 +1842,7 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
     <svg class="arch-head" viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg>
     <h2 id="campWayH">Join the camp</h2>
     <p class="epi">Plant the seed with us at AfrikaBurn 2027.</p>
-    <p>The camp is by invitation, and places are limited to 50. It starts with the tribe: <a href="tribe.html#join" data-pane="tribe" data-hash="join">join the tribe</a>, tell us you would love to come, and the camp leads read every introduction.</p>
+    <p>Places are limited to 50. Make your tribe profile, then <a href="camp.html#apply" data-pane="camp" data-hash="apply">apply to join the camp</a>: a short application, a welcome call with a camp lead, and your share in the common costs.</p>
     <p>Live and build with us in the Tankwa Karoo, from Monday 19 April for the build and through the burn, 26 April to 2 May 2027.</p>
     <p class="label" id="liveQ">Where do you live?</p>
     <div class="choice" role="group" aria-labelledby="liveQ"><button type="button" data-live="za" aria-pressed="false">South Africa</button><button type="button" data-live="away" aria-pressed="false">Elsewhere</button></div>
@@ -2861,6 +2905,13 @@ addEventListener('message', (e) => {
   if (e.data.mahala === 'open' && PANES[e.data.pane]) openPane(e.data.pane, e.data.hash || '', null, true);
   if (e.data.mahala === 'go' && e.data.hash === 'mahalaverse') { hidePane(); location.hash = '#mahalaverse'; }
 });
+// the phone menu (Mik's review, 26 Nov 2026, F-121): one button opens the doors; choosing one, or Escape, folds it away
+{ const mb = document.getElementById('menuOpen'), mn = document.getElementById('menu');
+  const setMenu = (on) => { mn.classList.toggle('open', on); mb.setAttribute('aria-expanded', String(on)); };
+  mb.addEventListener('click', () => setMenu(!mn.classList.contains('open')));
+  mn.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && mn.classList.contains('open')) { setMenu(false); mb.focus(); } });
+  document.addEventListener('click', (e) => { if (mn.classList.contains('open') && !e.target.closest('#menu, #menuOpen')) setMenu(false); }); }
 document.querySelectorAll('[data-give]').forEach((a) => { if (SITE.donateUrl) { a.href = SITE.donateUrl; a.target = '_blank'; a.rel = 'noopener'; a.removeAttribute('data-pane'); } });
 document.addEventListener('click', (e) => {
   const a = e.target instanceof Element && e.target.closest('[data-pane]'); if (!a || S.gone) return;

@@ -638,7 +638,7 @@
       var anchor = document.querySelector('[data-mahala-doors]');
       var here = (location.pathname.split('/').pop() || 'index.html'), links = [];
       if (j.basecamp && here !== 'basecamp.html' && !document.getElementById('toBasecamp')) links.push(['basecamp.html', 'Basecamp', 'basecamp']);
-      if (j.community && here !== 'community.html' && !document.getElementById('toCommunity')) links.push(['community.html', 'Community Map', 'community']);
+      // the Community Map opens from Basecamp only (the website review of 26 Nov 2026, F-156)
       if (!anchor || !links.length) return;
       if (!document.getElementById('mvm-doors-css')) { var st = document.createElement('style'); st.id = 'mvm-doors-css'; st.textContent = DOORS_CSS; document.head.appendChild(st); }
       var sp = document.createElement('span'); sp.id = 'mvm-doors'; sp.className = 'mvm-doors';
@@ -843,6 +843,11 @@
     clearPicture: function () { return clearPhoto().then(function (u) { pictureChanged(); return u; }); },
     // the end of Join the tribe: make the account with the address just given, and land on Your Mahala (F-025)
     join: function (o) { return infoP.then(function () { UI.join(o || {}); }); },
+    // Follow and subscribe with a tribe profile: the password is asked on the form, the address proved with the emailed
+    // code on the same page (Mik's review, 26 Nov 2026, F-112, F-113)
+    signUp: function (o) { return infoP.then(function () { return UI.formSignUp(o || {}); }); },
+    verifyCode: function (o) { return infoP.then(function () { return UI.formVerify(o || {}); }); },
+    resendCode: function (o) { return infoP.then(function () { return UI.formResend(o || {}); }); },
     correct: function (text) { return rpc('report_correction', { p_text: String(text || '').slice(0, 1000) }); },
     // quest progress, one record for Your Mahala, the Mahalaverse and Basecamp (F-065)
     quests: QUESTS.quests, markStep: QUESTS.markStep, takeQuest: QUESTS.takeQuest, dropQuest: QUESTS.dropQuest,
@@ -1522,8 +1527,49 @@
       });
     }
 
+    // Follow and subscribe, with a tribe profile (Mik's review, 26 Nov 2026, F-112, F-113): the form itself asks for the
+    // password, so there is no second sheet. Supabase keeps "Confirm email" on (claim_thread trusts it, SETUP.md step 4),
+    // so the address is proved with the code in the confirmation email, typed on the same page: no link to open on the
+    // right device, nothing a mail scanner can use up first, and the person lands on Your Mahala signed in.
+    // Each returns { state: 'in' | 'code' | 'exists' | 'error', text }.
+    function formSignUp(o) {
+      var addr = String((o && o.email) || '').trim(), pw = String((o && o.password) || '');
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(addr)) return Promise.resolve({ state: 'error', text: 'Add your email address.' });
+      if (pw.length < PW_MIN) return Promise.resolve({ state: 'error', text: 'Choose a password of at least ' + PW_MIN + ' characters.' });
+      ss.set(LAND, '1'); setAfter(null); ss.set('mahala.lastEmail', addr); ls.set(KEEP, '1');
+      return clientP.then(function (c) { return c.auth.signUp({ email: addr, password: pw, options: { emailRedirectTo: redirectTo(false) } }); }).then(function (r) {
+        var d = r && r.data;
+        if (r && r.error) { var t = authMsg(r.error); return t === 'confirm' ? { state: 'code' } : { state: 'error', text: t }; }
+        if (d && d.session) return { state: 'in' };
+        if (d && d.user && Array.isArray(d.user.identities) && !d.user.identities.length) { ss.set(LAND, null); return { state: 'exists' }; }
+        return { state: 'code' };
+      }, function () { ss.set(LAND, null); return { state: 'error', text: 'Signing up is not available right now. Try again in a little while.' }; });
+    }
+    function formVerify(o) {
+      var addr = String((o && o.email) || '').trim(), code = String((o && o.code) || '').replace(/\D/g, '');
+      if (code.length < 6) return Promise.resolve({ state: 'error', text: 'Type the six numbers from the email.' });
+      ss.set(LAND, '1'); ls.set(ASKED, String(Date.now()));
+      return clientP.then(function (c) {
+        return c.auth.verifyOtp({ email: addr, token: code, type: 'signup' }).then(function (r) {
+          return r && r.error ? c.auth.verifyOtp({ email: addr, token: code, type: 'email' }) : r;
+        });
+      }).then(function (r) {
+        if (r && r.error) {
+          var m = String(r.error.message || '');
+          return { state: 'error', text: /expired|invalid/i.test(m) ? 'That code has expired or does not match. Ask for a new one below.' : authMsg(r.error) };
+        }
+        return { state: 'in' };     // the session starts; the page moves on to Your Mahala by itself (restart)
+      }, function () { return { state: 'error', text: 'That did not go through. Try again in a little while.' }; });
+    }
+    function formResend(o) {
+      var addr = String((o && o.email) || '').trim();
+      return clientP.then(function (c) { return c.auth.resend({ type: 'signup', email: addr, options: { emailRedirectTo: redirectTo(false) } }); }).then(function (r) {
+        return r && r.error ? { state: 'error', text: authMsg(r.error) } : { state: 'code' };
+      }, function () { return { state: 'error', text: 'That did not go through. Try again in a little while.' }; });
+    }
+
     return {
-      join: join,
+      join: join, formSignUp: formSignUp, formVerify: formVerify, formResend: formResend,
       toast: toast,
       open: function (mode, note) { if (mode === 'gate') signIn(true); else if (mode === 'newpass') newPassword(false); else if (mode === 'password') newPassword(true); else if (mode === 'link') signIn(false, 'link', note); else if (mode === 'account') account(); else if (mode === 'delete') del(); else if (mode === 'notice') showNotice(); else if (info && info.signedIn) account(); else signIn(false, 'in', note); },
       welcome: welcome, newPassword: newPassword, guide: guide,
@@ -1553,6 +1599,25 @@
     });
   }
 
+  // Sign out and the member space beside the account chip (Mik's review, 26 Nov 2026, F-116, F-140): anything marked
+  // data-mahala-signout shows only when signed in and signs out; anything marked data-mahala-space shows only to people
+  // the member space is for (invited to camp 2027, a place in the camp, or a role), and anything marked
+  // data-mahala-signedout shows only when signed out.
+  function spaceOpen(w) {
+    var j = w && w.signedIn && w.claimed ? w.journey || {} : {};
+    return j.tier === 'invited' || j.tier === 'camp' || !!(j.roles && j.roles.length) || !!(w && w.isSteward);
+  }
+  function mountSignedIn() {
+    var on = !!(info && info.signedIn);
+    Array.prototype.forEach.call(document.querySelectorAll('[data-mahala-signout]'), function (b) {
+      b.hidden = !on;
+      if (b.dataset.mvOn) return; b.dataset.mvOn = '1';
+      b.addEventListener('click', function (e) { e.preventDefault(); AUTH.signOut().then(function () { location.reload(); }, function () { location.reload(); }); });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-mahala-signedout]'), function (b) { b.hidden = on; });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-mahala-space]'), function (b) { b.hidden = !spaceOpen(info); });
+  }
+
   // Pages without the game (camp.html, seed.html) put <button data-mahala-account> where a sign-in belongs.
   function mountChips(refresh) {
     Array.prototype.forEach.call(document.querySelectorAll('[data-mahala-account]'), function (b) {
@@ -1566,7 +1631,7 @@
         UI.open(info && info.signedIn ? 'account' : 'signin');
       });
     });
-    paintChips(); mountDoors();
+    paintChips(); mountDoors(); mountSignedIn();
     if (document.querySelector('[data-mahala-account]') && !document.getElementById('mvs-css')) { var s = document.createElement('style'); s.id = 'mvs-css'; s.textContent = CSS; document.head.appendChild(s); }
   }
 })();

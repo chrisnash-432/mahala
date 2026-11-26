@@ -72,6 +72,7 @@ nav.tabs::-webkit-scrollbar { display: none; }
 nav.tabs a { position: relative; text-decoration: none; color: var(--muted); padding: 12px 12px 11px; white-space: nowrap; font-weight: 500; font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; transition: color .2s; }
 nav.tabs a::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: 0; height: 2px; border-radius: 2px; background: var(--prism); transform: scaleX(0); transition: transform .35s var(--ease); }
 nav.tabs a:hover { color: var(--ink); }
+nav.tabs a.tab-out { margin-left: auto; border: 1px solid var(--line, #d8cfc2); border-radius: 999px; padding: 9px 14px 8px; }
 nav.tabs a[aria-current="page"] { color: var(--ink); }
 nav.tabs a[aria-current="page"]::after { transform: scaleX(1); }
 nav.tabs a .n { display: inline-block; min-width: 18px; padding: 0 5px; margin-left: 4px; border-radius: 999px; background: var(--bad-soft); color: var(--bad); font-size: 0.72rem; text-align: center; }
@@ -619,7 +620,7 @@ footer:empty { display: none; }
 
 <header class="top">
   <div class="toprow">
-    <a class="brand" href="#today" aria-label="Basecamp, Today">
+    <a class="brand" href="#mine" aria-label="Basecamp, your tasks">
       <div>
         <h1><span class="wm">Mahala</span><span class="bc">Basecamp</span></h1>
         <div class="sub" id="asof">The Seed, AfrikaBurn 2027</div>
@@ -646,7 +647,7 @@ footer:empty { display: none; }
 <meta name="robots" content="noindex">
 <script>window.BASECAMP_SITE = true;</script>
 <script src="site.js?v=10"></script>
-<script src="assets/shim/claude-shim.js?v=19"></script>
+<script src="assets/shim/claude-shim.js?v=20"></script>
 <script>
 const ROLES = {
   core:      { label: 'Core team', me: '', who: 'the core team', sees: 'everything: every hub, node, task, budget line and partner, and anyone’s list. Can update any task.', projects: 'all', tasks: 'all', edit: 'all', budget: 'lines', partners: 'full', team: true, pick: true, audiences: ['core', 'leads', 'members'] },
@@ -660,11 +661,15 @@ const ROLES = {
 // Four places (10 Nov 2026): Today (was Home and My list), Camp (was Plan and Decisions), Gather (was Events) and Library
 // (was Library and Money). Every old link still lands: #home, #plan-timeline, #decisions, #money and the rest. A person's
 // whole list (#list) stays one tap from Today.
-const TABS = [['today', 'Today'], ['camp', 'Camp'], ['gather', 'Gather'], ['library', 'Library']];
-const PUBLIC_TABS = ['today', 'camp', 'gather', 'library'];
-const ALIAS = { home: 'today', overview: 'today', week: 'list', people: 'list', plan: 'camp', nodes: 'camp', projects: 'camp', crews: 'camp', timeline: 'camp-timeline', tasks: 'camp-tasks', board: 'camp-board', kanban: 'camp-board', decisions: 'camp-decisions', events: 'gather', money: 'library', budget: 'library', access: 'library' };
+// the website review of 26 Nov 2026 (F-162 to F-168): Your tasks replaces Today (the tasks that are yours as a lead or on the
+// core team; every member's own steps live in the member space), Project management replaces Camp (the timeline, the
+// task list and the board), Gather is the calendar only, and the Library starts with the documents. The community map
+// opens from here. Old links (#today, #home, #camp-timeline and the rest) still land.
+const TABS = [['mine', 'Your tasks'], ['camp', 'Project management'], ['gather', 'Gather'], ['library', 'Library']];
+const PUBLIC_TABS = ['mine', 'camp', 'gather', 'library'];
+const ALIAS = { today: 'mine', home: 'mine', overview: 'mine', pm: 'camp', project: 'camp', week: 'list', people: 'list', plan: 'camp', nodes: 'camp', projects: 'camp', crews: 'camp', timeline: 'camp-timeline', tasks: 'camp-tasks', board: 'camp-board', kanban: 'camp-board', decisions: 'camp-decisions', events: 'gather', money: 'library', budget: 'library', access: 'library' };
 const PLACE_ICON = {
-  today: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg>',
+  mine: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8"/></svg>',
   camp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>',
   gather: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><path d="M15.5 3.5a8.5 8.5 0 1 0 5 13.4A7 7 0 0 1 15.5 3.5z"/></svg>',
   library: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round" aria-hidden="true"><path d="M4 5.5c2.5-1 5.5-1 8 .8 2.5-1.8 5.5-1.8 8-.8V19c-2.5-1-5.5-1-8 .8-2.5-1.8-5.5-1.8-8-.8z"/><path d="M12 6.3v13.5"/></svg>' };
@@ -982,7 +987,7 @@ function viewHome() {
     h += `</section><section class="block">${fundCard(DATA.funding[0])}</section>`;
     h += `<section class="block"><div class="head"><h2>The road to the burn</h2><a href="#plan">The plan</a></div>${nextDays(null, true)}</section>`;
     h += `<section class="block"><h2>Where help is needed</h2><div class="gaps">${DATA.skills_gaps.map(g => `<span>${esc(g)}</span>`).join('')}</div>
-      <p class="muted">The Seed is year one of a four-year path: we are applying to build the temple in 2030. <a href="https://wearemahala.com/" target="_blank" rel="noopener">Join the tribe on wearemahala.com</a> and tell us what you bring.</p></section>`;
+      <p class="muted">The Seed is year one of a four-year path: we are applying to build the temple in 2030. <a href="https://wearemahala.com/" target="_blank" rel="noopener">Follow Mahala on wearemahala.com</a>, and apply to join the camp from there.</p></section>`;
     h += keyDocs();
     return h;
   }
@@ -1590,7 +1595,7 @@ function viewLibrary() {
   const ls = DATA.library.filter(linkVisible);
   const groups = [...new Set(ls.map(l => l.group))];
   let h = `<section class="block"><div class="head"><h2>Library</h2><span class="muted small">${plural(ls.length, 'link')}</span></div>
-    ${isPublic() ? '' : `<p class="libtop"><span class="muted">Each link shows only to the roles it is meant for${isCore() ? '; links marked core team stay with the core team' : ''}.</span><button class="btn link" type="button" data-openaccess>Who sees what</button></p>`}
+    ${isPublic() ? '' : `<p class="libtop"><span class="muted">Each link shows only to the roles it is meant for${isCore() ? '; links marked core team stay with the core team' : ''}.</span></p>`}
     <div class="libgrid">${groups.map(g => `<div class="libg"><div class="eyebrow">${esc(g)}</div><div class="liblist">${ls.filter(l => l.group === g).map(l => `<a href="${esc(l.u)}" target="_blank" rel="noopener"><span class="lt">${esc(l.t)}</span><span class="k">${KIND[l.kind] || 'Link'}</span>${l.note ? `<span class="muted tiny">${esc(l.note)}${l.core ? ' · core team' : ''}</span>` : ''}</a>`).join('')}</div></div>`).join('')}</div>
     ${isPublic() ? '' : '<p class="libhint">Some documents open only for people they have been shared with. Ask a steward if one will not open.</p>'}</section>`;
   const access = `<p class="small" style="max-width:68ch">What each person can open depends on how they are part of Mahala: visitor, tribe member, invited, camp member or steward. A role such as crew lead adds more, for their own crew or node, and renews each camp year. Here the View as switch only shows what each role would see; once the member platform is live, each person’s log-in decides.</p>
@@ -1602,10 +1607,6 @@ function viewLibrary() {
     <div><dt>The camp leads</dt><dd>The leads of the camp’s crews and areas, who nominate new members and decide camp matters together.</dd></div>
     <div><dt>The treasurer</dt><dd>Keeps the budget lines and the camp’s money, with the core team as the budget group.</dd></div>
     <div><dt>Hubs and nodes</dt><dd>As in the 2026 Freedom Machine: a hub is an area of the camp’s work, and each node is one part of it, with its own lead, phases and tasks.</dd></div></dl>`;
-  h += `<section class="block">${fold('ab-who', 'Who’s who', '', whos, !isPublic(), 'card')}${fold('ab-access', 'Who sees what', '', access, false, 'card')}
-    ${fold('ab-limits', 'What Basecamp cannot say', DATA.limits.length, `<ul class="limits">${DATA.limits.map(l => `<li>${esc(l)}</li>`).join('')}</ul>`, false, 'card')}
-    ${!isCore() ? '' : fold('ab-gloss', 'Names transcripts get wrong', DATA.glossary.length, `<div class="tablecard scroll"><table><tbody>${DATA.glossary.map(g => `<tr><td>${esc(g.heard)}</td><td>${esc(g.is)}</td></tr>`).join('')}</tbody></table></div>`, false, 'card')}
-    ${isCore() ? fold('ab-checks', 'Build checks', DATA.checks.warnings.length, `<div class="list">${DATA.checks.warnings.map(w => `<div class="item k-warn"><div class="t small">${esc(w)}</div></div>`).join('') || '<div class="empty">No warnings.</div>'}</div>`, false, 'card') : ''}</section>`;
   h += `<section class="block"><p class="muted small" style="max-width:70ch">Built on ${day(DATA.as_of)} from Mahala’s shared record: the nodes, budget lines, partners and decisions, the phases of the plan and the one task list. ${SITE ? 'Updates and comments sent from this page go into the task list within the hour.' : 'Updates sent from this page go to the stewards, who write them into the record.'} No contact details or personal payments appear here.</p></section>`;
   return h;
 }
@@ -1717,12 +1718,7 @@ function viewEvents() {
   const dl = up.filter(e => e.kind === 'deadline' && evDays(e) <= 14);
   const ts = pub ? [] : DATA.tasks.filter(t => t.project === 'events' && canSeeTasksOf('events'));
   const open = ts.filter(t => !t.done), late = open.filter(t => t.due && D(t.due) < NOW);
-  let h = `<section class="block"><div class="head"><h2>Events season</h2><span class="muted small">${plural(evs.length, 'date')} to the burn${pub ? '' : ` · ${evs.filter(e => e.status !== 'proposed').length} set, ${evs.filter(e => e.status === 'proposed').length} proposed`}</span></div><div class="evstats">`;
-  if (next) h += `<div class="evstat"><span class="k">Next</span><span class="v">${esc(pub ? next.public_title || next.title : next.title)}</span><span class="s">${weekday(next.date)} ${day(next.date)}, ${inDays(evDays(next))}</span></div>`;
-  if (!pub) h += `<div class="evstat"><span class="k">Deadlines, next 14 days</span><span class="v">${dl.length || 'None'}</span><span class="s">${dl.length ? dl.map(e => `${day(e.date)}: ${esc(trim(e.title, 60))}`).join('<br>') : 'Nothing due from the City or a venue'}</span></div>`;
-  if (ts.length) h += `<div class="evstat"><span class="k">Event tasks</span><span class="v">${open.length} open</span><span class="s">${late.length ? `<span style="color:var(--bad)">${late.length} overdue</span> · ` : ''}${ts.length - open.length} done · <a href="#plan">on the plan</a></span></div>`;
-  h += `<div class="evstat"><span class="k">The public calendar</span><span class="v">${plural(items.filter(e => e.public && D(e.end || e.date) >= NOW).length, 'date')}</span><span class="s"><a href="https://wearemahala.com/#events" target="_blank" rel="noopener">Gather with us</a>, on the tribe page</span></div>`;
-  h += `</div></section>`;
+  let h = '';   // Gather is the calendar only (the website review of 26 Nov 2026, F-164): no summary above it, nothing below it
   const f = store.evf, pass = e => pub || f === 'all' || (f === 'events' ? EV_EVENT.includes(e.kind) : f === 'meetings' ? e.kind === 'meeting' : ['deadline', 'comms', 'pause'].includes(e.kind));
   const shown = (store.evPast ? items : up).filter(pass);
   h += `<section class="block"><div class="head"><h2>The calendar</h2><span class="muted small">Cape Town time</span></div>
@@ -1735,24 +1731,14 @@ function viewEvents() {
       return `<div class="daygroup"><div class="dh">${MON[mo - 1]} ${y}</div>${shown.filter(e => e.date.startsWith(m)).map(evRow).join('')}</div>`; }).join('')}</div>`;
   }
   h += `</section>`;
-  if (!pub) {
-    const cl = (E.clashes || []).filter(c => D(c.end || c.date) >= NOW);
-    let more = '';
-    if (cl.length) more += fold('ev-clash', 'Dates we steer around', cl.length, `<div class="list">${cl.map(c => `<div class="item"><div class="t"><span class="ttl">${esc(c.name)}</span></div><div class="meta"><span class="who">${day(c.date)}${c.end ? ' to ' + day(c.end) : ''}</span><span class="muted">${esc(c.means)}</span></div></div>`).join('')}</div>`, false, 'card');
-    if ((E.undated || []).length) more += fold('ev-undated', 'Not dated yet', E.undated.length, `<div class="list">${E.undated.map(u => `<div class="item"><div class="t"><span class="ttl">${esc(u.title)}</span></div><div class="meta">${evStatus(u)}<span class="muted">${esc(u.why || '')}</span></div></div>`).join('')}</div>`, false, 'card');
-    if ((E.parked || []).length && cfg().projects !== 'summary') more += fold('ev-parked', 'Parked ideas', E.parked.length, `<div class="list">${E.parked.map(x => `<div class="item"><div class="t">${esc(x.idea)}</div><div class="meta"><span class="who">${esc(x.from)}</span><span class="muted">Look again: ${esc(x.revisit)}</span></div></div>`).join('')}</div>`, false, 'card');
-    if (more) h += `<section class="block">${more}</section>`;
-    const docs = DATA.library.filter(l => l.nodes && l.nodes.includes('events') && linkVisible(l));
-    h += `<section class="block"><div class="keydocs">${docs.map(linkChip).join('')}</div>${isCore() ? `<p class="muted small" style="max-width:70ch;margin-top:10px">Dates change in one place: Mahala OS, operations/2027/events.yaml. Basecamp and the tribe page both follow it; the export writes only the public rows to the site, never leads, venues or notes.</p>` : ''}</section>`;
-  }
   return h;
 }
 
 // ---------------------------------------------------------------- render
-const VIEWS = { today: viewToday, list: viewList, camp: viewPlan, gather: viewEvents, library: () => contentDoor() + viewLibrary() + viewMoney() };
+const VIEWS = { mine: () => isPublic() ? viewToday() : viewList() + (isCore() ? (SITE ? questBlock() : '') + (store.updates.length ? feedBlock() : '') : ''), list: viewList, camp: viewPlan, gather: viewEvents, library: () => viewLibrary() + contentDoor() };
 function current() {
   let h = location.hash.slice(1);
-  if (h.startsWith('as-') && ROLES[h.slice(3)]) { role = h.slice(3); try { localStorage.setItem('basecamp.role', role); } catch (e) {} history.replaceState(null, '', '#today'); h = 'today'; }
+  if (h.startsWith('as-') && ROLES[h.slice(3)]) { role = h.slice(3); try { localStorage.setItem('basecamp.role', role); } catch (e) {} history.replaceState(null, '', '#mine'); h = 'mine'; }
   h = ALIAS[h] || h;
   if (h.startsWith('people-')) h = 'list-' + h.slice(7);
   if (h.startsWith('list-')) { const w = [...INDIV, ...GROUPS_ORDER].find(x => slug(x) === h.slice(5)); store.person = w && w !== cfg().me ? w : ''; h = 'list'; }
@@ -1761,13 +1747,13 @@ function current() {
   if (h === 'camp') store.plan = 'nodes';
   if (h.startsWith('camp-')) { store.plan = h.slice(5); h = 'camp'; }
   if (h === 'list' && !isPublic()) return 'list';
-  return tabsFor().some(([k]) => k === h) ? h : 'today';
+  return tabsFor().some(([k]) => k === h) ? h : 'mine';
 }
 function badge() { return ''; }   // no red counts on the places (the review of 9 Nov); Today asks for your voice instead
 function render() {
   const c = cfg(), tab = current();
-  const place = tab === 'list' ? 'today' : tab;
-  $('#tabs').innerHTML = tabsFor().map(([k, l]) => `<a href="#${k}" ${k === place ? 'aria-current="page"' : ''}>${l}${badge(k)}</a>`).join('');
+  const place = tab === 'list' ? 'mine' : tab;
+  $('#tabs').innerHTML = tabsFor().map(([k, l]) => `<a href="#${k}" ${k === place ? 'aria-current="page"' : ''}>${l}${badge(k)}</a>`).join('') + (isPublic() ? '' : `<a href="community.html" class="tab-out">Community map</a>`);
   $('#bottombar').hidden = false;
   $('#bottombar').innerHTML = tabsFor().map(([k, l]) => `<a href="#${k}" ${k === place ? 'aria-current="page"' : ''}>${PLACE_ICON[k]}<span>${l}</span></a>`).join('');
   $('#roleline').hidden = false;
@@ -1864,7 +1850,7 @@ document.addEventListener('input', e => {
 document.addEventListener('change', e => {
   const id = e.target.id;
   if (id === 'role') { role = e.target.value; try { localStorage.setItem('basecamp.role', role); } catch (er) {} store.openForm = null; store.filter = null; store.sel = null; store.selTask = null; store.who = ''; store.person = ''; store.roleWhy = false;
-    const hh = location.hash.slice(1); const base = (ALIAS[hh] || hh).replace(/-.*$/, ''); if (!tabsFor().some(([k]) => k === base) && base !== 'list') location.hash = 'today'; render(); return; }
+    const hh = location.hash.slice(1); const base = (ALIAS[hh] || hh).replace(/-.*$/, ''); if (!tabsFor().some(([k]) => k === base) && base !== 'list') location.hash = 'mine'; render(); return; }
   if (id === 'f-person') { location.hash = 'list-' + slug(e.target.value); return; }
   if (id === 'f-who') { store.who = e.target.value; store.sel = null; store.selTask = null; if (store.who) { store.depth = 'tasks'; store.flip = new Set([...store.flip].filter(x => !/^[hnpo]-/.test(x))); } render(); return; }
   if (id === 'f-hub') { store.hubF = e.target.value; render(); return; }
