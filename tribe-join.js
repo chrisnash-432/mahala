@@ -101,9 +101,9 @@
     },
     3: function () {
       return '<h2 class="h-sub">Check your email</h2>'
-        + '<p class="small centre">We have sent a six-digit code to <b>' + esc(A.email) + '</b>. Type it here and your tribe profile is made. It can take a minute; look in Promotions or Spam too.</p>'
-        + field('tCode', 'The code from the email', '<input type="text" id="tCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10" value="' + esc(A.code) + '">')
-        + '<p class="small">The email has a link as well: opening it in this browser works too.</p>'
+        + '<p class="small centre">We have sent an email to <b>' + esc(A.email) + '</b> to confirm your address. It can take a minute; look in Promotions or Spam too.</p>'
+        + field('tCode', 'If the email has a six-digit code, type it here', '<input type="text" id="tCode" inputmode="numeric" autocomplete="one-time-code" maxlength="10" value="' + esc(A.code) + '">')
+        + '<p class="small">Or open the link in the email, in this browser, and you arrive on your page signed in.</p>'
         + '<p><button type="button" class="link" id="tResend">Send me a new code</button></p>';
     },
   };
