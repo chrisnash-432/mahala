@@ -498,8 +498,8 @@ a.act { color: inherit; text-decoration: none; }
 @media (max-width: 345px) { .menu .menu-door .the { display: none; } .top .menu .menu-door { padding: 10px 3px; letter-spacing: .04em; font-size: 10px; } .top .menu .menu-door.menu-join, .top .menu .menu-door[data-give] { padding: 7px 7px; margin-left: 3px; } }
 @media (max-width: 360px) { .menu .menu-door { padding: 10px 5px; letter-spacing: .08em; } .menu .menu-door svg { display: none; } }
 /* ---------------------------------------------------------------------------------- Mik's review, 26 Nov 2026 */
-/* The top bar (F-116, F-117, F-121): Sign in top left (with Member space and Sign out once signed in), The tribe, The camp
-   and The Seed top right, then Join, Follow and Donate. About twice the size it was, so nobody misses the way in; on a
+/* The top bar (F-116, F-117, F-121, F-171): Sign in top left (with Member space and Sign out once signed in), The tribe, The camp
+   and The Seed top right, then Apply, Join the tribe and Donate, with Instagram and WhatsApp beside them. About twice the size it was, so nobody misses the way in; on a
    phone the doors fold into a menu button. The first screen (F-118) carries the same three ways, written out. */
 .menu .menu-door { font-size: clamp(13px, 1.15vw, 17px); padding: 12px 12px; letter-spacing: .18em; }
 .menu .menu-door.menu-join, .menu .menu-door.menu-follow, .menu .menu-door[data-give] { padding: 11px 20px; margin-left: 10px; border-radius: 999px; }
@@ -531,11 +531,15 @@ a.act { color: inherit; text-decoration: none; }
   .top .acct.mvm-chip { position: static; min-height: 38px; padding: 0 12px; font-size: 11px; }
   .top .acct-x { min-height: 38px; padding: 0 12px; font-size: 11px; }
 }
+.menu-social { display: inline-flex; gap: 4px; margin-left: 10px; align-items: center; }
+.menu-social a { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 999px; color: inherit; opacity: .85; }
+.menu-social a:hover, .menu-social a:focus-visible { opacity: 1; background: rgba(255,255,255,.14); }
+@media (max-width: 900px) { .menu-social { justify-content: center; margin: 6px 0 0; gap: 14px; } .menu-social a { width: 48px; height: 48px; border: 1px solid var(--rule, rgba(0,0,0,.15)); } }
 @media (max-width: 420px) { .top .mark { display: none; } .top .acct-x[data-mahala-signout] { display: none; } }
 @media (max-width: 640px) { .first-acts { display: grid; grid-template-columns: 1fr 1fr; width: min(86vw, 360px); margin-left: auto; margin-right: auto; }
   .first-acts .act { justify-content: center; padding: 14px 10px 13px; font-size: 11.5px; letter-spacing: .1em; }
   .first-acts .act.lead { grid-column: 1 / -1; font-size: 13px; } }
-/* the last frame: Join the camp in the middle and largest, Follow and subscribe, Donate and the Mahalaverse beside it */
+/* the last frame: Apply to join the camp in the middle and largest, Join the tribe, Donate and the Mahalaverse beside it */
 @media (min-width: 641px) { .end-acts { flex-wrap: wrap; } }
 @media (max-width: 640px) { .end-acts .act:not(.lead) { grid-row: auto; } }
 /* the sound: its own button, bottom right */
@@ -1615,9 +1619,10 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
     <a class="menu-door" href="tribe.html" data-pane="tribe" data-count="The tribe" data-count-where="top bar"><span class="the">The </span>tribe</a>
     <a class="menu-door" href="camp.html" data-pane="camp" data-count="The camp" data-count-where="top bar"><span class="the">The </span>camp</a>
     <a class="menu-door" href="seed.html" data-pane="seed" data-count="The Seed" data-count-where="top bar"><span class="the">The </span>Seed</a>
-    <a class="menu-door menu-join" href="camp.html#apply" data-pane="camp" data-hash="apply" data-count="Join the camp" data-count-where="top bar">Join</a>
-    <a class="menu-door menu-follow" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Follow" data-count-where="top bar">Follow</a>
+    <a class="menu-door menu-join" href="camp.html#apply" data-pane="camp" data-hash="apply" data-count="Apply to join the camp" data-count-where="top bar">Apply</a>
+    <a class="menu-door menu-follow" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Join the tribe" data-count-where="top bar">Join the tribe</a>
     <a class="menu-door" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give data-count="Donate" data-count-where="top bar">Donate</a>
+    <span class="menu-social"><a href="https://www.instagram.com/wearemahala" target="_blank" rel="noopener" aria-label="Mahala on Instagram" title="Instagram" data-count="Instagram" data-count-where="top bar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M4 8.5h3.2L9 6h6l1.8 2.5H20a1 1 0 0 1 1 1V18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.4"/></svg></a><a href="https://chat.whatsapp.com/FOKRiNUU6gH41G7vRKWvqt" target="_blank" rel="noopener" aria-label="Mahala Tribe Announcements on WhatsApp" title="WhatsApp" data-count="WhatsApp tribe group" data-count-where="top bar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 4c4.7 0 8.5 3.2 8.5 7.2S16.7 18.4 12 18.4c-1 0-2-.1-2.9-.4L4.5 20l1.3-3.6C4.3 15 3.5 13.2 3.5 11.2 3.5 7.2 7.3 4 12 4z"/></svg></a></span>
   </nav>
 </header>
 
@@ -1659,7 +1664,7 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
   <p class="kicker v">An invitation for you, dearest soul.</p>
   <h1 class="big" id="m0h" aria-label="MAHALA"><span aria-hidden="true" style="--i:-2.5">M</span><span aria-hidden="true" style="--i:-1.5">A</span><span aria-hidden="true" style="--i:-0.5">H</span><span aria-hidden="true" style="--i:0.5">A</span><span aria-hidden="true" style="--i:1.5">L</span><span aria-hidden="true" style="--i:2.5">A</span></h1>
   <p class="sub v">Reviving the art of temple building, through reverential play</p>
-  <div class="acts first-acts"><a class="act lead" href="camp.html#apply" data-pane="camp" data-hash="apply" data-count="Join the camp" data-count-where="first screen">Join the camp</a><a class="act" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Follow" data-count-where="first screen">Follow and subscribe</a><a class="act" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give data-count="Donate" data-count-where="first screen">Donate to The Seed</a></div>
+  <div class="acts first-acts"><a class="act lead" href="camp.html#apply" data-pane="camp" data-hash="apply" data-count="Apply to join the camp" data-count-where="first screen">Apply to join the camp</a><a class="act" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Join the tribe" data-count-where="first screen">Join the tribe</a><a class="act" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give data-count="Donate" data-count-where="first screen">Donate to The Seed</a></div>
   <p class="vh">The Seed at first light: a dome of coloured panes on the open clay, the sun coming up behind it.</p>
 </div>
 <div class="moment low-band env-band arrive sunrise" data-m="0" inert>
@@ -1730,8 +1735,8 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
 <div class="moment low-band end-band" data-m="7" inert>
   <div class="end-acts">
     <a class="act step" id="stepIn" href="#mahalaverse" data-count="Mahalaverse" data-count-where="the end"><svg viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg>Step into the Mahalaverse</a>
-    <a class="act lead" href="camp.html#apply" data-pane="camp" data-hash="apply" data-count="Join the camp" data-count-where="the end">Join the camp</a>
-    <a class="act" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Follow" data-count-where="the end">Follow and subscribe</a>
+    <a class="act lead" href="camp.html#apply" data-pane="camp" data-hash="apply" data-count="Apply to join the camp" data-count-where="the end">Apply to join the camp</a>
+    <a class="act" href="tribe.html#join" data-pane="tribe" data-hash="join" data-count="Join the tribe" data-count-where="the end">Join the tribe</a>
     <a class="act" href="https://www.backabuddy.co.za/campaign/the-seed" target="_blank" rel="noopener" data-give data-count="Donate" data-count-where="the end">Donate to The Seed</a>
     <button class="act readall-open" type="button" data-count="Read the whole invitation" data-count-where="the end">Read the whole invitation</button>
   </div>
@@ -1842,7 +1847,7 @@ iframe.spotify { display: block; width: 100%; height: 152px; border: 0; border-r
     <svg class="arch-head" viewBox="0 0 60 84" aria-hidden="true"><path d="M6 84V46C6 33 15 27 22 20C27 15 29 7 30 0C31 7 33 15 38 20C45 27 54 33 54 46V84Z"/></svg>
     <h2 id="campWayH">Join the camp</h2>
     <p class="epi">Plant the seed with us at AfrikaBurn 2027.</p>
-    <p>Places are limited to 50. Make your tribe profile, then <a href="camp.html#apply" data-pane="camp" data-hash="apply">apply to join the camp</a>: a short application, a welcome call with a camp lead, and your share in the common costs.</p>
+    <p>Places are limited to 50. Join the tribe, then <a href="camp.html#apply" data-pane="camp" data-hash="apply">apply to join the camp</a>: a short application, a welcome call with a camp lead, and your share in the common costs.</p>
     <p>Live and build with us in the Tankwa Karoo, from Monday 19 April for the build and through the burn, 26 April to 2 May 2027.</p>
     <p class="label" id="liveQ">Where do you live?</p>
     <div class="choice" role="group" aria-labelledby="liveQ"><button type="button" data-live="za" aria-pressed="false">South Africa</button><button type="button" data-live="away" aria-pressed="false">Elsewhere</button></div>

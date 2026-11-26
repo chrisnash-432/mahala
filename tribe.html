@@ -205,7 +205,7 @@ html.join-open, html.join-open body { overflow: hidden; }
 .next-up a { text-decoration: none; border-bottom: 1px solid var(--pine); padding-bottom: 1px; }
 .next-up a:hover { border-color: var(--ink); }
 /* Mik's review, 26 Nov 2026: the next gathering as a heading of its own (F-123); the tribe page's end (F-125); the
-   WhatsApp group's QR code in Follow and subscribe (F-110) */
+   WhatsApp group's QR code in Join the tribe (F-110) */
 .next-up { margin: 34px auto 0; padding: 22px 26px 20px; max-width: 560px; border: 1px solid var(--rule); border-radius: 22px; background: rgba(255,255,255,.55); text-align: center; }
 .next-up .nu-k { margin: 0 0 8px; font: 500 12px/1 var(--text); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-3); }
 .next-up .nu-t { display: inline-block; border: 0; font: 400 clamp(24px, 3.2vw, 34px)/1.15 var(--name); color: var(--ink); }
@@ -280,7 +280,7 @@ html.join-open, html.join-open body { overflow: hidden; }
       <div class="prism" aria-hidden="true"></div>
       <p class="lede" id="lede"></p>
       <div class="tally" id="tally"></div>
-      <div class="acts top-acts"><button class="act solid" type="button" data-tribe-join>Follow and subscribe</button></div>
+      <div class="acts top-acts"><button class="act solid" type="button" data-tribe-join>Join the tribe</button></div>
       <div class="next-up" id="nextUp" hidden></div>
     </header>
 
@@ -299,8 +299,8 @@ html.join-open, html.join-open body { overflow: hidden; }
         <div class="season" id="season" aria-hidden="true"></div>
         <div class="ev-filter" role="group" aria-label="Show"><button type="button" data-evf="all" aria-pressed="true">Everything</button><button type="button" data-evf="person" aria-pressed="false">In person</button><button type="button" data-evf="online" aria-pressed="false">Online talks</button><button type="button" data-evf="build" aria-pressed="false">Build days</button></div>
         <div id="evlist"></div>
-        <p class="ev-foot">Tickets open here as each date is set. Follow Mahala and you hear first.</p>
-        <div class="acts"><button class="act solid" type="button" data-tribe-join>Follow and subscribe</button><a class="act" href="seed.html" data-open="seed">About The Seed</a></div>
+        <p class="ev-foot">Tickets open here as each date is set. Join the tribe and you hear first.</p>
+        <div class="acts"><button class="act solid" type="button" data-tribe-join>Join the tribe</button><a class="act" href="seed.html" data-open="seed">About The Seed</a></div>
       </div>
     </section>
 
@@ -338,8 +338,9 @@ html.join-open, html.join-open body { overflow: hidden; }
     </section>
 
     <section class="tribe-end" aria-label="Where next">
-      <div class="acts"><a class="act" href="seed.html" data-open="seed">About The Seed</a><button class="act solid" type="button" data-tribe-join>Subscribe</button><a class="act" href="./#mahalaverse" data-go-verse data-count="Mahalaverse" data-count-where="The tribe page">Step into the Mahalaverse</a></div>
-      <p class="door-note">Anyone can follow Mahala. Want to camp with us at AfrikaBurn? <a href="camp.html#apply" data-open="camp">Apply to join the camp</a>.</p>
+      <div class="acts"><a class="act" href="seed.html" data-open="seed">About The Seed</a><button class="act solid" type="button" data-tribe-join>Join the tribe</button><a class="act" href="./#mahalaverse" data-go-verse data-count="Mahalaverse" data-count-where="The tribe page">Step into the Mahalaverse</a></div>
+      <p class="door-note">Anyone can join the tribe. Want to camp with us at AfrikaBurn? <a href="camp.html#apply" data-open="camp">Apply to join the camp</a>.</p>
+      <p class="door-note">Or follow along on <a href="https://www.instagram.com/wearemahala" target="_blank" rel="noopener" data-count="Instagram" data-count-where="The tribe page">Instagram</a> and in the <a href="https://chat.whatsapp.com/FOKRiNUU6gH41G7vRKWvqt" target="_blank" rel="noopener" data-count="WhatsApp tribe group" data-count-where="The tribe page">WhatsApp announcements group</a>.</p>
     </section>
 
     <p class="how" id="how"></p>
@@ -348,7 +349,7 @@ html.join-open, html.join-open body { overflow: hidden; }
 <section class="tjoin" id="tjoin" role="dialog" aria-modal="true" aria-labelledby="tjoinH" hidden>
   <div class="bar">
     <button class="back" type="button" id="tjoinClose"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9"/></svg>Close</button>
-    <span class="ttl" id="tjoinH">Follow and subscribe</span>
+    <span class="ttl" id="tjoinH">Join the tribe</span>
     <span class="side"><span class="jstep" id="tjoinStep"></span></span>
   </div>
   <div class="tj-page"><div id="tjoinBody"></div></div>
@@ -602,7 +603,7 @@ html.join-open, html.join-open body { overflow: hidden; }
   var filter = 'all';
   var draw = function () {
     var list = upcoming.filter(function (e) { return filter === 'all' || GROUP[filter].indexOf(e.kind) >= 0; });
-    if (!list.length) { $('evlist').innerHTML = '<p class="ev-empty">Nothing of this kind is on the calendar yet. Follow Mahala and we will tell you when it is.</p>'; return; }
+    if (!list.length) { $('evlist').innerHTML = '<p class="ev-empty">Nothing of this kind is on the calendar yet. Join the tribe and we will tell you when it is.</p>'; return; }
     var h = '', month = '';
     list.forEach(function (e) {
       var m = e.date.slice(0, 7);
@@ -688,7 +689,7 @@ html.join-open, html.join-open body { overflow: hidden; }
 </script>
 <script src="site.js?v=10"></script>
 <script src="assets/shim/claude-shim.js?v=20"></script>
-<script src="tribe-join.js?v=6"></script>
+<script src="tribe-join.js?v=7"></script>
 <script src="yourevents.js?v=2"></script>
 <script src="analytics.js?v=2"></script>
 </body>

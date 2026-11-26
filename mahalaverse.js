@@ -4812,9 +4812,9 @@ function tribeDoor() {
     D.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="tdTitle"><div class="sheet-body intro-body">
       <span class="eyebrow">For the tribe</span>
       <h3 id="tdTitle">The Mahalaverse is the tribe's home</h3>
-      <p class="intro-lead">This is where Mahala's tribe of temple builders gathers online. Make your tribe profile to step in: it takes a few minutes, and your own page comes with it.</p>
+      <p class="intro-lead">This is where Mahala's tribe of temple builders gathers online. Join the tribe to step in: it takes a few minutes, and your own page comes with it.</p>
       <p>Once it is made, Into the Mahalaverse on your page brings you back here.</p>
-      <a class="btn primary intro-go" href="tribe.html#profile" data-td="join">${icon('star')}Make my tribe profile</a>
+      <a class="btn primary intro-go" href="tribe.html#profile" data-td="join">${icon('star')}Join the tribe</a>
       <p class="note">Already have one? <button class="linkish td-in" type="button" data-td="signin">Sign in</button> · <a href="./" data-td="back">Back to The Seed</a></p>
     </div></div>`;
     document.body.appendChild(D);

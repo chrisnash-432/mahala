@@ -489,7 +489,7 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) { e.stopImmediatePropagation(); closeJoin(); } }, true);
   document.querySelectorAll('[data-join]').forEach(function (b) { b.addEventListener('click', function () { openJoin(b); }); });
   // Apply to join the camp, the camp page's one way on (Mik's review, 26 Nov 2026, F-115, F-132): signed in, the
-  // application opens at once (invited or not); signed out, the tribe profile comes first (Follow and subscribe's
+  // application opens at once (invited or not); signed out, the tribe profile comes first (Join the tribe's
   // #apply), and the application opens from Your Mahala; already applied, the member space.
   var EMBED = (function () { try { return window.parent !== window && window.parent.location.origin === location.origin; } catch (e) { return false; } })();
   function tribeFirst() {
