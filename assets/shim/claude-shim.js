@@ -861,9 +861,9 @@
   // takes someone already signed in to Your Mahala instead of the form. One listener here, so pages need no change:
   // links to tribe.html#join, [data-tribe-join] buttons, and anything marked data-mahala-join.
   var JOIN_SEL = 'a[href*="tribe.html#join"],[data-tribe-join],[data-mahala-join]';
-  function goMe(replace) {
+  function goMe(replace, hash) {
     if (!MEPAGE) return false;
-    var url = new URL(MEPAGE, location.href).href, w = EMBEDDED ? window.top : window;
+    var url = new URL(MEPAGE + (hash || ''), location.href).href, w = EMBEDDED ? window.top : window;
     if (replace) w.location.replace(url); else w.location.href = url;
     return true;
   }
@@ -1619,15 +1619,20 @@
   }
 
   // Pages without the game (camp.html, seed.html) put <button data-mahala-account> where a sign-in belongs.
+  // One chip, not two (the stewards, 26 Nov 2026, F-172): for camp members it reads Member space and opens it; for
+  // everyone else signed in it carries their name and opens their profile; signed out it reads Sign in. Profile and
+  // member space switch from the top of Your Mahala itself.
+  function chipText() { return info && info.signedIn ? (spaceOpen(info) ? 'Member space' : (info.name || 'Your account')) : 'Sign in'; }
   function mountChips(refresh) {
     Array.prototype.forEach.call(document.querySelectorAll('[data-mahala-account]'), function (b) {
-      if (b.dataset.mvOn) { if (refresh) { b.textContent = info && info.signedIn ? (info.name || 'Your account') : 'Sign in'; paintChips(); } return; }
+      if (b.dataset.mvOn) { if (refresh) { b.textContent = chipText(); paintChips(); } return; }
       b.dataset.mvOn = '1';
       b.classList.add('mvm-chip'); b.hidden = false;
-      b.textContent = info && info.signedIn ? (info.name || 'Your account') : 'Sign in';
+      b.textContent = chipText();
+      if (info && info.signedIn) b.title = info.name || '';
       // signed in, the chip opens the member's own page (site.js members.mePage), else the account box
       b.addEventListener('click', function () {
-        if (info && info.signedIn && MEPAGE && !onMe()) { goMe(); return; }
+        if (info && info.signedIn && MEPAGE && !onMe()) { goMe(false, spaceOpen(info) ? '#space' : ''); return; }
         UI.open(info && info.signedIn ? 'account' : 'signin');
       });
     });
