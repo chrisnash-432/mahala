@@ -35,6 +35,7 @@
   var A = { name: '', email: '', whatsapp: '', waFrom: '', based: '', city: '', country: '', placeFrom: '', placeOpen: false, skills: [], bigCoil: false, gift: 0, payIn: 1, coupon: '', agreed: [],
     message: '', nominatedBy: '', booked: false, when: '', date: '', proof: '', proofUrl: '' };
   try { var q = new URLSearchParams(location.search); if (q.get('name')) A.name = q.get('name').slice(0, 40); if (q.get('by')) A.nominatedBy = q.get('by').slice(0, 60); } catch (e) { }
+  var APPLY = false;   // applying without an invitation letter (Mik's review, 26 Nov 2026)
   var LAST = 5, step = 1, payOnly = false, box = $('join'), body = $('joinBody'), stepEl = $('joinStep');
   // the payment step's view of the account: signed in, the game id (the folder for the proof), the camp's banking details
   var PAY = { signedIn: false, uid: null, details: undefined, uploading: false, msg: '' };
@@ -47,8 +48,6 @@
   function rand(n) { return fee().cur === 'ZAR' ? 'R ' + nb(n) : rate() ? 'R ' + nb(n * rate()) : '$' + nb(n); }
   function lines() {
     var f = fee(), L = [['A place at Mahala camp', f.place]];
-    if (A.bigCoil) L.push(['The big coil', f.coil]);
-    if (A.gift) L.push(['A gift to the art piece', A.gift]);
     return L;
   }
   function total() { return lines().reduce(function (s, l) { return s + l[1]; }, 0); }
@@ -105,10 +104,10 @@
     },
     2: function () {
       var f = fee(), L = lines(), t = total();
-      return '<h2 class="h-sub">Your place at the camp</h2>' + feeBig(f.place) +
-        '<p class="centre small">A place in Mahala camp, the kitchen, the Lotus Mahal, the fire, and your coil necklace.</p>' +
-        '<label class="opt tick"><input type="checkbox" id="jCoil"' + (A.bigCoil ? ' checked' : '') + '><span><b>Add the big coil</b>, ' + money(f.coil) + ': about 40 cm across, wound by hand.</span></label>' +
-        '<fieldset class="field"><legend class="flabel">An extra gift to the art piece <small>(optional)</small></legend>' + chips('gift', GIFTS.map(function (g) { return [String(g), g ? money(g) : 'None']; }), String(A.gift), false) + '</fieldset>' +
+      // Mik's review, 26 Nov 2026 (F-143): the camp fee only, in the words of shared costs; the big coil and gifts to
+      // The Seed live on BackaBuddy, linked from the last step
+      return '<h2 class="h-sub">Your share in the common costs</h2>' + feeBig(f.place) +
+        '<p class="centre small">We recognise not everyone is able to contribute equally, and welcome the opportunity to talk about what will be affordable for you. <a href="mailto:love@wearemahala.com?subject=' + encodeURIComponent('My share in the common costs') + '">Write to us</a>.</p>' +
         '<fieldset class="field"><legend class="flabel">Pay in</legend>' + chips('payIn', [['1', 'One payment'], ['2', '2 instalments'], ['4', '4 instalments']], String(A.payIn), false) + '</fieldset>' +
         field('jCoupon', 'Coupon code, if you were given one <small>(optional)</small>', '<input type="text" id="jCoupon" maxlength="30" value="' + esc(A.coupon) + '">') +
         '<div class="sum" aria-live="polite">' + L.map(function (l) { return '<div><span>' + l[0] + '</span><b>' + money(l[1]) + '</b></div>'; }).join('') +
@@ -116,7 +115,7 @@
         (A.payIn > 1 ? '<div class="per"><span>' + A.payIn + ' payments of</span><b>' + money(firstPay()) + '</b></div>' : '') +
         (A.coupon ? '<div class="per"><span>Coupon ' + esc(A.coupon) + '</span><b>noted with your application</b></div>' : '') + '</div>' +
         '<p class="small centre due">' + DUE[A.payIn] + ' Everyone has paid in full by February.</p>' +
-        '<p class="note">Your spot is confirmed on your first payment. There are only ' + SPOTS + ' spots.</p>';
+        (APPLY ? '<p class="note">Your place is confirmed once a camp lead has welcomed you on a short call. There are only ' + SPOTS + ' places.</p>' : '<p class="note">Your spot is confirmed on your first payment. There are only ' + SPOTS + ' spots.</p>');
     },
     3: function () {
       return '<h2 class="h-sub">The Sacred Agreements</h2>' +
@@ -185,7 +184,7 @@
   function read() {
     var v = function (id) { var e = $(id); return e ? e.value : null; };
     if (step === 1) { A.name = (v('jName') || '').trim(); A.email = (v('jEmail') || '').trim(); A.whatsapp = (v('jWa') || '').trim(); if ($('jCity')) A.city = v('jCity').trim(); }
-    if (step === 2) { A.bigCoil = !!($('jCoil') && $('jCoil').checked); A.coupon = (v('jCoupon') || '').trim(); }
+    if (step === 2) { A.bigCoil = false; A.gift = 0; A.coupon = (v('jCoupon') || '').trim(); }
     if (step === 4) { A.message = (v('jMsg') || '').trim(); }
     if (step === 5 && $('jDate')) A.date = v('jDate') || '';
   }
@@ -489,6 +488,23 @@
   $('joinClose').addEventListener('click', closeJoin);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !box.hidden) { e.stopImmediatePropagation(); closeJoin(); } }, true);
   document.querySelectorAll('[data-join]').forEach(function (b) { b.addEventListener('click', function () { openJoin(b); }); });
+  // Apply to join the camp, the camp page's one way on (Mik's review, 26 Nov 2026, F-115, F-132): signed in, the
+  // application opens at once (invited or not); signed out, the tribe profile comes first (Follow and subscribe's
+  // #apply), and the application opens from Your Mahala; already applied, the member space.
+  var EMBED = (function () { try { return window.parent !== window && window.parent.location.origin === location.origin; } catch (e) { return false; } })();
+  function tribeFirst() {
+    if (EMBED) { parent.postMessage({ mahala: 'open', pane: 'tribe', hash: 'apply' }, location.origin); return; }
+    location.href = 'tribe.html' + location.search + '#apply';
+  }
+  function startApply(from) {
+    var M = window.MahalaMembers;
+    if (APPLIED) { location.href = (M && M.mePage ? M.mePage : 'me.html') + '#space'; return; }
+    if (!M || !M.info) { APPLY = !INVITED; accountAsked = true; openJoin(from); return; }
+    M.info().then(function (i) {
+      if (i && i.signedIn) { APPLY = !INVITED; openJoin('after-sign-in'); } else tribeFirst();
+    }, tribeFirst);
+  }
+  document.querySelectorAll('[data-apply]').forEach(function (b) { b.addEventListener('click', function () { startApply(b); }); });
   document.querySelectorAll('[data-pay-later]').forEach(function (b) { b.addEventListener('click', function () { openPay(b); }); });
 
   // Once the application is in (the record says applicant or camp, or this device sent it), Accept your invitation
@@ -497,10 +513,9 @@
   function applied() { try { var c = JSON.parse(localStorage.getItem('mahala.applied') || 'null'); return !!(c && Date.now() - c.at < 200 * 864e5); } catch (e) { return false; } }
   function showApplied() {
     APPLIED = true;
-    document.querySelectorAll('[data-join]').forEach(function (b) { b.hidden = true; });
+    document.querySelectorAll('[data-join], [data-apply], [data-apply-how]').forEach(function (b) { b.hidden = true; });
     document.querySelectorAll('[data-invited-note]').forEach(function (a) { a.hidden = true; });
-    document.querySelectorAll('[data-open-tribe]').forEach(function (a) { a.hidden = true; });
-    var bi = $('byInvite'); if (bi) bi.hidden = true;
+    document.querySelectorAll('.apply-follow').forEach(function (a) { a.hidden = true; });
     var M = window.MahalaMembers;
     document.querySelectorAll('[data-applied]').forEach(function (a) { if (M && M.mePage) a.setAttribute('href', M.mePage); a.hidden = false; });
     if (M && M.info) M.info().then(function (i) {
@@ -513,10 +528,7 @@
   }
   function showInvited() {
     if (APPLIED) return;
-    document.querySelectorAll('[data-join]').forEach(function (b) { b.hidden = false; });
-    document.querySelectorAll('[data-open-tribe]').forEach(function (a) { a.hidden = true; });
     document.querySelectorAll('[data-invited-note]').forEach(function (a) { a.hidden = false; });
-    var bi = $('byInvite'); if (bi) bi.hidden = true;
   }
   if (applied()) showApplied();
   // the camp is by invitation: the application opens only from an invitation letter's link (it carries ?ref=, ?inv= or ?by=)
@@ -532,7 +544,7 @@
   }
   if (INVITED) {
     showInvited();
-    if (!APPLIED && /^#(join|apply)$/i.test(location.hash)) openJoin();
+    if (!APPLIED && /^#join$/i.test(location.hash)) openJoin();
   }
   // "Apply without an account", under the sign-in sheet the application opened
   function addSkip() {
@@ -555,7 +567,8 @@
   if (M0 && M0.ready) M0.ready.then(function (i) {
     var t = i && i.journey && i.journey.tier;
     if (t === 'applicant' || t === 'camp') { showApplied(); return; }
-    if (!INVITED && t === 'invited') { INVITED = true; showInvited(); if (/^#(join|apply)$/i.test(location.hash) && box.hidden) openJoin('after-sign-in'); }
+    if (!INVITED && t === 'invited') { INVITED = true; showInvited(); }
+    if (i && i.signedIn && /^#join$/i.test(location.hash) && box.hidden) { APPLY = !INVITED; openJoin('after-sign-in'); }
   });
   // back from the sign-in the application asked for: open it now
   try {
